@@ -1,0 +1,76 @@
+#' Calculate weight of evidence (woe) and information values (iv)
+#'
+#' This function calculate woe and iv values based on datatable or good/bad series.
+#'
+#' @name iv
+#' @param dt Name of data.frame/data.table with input data.
+#' @param y Name of y variable.
+#' @param x Name of x variables.
+#' @param event_class The positive/bad target event, such as "bad" or 1.
+#' @return List of woe and iv data tables.
+#' @export
+#' @examples
+#' # Load German credit data and create good and bad series
+#' data(germancredit)
+#' dt <- data.table(germancredit[, c('creditability', 'credit.amount', 'age.in.years')])
+#'
+#' iv(dt, y = "creditability")
+#'
+iv <- function(dt, y, x="", event_class="bad|1") {
+  if (x=="") x <- setdiff(names(df), y)
+
+  dt <- data.table(df)[, x, with = FALSE
+                       ][, `:=`(
+                         rowid = as.integer(row.names(.SD)),
+                         y = ifelse(grepl(event.class, df[[y]]), 1, 0)
+                       )]
+
+  # estimate iv
+  ivdt <- melt( dt, id = c("rowid", "y") )[
+    , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
+
+    # ][, `:=`(group = value, group0 = good==0 | bad==0)
+    # ][, `:=`(group1 = group0 - shift(group0, type="lag"))
+    #
+    # ][, `:=`(mincount = ifelse(shift(count, type="lag") > shift(count, type="lead"), "lead", "lag")  ), by="variable" # mark lag lead
+    # ][][, `:=`(mincount = ifelse(as.integer(row.names(.SD)) == 1, "lead", ifelse(as.integer(row.names(.SD)) == .N, "lag", mincount))), by="variable"
+    # ][][, `:=`(group = ifelse(group0 == TRUE & mincount == "lead", shift(group, type="lead"), ifelse(group0 == TRUE & mincount == "lag", shift(group, type="lag"), group) )), by="variable"
+    # ][, .(good = sum(good), bad = sum(bad)), keyby=c("variable", "group")
+    ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0good/bad by 0.99
+
+      ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
+        ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+          ]
+
+  iv <-
+    ivdt[, sum(miv), by="variable"]
+
+  return(list(ivdt = ivdt, iv = iv))
+}
+
+#' @rdname iv
+#' @param good vector of good numbers
+#' @param bad vector of bad numbers
+#' @return The iv of \code{good} and \code{bad}
+#' @export
+#' @examples
+#' melt(dt, id = 'creditability')[, .(
+#' good = sum(creditability=="good"), bad = sum(creditability=="bad")
+#' ), keyby = c("variable", "value")][
+#' , .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
+#'
+iv_01 <- function(good, bad) {
+  data.table(
+    good = good, bad = bad
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
+
+  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+  ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+  ][, sum(miv)]
+
+}
+
+
+
+# Weight of Evidence (WoE) Introductory Overview
+# http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview

@@ -1,0 +1,12 @@
+Package: woebin
+Type: Package
+Title: Weight of Evidence Binning
+Version: 0.1.0
+Author: Shichen Xie
+Maintainer: Shichen Xie <xie@shichen.name>
+Description: Weight of Evidence Binning
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports: data.table
+RoxygenNote: 6.0.1
