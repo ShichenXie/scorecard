@@ -1,12 +1,13 @@
-#' Calculate weight of evidence (woe) and information values (iv)
+#' information values (iv)
 #'
 #' This function calculate woe and iv values based on datatable or good/bad series.
 #'
 #' @name iv
+#' @usage iv(dt, y, x, positive)
 #' @param dt Name of data.frame/data.table with input data.
 #' @param y Name of y variable.
-#' @param x Name of x variables.
-#' @param event_class The positive/bad target event, such as "bad" or 1.
+#' @param x Name vector of x variables.
+#' @param positive The positive/bad target event, such as "bad" or 1.
 #' @return List of woe and iv data tables.
 #' @export
 #' @examples
@@ -14,16 +15,17 @@
 #' data(germancredit)
 #' dt <- data.table(germancredit[, c('creditability', 'credit.amount', 'age.in.years')])
 #'
+#' # iv(dt, y)
 #' iv(dt, y = "creditability")
-#'
-iv <- function(dt, y, x="", event_class="bad|1") {
-  if (x=="") x <- setdiff(names(df), y)
+iv <- function(dt, y, x="", positive="bad|1") {
+  if (x=="") x <- setdiff(names(dt), y)
 
-  dt <- data.table(df)[, x, with = FALSE
-                       ][, `:=`(
-                         rowid = as.integer(row.names(.SD)),
-                         y = ifelse(grepl(event.class, df[[y]]), 1, 0)
-                       )]
+  dt <- data.table(dt)[
+    , x, with = FALSE
+    ][, `:=`(
+      rowid = as.integer(row.names(.SD)),
+      y = ifelse(grepl(positive, dt[[y]]), 1, 0)
+    )]
 
   # estimate iv
   ivdt <- melt( dt, id = c("rowid", "y") )[
@@ -48,17 +50,19 @@ iv <- function(dt, y, x="", event_class="bad|1") {
   return(list(ivdt = ivdt, iv = iv))
 }
 
-#' @rdname iv
-#' @param good vector of good numbers
-#' @param bad vector of bad numbers
-#' @return The iv of \code{good} and \code{bad}
-#' @export
-#' @examples
-#' melt(dt, id = 'creditability')[, .(
-#' good = sum(creditability=="good"), bad = sum(creditability=="bad")
-#' ), keyby = c("variable", "value")][
-#' , .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
-#'
+# #' @rdname iv
+# #' @param good vector of good numbers
+# #' @param bad vector of bad numbers
+# #' @return The iv of \code{good} and \code{bad}
+# #' @export
+# #' @examples
+# #'
+# #' # iv_01(good, bad)
+# #' dtm <- melt(dt, id = 'creditability')[, .(
+# #' good = sum(creditability=="good"), bad = sum(creditabilit=="bad")
+# #' ), keyby = c("variable", "value")]
+# #'
+# #' dtm[, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
 iv_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
@@ -68,6 +72,26 @@ iv_01 <- function(good, bad) {
   ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
   ][, sum(miv)]
 
+}
+
+miv_01 <- function(good, bad) {
+  data.table(
+    good = good, bad = bad
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
+
+    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+      ][, `:=`( miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+        ][, miv]
+}
+
+woe_01 <- function(good, bad) {
+  data.table(
+    good = good, bad = bad
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
+
+    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+      ][, `:=`(woe = log(DistrBad/DistrGood))
+        ][, woe]
 }
 
 

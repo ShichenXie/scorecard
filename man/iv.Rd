@@ -2,30 +2,21 @@
 % Please edit documentation in R/iv.R
 \name{iv}
 \alias{iv}
-\alias{iv_01}
-\title{Calculate weight of evidence (woe) and information values (iv)}
+\title{information values (iv)}
 \usage{
-iv(dt, y, x = "", event_class = "bad|1")
-
-iv_01(good, bad)
+iv(dt, y, x, positive)
 }
 \arguments{
 \item{dt}{Name of data.frame/data.table with input data.}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables.}
+\item{x}{Name vector of x variables.}
 
-\item{event_class}{The positive/bad target event, such as "bad" or 1.}
-
-\item{good}{vector of good numbers}
-
-\item{bad}{vector of bad numbers}
+\item{positive}{The positive/bad target event, such as "bad" or 1.}
 }
 \value{
 List of woe and iv data tables.
-
-The iv of \code{good} and \code{bad}
 }
 \description{
 This function calculate woe and iv values based on datatable or good/bad series.
@@ -35,11 +26,6 @@ This function calculate woe and iv values based on datatable or good/bad series.
 data(germancredit)
 dt <- data.table(germancredit[, c('creditability', 'credit.amount', 'age.in.years')])
 
+# iv(dt, y)
 iv(dt, y = "creditability")
-
-melt(dt, id = 'creditability')[, .(
-good = sum(creditability=="good"), bad = sum(creditability=="bad")
-), keyby = c("variable", "value")][
-, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
-
 }
