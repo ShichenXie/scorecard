@@ -27,27 +27,15 @@ iv <- function(dt, y, x="", positive="bad|1") {
       y = ifelse(grepl(positive, dt[[y]]), 1, 0)
     )]
 
-  # estimate iv
-  ivdt <- melt( dt, id = c("rowid", "y") )[
+  melt( dt, id = c("rowid", "y") )[
     , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
 
-    # ][, `:=`(group = value, group0 = good==0 | bad==0)
-    # ][, `:=`(group1 = group0 - shift(group0, type="lag"))
-    #
-    # ][, `:=`(mincount = ifelse(shift(count, type="lag") > shift(count, type="lead"), "lead", "lag")  ), by="variable" # mark lag lead
-    # ][][, `:=`(mincount = ifelse(as.integer(row.names(.SD)) == 1, "lead", ifelse(as.integer(row.names(.SD)) == .N, "lag", mincount))), by="variable"
-    # ][][, `:=`(group = ifelse(group0 == TRUE & mincount == "lead", shift(group, type="lead"), ifelse(group0 == TRUE & mincount == "lag", shift(group, type="lag"), group) )), by="variable"
-    # ][, .(good = sum(good), bad = sum(bad)), keyby=c("variable", "group")
     ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0good/bad by 0.99
 
       ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
         ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
-          ]
+          ][, sum(miv), by="variable"]
 
-  iv <-
-    ivdt[, sum(miv), by="variable"]
-
-  return(list(ivdt = ivdt, iv = iv))
 }
 
 # #' @rdname iv
@@ -69,7 +57,7 @@ iv_01 <- function(good, bad) {
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
 
   ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+  ][, `:=`(miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
   ][, sum(miv)]
 
 }

@@ -75,32 +75,51 @@ woebin2 <- function(dt, y, x="", binnum=5, method="tree", min_perc_total=0.02, p
 
     # best breakpoints
     # requried by add_bst_brkp
-    bestbreakpoints <- function(brkpdt, bst_brkp) {
+    bestbreakpoints <- function(brkpdt, bst_brkp, total_iv=TRUE) {
       if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
-        brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = TRUE)
-          ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
+        if (total_iv) {
+          brkpdt[
+            , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = TRUE)
+            ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
+              ][, .(total_iv = sapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
+
+        } else {
+          brkpdt[
+            , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = TRUE)
+            ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
             ][, `:=`(badprob = bad/(good+bad), bin = bstbin )
-              ][order(bstbin)
-                ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-                  ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
-                    ][, total_iv := sum(miv)
-                      ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-                        ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv)]
+            ][order(bstbin)
+            ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+            ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
+            ][, total_iv := sum(miv)
+            ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
+            ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv)]
+
+        }
+
 
       } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
         bst_brkp <- setdiff(bst_brkp, min(brkpdt[,brkp]))
 
-        brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = TRUE)
-          ][, .(variable=unique(variable), bin = paste0(bin, collapse = "##"), good = sum(good), bad = sum(bad)), keyby = bstbin
-            ][, badprob:=bad/(good+bad)
-              ][order(bstbin)
-                ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-                  ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
-                    ][, total_iv := sum(miv)
-                      ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-                        ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv) ]
+        if (total_iv) {
+          brkpdt[
+            , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = TRUE)
+            ][, .(variable=unique(variable), bin = paste0(bin, collapse = "##"), good = sum(good), bad = sum(bad)), keyby = bstbin
+              ][, .(total_iv = sapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
+
+        } else {
+          brkpdt[
+            , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = TRUE)
+            ][, .(variable=unique(variable), bin = paste0(bin, collapse = "##"), good = sum(good), bad = sum(bad)), keyby = bstbin
+              ][, badprob:=bad/(good+bad)
+                ][order(bstbin)
+                  ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+                    ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
+                      ][, total_iv := sum(miv)
+                        ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
+                          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv) ]
+        }
+
         # variable bstbin bstbrkp good bad badprob woe miv total_iv
 
       }
@@ -121,12 +140,12 @@ woebin2 <- function(dt, y, x="", binnum=5, method="tree", min_perc_total=0.02, p
       #     ][, total_iv := sum(miv)][]
 
 
-      bst_brkpdt <- bestbreakpoints(brkpdt, bst_brkp_i)
+      bst_brkpdt <- bestbreakpoints(brkpdt, bst_brkp_i, total_iv = TRUE)
 
       # rbind datatable of iv and bst_brkp with new row
       iv_dt <- rbindlist(list(
         iv_dt,
-        data.table( total_iv = bst_brkpdt[,unique(total_iv)], brkp = i )
+        data.table( total_iv = bst_brkpdt[1,total_iv], brkp = i )
       ))
     }
     )
@@ -134,7 +153,7 @@ woebin2 <- function(dt, y, x="", binnum=5, method="tree", min_perc_total=0.02, p
     # selected best breakpoint
     bst_brkp <- sort( c(bst_brkp, iv_dt[total_iv==max(total_iv), brkp]) )
     #
-    bst_bins_dt <- bestbreakpoints(brkpdt, bst_brkp)
+    bst_bins_dt <- bestbreakpoints(brkpdt, bst_brkp, total_iv = FALSE)
 
     return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[, unique(total_iv)]))
   }
@@ -241,6 +260,7 @@ woebin_ply <- function(dt, bins, y) {
   kdt <- copy(dt)
 
   for (x in names(bins)) {
+    print(x)
     binsx <- bins[[x]]
 
     if (is.factor(kdt[[x]]) | is.character(kdt[[x]])) {
@@ -251,9 +271,11 @@ woebin_ply <- function(dt, bins, y) {
 
       kdt[[x]] <- kdt[[paste0(x, "_brkp")]]
       kdt[, paste0(x, "_brkp") := NULL]
+    } else if (is.logical(kdt[[x]])) {
+      kdt[[x]] <- as.numeric(kdt[[x]])
     }
 
-    kdt[, (x) := cut(kdt[[x]], c(-Inf, binsx[, bstbrkp]), right = FALSE, dig.lab = 10, ordered_result = TRUE) ]
+    kdt[, (x) := cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp])), right = FALSE, dig.lab = 10, ordered_result = TRUE) ]
 
     kdt <- setnames(binsx[,.(bstbin, woe)], c(x, paste0(x,"_woe")))[kdt, on = x][,(x):=NULL]
   }
