@@ -13,7 +13,7 @@ woebin2 <- function(dt, y, x="", binnum=5, method="tree", min_perc_total=0.02, p
 
   # input data.table
   dtm <- data.table(y = dt[[y]], variable=x, value = dt[[x]])[, y := ifelse(grepl(positive, y), 1, 0)]
-  # setnames(melt(dt, id=y, value.factor = TRUE), c("y", "variable", "value"))
+  if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
 
   # functions ------
   ###### breakpoints for initial bins
