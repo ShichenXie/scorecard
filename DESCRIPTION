@@ -11,4 +11,5 @@ LazyData: true
 RoxygenNote: 6.0.1
 Depends: data.table,
     ggplot2,
-    gridExtra
+    gridExtra,
+    shiny

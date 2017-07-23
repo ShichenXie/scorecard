@@ -3,4 +3,5 @@
 export(iv)
 export(perf_plot)
 export(woebin)
+export(woebin_adj)
 export(woebin_ply)

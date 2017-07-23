@@ -1,6 +1,6 @@
 #' information values (iv)
 #'
-#' This function calculate woe and iv values based on datatable or good/bad series.
+#' This function calculate woe and iv values.
 #'
 #' @name iv
 #' @usage iv(dt, y, x, positive)
@@ -13,7 +13,7 @@
 #' @examples
 #' # Load German credit data and create good and bad series
 #' data(germancredit)
-#' dt <- data.table(germancredit[, c('creditability', 'credit.amount', 'age.in.years')])
+#' dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years')]
 #'
 #' # iv(dt, y)
 #' iv(dt, y = "creditability")
@@ -85,4 +85,5 @@ woe_01 <- function(good, bad) {
 
 
 # Weight of Evidence (WoE) Introductory Overview
+# http://ucanalytics.com/blogs/data-visualization-case-study-banking/
 # http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview

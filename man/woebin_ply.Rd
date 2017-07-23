@@ -2,7 +2,7 @@
 % Please edit documentation in R/woebin.R
 \name{woebin_ply}
 \alias{woebin_ply}
-\title{woe binning apply}
+\title{binning apply}
 \usage{
 woebin_ply(dt, bins, y)
 }
@@ -23,8 +23,10 @@ This function applies binning via woebin to dataframe
 
 # load germancredit data
 data(germancredit)
-dt <- data.table(germancredit[, c('creditability', 'age.in.years', 'present.employment.since')])
+dt <- germancredit[, c('creditability', 'age.in.years', 'present.employment.since')]
 
+# woe binning
 bins <- woebin(dt, "creditability")
+# woe binning apply
 dt_woe <- woebin_ply(dt, bins, "creditability")
 }

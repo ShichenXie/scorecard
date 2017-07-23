@@ -4,8 +4,8 @@
 \alias{woebin}
 \title{woe binning}
 \usage{
-woebin(dt, y, x = "", binnum = 6, method = "tree",
-  min_perc_total = 0.01, positive = "bad|1", print_step = FALSE)
+woebin(dt, y, x = "", min_perc_total = 0.02, stop_limit = 0.1,
+  method = "tree", positive = "bad|1", print_step = FALSE)
 }
 \arguments{
 \item{dt}{Name of input data}
@@ -14,9 +14,9 @@ woebin(dt, y, x = "", binnum = 6, method = "tree",
 
 \item{x}{Name vector of x variables, defaults: "".}
 
-\item{binnum}{Number of binning, defaults: 6.}
+\item{min_perc_total}{The share of initial binning class number over total.}
 
-\item{min_perc_total}{The share of initial binning class on total number.}
+\item{stop_limit}{Stop binning segmentation when information value (iv) increase less than the stop_limit, default: 0.1.}
 
 \item{positive}{Name of positive class, defaults: bad or 1.}
 }
@@ -31,5 +31,6 @@ This function generates a list of binnings based on tree-like segmentation for b
 data(germancredit)
 dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years', 'present.employment.since')]
 
+# woe binning
 woebin(dt, y = "creditability")
 }

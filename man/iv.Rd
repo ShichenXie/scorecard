@@ -19,12 +19,12 @@ iv(dt, y, x, positive)
 List of woe and iv data tables.
 }
 \description{
-This function calculate woe and iv values based on datatable or good/bad series.
+This function calculate woe and iv values.
 }
 \examples{
 # Load German credit data and create good and bad series
 data(germancredit)
-dt <- data.table(germancredit[, c('creditability', 'credit.amount', 'age.in.years')])
+dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years')]
 
 # iv(dt, y)
 iv(dt, y = "creditability")
