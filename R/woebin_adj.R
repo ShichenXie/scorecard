@@ -38,21 +38,25 @@ woebin_adj <- function(dt, y, x="") {
   # server ------
   server <- function(input, output) {
 
+    # binning <- reactive({
+    #   woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+    # })
+
 
     # Show the first "n" observations
     output$distPlot <- renderPlot({
-      bins <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
-      pfun(bins)
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      pfun(binning)
     })
 
     output$bins <- renderPrint({
-      bins <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
-      bins[, .(bin)]
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      binning[, .(bin)]
     })
 
     output$table <- renderTable({
-      bins <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
-      copy(bins)[, `:=`(bin=NULL, bstbin = NULL, bstbrkp = NULL)]
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      binning[, `:=`(bin=NULL, bstbin = NULL, bstbrkp = NULL)]
     })
 
   }

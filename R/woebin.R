@@ -3,7 +3,8 @@
 woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step=FALSE) {
   # # load germancredit data
   # data(germancredit)
-  # dt <- data.table(germancredit[, c('creditability', 'credit.amount')])
+  # dt <- data.table(germancredit[, c('creditability', 'age.in.years')])
+  # dt <- data.table(germancredit[, c('creditability', 'status.of.existing.checking.account')])
   # dt <- data.table(germancredit[, c('creditability', 'present.employment.since')])
 
   # x column name
@@ -130,30 +131,35 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     # return
     bst_brkp <- sort( c(bst_brkp,  bst_brkp_max_total_iv) )
     #
-    bst_bins_dt <- bestbreakpoints(brkpdt, bst_brkp, only_total_iv=FALSE)
+    # bst_bins_dt <-
+      bestbreakpoints(brkpdt, bst_brkp, only_total_iv=FALSE)
 
-    return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[1, total_iv]))
+    # return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[1, total_iv]))
   }
   ###### all tree-like best breakpoints
   all_bst_brkp <- function(brkpdt, stop_limit=0.1, print_step=FALSE) {
-    len_brkp <- length(setdiff(brkpdt[, brkp], c(-Inf, Inf, NA)))
+    len_brkp <- length( setdiff(brkpdt[, brkp], c(-Inf, Inf, NA)) )
 
     # best breakpoints for two bins
     ALL_bst_brkp <- add_bst_brkp(brkpdt)
     if (print_step == TRUE) print(ALL_bst_brkp)
-    IVt1 <- ALL_bst_brkp$total_iv
+    IVt1 <- ALL_bst_brkp[1, total_iv]
 
+    len_step = 1
     if (len_brkp >= 2) {
       IVchg <- 1
     # best breakpoints from three to n+1 bins
     while (IVchg >= stop_limit) {
-      ALL_bst_brkp <- add_bst_brkp(brkpdt, ALL_bst_brkp$best_breakpoints)
+      ALL_bst_brkp <- add_bst_brkp(brkpdt, ALL_bst_brkp[bstbrkp != -Inf, bstbrkp])
       if (print_step == TRUE) print(ALL_bst_brkp)
 
-      IVt2 <- ALL_bst_brkp$total_iv
+      IVt2 <- ALL_bst_brkp[1, total_iv]
       IVchg <- IVt2/IVt1-1
       # print(IVchg)
       IVt1 <- IVt2
+
+      len_step = len_step + 1
+      if (len_step >= len_brkp) break
     }
     }
 
@@ -203,7 +209,7 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
 
     bin2 <- woebin2(dt[, c(x, y), with=FALSE], y, x, min_perc_total, stop_limit, method, positive)
 
-    bins[[x]] <- bin2$best_bins_datatable[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
+    bins[[x]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
   }
 
   return(bins)
@@ -237,9 +243,9 @@ woebin_ply <- function(dt, bins, y) {
 
     if (is.factor(kdt[[x]]) | is.character(kdt[[x]])) {
       kdt <- setnames(
-        woebin2(kdt[, c(y,x), with=FALSE], y, stop_limit = "N")[,.(bin,brkp)],
+        woebin2(kdt[, c(y,x), with=FALSE], y, x, stop_limit = "N")[,.(bin,brkp)],
         c(x, paste0(x, "_brkp"))
-      )[kdt, on=x]
+      )[][kdt, on=x]
 
       kdt[[x]] <- kdt[[paste0(x, "_brkp")]]
       kdt[, paste0(x, "_brkp") := NULL]
@@ -247,9 +253,11 @@ woebin_ply <- function(dt, bins, y) {
       kdt[[x]] <- as.numeric(kdt[[x]])
     }
 
-    kdt[, (x) := cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp])), right = FALSE, dig.lab = 10, ordered_result = TRUE) ]
+    kdt[[x]] = cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp], Inf)), right = FALSE, ordered_result = TRUE)
 
-    kdt <- setnames(binsx[,.(bstbin, woe)], c(x, paste0(x,"_woe")))[kdt, on = x][,(x):=NULL]
+    kdt <- setnames(
+      binsx[,.(bstbin, woe)], c(x, paste0(x,"_woe"))
+    )[kdt, on = x][,(x):=NULL][]
   }
 
   return(kdt)
