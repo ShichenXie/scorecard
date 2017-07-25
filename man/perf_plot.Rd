@@ -36,13 +36,16 @@ This function calculate kolmogorov-smirnow(ks) value and plot ks curve based on 
 #   data.table(germancredit)[sample(nrow(germancredit))],
 #   c(paste0("x",1:20), "y")
 # )[, y:=ifelse(y=="bad", 1, 0)]
+#
 # # woe binning
 # bins <- woebin(dt, "y", stop_limit = 0.05)
 # dt_woe <- woebin_ply(dt, bins, "y")
+#
 # # Breaking Data into Training and Test Sample
 # set.seed(345)
 # d <- sample(nrow(dt), nrow(dt)*0.6)
 # train <- dt_woe[d]; test <- dt_woe[-d];
+#
 # # Traditional Credit Scoring Using Logistic Regression
 # # model I
 # m1 <- glm(y~., family=binomial(), data=train)
@@ -55,9 +58,11 @@ This function calculate kolmogorov-smirnow(ks) value and plot ks curve based on 
 #         x8_woe + x6_woe + x5_woe + x4_woe + x3_woe + x2_woe + x1_woe,
 #       family = binomial(), data = train)
 # # summary(m2)
+#
 # # score test data set
 # train$score <- predict(m2, type='response', train)
 # test$score <- predict(m2, type='response', test)
+#
 # # performace plot
 # perf_plot(train$y, train$score)
 # perf_plot(test$y, test$score)

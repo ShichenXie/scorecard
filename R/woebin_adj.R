@@ -22,7 +22,7 @@ woebin_adj <- function(dt, y, x="") {
       badprob2 = badprob*max(counts),
       badprob = round(badprob,4),
       rowid = as.integer(row.names(.SD))
-    )][]
+    )][, bin := factor(bin, levels = bin)]
 
 
     ggplot(dat) +
