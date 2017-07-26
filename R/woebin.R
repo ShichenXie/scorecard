@@ -129,7 +129,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 
 
     # return
-    bst_brkp <- sort( c(bst_brkp,  bst_brkp_max_total_iv) )
+    bst_brkp <- sort( unique(c(bst_brkp,  bst_brkp_max_total_iv)) )
     #
     # bst_bins_dt <-
       bestbreakpoints(brkpdt, bst_brkp, only_total_iv=FALSE)
