@@ -3,7 +3,6 @@
 #' This function calculate woe and iv values.
 #'
 #' @name iv
-#' @usage iv(dt, y, x, positive)
 #' @param dt Name of data.frame/data.table with input data.
 #' @param y Name of y variable.
 #' @param x Name vector of x variables.
@@ -17,7 +16,7 @@
 #'
 #' # iv(dt, y)
 #' iv(dt, y = "creditability")
-iv <- function(dt, y, x="", positive="bad|1") {
+iv <- function(dt, y, x="", positive="bad|1", order="TRUE") {
   if (x=="") x <- setdiff(names(dt), y)
 
   dt <- data.table(dt)[
@@ -27,7 +26,7 @@ iv <- function(dt, y, x="", positive="bad|1") {
       y = ifelse(grepl(positive, dt[[y]]), 1, 0)
     )]
 
-  melt( dt, id = c("rowid", "y") )[
+  ivlist <- melt( dt, id = c("rowid", "y") )[
     , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
 
     ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0good/bad by 0.99
@@ -35,6 +34,12 @@ iv <- function(dt, y, x="", positive="bad|1") {
       ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
         ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
           ][, sum(miv), by="variable"]
+
+  if (order==TRUE) {
+    return(ivlist[order(-V1)])
+  } else {
+    return(ivlist)
+  }
 
 }
 

@@ -4,7 +4,7 @@
 \alias{iv}
 \title{information values (iv)}
 \usage{
-iv(dt, y, x, positive)
+iv(dt, y, x = "", positive = "bad|1")
 }
 \arguments{
 \item{dt}{Name of data.frame/data.table with input data.}
