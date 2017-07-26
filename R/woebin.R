@@ -235,7 +235,7 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
 #' # woe binning apply
 #' dt_woe <- woebin_ply(dt, bins, "creditability")
 woebin_ply <- function(dt, bins, y) {
-  kdt <- copy(dt)
+  kdt <- copy(data.table(dt))
 
   for (x in names(bins)) {
     print(x)
