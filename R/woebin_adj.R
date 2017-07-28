@@ -45,17 +45,17 @@ woebin_adj <- function(dt, y, x="") {
 
     # Show the first "n" observations
     output$distPlot <- renderPlot({
-      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)$bins[[1]]
       pfun(binning)
     })
 
     output$bins <- renderPrint({
-      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)$bins[[1]]
       binning[, .(bin)]
     })
 
     output$table <- renderTable({
-      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)[[1]]
+      binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)$bins[[1]]
       binning[, `:=`(bin=NULL, bstbin = NULL, bstbrkp = NULL)]
     })
 

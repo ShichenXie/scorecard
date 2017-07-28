@@ -22,7 +22,7 @@
 #' # )[, y:=ifelse(y=="bad", 1, 0)]
 #' #
 #' # # woe binning
-#' # bins <- woebin(dt, "y", stop_limit = 0.05)
+#' # bins <- woebin(dt, "y", stop_limit = 0.05)$bins
 #' # dt_woe <- woebin_ply(dt, bins, "y")
 #' #
 #' # # Breaking Data into Training and Test Sample
@@ -35,12 +35,9 @@
 #' # m1 <- glm(y~., family=binomial(), data=train)
 #' # # summary(m1)
 #' # # Select a formula-based model by AIC
-#' # step(m1, direction="both")
+#' # ms <- step(m1, direction="both")
 #' # # model II
-#' # m2 <- glm(formula = y ~
-#' #         x20_woe + x18_woe + x14_woe + x13_woe + x10_woe + x9_woe +
-#' #         x8_woe + x6_woe + x5_woe + x4_woe + x3_woe + x2_woe + x1_woe,
-#' #       family = binomial(), data = train)
+#' # m2 <- eval(ms$call)
 #' # # summary(m2)
 #' #
 #' # # score test data set

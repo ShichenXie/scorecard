@@ -5,7 +5,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
   # data(germancredit)
   # dt <- data.table(germancredit[, c('creditability', 'age.in.years')])
   # dt <- data.table(germancredit[, c('creditability', 'status.of.existing.checking.account')])
-  # dt <- data.table(germancredit[, c('creditability', 'present.employment.since')])
+  # dt <- data.table(germancredit[, c('creditability', 'present.employment.since', 'age.in.years')])
 
   # x column name
   # if (x=="") x <- setdiff(names(dt), y)
@@ -212,7 +212,14 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
     bins[[x]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
   }
 
-  return(bins)
+  total_iv_list <- unique(rbindlist(bins)[, .(variable, total_iv)])[order(-total_iv)]
+
+  bins_list <- list()
+  for (v in total_iv_list$variable) {
+    bins_list[[v]] <- bins[[v]]
+  }
+
+  return(list(bins = bins_list, iv=total_iv_list))
 }
 
 #' binning apply
@@ -231,9 +238,9 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
 #' dt <- germancredit[, c('creditability', 'age.in.years', 'present.employment.since')]
 #'
 #' # woe binning
-#' bins <- woebin(dt, "creditability")
+#' wb <- woebin(dt, "creditability")
 #' # woe binning apply
-#' dt_woe <- woebin_ply(dt, bins, "creditability")
+#' dt_woe <- woebin_ply(dt, wb$bins, "creditability")
 woebin_ply <- function(dt, bins, y) {
   kdt <- copy(data.table(dt))
 
@@ -253,7 +260,7 @@ woebin_ply <- function(dt, bins, y) {
       kdt[[x]] <- as.numeric(kdt[[x]])
     }
 
-    kdt[[x]] = cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp], Inf)), right = FALSE, ordered_result = TRUE)
+    kdt[[x]] = cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp], Inf)), right = FALSE, dig.lab = 10, ordered_result = TRUE)
 
     kdt <- setnames(
       binsx[,.(bstbin, woe)], c(x, paste0(x,"_woe"))

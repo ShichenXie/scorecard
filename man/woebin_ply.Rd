@@ -26,7 +26,7 @@ data(germancredit)
 dt <- germancredit[, c('creditability', 'age.in.years', 'present.employment.since')]
 
 # woe binning
-bins <- woebin(dt, "creditability")
+wb <- woebin(dt, "creditability")
 # woe binning apply
-dt_woe <- woebin_ply(dt, bins, "creditability")
+dt_woe <- woebin_ply(dt, wb$bins, "creditability")
 }
