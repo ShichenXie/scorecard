@@ -88,7 +88,7 @@ woe_01 <- function(good, bad) {
 }
 
 
-
+# reference
 # Weight of Evidence (WoE) Introductory Overview
 # http://ucanalytics.com/blogs/data-visualization-case-study-banking/
 # http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview

@@ -2,6 +2,7 @@
 
 export(iv)
 export(perf_plot)
+export(var_filter)
 export(woebin)
 export(woebin_adj)
 export(woebin_ply)
