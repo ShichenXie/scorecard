@@ -14,16 +14,11 @@
 #' # library(woebin)
 #' # # load germancredit data
 #' # data("germancredit")
-#' # xy <- names(germancredit)
-#' # # data.table
-#' # set.seed(1255)
 #' # dt <- setnames(
-#' #   data.table(germancredit)[sample(nrow(germancredit))],
-#' #   c(paste0("x",1:20), "y")
+#' #   data.table(germancredit), c(paste0("x",1:20), "y")
 #' # )[, y:=ifelse(y=="bad", 1, 0)]
 #' # # x y names
 #' # y <- "y"
-#' # xs <- setdiff(names(dt), y)
 #' #
 #' # # iv woe filter ------
 #' # # variable filter I
@@ -44,22 +39,24 @@
 #' # #
 #' # # # Breaking Data into Training and Test Sample
 #' # # set.seed(345)
-#' # # dt.split <- h2o.splitFrame(data=dth2o, ratios=0.7)
+#' # # dt.split <- h2o.splitFrame(data=dth2o, ratios=0.6)
 #' # # dt.train <- dt.split[[1]]; dt.test <- dt.split[[2]];
 #' # #
-#' # # # h2o.glm lasso ------
+#' # # # h2o.glm lasso
 #' # # fit <- h2o.glm(x=names(dt_woe_filter), y, dt.train, validation_frame=dt.test, family = "binomial", nfolds = 0, alpha = 1, lambda_search = TRUE)
 #' # # # summary(fit)
 #' # # h2o_var <- data.table(h2o.varimp(fit))[!is.na(coefficients) & coefficients > 0]
-#' # # dt_woe_lasso <- dt_woe_filter[, c(h2o_var$names, "flagy"), with=FALSE]
-#' #
+#' # # dt_woe_lasso <- dt_woe_filter[, c(h2o_var$names, y), with=FALSE]
+#' # # glm ------
 #' # # Breaking Data into Training and Test Sample
+#' # set.seed(1255)
+#' # dat <- data.table(dt_woe_filter)[sample(nrow(dt_woe_filter))]
 #' # set.seed(345)
-#' # d <- sample(nrow(dt_woe_filter), nrow(dt_woe_filter)*0.6)
-#' # train <- dt_woe_filter[d]; test <- dt_woe_filter[-d];
+#' # d <- sample(nrow(dat), nrow(dat)*0.6)
+#' # train <- dat[d]; test <- dat[-d];
 #' #
 #' # # Traditional Credit Scoring Using Logistic Regression ######
-#' # # a. model I ------
+#' # # a. model I
 #' # # remove variables that coefficients == NEG or Pr_z > 0.1
 #' # rm_var_num <- 1
 #' # sel_var <- names(train) #names(xy_selected_lasso)
@@ -91,7 +88,7 @@
 #' # m2 <- eval(m_step$call)
 #' # # summary(m2)
 #' #
-#' # # score performance ------
+#' # # score & performance ------
 #' # # score predict
 #' # train$score <- predict(m2, type='response', train)
 #' # test$score <- predict(m2, type='response', test)
@@ -109,13 +106,14 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
   if ("ks" %in% type | "lift" %in% type) {
     if (groupnum == "N") groupnum <- length(pred)
 
-    dfkslift <- df1[order(-pred)
-                    ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
-                      ][,.(good = sum(label==0), bad = sum(label==1)), by=group
-                        ][,`:=`(group= as.integer(row.names(.SD))/.N,
-                                good = good/sum(good), bad  = bad/sum(bad),
-                                cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
-                          ][, ks := cumbad - cumgood]
+    dfkslift <-
+      df1[order(-pred)
+        ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
+        ][,.(good = sum(label==0), bad = sum(label==1)), by=group
+        ][,`:=`(group= as.integer(row.names(.SD))/.N,
+                good = good/sum(good), bad  = bad/sum(bad),
+                cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
+        ][, ks := cumbad - cumgood]
 
     dfkslift <- rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
 
@@ -160,11 +158,12 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
 
   # data, dfrocpr ------
   if ("roc" %in% type | "pr" %in% type) {
-    dfrocpr <- df1[order(pred)
-                   ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
-                     ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
-                       ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
-                         ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
+    dfrocpr <-
+      df1[order(pred)
+      ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
+      ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
+      ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
+      ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
 
   }
 
@@ -215,14 +214,3 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
