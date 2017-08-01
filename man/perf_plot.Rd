@@ -4,17 +4,19 @@
 \alias{perf_plot}
 \title{ks value and ks curve}
 \usage{
-perf_plot(label, pred, groupnum = 20, type = c("ks", "roc"), plot = TRUE,
-  seed = 186)
+perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
+  "roc"), plot = TRUE, seed = 186)
 }
 \arguments{
 \item{label}{label values, such as 0s and 1s.}
 
 \item{pred}{predicted probability values.}
 
+\item{title}{plot title, default "train".}
+
 \item{groupnum}{the number of group numbers, default: 20.}
 
-\item{type}{performance plot types: "ks","lift","roc","pr". Default: c("ks").}
+\item{type}{performance plot types, "ks","lift","roc","pr", default: c("ks", "roc").}
 
 \item{plot}{logical value, default: TRUE.}
 
@@ -110,7 +112,7 @@ This function calculate kolmogorov-smirnow(ks) value and plot ks curve based on 
 # test$score <- predict(m2, type='response', test)
 #
 # # performace plot
-# perf_plot(train$y, train$score)
-# perf_plot(test$y, test$score)
+# perf_plot(train$y, train$score, title="train")
+# perf_plot(test$y, test$score, title="test")
 
 }

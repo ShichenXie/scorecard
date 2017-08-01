@@ -4,8 +4,9 @@
 #'
 #' @param label label values, such as 0s and 1s.
 #' @param pred predicted probability values.
+#' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
-#' @param type performance plot types: "ks","lift","roc","pr". Default: c("ks").
+#' @param type performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").
 #' @param plot logical value, default: TRUE.
 #' @param seed seed value for random sort data frame, defalut: 186.
 #' @return ks value and ks curve.
@@ -94,10 +95,10 @@
 #' # test$score <- predict(m2, type='response', test)
 #' #
 #' # # performace plot
-#' # perf_plot(train$y, train$score)
-#' # perf_plot(test$y, test$score)
+#' # perf_plot(train$y, train$score, title="train")
+#' # perf_plot(test$y, test$score, title="test")
 #'
-perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, seed=186) {
+perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), plot=TRUE, seed=186) {
   set.seed(seed)
 
   df1 <- data.table(label=ifelse(grepl("bad|1", as.character(label)), 1, 0), pred=pred)[!is.na(label)][sample(1:length(pred))]
@@ -120,7 +121,7 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
   }
 
 
-  # KS ------
+  # plot, KS ------
   if ("ks" %in% type) {
     dfks <- dfkslift[ks == max(ks)][order(group)][1]
     print(paste0("KS: ", round(dfks$ks, 4) ))
@@ -141,7 +142,7 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
     }
   }
 
-  # Lift ------
+  # plot, Lift ------
   if ("lift" %in% type) {
     plift <- ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
       geom_bar(stat = "identity", fill=NA, colour = "black") + coord_fixed() +
@@ -167,7 +168,7 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
 
   }
 
-  # ROC ------
+  # plot, ROC ------
   if ("roc" %in% type) {
     AUC <- dfrocpr[, sum(TP/(TP+FN)*(FP/(TN+FP)-shift(FP/(TN+FP), fill=0, type="lead")))]
     print(paste0("AUC: ", round(AUC,4)))
@@ -186,7 +187,7 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
   }
 
 
-  # P-R ------
+  # plot, P-R ------
   if ("pr" %in% type) {
     dfpr <- dfrocpr[precision == recall]
     # print(paste0("BEP: ", round(dfpr$recall, 4)))
@@ -203,12 +204,22 @@ perf_plot <- function(label, pred, groupnum=20, type=c("ks", "roc"), plot=TRUE, 
   }
 
 
+  # export plot
   if (plot == TRUE) {
     plist <- paste0("p", type)
+    # add title for first plot
+    eval(parse(text = paste0(plist[1], " = ", plist[1], " + ggtitle(title)")))
     if (length(plist) == 1) {
       eval(parse(text = plist))
     } else if (length(plist) > 1) {
-      eval(parse(text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")))
+      # add title for second plot
+      title=""
+      eval(parse(text = paste0(plist[2], " = ", plist[2], " + ggtitle(title)")))
+
+      # Arrange multiple plots
+      eval(parse(
+        text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
+      ))
     }
   }
 
