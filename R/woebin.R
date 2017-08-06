@@ -22,7 +22,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
       xvec <- dtm[, value]
 
-      # breakpoints vector
+      # breakpoints vector & outlier handle
       iq <- quantile(xvec, na.rm = TRUE)
       iqr <- IQR(xvec, na.rm = TRUE)
       if (iqr == 0) {
@@ -147,6 +147,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 
     len_step = 1
     if (len_brkp >= 2) {
+      # initial information value gain ratio
       IVchg <- 1
     # best breakpoints from three to n+1 bins
     while (IVchg >= stop_limit) {
@@ -154,6 +155,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
       if (print_step == TRUE) print(ALL_bst_brkp)
 
       IVt2 <- ALL_bst_brkp[1, total_iv]
+      # information value gain ratio
       IVchg <- IVt2/IVt1-1
       # print(IVchg)
       IVt1 <- IVt2
@@ -183,8 +185,8 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 #' @param dt Name of input data
 #' @param y Name of y variable.
 #' @param x Name vector of x variables, defaults: "".
-#' @param min_perc_total The share of initial binning class number over total.
-#' @param stop_limit Stop binning segmentation when information value (iv) increase less than the stop_limit, default: 0.1.
+#' @param min_perc_total The share of initial binning class number over total. Accepted range: 0.01-0.2; default: 0.02.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default: 0.1.
 #' @param positive Name of positive class, defaults: bad or 1.
 #' @return List of binnig for each variable.
 #' @export
@@ -195,25 +197,58 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 #'
 #' # woe binning
 #' woebin(dt, y = "creditability")
+#'
+#' # set stop_limit for each x variable
+#' woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01))
 
 woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step = FALSE) {
+
   # transfer dt to data.table
   dt <- data.table(dt)
-  # x variable names
-  if (x=="") xnames <- setdiff(names(dt), y)
+  # x variable names vector
+  if (length(x)==1 & ""%in%x) x <- setdiff(names(dt), y)
+
+  # stop_limit vector
+  if (length(stop_limit) == 1) {
+    stop_limit = rep(stop_limit, length(x))
+  } else if (length(stop_limit) != length(x)) {
+    break
+  }
+  # stop_limit range
+  if ( stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit) ) {
+    warning("Incorrect parameter specification; accepted stop_limit parameter range is 0-0.5. Parameter was set to default (0.1).")
+    sapply(stop_limit, function(x) if ( x < 0 || x > 0.5 || !is.numeric(x) ) x = 0.1 else x, simplify = TRUE)
+  }
+
+  # min_perc_total range
+  if ( min_perc_total<0.01 || min_perc_total>0.2 || !is.numeric(min_perc_total) ) {
+    warning("Incorrect parameter specification; accepted min_perc_total parameter range is 0.01-0.2. Parameter was set to default (0.02).")
+    min_perc_total = 0.02
+  }
+
+
+
 
   # export the bins of all columns
   bins <- list()
-  for (x in xnames) {
-    if (print_step) print(x)
+  for (i in 1:length(x)) {
+    x_i <- x[i]
+    stop_limit_i <- stop_limit[i]
 
-    bin2 <- woebin2(dt[, c(x, y), with=FALSE], y, x, min_perc_total, stop_limit, method, positive)
+    # print x
+    if (print_step) print(x_i)
 
-    bins[[x]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
+    # woebining on one variable
+    bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, min_perc_total, stop_limit_i, method, positive)
+
+    # renmae NA as missing
+    bins[[x_i]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
   }
 
+  # total_iv list
   total_iv_list <- unique(rbindlist(bins)[, .(variable, total_iv)])[order(-total_iv)]
 
+  # reorder bins by iv
   bins_list <- list()
   for (v in total_iv_list$variable) {
     bins_list[[v]] <- bins[[v]]

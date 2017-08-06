@@ -1,3 +1,61 @@
+#' Visualization of Binning
+#'
+#' This function visualizes the binning results generated via \code{\line{woebin}}
+#' @name woebin_plot
+#' @param bins binning generated via \code{\line{woebin}}
+#' @export
+#' @examples
+#' data(germancredit)
+#' bins <- woebin(germancredit, y="creditability")$bins
+#'
+#' plotlist <- woebin_plot(bins)
+#' plotlist
+#'
+woebin_plot <- function(bins) {
+
+  pf <- function(bin) {
+    # data
+    dat <- bin[,.(
+      variable, bin, good, bad, counts=good+bad, badprob, woe
+    )][, `:=`(
+      bin = ifelse(is.na(bin), "NA", bin),
+      badprob2 = badprob*max(counts),
+      badprob = round(badprob,4),
+      rowid = as.integer(row.names(.SD))
+    )][, bin := factor(bin, levels = bin)]
+
+    dat_melt <- melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[
+      ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
+      ]
+
+    # plot
+    ggplot() +
+      geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
+      geom_text(data=dat, aes(x = bin, y = counts, label = counts), vjust = -0.5) +
+      geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
+      geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
+      geom_text(data=dat, aes(x = rowid, y = badprob2, label = badprob), colour="blue", vjust = -0.5) +
+      scale_y_continuous(sec.axis = sec_axis(~./max(dat$counts), name = "Bad probability")) +
+      labs(title = dat[1, variable], x=NULL, y="Bin count", fill=NULL) +
+      theme_bw() +
+      theme(legend.position="bottom", legend.direction="horizontal")
+
+  }
+
+  # plot export
+  plotlist <- list()
+  if (!is.data.frame(bins) & is.list(bins)) {
+    bins_length <- length(bins)
+    for (i in 1:bins_length) plotlist[[bins[[i]][1,variable]]] <- pf(bins[[i]])
+  } else if (is.data.frame(bins)) {
+    bins_length <- 1
+    plotlist[[bins[1,variable]]] <- pf(bins)
+  }
+
+  return(plotlist)
+}
+
+
 #' binning adjustment
 #'
 #' This function provides a shiny interface for binning adjustment.
@@ -13,27 +71,6 @@
 woebin_adj <- function(dt, y, x="") {
   if (x=="") x <- setdiff(names(dt), y)
 
-  pfun <- function(bins) {
-
-    dat <- bins[,.(
-      variable, bin, counts=good+bad, badprob
-    )][, `:=`(
-      bin = ifelse(is.na(bin), "NA", bin),
-      badprob2 = badprob*max(counts),
-      badprob = round(badprob,4),
-      rowid = as.integer(row.names(.SD))
-    )][, bin := factor(bin, levels = bin)]
-
-
-    ggplot(dat) +
-      geom_bar(aes(x=bin, y=counts), stat = "identity", colour = "black", fill="white") +
-      geom_text(aes(x = bin, y = counts, label = counts), vjust = -0.5) +
-      geom_line(aes(x = rowid, y = badprob2), colour = "red") +
-      geom_point(aes(x = rowid, y=badprob2), colour = "red", shape=21, fill="white") +
-      geom_text(aes(x = rowid, y = badprob2, label = badprob), colour = "red", vjust = -0.5) +
-      labs(title = dat[1, variable], x=NULL, y=NULL) + theme_bw()
-
-  }
 
   # server ------
   server <- function(input, output) {
@@ -46,7 +83,7 @@ woebin_adj <- function(dt, y, x="") {
     # Show the first "n" observations
     output$distPlot <- renderPlot({
       binning <- woebin(dt[, c(y, input$variable)], y, stop_limit = input$stop_limit)$bins[[1]]
-      pfun(binning)
+      woebin_plot(binning)
     })
 
     output$bins <- renderPrint({

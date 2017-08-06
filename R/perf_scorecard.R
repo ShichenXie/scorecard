@@ -1,15 +1,17 @@
-#' ks value and ks curve
+#' ks, roc, lift, pr
 #'
-#' This function calculate kolmogorov-smirnow(ks) value and plot ks curve based on provided label and predicted probability values.
+#' This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall curves based on label and predicted probability values.
 #'
-#' @param label label values, such as 0s and 1s.
-#' @param pred predicted probability values.
+#' @name perf_plot
+#' @param dt_labelpred data with only label and predicted probability values.
+#' @param y name of y variable.
 #' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
 #' @param type performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").
+#' @param positive Name of positive class, defaults: bad or 1.
 #' @param plot logical value, default: TRUE.
 #' @param seed seed value for random sort data frame, defalut: 186.
-#' @return ks value and ks curve.
+#' @return ks, roc, lift, pr
 #' @export
 #' @examples
 #' # library(woebin)
@@ -26,7 +28,7 @@
 #' # dt_filter <- var_filter(dt, y)
 #' #
 #' # # woe binning
-#' # bins <- woebin(dt_filter, y, stop_limit = 0.05)$bins
+#' # bins <- woebin(dt_filter, y, stop_limit = 0.1)$bins
 #' # dt_woe <- woebin_ply(dt_filter, bins, y)
 #' #
 #' # # variable filter II
@@ -48,11 +50,12 @@
 #' # # # summary(fit)
 #' # # h2o_var <- data.table(h2o.varimp(fit))[!is.na(coefficients) & coefficients > 0]
 #' # # dt_woe_lasso <- dt_woe_filter[, c(h2o_var$names, y), with=FALSE]
+#' #
 #' # # glm ------
 #' # # Breaking Data into Training and Test Sample
 #' # set.seed(1255)
 #' # dat <- data.table(dt_woe_filter)[sample(nrow(dt_woe_filter))]
-#' # set.seed(345)
+#' # set.seed(456)
 #' # d <- sample(nrow(dat), nrow(dat)*0.6)
 #' # train <- dat[d]; test <- dat[-d];
 #' #
@@ -90,18 +93,34 @@
 #' # # summary(m2)
 #' #
 #' # # score & performance ------
-#' # # score predict
-#' # train$score <- predict(m2, type='response', train)
-#' # test$score <- predict(m2, type='response', test)
+#' # # predicted proability
+#' # train$pred <- predict(m2, type='response', train)
+#' # test$pred <- predict(m2, type='response', test)
+#' #
+#' # # score
+#' # train_score <- scorecards(train, y, bins, m2)$score
+#' # test_score <- scorecards(test, y, bins, m2)$score
 #' #
 #' # # performace plot
-#' # perf_plot(train$y, train$score, title="train")
-#' # perf_plot(test$y, test$score, title="test")
+#' # perf_plot(train[,.(y,pred)], y, title="train")
+#' # perf_plot(test[,.(y,pred)], y, title="test")
+#' #
+#' # perf_psi(train_score[,.(y, score)], test_score[,.(y, score)], y)
+#' #
+#' # # scorecards
+#' # cards <- scorecards(train, y, bins, m2)$scorecards
 #'
-perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), plot=TRUE, seed=186) {
-  set.seed(seed)
+perf_plot <- function(dt_labelpred, y, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", plot=TRUE, seed=186) {
+  # inputs checking
+  if (ncol(dt_labelpred) != 2 ) break
+  if (!(y %in% names(dt_labelpred))) break
+  kdt <- copy(data.table(dt_labelpred))
 
-  df1 <- data.table(label=ifelse(grepl("bad|1", as.character(label)), 1, 0), pred=pred)[!is.na(label)][sample(1:length(pred))]
+  set.seed(seed)
+  df1 <- data.table(
+    label=ifelse(grepl(positive, as.character(kdt[[y]])), 1, 0),
+    pred=kdt[[setdiff(names(kdt),y)]]
+  )[!is.na(label)][sample(1:length(pred))]
 
   # data, dfkslift ------
   if ("ks" %in% type | "lift" %in% type) {
@@ -225,3 +244,157 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 
 
 }
+
+#' psi
+#'
+#' This function provides population stability index (PSI).
+#'
+#' @name perf_psi
+#' @param train_labelscore train data with only label and score
+#' @param test_labelscore test data with only label and score
+#' @param y Name of y variable.
+#' @param title plot title, default "train".
+#' @param groupnum the number of group numbers, default: 20.
+#' @param positive Name of positive class, defaults: bad or 1.
+#' @param plot logical value, default TRUE. It means whether to display plot.
+#' @param plot_total logical value, default FALSE, which means not display the line of total PSI
+#' @param seed seed value for random sort data frame, defalut: 186.
+#' @return psi
+#' @export
+perf_psi <- function(train_labelscore, test_labelscore, y, title="PSI", groupnum=20, positive="bad|1", plot=TRUE, plot_total=FALSE, seed=186) {
+  # psi = sum((实际占比-预期占比)* ln(实际占比/预期占比))
+  # inputs checking
+  if (ncol(train_labelscore) != 2 | ncol(test_labelscore) != 2 ) break
+  if (!(y %in% names(train_labelscore) | y %in% names(test_labelscore))) break
+
+  # random order datatable
+  set.seed(seed)
+  dat <- rbindlist(
+    list(train=train_labelscore, test=test_labelscore), idcol = "id"
+  )[
+    sample(1:(nrow(train_labelscore)+nrow(test_labelscore)))
+  ][,.(id, label=y, score)
+  ][, id:=factor(id, levels=c("train", "test"))]
+
+
+  # PSI function
+  psi <- function(dat, groupnum) {
+    # groupnum
+    if (groupnum == "N") groupnum <- min(nrow(train_labelscore), nrow(test_labelscore))
+
+    brk <- pretty(dat$score, groupnum)
+    brk <- unique(c(-Inf, brk[2:(length(brk)-1)], Inf))
+
+    # dat2
+    dat2 <- dat[
+      order(id, score)
+      ][, group := cut(score, brk, right = FALSE, dig.lab = 10, ordered_result = F)
+      ][,.(count=.N), by=c("id", "group")
+      ][,.(group, count, dist = count/sum(count)), by="id"]
+
+    dcast(dat2, group ~ id, value.var="count", fill = 0)[
+      # , (c("train", "test")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("train", "test")][
+        , `:=`(A=train/sum(train), E=test/sum(test))
+      ][, `:=`(AE = A-E, logAE = log(A/E))
+      ][, `:=`(PSI = AE*logAE)
+      ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][][, sum(PSI)]
+
+  }
+
+
+  # print psi
+  print(paste0(
+    "PSI: Total=", round(psi(dat, groupnum), 4),
+    "; Good=", round(psi(dat[label==0], groupnum), 4),
+    "; Bad=", round(psi(dat[label==1], groupnum), 4), ";"
+  ))
+
+  # plot PSI
+  if (plot) {
+    p <- ggplot(rbindlist(list(bad=dat[label==1], good=dat[label==0]), idcol = "goodbad"), aes(score)) +
+      geom_density(aes(linetype=id, colour=goodbad)) +
+      ggtitle(title, subtitle = paste0(
+        "Total=", round(psi(dat, groupnum), 4),
+        "; Good=", round(psi(dat[label==0], groupnum), 4),
+        "; Bad=", round(psi(dat[label==1], groupnum), 4), ";"
+      )) +
+      labs(linetype=NULL, colour=NULL) +
+      scale_x_continuous(expand = c(0, 0), limits = c(0, 800)) +
+      scale_y_continuous(expand = c(0, 0)) +
+      theme_bw() + theme(legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
+
+  }
+  if (plot_total) {
+    p <- p + geom_density(data = dat, aes(score, linetype=id))
+  }
+
+  return(p)
+}
+
+
+
+# scorecards ------
+ab <- function(p0=600, odds0=1/60, pdo=50) {
+  # sigmoid function
+  # library(ggplot2)
+  # ggplot(data.frame(x = c(-5, 5)), aes(x)) + stat_function(fun = function(x) 1/(1+exp(-x)))
+
+  # p(y=1) <- 1/(1+exp(-z)), # z = beta0+beta1*x1+...+betar*xr = beta*x
+  #==># z <- log(p/(1-p)), # odds = p/(1-p) # bad/good
+  #==># z <- log(odds)
+  #==># score = a - b*log(odds)
+
+  b <- pdo/log(2)
+  a <- p0 + b*log(odds0/(1+odds0))
+
+  return(list(a=a, b=b))
+}
+#' credit score & scorecards
+#'
+#' This function calculates credit score based on predited probability.
+#' @name scorecards
+#' @param dt_woe input data that converted into woe
+#' @param y name of y variable.
+#' @param bins Binning information generated from woebin function
+#' @param model fitted glm model
+#' @param p0 target points, default 600
+#' @param odds0 target odds, default 1/60
+#' @param pdo Points to Double the Odds, default 50
+#' @return score and scorecards
+#' @export
+#'
+scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
+  aabb <- ab(p0, odds0, pdo)
+  a <- aabb$a; b <- aabb$b;
+  # odds <- pred/(1-pred); score <- a - b*log(odds)
+
+  # coefficients
+  coef <- data.frame(summary(model)$coefficients)
+  coef$var <- row.names(coef)
+  coef <- setnames(data.table(coef)[,c(1,5),with=FALSE], c("Estimate", "var_woe"))[, var := gsub("_woe$", "", var_woe) ][]
+
+
+  # scorecards & score
+  scorecards <- list()
+  dt_score <- data.table(y=dt_woe[[y]])
+  scorecards[["basepoints"]] <- data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
+
+  for (i in coef[-1,var]) {
+    scorecards[[i]] <- bins[[i]][ ,.(
+      variable, bin, woe, points = round(-b*coef[var==i, Estimate]*woe)
+    ) ]
+
+    dt_score[,(paste0(i,"_points")) := round(-b*coef[var==i, Estimate]*dt_woe[[paste0(i, "_woe")]])]
+  }
+
+  # total score
+  dt_score[["score"]] <- scorecards[["basepoints"]][,points] + rowSums(dt_score[, paste0(coef[-1,var], "_points"), with=FALSE])
+  # dt_score <- dt_woe[,c(paste0(coef[-1,var], "_points"), y, "score"), with=FALSE]
+
+  return(list(scorecards=scorecards, score = dt_score))
+
+}
+
+
+# reference
+# https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com#zmw57dd0e33220

@@ -14,9 +14,9 @@ woebin(dt, y, x = "", min_perc_total = 0.02, stop_limit = 0.1,
 
 \item{x}{Name vector of x variables, defaults: "".}
 
-\item{min_perc_total}{The share of initial binning class number over total.}
+\item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default: 0.02.}
 
-\item{stop_limit}{Stop binning segmentation when information value (iv) increase less than the stop_limit, default: 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default: 0.1.}
 
 \item{positive}{Name of positive class, defaults: bad or 1.}
 }
@@ -33,4 +33,7 @@ dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years', 'presen
 
 # woe binning
 woebin(dt, y = "creditability")
+
+# set stop_limit for each x variable
+woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01))
 }
