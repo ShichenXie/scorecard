@@ -1,4 +1,4 @@
-#' information values (iv)
+#' information values
 #'
 #' This function calculate woe and iv values.
 #'

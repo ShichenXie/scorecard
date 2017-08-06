@@ -2,7 +2,7 @@
 % Please edit documentation in R/iv.R
 \name{iv}
 \alias{iv}
-\title{information values (iv)}
+\title{information values}
 \usage{
 iv(dt, y, x = "", positive = "bad|1", order = "TRUE")
 }

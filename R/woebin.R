@@ -305,3 +305,60 @@ woebin_ply <- function(dt, bins, y) {
   return(kdt)
 }
 
+#' binning visualization
+#'
+#' This function visualizes the binning results generated via \code{\line{woebin}}
+#' @name woebin_plot
+#' @param bins binning generated via \code{\line{woebin}}
+#' @export
+#' @examples
+#' data(germancredit)
+#' bins <- woebin(germancredit, y="creditability")$bins
+#'
+#' plotlist <- woebin_plot(bins)
+#' plotlist
+#'
+woebin_plot <- function(bins) {
+
+  pf <- function(bin) {
+    # data
+    dat <- bin[,.(
+      variable, bin, good, bad, counts=good+bad, badprob, woe
+    )][, `:=`(
+      bin = ifelse(is.na(bin), "NA", bin),
+      badprob2 = badprob*max(counts),
+      badprob = round(badprob,4),
+      rowid = as.integer(row.names(.SD))
+    )][, bin := factor(bin, levels = bin)]
+
+    dat_melt <- melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[
+      ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
+      ]
+
+    # plot
+    ggplot() +
+      geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
+      geom_text(data=dat, aes(x = bin, y = counts, label = counts), vjust = -0.5) +
+      geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
+      geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
+      geom_text(data=dat, aes(x = rowid, y = badprob2, label = badprob), colour="blue", vjust = -0.5) +
+      scale_y_continuous(sec.axis = sec_axis(~./max(dat$counts), name = "Bad probability")) +
+      labs(title = dat[1, variable], x=NULL, y="Bin count", fill=NULL) +
+      theme_bw() +
+      theme(legend.position="bottom", legend.direction="horizontal")
+
+  }
+
+  # plot export
+  plotlist <- list()
+  if (!is.data.frame(bins) & is.list(bins)) {
+    bins_length <- length(bins)
+    for (i in 1:bins_length) plotlist[[bins[[i]][1,variable]]] <- pf(bins[[i]])
+  } else if (is.data.frame(bins)) {
+    bins_length <- 1
+    plotlist[[bins[1,variable]]] <- pf(bins)
+  }
+
+  return(plotlist)
+}
+
