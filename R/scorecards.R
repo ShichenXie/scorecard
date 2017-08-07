@@ -158,4 +158,5 @@ scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
 
 
 # reference
+# http://ucanalytics.com/blogs/population-stability-index-psi-banking-case-study/
 # https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com#zmw57dd0e33220

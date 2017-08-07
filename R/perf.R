@@ -3,7 +3,7 @@
 #' This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall curves based on label and predicted probability values.
 #'
 #' @name perf_plot
-#' @param dt_labelpred data with only label and predicted probability values.
+#' @param dt_labelpred dataframe with only label and predicted probability values.
 #' @param y name of y variable.
 #' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
@@ -250,8 +250,8 @@ perf_plot <- function(dt_labelpred, y, title="train", groupnum=20, type=c("ks", 
 #' This function provides population stability index (PSI).
 #'
 #' @name perf_psi
-#' @param train_labelscore train data with only label and score
-#' @param test_labelscore test data with only label and score
+#' @param train_labelscore label and score of train dataframe
+#' @param test_labelscore label and score of test dataframe
 #' @param y Name of y variable.
 #' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
