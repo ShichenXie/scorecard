@@ -3,8 +3,8 @@
 #' This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall curves based on label and predicted probability values.
 #'
 #' @name perf_plot
-#' @param dt_labelpred dataframe with only label and predicted probability values.
-#' @param y name of y variable.
+#' @param label label values, such as 0s and 1s.
+#' @param pred predicted probability values.
 #' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
 #' @param type performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").
@@ -97,29 +97,29 @@
 #' # train$pred <- predict(m2, type='response', train)
 #' # test$pred <- predict(m2, type='response', test)
 #' #
-#' # # score
+#' # # credit score
 #' # train_score <- scorecards(train, y, bins, m2)$score
 #' # test_score <- scorecards(test, y, bins, m2)$score
 #' #
-#' # # performace plot
-#' # perf_plot(train[,.(y,pred)], y, title="train")
-#' # perf_plot(test[,.(y,pred)], y, title="test")
+#' # # performace plot of ks & roc
+#' # perf_plot(train$y, train$pred, title="train")
+#' # perf_plot(test$y, test$pred, title="test")
 #' #
-#' # perf_psi(train_score[,.(y, score)], test_score[,.(y, score)], y)
+#' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
 #' # cards <- scorecards(train, y, bins, m2)$scorecards
 #'
-perf_plot <- function(dt_labelpred, y, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", plot=TRUE, seed=186) {
+perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", plot=TRUE, seed=186) {
   # inputs checking
-  if (ncol(dt_labelpred) != 2 ) break
-  if (!(y %in% names(dt_labelpred))) break
-  kdt <- copy(data.table(dt_labelpred))
+  if (!is.vector(label) | !is.vector(pred)) break
+  if (length(label) != length(pred)) break
 
+  # random sort datatable
   set.seed(seed)
   df1 <- data.table(
-    label=ifelse(grepl(positive, as.character(kdt[[y]])), 1, 0),
-    pred=kdt[[setdiff(names(kdt),y)]]
+    label=ifelse(grepl("bad|1", as.character(label)), 1, 0),
+    pred=pred
   )[!is.na(label)][sample(1:length(pred))]
 
   # data, dfkslift ------
@@ -250,9 +250,10 @@ perf_plot <- function(dt_labelpred, y, title="train", groupnum=20, type=c("ks", 
 #' This function provides population stability index (PSI).
 #'
 #' @name perf_psi
-#' @param train_labelscore label and score of train dataframe
-#' @param test_labelscore label and score of test dataframe
-#' @param y Name of y variable.
+#' @param label_train label values of training dataset, such as 0s and 1s.
+#' @param score_train credit score of training dataset.
+#' @param label_test label values of testing dataset, such as 0s and 1s.
+#' @param score_test credit score of testing dataset.
 #' @param title plot title, default "train".
 #' @param groupnum the number of group numbers, default: 20.
 #' @param positive Name of positive class, defaults: bad or 1.
@@ -345,42 +346,47 @@ perf_plot <- function(dt_labelpred, y, title="train", groupnum=20, type=c("ks", 
 #' # train$pred <- predict(m2, type='response', train)
 #' # test$pred <- predict(m2, type='response', test)
 #' #
-#' # # score
+#' # # credit score
 #' # train_score <- scorecards(train, y, bins, m2)$score
 #' # test_score <- scorecards(test, y, bins, m2)$score
 #' #
-#' # # performace plot
-#' # perf_plot(train[,.(y,pred)], y, title="train")
-#' # perf_plot(test[,.(y,pred)], y, title="test")
+#' # # performace plot of ks & roc
+#' # perf_plot(train$y, train$pred, title="train")
+#' # perf_plot(test$y, test$pred, title="test")
 #' #
-#' # perf_psi(train_score[,.(y, score)], test_score[,.(y, score)], y)
+#' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
 #' # cards <- scorecards(train, y, bins, m2)$scorecards
 #'
-perf_psi <- function(train_labelscore, test_labelscore, y, title="PSI", groupnum=20, positive="bad|1", plot=TRUE, plot_total=FALSE, seed=186) {
-  # psi = sum((实际占比-预期占比)* ln(实际占比/预期占比))
-  # inputs checking
-  if (ncol(train_labelscore) != 2 | ncol(test_labelscore) != 2 ) break
-  if (!(y %in% names(train_labelscore) | y %in% names(test_labelscore))) break
+perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", groupnum=20, positive="bad|1", plot=TRUE, plot_total=FALSE, seed=186) {
+  # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
-  # random order datatable
+  # inputs checking
+  if (!is.vector(label_train) | !is.vector(score_train) | !is.vector(label_test) | !is.vector(score_test)) break
+  if (length(label_train) != length(score_train) | length(label_test) != length(score_test)) break
+
+  # random sort datatable
   set.seed(seed)
   dat <- rbindlist(
-    list(train=train_labelscore, test=test_labelscore), idcol = "id"
+    list(
+      train=data.table(label=label_train, score=score_train),
+      test=data.table(label=label_test, score=score_test)
+    ), idcol = "id"
   )[
-    sample(1:(nrow(train_labelscore)+nrow(test_labelscore)))
-  ][,.(id, label=y, score)
+    sample(1:(length(label_train)+length(label_test)))
+  ][,.(id, label, score)
   ][, id:=factor(id, levels=c("train", "test"))]
 
 
   # PSI function
   psi <- function(dat, groupnum) {
     # groupnum
-    if (groupnum == "N") groupnum <- min(nrow(train_labelscore), nrow(test_labelscore))
+    if (groupnum == "N") groupnum <- min(length(label_train), length(label_test))
 
     brk <- pretty(dat$score, groupnum)
-    brk <- unique(c(-Inf, brk[2:(length(brk)-1)], Inf))
+    brk_p <- brk[which(brk>0)] # positive breakpoints
+    brk <- unique(c(-Inf, brk_p[-length(brk_p)], Inf))
 
     # dat2
     dat2 <- dat[

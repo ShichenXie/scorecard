@@ -4,15 +4,18 @@
 \alias{perf_psi}
 \title{psi}
 \usage{
-perf_psi(train_labelscore, test_labelscore, y, title = "PSI", groupnum = 20,
-  positive = "bad|1", plot = TRUE, plot_total = FALSE, seed = 186)
+perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
+  groupnum = 20, positive = "bad|1", plot = TRUE, plot_total = FALSE,
+  seed = 186)
 }
 \arguments{
-\item{train_labelscore}{train data with only label and score}
+\item{label_train}{label values of training dataset, such as 0s and 1s.}
 
-\item{test_labelscore}{test data with only label and score}
+\item{score_train}{credit score of training dataset.}
 
-\item{y}{Name of y variable.}
+\item{label_test}{label values of testing dataset, such as 0s and 1s.}
+
+\item{score_test}{credit score of testing dataset.}
 
 \item{title}{plot title, default "train".}
 
@@ -116,15 +119,15 @@ This function provides population stability index (PSI).
 # train$pred <- predict(m2, type='response', train)
 # test$pred <- predict(m2, type='response', test)
 #
-# # score
+# # credit score
 # train_score <- scorecards(train, y, bins, m2)$score
 # test_score <- scorecards(test, y, bins, m2)$score
 #
-# # performace plot
-# perf_plot(train[,.(y,pred)], y, title="train")
-# perf_plot(test[,.(y,pred)], y, title="test")
+# # performace plot of ks & roc
+# perf_plot(train$y, train$pred, title="train")
+# perf_plot(test$y, test$pred, title="test")
 #
-# perf_psi(train_score[,.(y, score)], test_score[,.(y, score)], y)
+# perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #
 # # scorecards
 # cards <- scorecards(train, y, bins, m2)$scorecards

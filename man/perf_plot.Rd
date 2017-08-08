@@ -4,13 +4,13 @@
 \alias{perf_plot}
 \title{ks, roc, lift, pr}
 \usage{
-perf_plot(dt_labelpred, y, title = "train", groupnum = 20, type = c("ks",
+perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
   "roc"), positive = "bad|1", plot = TRUE, seed = 186)
 }
 \arguments{
-\item{dt_labelpred}{data with only label and predicted probability values.}
+\item{label}{label values, such as 0s and 1s.}
 
-\item{y}{name of y variable.}
+\item{pred}{predicted probability values.}
 
 \item{title}{plot title, default "train".}
 
@@ -114,15 +114,15 @@ This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall cu
 # train$pred <- predict(m2, type='response', train)
 # test$pred <- predict(m2, type='response', test)
 #
-# # score
+# # credit score
 # train_score <- scorecards(train, y, bins, m2)$score
 # test_score <- scorecards(test, y, bins, m2)$score
 #
-# # performace plot
-# perf_plot(train[,.(y,pred)], y, title="train")
-# perf_plot(test[,.(y,pred)], y, title="test")
+# # performace plot of ks & roc
+# perf_plot(train$y, train$pred, title="train")
+# perf_plot(test$y, test$pred, title="test")
 #
-# perf_psi(train_score[,.(y, score)], test_score[,.(y, score)], y)
+# perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #
 # # scorecards
 # cards <- scorecards(train, y, bins, m2)$scorecards
