@@ -5,3 +5,4 @@
 /R/var_derive.R
 /data/dim_*.RData
 /data/*.csv
+/man/drvar_*.Rd

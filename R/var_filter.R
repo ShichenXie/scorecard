@@ -46,8 +46,9 @@ var_filter <- function(dt, y, x="", iv_limit = 0.02, na_perc_limit = 0.95, uniqu
 
   # remove na_perc>95 & uniquelength==1 & iv<0.01
   x_selected <- intersect(
-    names(dt)[which(na_perc <= na_perc_limit & unique_length > uniqueone_rm)],
-    ivlist_select
+    names(dt)[which(na_perc <= na_perc_limit)],
+    names(dt)[which(unique_length > uniqueone_rm)],
+    as.character( iv_list[V1 >= iv_limit, variable] )
   )
 
 
