@@ -8,6 +8,7 @@
 #' @param iv_limit The minimun IV of variables that are kept, default 0.02.
 #' @param na_perc_limit The maximum NA percent of variables that are kept, default 0.95.
 #' @param uniqueone_rm Logical, default TRUE, it remove variables that have only one unique elements (including NAs).
+#' @param var_rm variables need to remove force
 #' @export
 #' @examples
 #' # Load German credit data and create good and bad series
@@ -17,7 +18,7 @@
 #' # variable filter
 #' var_filter(dt, y = "creditability")
 #'
-var_filter <- function(dt, y, x="", iv_limit = 0.02, na_perc_limit = 0.95, uniqueone_rm = TRUE) {
+var_filter <- function(dat, y, x="", iv_limit = 0.02, na_perc_limit = 0.95, uniqueone_rm = TRUE, var_rm = "") {
   # 最小iv值0.02
   # 最大缺失值百分比95%
 
@@ -28,29 +29,31 @@ var_filter <- function(dt, y, x="", iv_limit = 0.02, na_perc_limit = 0.95, uniqu
 
 
   # transfer dt to data.table
-  dt <- data.table(dt)
+  dt <- data.table(dat)
   # x variable names
   if (x=="") xnames <- setdiff(names(dt), y)
 
 
-
-  # na percentage
-  na_perc <- dt[, lapply(.SD, function(x) sum(is.na(x))/length(x)), .SDcols = xnames]
   # iv
   iv_list <- iv(dt, y)
-  ivlist_select <- as.character( iv_list[V1 >= iv_limit]$variable )
+  # ivlist_select <- as.character( iv_list[V1 >= iv_limit]$variable )
+  # na percentage
+  na_perc <- dt[, lapply(.SD, function(x) sum(is.na(x))/length(x)), .SDcols = xnames]#t()
   # unique length
   unique_length <- dt[, lapply(.SD, function(x) length(unique(x))), .SDcols = xnames]
 
 
-
   # remove na_perc>95 & uniquelength==1 & iv<0.01
-  x_selected <- intersect(
-    names(dt)[which(na_perc <= na_perc_limit)],
-    names(dt)[which(unique_length > uniqueone_rm)],
-    as.character( iv_list[V1 >= iv_limit, variable] )
+  var_kept <- list(
+    as.character( iv_list[V1 >= iv_limit, variable] ),
+    names(na_perc[,na_perc <= na_perc_limit, with=FALSE]),
+    names(na_perc[,unique_length > uniqueone_rm, with=FALSE])
   )
+  x_selected <- intersect(var_kept[[1]], var_kept[[2]])
+  x_selected <- intersect(x_selected, var_kept[[3]])
 
+  # remove variables
+  x_selected <- setdiff(x_selected, var_rm)
 
   # return
   dt[, c(x_selected, y), with=FALSE ]

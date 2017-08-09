@@ -108,7 +108,7 @@
 #' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
-#' # cards <- scorecards(train, y, bins, m2)$scorecards
+#' # cards <- scorecards(train, y, bins, m2)$cards
 #'
 perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", plot=TRUE, seed=186) {
   # inputs checking
@@ -357,7 +357,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
-#' # cards <- scorecards(train, y, bins, m2)$scorecards
+#' # cards <- scorecards(train, y, bins, m2)$cards
 #'
 perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", groupnum=20, positive="bad|1", plot=TRUE, plot_total=FALSE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))

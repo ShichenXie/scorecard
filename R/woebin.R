@@ -44,7 +44,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 
       # binned datatable
       brkdt <- copy(dtm)[
-        , bin := cut(value, brkp, right = FALSE, dig.lab = 10, ordered_result = TRUE)
+        , bin := cut(value, brkp, right = FALSE, dig.lab = 10, ordered_result = FALSE)
         ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
         ][order(bin)
         ][, `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad) )
@@ -74,7 +74,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     bestbreakpoints <- function(brkpdt, bst_brkp, only_total_iv=TRUE) {
       if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
         brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = TRUE)
+          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
           ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
           ][, `:=`(badprob = bad/(good+bad), bin = bstbin )
           ][order(bstbin)
@@ -89,7 +89,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
         bst_brkp <- setdiff(bst_brkp, min(brkpdt[,brkp]))
 
         brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = TRUE)
+          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = FALSE)
           ][, .(variable=unique(variable), bin = paste0(bin, collapse = "##"), good = sum(good), bad = sum(bad)), keyby = bstbin
           ][, badprob:=bad/(good+bad)
           ][order(bstbin)
@@ -115,7 +115,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 
       # best breakpoint datatable
       bst_brkpdt <- brkpdt[
-        , paste0("bstbin",i) := cut(brkp, c(-Inf, bst_brkp_i, Inf), right = FALSE, dig.lab = 10, ordered_result = TRUE)
+        , paste0("bstbin",i) := cut(brkp, c(-Inf, bst_brkp_i, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
         ]
     }
 
@@ -242,7 +242,7 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
     bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, min_perc_total, stop_limit_i, method, positive)
 
     # renmae NA as missing
-    bins[[x_i]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))][]
+    bins[[x_i]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))]
   }
 
   # total_iv list
@@ -295,7 +295,7 @@ woebin_ply <- function(dt, bins, y) {
       kdt[[x]] <- as.numeric(kdt[[x]])
     }
 
-    kdt[[x]] = cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp], Inf)), right = FALSE, dig.lab = 10, ordered_result = TRUE)
+    kdt[[x]] = cut(kdt[[x]], unique(c(-Inf, binsx[, bstbrkp], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
 
     kdt <- setnames(
       binsx[,.(bstbin, woe)], c(x, paste0(x,"_woe"))

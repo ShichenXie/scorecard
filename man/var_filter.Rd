@@ -4,12 +4,10 @@
 \alias{var_filter}
 \title{variable filter}
 \usage{
-var_filter(dt, y, x = "", iv_limit = 0.02, na_perc_limit = 0.95,
-  uniqueone_rm = TRUE)
+var_filter(dat, y, x = "", iv_limit = 0.02, na_perc_limit = 0.95,
+  uniqueone_rm = TRUE, var_rm = "")
 }
 \arguments{
-\item{dt}{Name of input data}
-
 \item{y}{Name of y variable.}
 
 \item{x}{Name vector of x variables, default "".}
@@ -19,6 +17,10 @@ var_filter(dt, y, x = "", iv_limit = 0.02, na_perc_limit = 0.95,
 \item{na_perc_limit}{The maximum NA percent of variables that are kept, default 0.95.}
 
 \item{uniqueone_rm}{Logical, default TRUE, it remove variables that have only one unique elements (including NAs).}
+
+\item{var_rm}{variables need to remove force}
+
+\item{dt}{Name of input data}
 }
 \description{
 This function filter variables base on their iv, na percentage and length of unique elements.

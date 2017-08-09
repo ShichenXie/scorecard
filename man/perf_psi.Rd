@@ -130,6 +130,6 @@ This function provides population stability index (PSI).
 # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #
 # # scorecards
-# cards <- scorecards(train, y, bins, m2)$scorecards
+# cards <- scorecards(train, y, bins, m2)$cards
 
 }

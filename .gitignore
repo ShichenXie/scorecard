@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 /R/var_derive.R
+/man/drvar_*.Rd
 /data/dim_*.RData
 /data/*.csv
-/man/drvar_*.Rd
+

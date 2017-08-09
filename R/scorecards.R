@@ -123,7 +123,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
-#' # cards <- scorecards(train, y, bins, m2)$scorecards
+#' # cards <- scorecards(train, y, bins, m2)$cards
 #'
 scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   aabb <- ab(p0, odds0, pdo)
@@ -153,7 +153,7 @@ scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   dt_score[["score"]] <- scorecards[["basepoints"]][,points] + rowSums(dt_score[, paste0(coef[-1,var], "_points"), with=FALSE])
   # dt_score <- dt_woe[,c(paste0(coef[-1,var], "_points"), y, "score"), with=FALSE]
 
-  return(list(scorecards=scorecards, score = dt_score))
+  return(list(cards=scorecards, score = dt_score))
 
 }
 
