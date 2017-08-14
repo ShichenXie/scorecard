@@ -211,16 +211,29 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, me
 #' @return List of binnig for each variable.
 #' @export
 #' @examples
-#' # Load German credit data and create good and bad series
+#' # Load German credit data
 #' data(germancredit)
 #' dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years', 'present.employment.since')]
 #'
 #' # woe binning
-#' woebin(dt, y = "creditability")
+#' wb <- woebin(dt, y = "creditability")
+#' wb$bins
+#' wb$iv
 #'
-#' # set stop_limit for each x variable
+#' # set stop_limit (infovalue grain ratio) for each x variable
 #' woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01))
-
+#'
+#' # binning adjust based on the optimal woe binning solution
+#' breaks_adj <- list(
+#' credit.amount = c(600, 1400, 1800, 4000, 11000),
+#' age.in.years = c(25, 35, 40, 60),
+#' present.employment.since = NULL
+#' )
+#'
+#' wb_adj <- woebin(dt, y = "creditability", breaks_list = breaks_adj)
+#' wb_adj$bins
+#' wb_adj$iv
+#'
 woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step = FALSE) {
 
   # transfer dt to data.table
