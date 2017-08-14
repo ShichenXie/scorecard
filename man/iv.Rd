@@ -4,7 +4,7 @@
 \alias{iv}
 \title{information values}
 \usage{
-iv(dt, y, x = "", positive = "bad|1", order = "TRUE")
+iv(dt, y, x = NA, positive = "bad|1", order = "TRUE")
 }
 \arguments{
 \item{dt}{Name of data.frame/data.table with input data.}
@@ -19,13 +19,12 @@ iv(dt, y, x = "", positive = "bad|1", order = "TRUE")
 List of woe and iv data tables.
 }
 \description{
-This function calculate woe and iv values.
+This function calculates IV.
 }
 \examples{
-# Load German credit data and create good and bad series
+# Load German credit data
 data(germancredit)
-dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years')]
 
 # iv(dt, y)
-iv(dt, y = "creditability")
+iv(germancredit, y = "creditability")
 }

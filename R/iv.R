@@ -1,6 +1,6 @@
 #' information values
 #'
-#' This function calculate woe and iv values.
+#' This function calculates IV.
 #'
 #' @name iv
 #' @param dt Name of data.frame/data.table with input data.
@@ -10,14 +10,13 @@
 #' @return List of woe and iv data tables.
 #' @export
 #' @examples
-#' # Load German credit data and create good and bad series
+#' # Load German credit data
 #' data(germancredit)
-#' dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years')]
 #'
 #' # iv(dt, y)
-#' iv(dt, y = "creditability")
-iv <- function(dt, y, x="", positive="bad|1", order="TRUE") {
-  if (x=="") x <- setdiff(names(dt), y)
+#' iv(germancredit, y = "creditability")
+iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
+  if (anyNA(x) & length(x)==1) x <- setdiff(names(dt), y)
 
   dt <- data.table(dt)[
     , x, with = FALSE
@@ -28,12 +27,12 @@ iv <- function(dt, y, x="", positive="bad|1", order="TRUE") {
 
   ivlist <- melt( dt, id = c("rowid", "y") )[
     , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
-
-    ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0good/bad by 0.99
-
-      ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
-        ][, `:=`(woe = log(DistrBad/DistrGood), miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
-          ][, sum(miv), by="variable"]
+    ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0 by 0.99 in good/bad column
+    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
+    ][, `:=`(
+      # woe = log(DistrBad/DistrGood),
+      miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood)
+   )][, sum(miv), by="variable"]
 
   if (order==TRUE) {
     return(ivlist[order(-V1)])
@@ -52,43 +51,38 @@ iv <- function(dt, y, x="", positive="bad|1", order="TRUE") {
 # #'
 # #' # iv_01(good, bad)
 # #' dtm <- melt(dt, id = 'creditability')[, .(
-# #' good = sum(creditability=="good"), bad = sum(creditabilit=="bad")
+# #' good = sum(creditability=="good"), bad = sum(creditability=="bad")
 # #' ), keyby = c("variable", "value")]
 # #'
 # #' dtm[, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
+
+# calculating IV of total based on good and bad vectors
 iv_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
-
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
   ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
   ][, `:=`(miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
   ][, sum(miv)]
 
 }
 
+# calculating IV of each bin based on good and bad vectors
 miv_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
-
-    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-      ][, `:=`( miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
-        ][, miv]
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
+  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+  ][, `:=`( miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+  ][, miv]
 }
 
+# calculating WOE of each bin based on good and bad vectors
 woe_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0good/bad by 0.99
-
-    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-      ][, `:=`(woe = log(DistrBad/DistrGood))
-        ][, woe]
+  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
+  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+  ][, `:=`(woe = log(DistrBad/DistrGood))
+  ][, woe]
 }
-
-
-# reference
-# Weight of Evidence (WoE) Introductory Overview
-# http://ucanalytics.com/blogs/data-visualization-case-study-banking/
-# http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview

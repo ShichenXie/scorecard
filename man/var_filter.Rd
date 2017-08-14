@@ -4,33 +4,34 @@
 \alias{var_filter}
 \title{variable filter}
 \usage{
-var_filter(dat, y, x = "", iv_limit = 0.02, na_perc_limit = 0.95,
-  uniqueone_rm = TRUE, var_rm = "")
+var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
+  ele_perc_limit = 0.95, var_rm = NA, var_kp = NA)
 }
 \arguments{
+\item{dt}{Name of input data}
+
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables, default "".}
+\item{x}{Name vector of x variables, default NA.}
 
 \item{iv_limit}{The minimun IV of variables that are kept, default 0.02.}
 
-\item{na_perc_limit}{The maximum NA percent of variables that are kept, default 0.95.}
+\item{na_perc_limit}{The maximum NA percent of each kept variable, default 0.95.}
 
-\item{uniqueone_rm}{Logical, default TRUE, it remove variables that have only one unique elements (including NAs).}
+\item{ele_perc_limit}{The maximun element (excluding NAs) percentage in each kept variable, default 0.95.}
 
-\item{var_rm}{variables need to remove force}
+\item{var_rm}{force removed variables, default NA}
 
-\item{dt}{Name of input data}
+\item{var_kp}{force kept variables, default NA}
 }
 \description{
-This function filter variables base on their iv, na percentage and length of unique elements.
+This function filter variables base on their minimun iv, maximum na percentage and maximum element percentage.
 }
 \examples{
-# Load German credit data and create good and bad series
+# Load German credit data
 data(germancredit)
-dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years', 'present.employment.since')]
 
 # variable filter
-var_filter(dt, y = "creditability")
+var_filter(germancredit, y = "creditability")
 
 }

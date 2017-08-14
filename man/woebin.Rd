@@ -4,15 +4,18 @@
 \alias{woebin}
 \title{woe binning}
 \usage{
-woebin(dt, y, x = "", min_perc_total = 0.02, stop_limit = 0.1,
-  method = "tree", positive = "bad|1", print_step = FALSE)
+woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
+  stop_limit = 0.1, method = "tree", positive = "bad|1",
+  print_step = FALSE)
 }
 \arguments{
 \item{dt}{Name of input data}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables, defaults: "".}
+\item{x}{Name vector of x variables, defaults NA.}
+
+\item{breaks_list}{list of break points, defaults NA.}
 
 \item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default: 0.02.}
 

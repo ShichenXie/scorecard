@@ -255,10 +255,11 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param label_test label values of testing dataset, such as 0s and 1s.
 #' @param score_test credit score of testing dataset.
 #' @param title plot title, default "train".
-#' @param groupnum the number of group numbers, default: 20.
 #' @param positive Name of positive class, defaults: bad or 1.
 #' @param plot logical value, default TRUE. It means whether to display plot.
-#' @param plot_total logical value, default FALSE, which means not display the line of total PSI
+#' @param xlimits xaxis limits, default c(0, 800)
+#' @param x_tick_break xaxis ticker break, default 100
+#' @param line_total logical value, default FALSE, which means not display the line of total PSI
 #' @param seed seed value for random sort data frame, defalut: 186.
 #' @return psi
 #' @export
@@ -359,12 +360,19 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # # scorecards
 #' # cards <- scorecards(train, y, bins, m2)$cards
 #'
-perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", groupnum=20, positive="bad|1", plot=TRUE, plot_total=FALSE, seed=186) {
+perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", positive="bad|1", plot=TRUE, x_limits=c(100,650), x_tick_break=50, line_total=FALSE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   # inputs checking
   if (!is.vector(label_train) | !is.vector(score_train) | !is.vector(label_test) | !is.vector(score_test)) break
   if (length(label_train) != length(score_train) | length(label_test) != length(score_test)) break
+
+  # breakpoints
+  brkp <- c(
+    floor(min(c(score_train, score_test))/x_tick_break)*x_tick_break,
+    seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
+    ceiling(max(c(score_train, score_test))/x_tick_break)*x_tick_break
+  )
 
   # random sort datatable
   set.seed(seed)
@@ -376,60 +384,83 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
   )[
     sample(1:(length(label_train)+length(label_test)))
   ][,.(id, label, score)
-  ][, id:=factor(id, levels=c("train", "test"))]
+  ][, `:=`(id=factor(id, levels=c("train", "test")),
+           goodbad=ifelse(label==1, "bad", "good"))
+  ][, bin:=cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
 
 
   # PSI function
-  psi <- function(dat, groupnum) {
-    # groupnum
-    if (groupnum == "N") groupnum <- min(length(label_train), length(label_test))
-
-    brk <- pretty(dat$score, groupnum)
-    brk_p <- brk[which(brk>0)] # positive breakpoints
-    brk <- unique(c(-Inf, brk_p[-length(brk_p)], Inf))
-
-    # dat2
-    dat2 <- dat[
-      order(id, score)
-      ][, group := cut(score, brk, right = FALSE, dig.lab = 10, ordered_result = F)
-      ][,.(count=.N), by=c("id", "group")
-      ][,.(group, count, dist = count/sum(count)), by="id"]
-
-    dcast(dat2, group ~ id, value.var="count", fill = 0)[
+  psi <- function(dat) {
+    dcast(
+      dat[,.(count=.N), keyby=c("id", "bin")
+        ][,dist := count/sum(count), by="id"],
+      bin ~ id, value.var="count", fill = 0
+    )[
       # , (c("train", "test")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("train", "test")][
         , `:=`(A=train/sum(train), E=test/sum(test))
       ][, `:=`(AE = A-E, logAE = log(A/E))
       ][, `:=`(PSI = AE*logAE)
-      ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][][, sum(PSI)]
+      ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
 
   }
 
-
   # print psi
   print(paste0(
-    "PSI: Total=", round(psi(dat, groupnum), 4),
-    "; Good=", round(psi(dat[label==0], groupnum), 4),
-    "; Bad=", round(psi(dat[label==1], groupnum), 4), ";"
+    "PSI: Total=", round(psi(dat), 4),
+    "; Good=", round(psi(dat[label==0]), 4),
+    "; Bad=", round(psi(dat[label==1]), 4), ";"
   ))
 
   # plot PSI
   if (plot) {
-    p <- ggplot(rbindlist(list(bad=dat[label==1], good=dat[label==0]), idcol = "goodbad"), aes(score)) +
-      geom_density(aes(linetype=id, colour=goodbad)) +
-      ggtitle(title, subtitle = paste0(
-        "Total=", round(psi(dat, groupnum), 4),
-        "; Good=", round(psi(dat[label==0], groupnum), 4),
-        "; Bad=", round(psi(dat[label==1], groupnum), 4), ";"
-      )) +
-      labs(linetype=NULL, colour=NULL) +
-      scale_x_continuous(expand = c(0, 0), limits = c(0, 800)) +
+    # score distribution and bad probability
+    distr_prob <- dat[
+      order(bin)
+      ][,.(count=.N, bad=sum(label==1)),by="bin"
+        ][,`:=`(
+          dist = count/sum(count), badprob=bad/count,
+          bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
+          bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
+        )][,`:=`(midbin=(bin1+bin2)/2, badprob2=badprob*max(dist))]
+
+    p_dp <-
+      ggplot(distr_prob) +
+      geom_bar(aes(x=bin, y=dist), stat="identity", fill="lightblue") +
+      geom_line(aes(x=bin, y=badprob2, group=1), colour = "blue") +
+      geom_point(aes(x=bin, y=badprob2), colour = "blue", shape=21, fill="white") +
+      scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$dist), name = "Bad probability")) +
+      labs(x=NULL, y="Score distribution", fill=NULL) +
+      theme_bw() +
+      theme(legend.position="bottom", legend.direction="horizontal")
+
+    p_psi <-
+      ggplot() +
+      geom_density(data=dat, aes(score, linetype=id, colour=goodbad)) +
+      annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label="PSI", vjust=1.5, size=6) +
+      annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label=paste0("Total=", round(psi(dat), 4), "; Good=", round(psi(dat[label==0]), 4), "; Bad=", round(psi(dat[label==1]), 4), ";" ), vjust=5, size=3) +
+
+      # ggtitle(title, subtitle = paste0(
+      #   "Total=", round(psi(dat), 4),
+      #   "; Good=", round(psi(dat[label==0]), 4),
+      #   "; Bad=", round(psi(dat[label==1]), 4), ";"
+      # ) ) +
+      labs(x=NULL, y="Score distribution", linetype=NULL, colour=NULL) +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(x_limits[1], x_limits[2], by=x_tick_break), limits = x_limits) +
       scale_y_continuous(expand = c(0, 0)) +
-      theme_bw() + theme(legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
+      theme_bw() +
+      theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
+
+
+
+    if (line_total) {
+      p_psi <- p_psi + geom_density(data = dat, aes(score, linetype=id))
+    }
+
+    # grid.arrage
+    p<-grid.arrange(p_dp, p_psi, nrow=1)
 
   }
-  if (plot_total) {
-    p <- p + geom_density(data = dat, aes(score, linetype=id))
-  }
+
 
   return(p)
 }

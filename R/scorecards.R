@@ -143,7 +143,7 @@ scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
 
   for (i in coef[-1,var]) {
     scorecards[[i]] <- bins[[i]][ ,.(
-      variable, bin, woe, points = round(-b*coef[var==i, Estimate]*woe)
+      variable, bin, numdistr, woe, points = round(-b*coef[var==i, Estimate]*woe)
     ) ]
 
     dt_score[,(paste0(i,"_points")) := round(-b*coef[var==i, Estimate]*dt_woe[[paste0(i, "_woe")]])]
@@ -153,11 +153,12 @@ scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   dt_score[["score"]] <- scorecards[["basepoints"]][,points] + rowSums(dt_score[, paste0(coef[-1,var], "_points"), with=FALSE])
   # dt_score <- dt_woe[,c(paste0(coef[-1,var], "_points"), y, "score"), with=FALSE]
 
-  return(list(cards=scorecards, score = dt_score))
+  return(list(cards = scorecards, score = dt_score))
 
 }
 
 
 # reference
-# http://ucanalytics.com/blogs/population-stability-index-psi-banking-case-study/
-# https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com#zmw57dd0e33220
+# Population Stability Index (PSI) – Banking Case (Part 6)#: http://ucanalytics.com/blogs/population-stability-index-psi-banking-case-study/
+# Weight of Evidence (WoE) Introductory Overview #: http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview
+# Case Study for a Credit Scorecard Analysis #: https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com#zmw57dd0e33220

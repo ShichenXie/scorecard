@@ -4,10 +4,12 @@
 \alias{woebin_plot}
 \title{binning visualization}
 \usage{
-woebin_plot(bins)
+woebin_plot(bins, xs = NULL)
 }
 \arguments{
 \item{bins}{binning generated via \code{\line{woebin}}}
+
+\item{x}{names of variables}
 }
 \description{
 This function visualizes the binning results generated via \code{\line{woebin}}

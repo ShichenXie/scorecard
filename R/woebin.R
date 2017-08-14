@@ -1,20 +1,39 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step=FALSE) {
-  # # load germancredit data
+woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step=FALSE) {
   # data(germancredit)
-  # dt <- data.table(germancredit[, c('creditability', 'age.in.years')])
-  # dt <- data.table(germancredit[, c('creditability', 'status.of.existing.checking.account')])
-  # dt <- data.table(germancredit[, c('creditability', 'present.employment.since', 'age.in.years')])
+  # numerical data
+  # dt <- data.table(germancredit)[, .(y=creditability, age.in.years)];
+  # y="y"; x="age.in.years"
 
-  # x column name
-  # if (x=="") x <- setdiff(names(dt), y)
-  # if (length(x) > 1) break
+  # character data
+  # dt <- data.table(germancredit)[, .(y=creditability, status.of.existing.checking.account)])
+  # y="y"; x="status.of.existing.checking.account"
+
+  # dt <- data.table(germancredit[, c('creditability', 'present.employment.since', 'age.in.years')])
 
 
   # input data.table
   dtm <- data.table(y = dt[[y]], variable=x, value = dt[[x]])[, y := ifelse(grepl(positive, y), 1, 0)]
+  # convert logical value into numeric
   if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
+
+  # return binning if provide breakpoints
+  if ( !anyNA(breaks) & !is.null(breaks) ) {
+    brkp <- unique(c(-Inf, breaks, Inf))
+
+    bin <- copy(dtm)[
+      , bin := cut(value, brkp, right = FALSE, dig.lab = 10, ordered_result = FALSE)
+      ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
+      ][order(bin)
+      ][, `:=`(bstbin=bin, bstbrkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad) )
+      ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+      ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
+      ][, total_iv := sum(bin_iv)
+      ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, bin_iv, total_iv)]
+
+    return(bin)
+  }
 
   # functions ------
   ###### breakpoints for initial bins
@@ -68,36 +87,36 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 
   # add one tree-like best breakpoints
   # requried by all_bst_brkp
-  add_bst_brkp <- function(brkpdt, bst_brkp = c()) {
+  add_bst_brkp <- function(initial_brkpdt, bst_brkp = c()) {
 
     # best breakpoints
-    bestbreakpoints <- function(brkpdt, bst_brkp, only_total_iv=TRUE) {
+    bestbreakpoints <- function(initial_brkpdt, bst_brkp, only_total_iv=TRUE) {
       if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
-        brkpdt[
+        initial_brkpdt[
           , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
           ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
           ][, `:=`(badprob = bad/(good+bad), bin = bstbin )
           ][order(bstbin)
           ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-          ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
-          ][, total_iv := sum(miv)
+          ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
+          ][, total_iv := sum(bin_iv)
           ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv)]
+          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, bin_iv, total_iv)]
 
 
       } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
-        bst_brkp <- setdiff(bst_brkp, min(brkpdt[,brkp]))
+        bst_brkp <- setdiff(bst_brkp, min(initial_brkpdt[,brkp]))
 
-        brkpdt[
+        initial_brkpdt[
           , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = FALSE)
           ][, .(variable=unique(variable), bin = paste0(bin, collapse = "##"), good = sum(good), bad = sum(bad)), keyby = bstbin
           ][, badprob:=bad/(good+bad)
           ][order(bstbin)
           ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-          ][, miv := lapply(.SD, miv_01, bad), .SDcols = "good"
-          ][, total_iv := sum(miv)
+          ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
+          ][, total_iv := sum(bin_iv)
           ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, miv, total_iv) ]
+          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, bin_iv, total_iv) ]
         # variable bstbin bstbrkp good bad badprob woe miv total_iv
 
       }
@@ -106,7 +125,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     }
 
     # best breakpoints set
-    bst_brkp_set <- setdiff( brkpdt[,brkp], c(bst_brkp, -Inf, Inf, NA) )
+    bst_brkp_set <- setdiff( initial_brkpdt[,brkp], c(bst_brkp, -Inf, Inf, NA) )
 
     # loop on bst_brkp_set
     for (i in bst_brkp_set) {
@@ -114,7 +133,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
       bst_brkp_i <- sort(c(bst_brkp, i))
 
       # best breakpoint datatable
-      bst_brkpdt <- brkpdt[
+      bst_brkpdt <- initial_brkpdt[
         , paste0("bstbin",i) := cut(brkp, c(-Inf, bst_brkp_i, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
         ]
     }
@@ -132,16 +151,16 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     bst_brkp <- sort( unique(c(bst_brkp,  bst_brkp_max_total_iv)) )
     #
     # bst_bins_dt <-
-      bestbreakpoints(brkpdt, bst_brkp, only_total_iv=FALSE)
+      bestbreakpoints(initial_brkpdt, bst_brkp, only_total_iv=FALSE)
 
     # return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[1, total_iv]))
   }
   ###### all tree-like best breakpoints
-  all_bst_brkp <- function(brkpdt, stop_limit=0.1, print_step=FALSE) {
-    len_brkp <- length( setdiff(brkpdt[, brkp], c(-Inf, Inf, NA)) )
+  all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, print_step=FALSE) {
+    len_brkp <- length( setdiff(initial_brkpdt[, brkp], c(-Inf, Inf, NA)) )
 
     # best breakpoints for two bins
-    ALL_bst_brkp <- add_bst_brkp(brkpdt)
+    ALL_bst_brkp <- add_bst_brkp(initial_brkpdt)
     if (print_step == TRUE) print(ALL_bst_brkp)
     IVt1 <- ALL_bst_brkp[1, total_iv]
 
@@ -151,7 +170,7 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
       IVchg <- 1
     # best breakpoints from three to n+1 bins
     while (IVchg >= stop_limit) {
-      ALL_bst_brkp <- add_bst_brkp(brkpdt, ALL_bst_brkp[bstbrkp != -Inf, bstbrkp])
+      ALL_bst_brkp <- add_bst_brkp(initial_brkpdt, ALL_bst_brkp[bstbrkp != -Inf, bstbrkp])
       if (print_step == TRUE) print(ALL_bst_brkp)
 
       IVt2 <- ALL_bst_brkp[1, total_iv]
@@ -168,14 +187,14 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
     return(ALL_bst_brkp)
   }
   # examples
-  # system.time( brkpdt <- breakpoints(dtm, min_perc_total) )
-  # system.time(add_bst_brkp(brkpdt))
-  # system.time(all_bst_brkp(brkpdt, print_step = TRUE))
+  # system.time( initial_brkpdt <- breakpoints(dtm, min_perc_total) )
+  # system.time(add_bst_brkp(initial_brkpdt))
+  # system.time(all_bst_brkp(initial_brkpdt, print_step = TRUE))
 
   # run functions ------
-  brkpdt <- breakpoints(dtm, min_perc_total)
-  if (stop_limit == "N") return(brkpdt)
-  all_bst_brkp(brkpdt, stop_limit, print_step)
+  initial_brkpdt <- breakpoints(dtm, min_perc_total)
+  if (stop_limit == "N") return(initial_brkpdt)
+  all_bst_brkp(initial_brkpdt, stop_limit, print_step)
 }
 
 #' woe binning
@@ -184,7 +203,8 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 #' @name woebin
 #' @param dt Name of input data
 #' @param y Name of y variable.
-#' @param x Name vector of x variables, defaults: "".
+#' @param x Name vector of x variables, defaults NA.
+#' @param breaks_list list of break points, defaults NA.
 #' @param min_perc_total The share of initial binning class number over total. Accepted range: 0.01-0.2; default: 0.02.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default: 0.1.
 #' @param positive Name of positive class, defaults: bad or 1.
@@ -201,12 +221,21 @@ woebin2 <- function(dt, y, x, min_perc_total=0.02, stop_limit=0.1, method="tree"
 #' # set stop_limit for each x variable
 #' woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01))
 
-woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step = FALSE) {
+woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=0.1, method="tree", positive="bad|1", print_step = FALSE) {
 
   # transfer dt to data.table
   dt <- data.table(dt)
   # x variable names vector
-  if (length(x)==1 & ""%in%x) x <- setdiff(names(dt), y)
+  if (anyNA(x)) x <- setdiff(names(dt), y)
+
+  # breaks_list
+  if (!anyNA(breaks_list)) {
+    if (!is.list(breaks_list)) {
+      break
+    } else if (length(breaks_list) != length(x)) {
+      break
+    }
+  }
 
   # stop_limit vector
   if (length(stop_limit) == 1) {
@@ -239,7 +268,12 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
     if (print_step) print(x_i)
 
     # woebining on one variable
-    bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, min_perc_total, stop_limit_i, method, positive)
+    if (anyNA(breaks_list)) {
+      bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, min_perc_total=min_perc_total, stop_limit=stop_limit_i, method=method, positive=positive)
+    } else {
+      bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, breaks = breaks_list[[x_i]], method=method, positive=positive)
+    }
+
 
     # renmae NA as missing
     bins[[x_i]] <- bin2[, bin := ifelse(is.na(bin), "missing", as.character(bin))]
@@ -251,7 +285,7 @@ woebin <- function(dt, y, x="", min_perc_total=0.02, stop_limit=0.1, method="tre
   # reorder bins by iv
   bins_list <- list()
   for (v in total_iv_list$variable) {
-    bins_list[[v]] <- bins[[v]]
+    bins_list[[v]] <- bins[[v]][,.(variable, bin, bstbin, bstbrkp, good, bad, numdistr=(good+bad)/(sum(good)+sum(bad)), badprob, woe, bin_iv, total_iv)]
   }
 
   return(list(bins = bins_list, iv=total_iv_list))
@@ -310,6 +344,7 @@ woebin_ply <- function(dt, bins, y) {
 #' This function visualizes the binning results generated via \code{\line{woebin}}
 #' @name woebin_plot
 #' @param bins binning generated via \code{\line{woebin}}
+#' @param x names of variables
 #' @export
 #' @examples
 #' data(germancredit)
@@ -318,7 +353,7 @@ woebin_ply <- function(dt, bins, y) {
 #' plotlist <- woebin_plot(bins)
 #' plotlist
 #'
-woebin_plot <- function(bins) {
+woebin_plot <- function(bins, xs=NULL) {
 
   pf <- function(bin) {
     # data
@@ -349,15 +384,15 @@ woebin_plot <- function(bins) {
 
   }
 
+  if (is.data.frame(bins)) {
+    bins <- eval(parse(text = paste0("list(", bins[1, variable], " = bins)")))
+  }
+  if (is.null(xs)) xs = names(bins)
+
   # plot export
   plotlist <- list()
-  if (!is.data.frame(bins) & is.list(bins)) {
-    bins_length <- length(bins)
-    for (i in 1:bins_length) plotlist[[bins[[i]][1,variable]]] <- pf(bins[[i]])
-  } else if (is.data.frame(bins)) {
-    bins_length <- 1
-    plotlist[[bins[1,variable]]] <- pf(bins)
-  }
+  for (i in xs) plotlist[[i]] <- pf(bins[[i]])
+
 
   return(plotlist)
 }

@@ -5,8 +5,8 @@
 \title{psi}
 \usage{
 perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
-  groupnum = 20, positive = "bad|1", plot = TRUE, plot_total = FALSE,
-  seed = 186)
+  positive = "bad|1", plot = TRUE, x_limits = c(100, 650),
+  x_tick_break = 50, line_total = FALSE, seed = 186)
 }
 \arguments{
 \item{label_train}{label values of training dataset, such as 0s and 1s.}
@@ -19,15 +19,17 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 
 \item{title}{plot title, default "train".}
 
-\item{groupnum}{the number of group numbers, default: 20.}
-
 \item{positive}{Name of positive class, defaults: bad or 1.}
 
 \item{plot}{logical value, default TRUE. It means whether to display plot.}
 
-\item{plot_total}{logical value, default FALSE, which means not display the line of total PSI}
+\item{x_tick_break}{xaxis ticker break, default 100}
+
+\item{line_total}{logical value, default FALSE, which means not display the line of total PSI}
 
 \item{seed}{seed value for random sort data frame, defalut: 186.}
+
+\item{xlimits}{xaxis limits, default c(0, 800)}
 }
 \value{
 psi
