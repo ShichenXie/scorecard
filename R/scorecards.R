@@ -32,28 +32,28 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # library(woebin)
 #' # # load germancredit data
 #' # data("germancredit")
-#' # dt <- setnames(
-#' #   data.table(germancredit), c(paste0("x",1:20), "y")
-#' # )[, y:=ifelse(y=="bad", 1, 0)]
-#' # # x y names
-#' # y <- "y"
+#' #
+#' # germancredit$y <- germancredit$creditability
+#' # germancredit$creditability <- NULL
+#' #
+#' # dt <- data.table(germancredit)[, y:=ifelse(y=="bad", 1, 0)]
 #' #
 #' # # iv woe filter ------
 #' # # variable filter I
-#' # dt_filter <- var_filter(dt, y)
+#' # dt_select <- var_filter(dt, "y")
 #' #
 #' # # woe binning
-#' # bins <- woebin(dt_filter, y, stop_limit = 0.1)$bins
-#' # dt_woe <- woebin_ply(dt_filter, bins, y)
+#' # bins <- woebin(dt_select, "y", stop_limit = 0.1)$bins
+#' # dt_woe <- woebin_ply(dt_select, bins, "y")
 #' #
 #' # # variable filter II
-#' # dt_woe_filter <- var_filter(dt_woe, y)
+#' # dt_woe_select <- var_filter(dt_woe, "y")
 #' #
 #' # # # lasso filter ------
 #' # # library(h2o)
 #' # # # h2o data
 #' # # localH2O <- h2o.init()
-#' # # dth2o <- as.h2o(dt_woe_filter)
+#' # # dth2o <- as.h2o(dt_woe_select)
 #' # #
 #' # # # Breaking Data into Training and Test Sample
 #' # # set.seed(345)
@@ -61,15 +61,15 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # # dt.train <- dt.split[[1]]; dt.test <- dt.split[[2]];
 #' # #
 #' # # # h2o.glm lasso
-#' # # fit <- h2o.glm(x=names(dt_woe_filter), y, dt.train, validation_frame=dt.test, family = "binomial", nfolds = 0, alpha = 1, lambda_search = TRUE)
+#' # # fit <- h2o.glm(x=names(dt_woe_select), y, dt.train, validation_frame=dt.test,' family = "binomial", nfolds = 0, alpha = 1, lambda_search = TRUE)
 #' # # # summary(fit)
-#' # # h2o_var <- data.table(h2o.varimp(fit))[!is.na(coefficients) & coefficients > 0]
-#' # # dt_woe_lasso <- dt_woe_filter[, c(h2o_var$names, y), with=FALSE]
+#' # # h2o_var <- data.table(h2o.varimp(fit))[!is.na(coefficients) & coefficients > 0']
+#' # # dt_woe_lasso <- dt_woe_select[, c(h2o_var$names, y), with=FALSE]
 #' #
 #' # # glm ------
 #' # # Breaking Data into Training and Test Sample
 #' # set.seed(1255)
-#' # dat <- data.table(dt_woe_filter)[sample(nrow(dt_woe_filter))]
+#' # dat <- data.table(dt_woe_select)[sample(nrow(dt_woe_select))]
 #' # set.seed(456)
 #' # d <- sample(nrow(dat), nrow(dat)*0.6)
 #' # train <- dat[d]; test <- dat[-d];
@@ -94,7 +94,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' #   setnames(m1_coef, c("Estimate", "Std_Error", "z_value", "Pr_z", "var"))
 #' #
 #' #   # selected variables
-#' #   sel_var <- c(m1_coef[Estimate > 0 & Pr_z < 0.1, var], y)
+#' #   sel_var <- c(m1_coef[Estimate > 0 & Pr_z < 0.1, var], "y")
 #' #
 #' #   # number of variables that coefficients == NEG or Pr_z > 0.1
 #' #   rm_var_num <- m1_coef[Estimate <= 0 | Pr_z > 0.1][, .N]
@@ -113,8 +113,8 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # test$pred <- predict(m2, type='response', test)
 #' #
 #' # # credit score
-#' # train_score <- scorecards(train, y, bins, m2)$score
-#' # test_score <- scorecards(test, y, bins, m2)$score
+#' # train_score <- scorecards(train, "y", bins, m2)$score
+#' # test_score <- scorecards(test, "y", bins, m2)$score
 #' #
 #' # # performace plot of ks & roc
 #' # perf_plot(train$y, train$pred, title="train")
@@ -123,7 +123,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
 #' #
 #' # # scorecards
-#' # cards <- scorecards(train, y, bins, m2)$cards
+#' # cards <- scorecards(train, "y", bins, m2)$cards
 #'
 scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   aabb <- ab(p0, odds0, pdo)
