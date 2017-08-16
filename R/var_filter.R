@@ -18,7 +18,7 @@
 #' # variable filter
 #' var_filter(germancredit, y = "creditability")
 #'
-var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
+var_filter <- function(dt, y, xs = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
   # 最小iv值0.02
   # 最大缺失值百分比95%
 
@@ -31,15 +31,15 @@ var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele
   # transfer dt to data.table
   dt <- data.table(dt)
   # x variable names
-  if (anyNA(x)) xnames <- setdiff(names(dt), y)
+  if (anyNA(xs)) xs <- setdiff(names(dt), y)
 
 
   # -iv
-  iv_list <- iv(dt, y)
+  iv_list <- iv(dt, y, xs)
   # -na percentage
-  na_perc <- dt[, lapply(.SD, function(x) sum(is.na(x))/length(x)), .SDcols = xnames]
+  na_perc <- dt[, lapply(.SD, function(x) sum(is.na(x))/length(x)), .SDcols = xs]
   # -percentage limit
-  ele_perc <- dt[, lapply(.SD, function(x) max(table(x)/sum(!is.na(x)))), .SDcols = xnames]
+  ele_perc <- dt[, lapply(.SD, function(x) max(table(x)/sum(!is.na(x)))), .SDcols = xs]
 
 
   # remove na_perc>95 | ele_perc>0.95 | iv<0.02
@@ -57,7 +57,9 @@ var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele
   if (!anyNA(var_kp))  x_selected <- unique(c(x_selected, var_kp))
 
   # return
-  dt[, c(x_selected, y), with=FALSE ]
+  dt_sel <- dt[, c(x_selected, y), with=FALSE ]
+
+  return(dt_sel)
 
 }
 
