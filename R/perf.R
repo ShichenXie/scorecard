@@ -98,14 +98,14 @@
 #' # test$pred <- predict(m2, type='response', test)
 #' #
 #' # # credit score
-#' # train_score <- scorecards(train, "y", bins, m2)$score
-#' # test_score <- scorecards(test, "y", bins, m2)$score
+#' # train$score <- scorecards(train, "y", bins, m2)$score
+#' # test$score <- scorecards(test, "y", bins, m2)$score
 #' #
 #' # # performace plot of ks & roc
 #' # perf_plot(train$y, train$pred, title="train")
 #' # perf_plot(test$y, test$pred, title="test")
 #' #
-#' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
+#' # perf_psi(train$y, train$score, test$y, test$score)
 #' #
 #' # # scorecards
 #' # cards <- scorecards(train, "y", bins, m2)$cards
@@ -348,14 +348,14 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # test$pred <- predict(m2, type='response', test)
 #' #
 #' # # credit score
-#' # train_score <- scorecards(train, "y", bins, m2)$score
-#' # test_score <- scorecards(test, "y", bins, m2)$score
+#' # train$score <- scorecards(train, "y", bins, m2)$score
+#' # test$score <- scorecards(test, "y", bins, m2)$score
 #' #
 #' # # performace plot of ks & roc
 #' # perf_plot(train$y, train$pred, title="train")
 #' # perf_plot(test$y, test$pred, title="test")
 #' #
-#' # perf_psi(train_score$y, train_score$score, test_score$y, test_score$score)
+#' # perf_psi(train$y, train$score, test$y, test$score)
 #' #
 #' # # scorecards
 #' # cards <- scorecards(train, "y", bins, m2)$cards
