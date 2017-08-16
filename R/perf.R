@@ -368,11 +368,11 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
   if (length(label_train) != length(score_train) | length(label_test) != length(score_test)) break
 
   # breakpoints
-  brkp <- c(
+  brkp <- unique(c(
     floor(min(c(score_train, score_test))/x_tick_break)*x_tick_break,
     seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
     ceiling(max(c(score_train, score_test))/x_tick_break)*x_tick_break
-  )
+  ))
 
   # random sort datatable
   set.seed(seed)

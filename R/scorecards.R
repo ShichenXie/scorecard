@@ -150,10 +150,11 @@ scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   }
 
   # total score
-  dt_score[["score"]] <- scorecards[["basepoints"]][,points] + rowSums(dt_score[, paste0(coef[-1,var], "_points"), with=FALSE])
+  # dt_score[["score"]]
+  score <- scorecards[["basepoints"]][,points] + rowSums(dt_score[, paste0(coef[-1,var], "_points"), with=FALSE])
   # dt_score <- dt_woe[,c(paste0(coef[-1,var], "_points"), y, "score"), with=FALSE]
 
-  return(list(cards = scorecards, score = dt_score))
+  return(list(cards = scorecards, score = score))
 
 }
 
