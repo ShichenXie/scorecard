@@ -325,10 +325,12 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
 #' dt_woe <- woebin_ply(dt, wb$bins, "creditability")
 woebin_ply <- function(dt, bins, y) {
   kdt <- copy(data.table(dt))
+  if (is.list(bins)) bins_dt <- rbindlist(bins)
 
-  for (x in names(bins)) {
+
+  for (x in bins_dt[,unique(variable)]) {
     print(x)
-    binsx <- bins[[x]]
+    binsx <- bins_dt[variable==x] #bins[[x]]
 
     if (is.factor(kdt[[x]]) | is.character(kdt[[x]])) {
       kdt <- setnames(

@@ -438,7 +438,6 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
       geom_density(data=dat, aes(score, linetype=id, colour=goodbad)) +
       annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label="PSI", vjust=1.5, size=6) +
       annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label=paste0("Total=", round(psi(dat), 4), "; Good=", round(psi(dat[label==0]), 4), "; Bad=", round(psi(dat[label==1]), 4), ";" ), vjust=5, size=3) +
-
       # ggtitle(title, subtitle = paste0(
       #   "Total=", round(psi(dat), 4),
       #   "; Good=", round(psi(dat[label==0]), 4),
@@ -457,7 +456,7 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
     }
 
     # grid.arrage
-    p<-grid.arrange(p_dp, p_psi, nrow=1)
+    p<- grid.arrange(p_psi, p_dp, nrow=1, padding = 0)
 
   }
 
