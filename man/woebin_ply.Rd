@@ -4,14 +4,14 @@
 \alias{woebin_ply}
 \title{binning apply}
 \usage{
-woebin_ply(dt, bins, y)
+woebin_ply(dt, y, bins)
 }
 \arguments{
 \item{dt}{Name of input data}
 
-\item{bins}{Binning information generated from woebin function}
-
 \item{y}{Name of y variable}
+
+\item{bins}{Binning information generated from \code{woebin} function}
 }
 \value{
 List of binnig for each variable.
@@ -20,13 +20,14 @@ List of binnig for each variable.
 This function applies binning via woebin to dataframe
 }
 \examples{
-
 # load germancredit data
 data(germancredit)
 dt <- germancredit[, c('creditability', 'age.in.years', 'present.employment.since')]
 
 # woe binning
-wb <- woebin(dt, "creditability")
+wb <- woebin(dt, y = "creditability")
+
 # woe binning apply
-dt_woe <- woebin_ply(dt, wb$bins, "creditability")
+dt_woe <- woebin_ply(dt, y = "creditability", bins = wb$bins)
+
 }

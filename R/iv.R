@@ -13,7 +13,7 @@
 #' # Load German credit data
 #' data(germancredit)
 #'
-#' # iv(dt, y)
+#' # information values
 #' iv(germancredit, y = "creditability")
 iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
   if (anyNA(x) & length(x)==1) x <- setdiff(names(dt), y)

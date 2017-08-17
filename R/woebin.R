@@ -309,21 +309,22 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
 #' This function applies binning via woebin to dataframe
 #'
 #' @param dt Name of input data
-#' @param bins Binning information generated from woebin function
 #' @param y Name of y variable
+#' @param bins Binning information generated from \code{woebin} function
 #' @return List of binnig for each variable.
 #' @export
 #' @examples
-#'
 #' # load germancredit data
 #' data(germancredit)
 #' dt <- germancredit[, c('creditability', 'age.in.years', 'present.employment.since')]
 #'
 #' # woe binning
-#' wb <- woebin(dt, "creditability")
+#' wb <- woebin(dt, y = "creditability")
+#'
 #' # woe binning apply
-#' dt_woe <- woebin_ply(dt, wb$bins, "creditability")
-woebin_ply <- function(dt, bins, y) {
+#' dt_woe <- woebin_ply(dt, y = "creditability", bins = wb$bins)
+#'
+woebin_ply <- function(dt, y, bins ) {
   kdt <- copy(data.table(dt))
 
   if (is.list(bins)) bins_dt <- rbindlist(bins)
@@ -362,9 +363,9 @@ woebin_ply <- function(dt, bins, y) {
 
 #' binning visualization
 #'
-#' This function visualizes the binning results generated via \code{\line{woebin}}
+#' This function visualizes the binning results generated via \code{woebin}
 #' @name woebin_plot
-#' @param bins binning generated via \code{\line{woebin}}
+#' @param bins binning generated via \code{woebin}
 #' @param x names of variables
 #' @export
 #' @examples

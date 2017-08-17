@@ -25,6 +25,6 @@ This function calculates IV.
 # Load German credit data
 data(germancredit)
 
-# iv(dt, y)
+# information values
 iv(germancredit, y = "creditability")
 }

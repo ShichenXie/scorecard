@@ -29,101 +29,43 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' @export
 #' @examples
 #' @examples
+#' # # Traditional Credit Scoring Using Logistic Regression
 #' # library(woebin)
 #' # # load germancredit data
 #' # data("germancredit")
 #' #
-#' # germancredit$y <- germancredit$creditability
-#' # germancredit$creditability <- NULL
+#' # # rename creditability as y
+#' # dt <- data.table(germancredit)[, `:=`(
+#' #   y = ifelse(creditability == "bad", 1, 0),
+#' #   creditability = NULL
+#' # )]
 #' #
-#' # dt <- data.table(germancredit)[, y:=ifelse(y=="bad", 1, 0)]
-#' #
-#' # # iv woe filter ------
-#' # # variable filter I
-#' # dt_select <- var_filter(dt, "y")
-#' #
-#' # # woe binning
-#' # bins <- woebin(dt_select, "y", stop_limit = 0.1)$bins
-#' # dt_woe <- woebin_ply(dt_select, bins, "y")
-#' #
-#' # # variable filter II
-#' # dt_woe_select <- var_filter(dt_woe, "y")
-#' #
-#' # # # lasso filter ------
-#' # # library(h2o)
-#' # # # h2o data
-#' # # localH2O <- h2o.init()
-#' # # dth2o <- as.h2o(dt_woe_select)
-#' # #
-#' # # # Breaking Data into Training and Test Sample
-#' # # set.seed(345)
-#' # # dt.split <- h2o.splitFrame(data=dth2o, ratios=0.6)
-#' # # dt.train <- dt.split[[1]]; dt.test <- dt.split[[2]];
-#' # #
-#' # # # h2o.glm lasso
-#' # # fit <- h2o.glm(x=names(dt_woe_select), y, dt.train, validation_frame=dt.test,' family = "binomial", nfolds = 0, alpha = 1, lambda_search = TRUE)
-#' # # # summary(fit)
-#' # # h2o_var <- data.table(h2o.varimp(fit))[!is.na(coefficients) & coefficients > 0']
-#' # # dt_woe_lasso <- dt_woe_select[, c(h2o_var$names, y), with=FALSE]
+#' # # woe binning ------
+#' # bins <- woebin(dt, "y")$bins
+#' # dt_woe <- woebin_ply(dt, "y", bins)
 #' #
 #' # # glm ------
-#' # # Breaking Data into Training and Test Sample
-#' # set.seed(1255)
-#' # dat <- data.table(dt_woe_select)[sample(nrow(dt_woe_select))]
-#' # set.seed(456)
-#' # d <- sample(nrow(dat), nrow(dat)*0.6)
-#' # train <- dat[d]; test <- dat[-d];
-#' #
-#' # # Traditional Credit Scoring Using Logistic Regression ######
-#' # # a. model I
-#' # # remove variables that coefficients == NEG or Pr_z > 0.1
-#' # rm_var_num <- 1
-#' # sel_var <- names(train) #names(xy_selected_lasso)
-#' # while (rm_var_num > 0) {
-#' #   print(rm_var_num)
-#' #
-#' #   m1 <- glm(
-#' #     y ~ ., family = "binomial",
-#' #     data = train[, sel_var, with=FALSE]
-#' #   )
-#' #
-#' #   # coefficients
-#' #   m1_coef <- data.frame(summary(m1)$coefficients)
-#' #   m1_coef$var <- row.names(m1_coef)
-#' #   m1_coef <- data.table(m1_coef)[var != "(Intercept)"]
-#' #   setnames(m1_coef, c("Estimate", "Std_Error", "z_value", "Pr_z", "var"))
-#' #
-#' #   # selected variables
-#' #   sel_var <- c(m1_coef[Estimate > 0 & Pr_z < 0.1, var], "y")
-#' #
-#' #   # number of variables that coefficients == NEG or Pr_z > 0.1
-#' #   rm_var_num <- m1_coef[Estimate <= 0 | Pr_z > 0.1][, .N]
-#' # }
+#' # m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
 #' # # summary(m1)
 #' #
-#' # # b. model II
 #' # # Select a formula-based model by AIC
 #' # m_step <- step(m1, direction="both")
 #' # m2 <- eval(m_step$call)
 #' # # summary(m2)
 #' #
-#' # # score & performance ------
+#' # # performance ------
 #' # # predicted proability
-#' # train$pred <- predict(m2, type='response', train)
-#' # test$pred <- predict(m2, type='response', test)
+#' # dt_woe$pred <- predict(m2, type='response', dt_woe)
 #' #
-#' # # credit score
-#' # train$score <- scorecards(train, "y", bins, m2)$score
-#' # test$score <- scorecards(test, "y", bins, m2)$score
+#' # # performace
+#' # # ks & roc plot
+#' # perf_plot(dt_woe$y, dt_woe$pred)
 #' #
-#' # # performace plot of ks & roc
-#' # perf_plot(train$y, train$pred, title="train")
-#' # perf_plot(test$y, test$pred, title="test")
+#' # # score
+#' # dt_woe$score <- scorecards(dt_woe, "y", bins, m2)$score
 #' #
-#' # perf_psi(train$y, train$score, test$y, test$score)
-#' #
-#' # # scorecards
-#' # cards <- scorecards(train, "y", bins, m2)$cards
+#' # # cards
+#' # cards <- scorecards(dt_woe, "y", bins, m2)$cards
 #'
 scorecards <- function(dt_woe, y, bins, model, p0=600, odds0=1/60, pdo=50) {
   aabb <- ab(p0, odds0, pdo)

@@ -7,12 +7,12 @@
 woebin_plot(bins, xs = NULL)
 }
 \arguments{
-\item{bins}{binning generated via \code{\line{woebin}}}
+\item{bins}{binning generated via \code{woebin}}
 
 \item{x}{names of variables}
 }
 \description{
-This function visualizes the binning results generated via \code{\line{woebin}}
+This function visualizes the binning results generated via \code{woebin}
 }
 \examples{
 data(germancredit)
