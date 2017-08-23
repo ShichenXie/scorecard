@@ -25,7 +25,7 @@ var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
 \item{var_kp}{Name vector of force kept variables, default NA.}
 }
 \description{
-This function filter variables base on their minimun iv, maximum na percentage and maximum element percentage.
+This function filter variables base on their minimum iv, maximum na percentage and maximum element percentage.
 }
 \examples{
 # Load German credit data

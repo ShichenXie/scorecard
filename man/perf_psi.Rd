@@ -32,7 +32,7 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 
 \item{line_total}{logical value, default FALSE, which means not display the line of total PSI}
 
-\item{seed}{An integer. The specify seed is used for random sorting data, defalut: 186.}
+\item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }
 \value{
 psi

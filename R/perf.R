@@ -202,7 +202,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param x_limits x-axis limits, default c(0, 800)
 #' @param x_tick_break xaxis ticker break, default 100
 #' @param line_total logical value, default FALSE, which means not display the line of total PSI
-#' @param seed An integer. The specify seed is used for random sorting data, defalut: 186.
+#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return psi
 #' @export
 #' @examples

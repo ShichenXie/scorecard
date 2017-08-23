@@ -1,6 +1,6 @@
 #' variable filter
 #'
-#' This function filter variables base on their minimun iv, maximum na percentage and maximum element percentage.
+#' This function filter variables base on their minimum iv, maximum na percentage and maximum element percentage.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
