@@ -1,15 +1,15 @@
 #' variable filter
 #'
 #' This function filter variables base on their minimun iv, maximum na percentage and maximum element percentage.
-#' @name var_filter
-#' @param dt Name of input data
+#'
+#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name vector of x variables, default NA.
-#' @param iv_limit The minimun IV of variables that are kept, default 0.02.
+#' @param x Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.
+#' @param iv_limit The minimun IV of each kept variable, default 0.02.
 #' @param na_perc_limit The maximum NA percent of each kept variable, default 0.95.
 #' @param ele_perc_limit The maximun element (excluding NAs) percentage in each kept variable, default 0.95.
-#' @param var_rm force removed variables, default NA
-#' @param var_kp force kept variables, default NA
+#' @param var_rm Name vector of force removed variables, default NA.
+#' @param var_kp Name vector of force kept variables, default NA.
 #' @export
 #' @examples
 #' # Load German credit data
@@ -18,7 +18,7 @@
 #' # variable filter
 #' var_filter(germancredit, y = "creditability")
 #'
-var_filter <- function(dt, y, xs = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
+var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
   # 最小iv值0.02
   # 最大缺失值百分比95%
 
@@ -31,15 +31,15 @@ var_filter <- function(dt, y, xs = NA, iv_limit = 0.02, na_perc_limit = 0.95, el
   # transfer dt to data.table
   dt <- data.table(dt)
   # x variable names
-  if (anyNA(xs)) xs <- setdiff(names(dt), y)
+  if (anyNA(x)) x <- setdiff(names(dt), y)
 
 
   # -iv
-  iv_list <- iv(dt, y, xs)
+  iv_list <- iv(dt, y, x)
   # -na percentage
-  na_perc <- dt[, lapply(.SD, function(x) sum(is.na(x))/length(x)), .SDcols = xs]
+  na_perc <- dt[, lapply(.SD, function(a) sum(is.na(a))/length(a)), .SDcols = x]
   # -percentage limit
-  ele_perc <- dt[, lapply(.SD, function(x) max(table(x)/sum(!is.na(x)))), .SDcols = xs]
+  ele_perc <- dt[, lapply(.SD, function(a) max(table(a)/sum(!is.na(a)))), .SDcols = x]
 
 
   # remove na_perc>95 | ele_perc>0.95 | iv<0.02

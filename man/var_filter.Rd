@@ -4,25 +4,25 @@
 \alias{var_filter}
 \title{variable filter}
 \usage{
-var_filter(dt, y, xs = NA, iv_limit = 0.02, na_perc_limit = 0.95,
+var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
   ele_perc_limit = 0.95, var_rm = NA, var_kp = NA)
 }
 \arguments{
-\item{dt}{Name of input data}
+\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
 \item{y}{Name of y variable.}
 
-\item{iv_limit}{The minimun IV of variables that are kept, default 0.02.}
+\item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
+
+\item{iv_limit}{The minimun IV of each kept variable, default 0.02.}
 
 \item{na_perc_limit}{The maximum NA percent of each kept variable, default 0.95.}
 
 \item{ele_perc_limit}{The maximun element (excluding NAs) percentage in each kept variable, default 0.95.}
 
-\item{var_rm}{force removed variables, default NA}
+\item{var_rm}{Name vector of force removed variables, default NA.}
 
-\item{var_kp}{force kept variables, default NA}
-
-\item{x}{Name vector of x variables, default NA.}
+\item{var_kp}{Name vector of force kept variables, default NA.}
 }
 \description{
 This function filter variables base on their minimun iv, maximum na percentage and maximum element percentage.

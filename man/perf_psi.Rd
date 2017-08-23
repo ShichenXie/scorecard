@@ -5,8 +5,9 @@
 \title{psi}
 \usage{
 perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
-  positive = "bad|1", plot = TRUE, x_limits = c(100, 650),
-  x_tick_break = 50, line_total = FALSE, seed = 186)
+  type = c("psi", "score_distr"), positive = "bad|1", show_plot = TRUE,
+  x_limits = c(100, 700), x_tick_break = 50, line_total = FALSE,
+  seed = 186)
 }
 \arguments{
 \item{label_train}{label values of training dataset, such as 0s and 1s.}
@@ -17,19 +18,21 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 
 \item{score_test}{credit score of testing dataset.}
 
-\item{title}{plot title, default "train".}
+\item{title}{plot title, default "PSI".}
 
-\item{positive}{Name of positive class, defaults: bad or 1.}
+\item{type}{performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").}
 
-\item{plot}{logical value, default TRUE. It means whether to display plot.}
+\item{positive}{Value of positive class, default "bad|1".}
+
+\item{show_plot}{Logical value, default TRUE. It means whether to display plot.}
+
+\item{x_limits}{x-axis limits, default c(0, 800)}
 
 \item{x_tick_break}{xaxis ticker break, default 100}
 
 \item{line_total}{logical value, default FALSE, which means not display the line of total PSI}
 
-\item{seed}{seed value for random sort data frame, defalut: 186.}
-
-\item{xlimits}{xaxis limits, default c(0, 800)}
+\item{seed}{An integer. The specify seed is used for random sorting data, defalut: 186.}
 }
 \value{
 psi
@@ -39,7 +42,6 @@ This function provides population stability index (PSI).
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression
-# library(woebin)
 # # load germancredit data
 # data("germancredit")
 #
@@ -59,10 +61,10 @@ This function provides population stability index (PSI).
 # dt_train <- dt[rn]; dt_test <- dt[-rn];
 #
 # # woe binning ------
-# bins <- woebin(dt_train, "y")$bins
+# bins <- woebin(dt_train, "y")
 #
-# train <- woebin_ply(dt_train, "y", bins)
-# test <- woebin_ply(dt_test, "y", bins)
+# train <- woebin_ply(dt_train, bins)
+# test <- woebin_ply(dt_test, bins)
 #
 # # glm ------
 # m1 <- glm( y ~ ., family = "binomial", data = train)
@@ -83,8 +85,11 @@ This function provides population stability index (PSI).
 # perf_plot(train$y, train$pred, title = "test")
 #
 # # score
-# train$score <- scorecards(train, "y", bins, m2)$score
-# test$score <- scorecards(test, "y", bins, m2)$score
+# card <- scorecard(bins, m2)
+#
+# # score
+# train$score <- scorecard_ply(dt_train, card)
+# test$score <- scorecard_ply(dt_test, card)
 #
 # # psi
 # perf_psi(train$y, train$score, test$y, test$score, x_limits = c(0, 700), x_tick_break = 100)

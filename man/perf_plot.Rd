@@ -5,24 +5,24 @@
 \title{ks, roc, lift, pr}
 \usage{
 perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
-  "roc"), positive = "bad|1", plot = TRUE, seed = 186)
+  "roc"), positive = "bad|1", show_plot = TRUE, seed = 186)
 }
 \arguments{
-\item{label}{label values, such as 0s and 1s.}
+\item{label}{Label values, such as 0s and 1s.}
 
-\item{pred}{predicted probability values.}
+\item{pred}{Predicted probability values.}
 
-\item{title}{plot title, default "train".}
+\item{title}{Title of plot, default "train".}
 
-\item{groupnum}{the number of group numbers, default: 20.}
+\item{groupnum}{The group numbers used for calcualting bad probability, default 20.}
 
-\item{type}{performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").}
+\item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 
-\item{positive}{value of positive class, defaults: bad or 1.}
+\item{positive}{Value of positive class, default "bad|1".}
 
-\item{plot}{logical value, default TRUE.}
+\item{show_plot}{Logical value, default TRUE. It means whether to display plot.}
 
-\item{seed}{seed value for random sort data frame, defalut: 186.}
+\item{seed}{An integer. The specify seed is used for random sorting data, defalut: 186.}
 }
 \value{
 ks, roc, lift, pr
@@ -32,7 +32,6 @@ This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall cu
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression
-# library(woebin)
 # # load germancredit data
 # data("germancredit")
 #
@@ -43,8 +42,8 @@ This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall cu
 # )]
 #
 # # woe binning ------
-# bins <- woebin(dt, "y")$bins
-# dt_woe <- woebin_ply(dt, "y", bins)
+# bins <- woebin(dt, "y")
+# dt_woe <- woebin_ply(dt, bins)
 #
 # # glm ------
 # m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
@@ -61,7 +60,7 @@ This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall cu
 #
 # # performace
 # # only ks & auc values
-# perf_plot(dt_woe$y, dt_woe$pred, plot=FALSE)
+# perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 #
 # # ks & roc plot
 # perf_plot(dt_woe$y, dt_woe$pred)

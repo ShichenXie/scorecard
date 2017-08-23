@@ -1,13 +1,13 @@
-#' information values
+#' Information Value
 #'
-#' This function calculates IV.
+#' This function calculates information value (IV) for all x variables.
 #'
-#' @name iv
-#' @param dt Name of data.frame/data.table with input data.
+#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name vector of x variables.
-#' @param positive The positive/bad target event, such as "bad" or 1.
-#' @return List of woe and iv data tables.
+#' @param x Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.
+#' @param positive Value of positive class, default "bad|1".
+#' @param order Logical. If it is TRUE, return descending sorted iv values.
+#' @return IV of all x variables.
 #' @export
 #' @examples
 #' # Load German credit data
@@ -15,6 +15,7 @@
 #'
 #' # information values
 #' iv(germancredit, y = "creditability")
+#'
 iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
   if (anyNA(x) & length(x)==1) x <- setdiff(names(dt), y)
 

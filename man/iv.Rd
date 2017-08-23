@@ -2,24 +2,26 @@
 % Please edit documentation in R/iv.R
 \name{iv}
 \alias{iv}
-\title{information values}
+\title{Information Value}
 \usage{
 iv(dt, y, x = NA, positive = "bad|1", order = "TRUE")
 }
 \arguments{
-\item{dt}{Name of data.frame/data.table with input data.}
+\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables.}
+\item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
 
-\item{positive}{The positive/bad target event, such as "bad" or 1.}
+\item{positive}{Value of positive class, default "bad|1".}
+
+\item{order}{Logical. If it is TRUE, return descending sorted iv values.}
 }
 \value{
-List of woe and iv data tables.
+IV of all x variables.
 }
 \description{
-This function calculates IV.
+This function calculates information value (IV) for all x variables.
 }
 \examples{
 # Load German credit data
@@ -27,4 +29,5 @@ data(germancredit)
 
 # information values
 iv(germancredit, y = "creditability")
+
 }

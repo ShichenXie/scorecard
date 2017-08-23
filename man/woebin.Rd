@@ -5,52 +5,52 @@
 \title{woe binning}
 \usage{
 woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
-  stop_limit = 0.1, method = "tree", positive = "bad|1",
-  print_step = FALSE)
+  stop_limit = 0.1, positive = "bad|1", print_step = FALSE)
 }
 \arguments{
-\item{dt}{Name of input data}
+\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables, defaults NA.}
+\item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
 
-\item{breaks_list}{list of break points, defaults NA.}
+\item{breaks_list}{List of break points, defaults NA. If it is not NA,  variable binning will based on the provided breaks.}
 
-\item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default: 0.02.}
+\item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default: 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.}
 
-\item{positive}{Name of positive class, defaults: bad or 1.}
+\item{positive}{Value of positive class, default "bad|1".}
+
+\item{print_step}{Logical. If it is TRUE, print the variable name  when generate binning.}
 }
 \value{
-List of binnig for each variable.
+List of binning information for each variable.
 }
 \description{
-This function generates a list of binnings based on tree-like segmentation for both numeric and character variables.
+This function generates optimal binning for both numerical and character variables using tree-like segmentation.
 }
 \examples{
-# Load German credit data
+# load germancredit data
 data(germancredit)
-dt <- germancredit[, c('creditability', 'credit.amount', 'age.in.years', 'present.employment.since')]
 
-# woe binning
-wb <- woebin(dt, y = "creditability")
-wb$bins
-wb$iv
+dt <- germancredit[, c("creditability", "age.in.years",
+      "credit.amount", "housing", "purpose")]
 
 # set stop_limit (infovalue grain ratio) for each x variable
-woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01))
+bins <- woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01, 0.1))
+bins
 
-# binning adjust based on the optimal woe binning solution
+
+# set binning breakpoints manually
 breaks_adj <- list(
-credit.amount = c(600, 1400, 1800, 4000, 11000),
-age.in.years = c(25, 35, 40, 60),
-present.employment.since = NULL
+  age.in.years = c(25, 35, 40, 60),
+  credit.amount = NULL,
+  housing = c("own", "for free\%,\%rent"),
+  purpose = NULL
 )
 
-wb_adj <- woebin(dt, y = "creditability", breaks_list = breaks_adj)
-wb_adj$bins
-wb_adj$iv
+bins_adj <- woebin(dt, y="creditability", breaks_list=breaks_adj)
+bins_adj
 
 }
