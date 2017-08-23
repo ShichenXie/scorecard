@@ -9,7 +9,7 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 \arguments{
 \item{dt}{Original data}
 
-\item{card}{Socrecard generated from \code{scorecard}.}
+\item{card}{Scorecard generated from \code{scorecard}.}
 
 \item{only_total_score}{Logical, default TRUE. If it is TRUE, return total score only, else return both total score and points of all x variables.}
 }
@@ -17,7 +17,7 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 score points
 }
 \description{
-This function calculates credit socre using the scorecard.
+This function calculates credit score using the scorecard.
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression

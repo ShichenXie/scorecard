@@ -14,11 +14,11 @@ var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
 
 \item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
 
-\item{iv_limit}{The minimun IV of each kept variable, default 0.02.}
+\item{iv_limit}{The minimum IV of each kept variable, default 0.02.}
 
 \item{na_perc_limit}{The maximum NA percent of each kept variable, default 0.95.}
 
-\item{ele_perc_limit}{The maximun element (excluding NAs) percentage in each kept variable, default 0.95.}
+\item{ele_perc_limit}{The maximum element (excluding NAs) percentage in each kept variable, default 0.95.}
 
 \item{var_rm}{Name vector of force removed variables, default NA.}
 

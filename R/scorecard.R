@@ -98,9 +98,9 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 
 #' calculates credit score
 #'
-#' This function calculates credit socre using the scorecard.
+#' This function calculates credit score using the scorecard.
 #' @param dt Original data
-#' @param card Socrecard generated from \code{scorecard}.
+#' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total score only, else return both total score and points of all x variables.
 #' @return score points
 #' @export

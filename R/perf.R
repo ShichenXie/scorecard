@@ -6,11 +6,11 @@
 #' @param label Label values, such as 0s and 1s.
 #' @param pred Predicted probability values.
 #' @param title Title of plot, default "train".
-#' @param groupnum The group numbers used for calcualting bad probability, default 20.
+#' @param groupnum The group numbers when calculating bad probability, default 20.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param positive Value of positive class, default "bad|1".
 #' @param show_plot Logical value, default TRUE. It means whether to display plot.
-#' @param seed An integer. The specify seed is used for random sorting data, defalut: 186.
+#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return ks, roc, lift, pr
 #' @export
 #' @examples

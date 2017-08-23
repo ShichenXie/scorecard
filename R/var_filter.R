@@ -5,9 +5,9 @@
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.
-#' @param iv_limit The minimun IV of each kept variable, default 0.02.
+#' @param iv_limit The minimum IV of each kept variable, default 0.02.
 #' @param na_perc_limit The maximum NA percent of each kept variable, default 0.95.
-#' @param ele_perc_limit The maximun element (excluding NAs) percentage in each kept variable, default 0.95.
+#' @param ele_perc_limit The maximum element (excluding NAs) percentage in each kept variable, default 0.95.
 #' @param var_rm Name vector of force removed variables, default NA.
 #' @param var_kp Name vector of force kept variables, default NA.
 #' @export

@@ -14,7 +14,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 
 \item{title}{Title of plot, default "train".}
 
-\item{groupnum}{The group numbers used for calcualting bad probability, default 20.}
+\item{groupnum}{The group numbers when calculating bad probability, default 20.}
 
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 
@@ -22,7 +22,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 
 \item{show_plot}{Logical value, default TRUE. It means whether to display plot.}
 
-\item{seed}{An integer. The specify seed is used for random sorting data, defalut: 186.}
+\item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }
 \value{
 ks, roc, lift, pr
