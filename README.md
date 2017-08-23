@@ -8,7 +8,7 @@ You can install scorecard from github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("shichenxie/shichenxie")
+devtools::install_github("shichenxie/scorecard")
 ```
 
 ## Example
