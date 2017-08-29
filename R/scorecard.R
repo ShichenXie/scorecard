@@ -26,7 +26,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' @param odds0 Target odds, default 1/60.
 #' @param pdo Points to Double the Odds, default 50.
 #' @return scorecard
-#' @export
+#'
 #' @examples
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
@@ -64,6 +64,9 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' #
 #' # # score
 #' # dt_woe$score <- scorecard_ply(dt, card)
+#'
+#' @import data.table
+#' @export
 #'
 scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
   aabb <- ab(p0, odds0, pdo)
@@ -103,7 +106,7 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total score only, else return both total score and points of all x variables.
 #' @return score points
-#' @export
+#'
 #' @examples
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
@@ -142,9 +145,12 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' # # score
 #' # dt_woe$score <- scorecard_ply(dt, card)
 #'
+#' @import data.table
+#' @export
+#'
 scorecard_ply <- function(dt, card, only_total_score = TRUE) {
   kdt <- copy(setDT(dt))
-
+  kdt[kdt==""] <- NA
 
   # card # if (is.list(card)) rbindlist(card)
   if (!is.data.table(card)) {

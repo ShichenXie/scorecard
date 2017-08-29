@@ -8,13 +8,16 @@
 #' @param positive Value of positive class, default "bad|1".
 #' @param order Logical. If it is TRUE, return descending sorted iv values.
 #' @return IV of all x variables.
-#' @export
+#'
 #' @examples
 #' # Load German credit data
 #' data(germancredit)
 #'
 #' # information values
 #' iv(germancredit, y = "creditability")
+#'
+#' @import data.table
+#' @export
 #'
 iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
   if (anyNA(x) & length(x)==1) x <- setdiff(names(dt), y)

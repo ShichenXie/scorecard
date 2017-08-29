@@ -12,7 +12,7 @@
 #' @param show_plot Logical value, default TRUE. It means whether to display plot.
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return ks, roc, lift, pr
-#' @export
+#'
 #' @examples
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
@@ -50,6 +50,9 @@
 #' #
 #' # # ks, lift, roc & pr plot
 #' # perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+#'
+#' @import data.table ggplot2 gridExtra
+#' @export
 #'
 perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", show_plot=TRUE, seed=186) {
   # inputs checking
@@ -204,7 +207,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param line_total logical value, default FALSE, which means not display the line of total PSI
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return psi
-#' @export
+#'
 #' @examples
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
@@ -258,6 +261,9 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' #
 #' # # psi
 #' # perf_psi(train$y, train$score, test$y, test$score, x_limits = c(0, 700), x_tick_break = 100)
+#'
+#' @import data.table ggplot2 gridExtra
+#' @export
 #'
 perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", type = c("psi", "score_distr"), positive="bad|1", show_plot=TRUE, x_limits=c(100,700), x_tick_break=50, line_total=FALSE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))

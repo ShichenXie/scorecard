@@ -10,13 +10,16 @@
 #' @param ele_perc_limit The maximum element (excluding NAs) percentage in each kept variable, default 0.95.
 #' @param var_rm Name vector of force removed variables, default NA.
 #' @param var_kp Name vector of force kept variables, default NA.
-#' @export
+#'
 #' @examples
 #' # Load German credit data
 #' data(germancredit)
 #'
 #' # variable filter
 #' var_filter(germancredit, y = "creditability")
+#'
+#' @import data.table
+#' @export
 #'
 var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
   # 最小iv值0.02
@@ -30,6 +33,7 @@ var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele
 
   # transfer dt to data.table
   dt <- data.table(dt)
+  dt[dt==""] <- NA
   # x variable names
   if (anyNA(x)) x <- setdiff(names(dt), y)
 
