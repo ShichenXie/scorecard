@@ -199,7 +199,6 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param label_test label values of testing dataset, such as 0s and 1s.
 #' @param score_test credit score of testing dataset.
 #' @param title plot title, default "PSI".
-#' @param type performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").
 #' @param positive Value of positive class, default "bad|1".
 #' @param show_plot Logical value, default TRUE. It means whether to display plot.
 #' @param x_limits x-axis limits, default c(0, 800)
@@ -260,12 +259,16 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # test$score <- scorecard_ply(dt_test, card)
 #' #
 #' # # psi
-#' # perf_psi(train$y, train$score, test$y, test$score, x_limits = c(0, 700), x_tick_break = 100)
+#' # perf_psi(train$y, train$score, test$y, test$score,
+#' #          x_limits = c(0, 700), x_tick_break = 100)
+#' #
+#' # perf_score_bad(c(train$y,test$y), c(train$score, test$score),
+#' #                x_limits = c(0, 700), x_tick_break = 100)
 #'
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", type = c("psi", "score_distr"), positive="bad|1", show_plot=TRUE, x_limits=c(100,700), x_tick_break=50, line_total=FALSE, seed=186) {
+perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", positive="bad|1", show_plot=TRUE, x_limits=c(100,700), x_tick_break=50, line_total=FALSE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   # inputs checking
@@ -318,74 +321,100 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
 
   # plot PSI
   if (show_plot) {
-    if ("score_distr" %in% type) {
-      # score distribution and bad probability
-      distr_prob <- dat[
-        order(bin)
-        ][,.(count=.N, bad=sum(label==1)),by="bin"
-          ][,`:=`(
-            dist = count/sum(count), badprob=bad/count,
-            bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
-            bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
-          )][,`:=`(midbin=(bin1+bin2)/2, badprob2=badprob*max(dist))]
-
-      p_score_distr <-
-        ggplot(distr_prob) +
-        geom_bar(aes(x=bin, y=dist), stat="identity", fill="lightblue") +
-        geom_line(aes(x=bin, y=badprob2, group=1), colour = "blue") +
-        geom_point(aes(x=bin, y=badprob2), colour = "blue", shape=21, fill="white") +
-        scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$dist), name = "Bad probability")) +
-        labs(x=NULL, y="Score distribution", fill=NULL) +
-        theme_bw() +
-        theme(legend.position="bottom", legend.direction="horizontal")
-
-    }
+    p_psi <-
+      ggplot() +
+      geom_density(data=dat, aes(score, linetype=id, colour=goodbad)) +
+      annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label="PSI", vjust=1.5, size=6) +
+      annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label=paste0("Total=", round(psi(dat), 4), "; Good=", round(psi(dat[label==0]), 4), "; Bad=", round(psi(dat[label==1]), 4), ";" ), vjust=5, size=3) +
+      # ggtitle(title, subtitle = paste0(
+      #   "Total=", round(psi(dat), 4),
+      #   "; Good=", round(psi(dat[label==0]), 4),
+      #   "; Bad=", round(psi(dat[label==1]), 4), ";"
+      # ) ) +
+      labs(x=NULL, y="Score distribution", linetype=NULL, colour=NULL) +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(x_limits[1], x_limits[2], by=x_tick_break), limits = x_limits) +
+      scale_y_continuous(expand = c(0, 0)) +
+      theme_bw() +
+      theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank()) +
+      ggtitle(title)
 
 
-    if ("psi" %in% type) {
-      p_psi <-
-        ggplot() +
-        geom_density(data=dat, aes(score, linetype=id, colour=goodbad)) +
-        annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label="PSI", vjust=1.5, size=6) +
-        annotate("text", x = (x_limits[1]+x_limits[2])/2, y=Inf, label=paste0("Total=", round(psi(dat), 4), "; Good=", round(psi(dat[label==0]), 4), "; Bad=", round(psi(dat[label==1]), 4), ";" ), vjust=5, size=3) +
-        # ggtitle(title, subtitle = paste0(
-        #   "Total=", round(psi(dat), 4),
-        #   "; Good=", round(psi(dat[label==0]), 4),
-        #   "; Bad=", round(psi(dat[label==1]), 4), ";"
-        # ) ) +
-        labs(x=NULL, y="Score distribution", linetype=NULL, colour=NULL) +
-        scale_x_continuous(expand = c(0, 0), breaks = seq(x_limits[1], x_limits[2], by=x_tick_break), limits = x_limits) +
-        scale_y_continuous(expand = c(0, 0)) +
-        theme_bw() +
-        theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
-
-
-      if (line_total) {
-        p_psi <- p_psi + geom_density(data = dat, aes(score, linetype=id))
-      }
+    if (line_total) {
+      p_psi <- p_psi + geom_density(data = dat, aes(score, linetype=id))
     }
   }
 
   # export plot
   if (show_plot) {
-    plist <- paste0("p_", type)
-    # add title for first plot
-    eval(parse(text = paste0(plist[1], " = ", plist[1], " + ggtitle(title)")))
-    if (length(plist) == 1) {
-      eval(parse(text = plist))
-    } else if (length(plist) > 1) {
-      # add title for second plot
-      title=""
-      eval(parse(text = paste0(plist[2:length(plist)], " = ", plist[2:length(plist)], " + ggtitle(title)")))
-
-      # Arrange multiple plots
-      eval(parse(
-        text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
-      ))
-    }
+    p_psi
   }
 
   # p <- grid.arrange(p_psi, p_dp, nrow=1, padding = 0)
   # return(p)
 }
 
+
+#' score_bad
+#'
+#' Score distribution and bad probability
+#'
+#' @param label label values, such as 0s and 1s.
+#' @param score credit score.
+#' @param title plot title, default "Socre distribution and bad probability".
+#' @param positive Value of positive class, default "bad|1".
+#' @param x_limits x-axis limits, default c(0, 800)
+#' @param x_tick_break xaxis ticker break, default 100
+#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
+#'
+#' @import data.table ggplot2 gridExtra
+#' @export
+#'
+perf_score_bad <- function(label, score, title="Socre distribution and bad probability", positive="bad|1", x_limits=c(100,700), x_tick_break=50, seed=186) {
+
+  # inputs checking
+  if (!is.vector(label) | !is.vector(score)) break
+  if (length(label) != length(score)) break
+
+  # breakpoints
+  brkp <- unique(c(
+    floor(min(c(score))/x_tick_break)*x_tick_break,
+    seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
+    ceiling(max(c(score))/x_tick_break)*x_tick_break
+  ))
+
+  # random sort datatable
+  set.seed(seed)
+  dat <- data.table(
+    label=label, score=score
+  )[
+    sample(1:length(label))
+    ][,.(label, score)
+      ][, `:=`(goodbad=ifelse(label==1, "bad", "good"))
+        ][, bin:=cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
+
+
+
+  # plot
+  distr_prob <- dat[
+    order(bin)
+    ][,.(count=.N, bad=sum(label==1)),by="bin"
+      ][,`:=`(
+        dist = count/sum(count), badprob=bad/count,
+        bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
+        bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
+      )][,`:=`(midbin=(bin1+bin2)/2, badprob2=badprob*max(dist))]
+
+  p_score_distr <-
+    ggplot(distr_prob) +
+    geom_bar(aes(x=bin, y=dist), stat="identity", fill="lightblue") +
+    geom_line(aes(x=bin, y=badprob2, group=1), colour = "blue") +
+    geom_point(aes(x=bin, y=badprob2), colour = "blue", shape=21, fill="white") +
+    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$dist), name = "Bad probability")) +
+    labs(x=NULL, y="Score distribution", fill=NULL) +
+    theme_bw() +
+    theme(legend.position="bottom", legend.direction="horizontal") +
+    ggtitle(title)
+
+
+  return(p_score_distr)
+}

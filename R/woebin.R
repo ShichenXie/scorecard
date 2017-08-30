@@ -436,10 +436,10 @@ woebin_plot <- function(bins, x=NULL) {
   pf <- function(bin) {
     # data
     dat <- bin[,.(
-      variable, bin, good, bad, counts=good+bad, badprob, woe
+      variable, bin, count_num=count, count=count/sum(count), count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
     )][, `:=`(
       bin = ifelse(is.na(bin), "NA", bin),
-      badprob2 = badprob*max(counts),
+      badprob2 = badprob*max(count),
       badprob = round(badprob,4),
       rowid = as.integer(row.names(.SD))
     )][, bin := factor(bin, levels = bin)]
@@ -451,12 +451,12 @@ woebin_plot <- function(bins, x=NULL) {
     # plot
     ggplot() +
       geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
-      geom_text(data=dat, aes(x = bin, y = counts, label = counts), vjust = -0.5) +
+      geom_text(data=dat, aes(x = bin, y = count, label = paste0(round(count*100, 1), "%, ", count_num) ), vjust = 0.5) +
       geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
       geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
       geom_text(data=dat, aes(x = rowid, y = badprob2, label = badprob), colour="blue", vjust = -0.5) +
-      scale_y_continuous(sec.axis = sec_axis(~./max(dat$counts), name = "Bad probability")) +
-      labs(title = dat[1, variable], x=NULL, y="Bin count", fill=NULL) +
+      scale_y_continuous(sec.axis = sec_axis(~./max(dat$count), name = "Bad probability")) +
+      labs(title = dat[1, variable], x=NULL, y="Bin count distribution", fill=NULL) +
       theme_bw() +
       theme(legend.position="bottom", legend.direction="horizontal")
 

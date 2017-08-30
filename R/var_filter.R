@@ -22,14 +22,6 @@
 #' @export
 #'
 var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
-  # 最小iv值0.02
-  # 最大缺失值百分比95%
-
-  # 单个类别最大百分比90%
-  # 最大类别数95%
-
-  # 最小变异系数0.1%
-
 
   # transfer dt to data.table
   dt <- data.table(dt)

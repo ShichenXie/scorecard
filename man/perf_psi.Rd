@@ -5,9 +5,8 @@
 \title{psi}
 \usage{
 perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
-  type = c("psi", "score_distr"), positive = "bad|1", show_plot = TRUE,
-  x_limits = c(100, 700), x_tick_break = 50, line_total = FALSE,
-  seed = 186)
+  positive = "bad|1", show_plot = TRUE, x_limits = c(100, 700),
+  x_tick_break = 50, line_total = FALSE, seed = 186)
 }
 \arguments{
 \item{label_train}{label values of training dataset, such as 0s and 1s.}
@@ -19,8 +18,6 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 \item{score_test}{credit score of testing dataset.}
 
 \item{title}{plot title, default "PSI".}
-
-\item{type}{performance plot types, such as "ks","lift","roc","pr", default: c("ks", "roc").}
 
 \item{positive}{Value of positive class, default "bad|1".}
 
@@ -92,6 +89,10 @@ This function provides population stability index (PSI).
 # test$score <- scorecard_ply(dt_test, card)
 #
 # # psi
-# perf_psi(train$y, train$score, test$y, test$score, x_limits = c(0, 700), x_tick_break = 100)
+# perf_psi(train$y, train$score, test$y, test$score,
+#          x_limits = c(0, 700), x_tick_break = 100)
+#
+# perf_score_bad(c(train$y,test$y), c(train$score, test$score),
+#                x_limits = c(0, 700), x_tick_break = 100)
 
 }
