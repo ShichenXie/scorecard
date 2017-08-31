@@ -11,10 +11,10 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 
 \item{card}{Scorecard generated from \code{scorecard}.}
 
-\item{only_total_score}{Logical, default TRUE. If it is TRUE, return total score only, else return both total score and points of all x variables.}
+\item{only_total_score}{Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.}
 }
 \value{
-score points
+credit score points
 }
 \description{
 This function calculates credit score using the scorecard.

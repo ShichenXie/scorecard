@@ -454,7 +454,7 @@ woebin_plot <- function(bins, x=NULL) {
       geom_text(data=dat, aes(x = bin, y = count, label = paste0(round(count*100, 1), "%, ", count_num) ), vjust = 0.5) +
       geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
       geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
-      geom_text(data=dat, aes(x = rowid, y = badprob2, label = badprob), colour="blue", vjust = -0.5) +
+      geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour="blue", vjust = -0.5) +
       scale_y_continuous(sec.axis = sec_axis(~./max(dat$count), name = "Bad probability")) +
       labs(title = dat[1, variable], x=NULL, y="Bin count distribution", fill=NULL) +
       theme_bw() +

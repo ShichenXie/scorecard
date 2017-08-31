@@ -104,8 +104,8 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' This function calculates credit score using the scorecard.
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
-#' @param only_total_score Logical, default TRUE. If it is TRUE, return total score only, else return both total score and points of all x variables.
-#' @return score points
+#' @param only_total_score Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.
+#' @return credit score points
 #'
 #' @examples
 #' # # Traditional Credit Scoring Using Logistic Regression
