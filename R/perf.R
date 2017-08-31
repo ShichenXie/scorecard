@@ -1,6 +1,6 @@
 #' ks, roc, lift, pr
 #'
-#' This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall curves based on label and predicted probability values.
+#' \code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 #'
 #' @name perf_plot
 #' @param label Label values, such as 0s and 1s.
@@ -192,7 +192,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 
 #' psi
 #'
-#' This function provides population stability index (PSI).
+#' \code{perf_psi} provides population stability index (PSI).
 #'
 #' @param label_train label values of training dataset, such as 0s and 1s.
 #' @param score_train credit score of training dataset.
@@ -265,7 +265,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # perf_score_bad(c(train$y,test$y), c(train$score, test$score),
 #' #                x_limits = c(0, 700), x_tick_break = 100)
 #'
-#' @import data.table ggplot2 gridExtra
+#' @import data.table ggplot2
 #' @export
 #'
 perf_psi <- function(label_train, score_train, label_test, score_test, title="PSI", positive="bad|1", show_plot=TRUE, x_limits=c(100,700), x_tick_break=50, line_total=FALSE, seed=186) {
@@ -301,7 +301,7 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
   psi <- function(dat) {
     dcast(
       dat[,.(count=.N), keyby=c("id", "bin")
-        ][,dist := count/sum(count), by="id"],
+        ][,distr := count/sum(count), by="id"],
       bin ~ id, value.var="count", fill = 0
     )[
       # , (c("train", "test")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("train", "test")][
@@ -354,9 +354,9 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
 }
 
 
-#' score_bad
-#'
 #' Score distribution and bad probability
+#'
+#' \code{perf_score_bad} provides a plot with score distribution and bad probability trends.
 #'
 #' @param label label values, such as 0s and 1s.
 #' @param score credit score.
@@ -366,7 +366,7 @@ perf_psi <- function(label_train, score_train, label_test, score_test, title="PS
 #' @param x_tick_break xaxis ticker break, default 100
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #'
-#' @import data.table ggplot2 gridExtra
+#' @import data.table ggplot2
 #' @export
 #'
 perf_score_bad <- function(label, score, title="Socre distribution and bad probability", positive="bad|1", x_limits=c(100,700), x_tick_break=50, seed=186) {
@@ -399,22 +399,23 @@ perf_score_bad <- function(label, score, title="Socre distribution and bad proba
     order(bin)
     ][,.(count=.N, bad=sum(label==1)),by="bin"
       ][,`:=`(
-        dist = count/sum(count), badprob=bad/count,
+        distr = count/sum(count), badprob=bad/count,
         bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
         bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
-      )][,`:=`(midbin=(bin1+bin2)/2, badprob2=badprob*max(dist))]
+      )][,`:=`(midbin=(bin1+bin2)/2, badprob2=badprob*max(distr))]
+
 
   p_score_distr <-
     ggplot(distr_prob) +
-    geom_bar(aes(x=bin, y=dist), stat="identity", fill="lightblue") +
+    geom_bar(aes(x=bin, y=distr), stat="identity", fill="lightblue") +
     geom_line(aes(x=bin, y=badprob2, group=1), colour = "blue") +
     geom_point(aes(x=bin, y=badprob2), colour = "blue", shape=21, fill="white") +
-    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$dist), name = "Bad probability")) +
+    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
     labs(x=NULL, y="Score distribution", fill=NULL) +
     theme_bw() +
     theme(legend.position="bottom", legend.direction="horizontal") +
     ggtitle(title)
 
 
-  return(p_score_distr)
+  return(list(d=distr_prob, p=p_score_distr))
 }

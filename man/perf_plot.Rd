@@ -28,7 +28,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 ks, roc, lift, pr
 }
 \description{
-This function provides kolmogorov-smirnow(ks), ROC, lift and precision-recall curves based on label and predicted probability values.
+\code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression

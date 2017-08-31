@@ -18,7 +18,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 }
 #' create scorecard
 #'
-#' This function creates scorecard based on the results from \code{woebin} and \code{glm}.
+#' \code{scorecard} creates scorecard based on the results from \code{woebin} and \code{glm}.
 #'
 #' @param bins Binning information generated from \code{woebin} function.
 #' @param model A glm model object.
@@ -84,16 +84,16 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 
   # coefficients
   coef <- data.frame(summary(model)$coefficients)
-  coef$var <- row.names(coef)
-  coef <- setnames(setDT(coef)[,c(1,5),with=FALSE], c("Estimate", "var_woe"))[, var := gsub("_woe$", "", var_woe) ][]
+  coef$variable <- row.names(coef)
+  coef <- setnames(setDT(coef)[,c(1,5),with=FALSE], c("Estimate", "var_woe"))[, variable := gsub("_woe$", "", var_woe) ][]
 
 
   # scorecard
   scorecard <- list()
   scorecard[["basepoints"]] <- data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
 
-  for (i in coef[-1,var]) {
-    scorecard[[i]] <- bins[variable==i][, points := round(-b*coef[var==i, Estimate]*woe)] # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[var==i, Estimate]*woe) )]
+  for (i in coef[-1,variable]) {
+    scorecard[[i]] <- bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)] # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[variable==i, Estimate]*woe) )]
   }
 
   return(scorecard)
@@ -101,7 +101,7 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 
 #' calculates credit score
 #'
-#' This function calculates credit score using the scorecard.
+#' \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.
@@ -208,14 +208,14 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE) {
 
   }
 
-  # dt_score[,(paste0(i,"_points")) := round(-b*coef[var==i, Estimate]*dt_woe[[paste0(i, "_woe")]])]
+  # dt_score[,(paste0(i,"_points")) := round(-b*coef[variable==i, Estimate]*dt_woe[[paste0(i, "_woe")]])]
 
 
 
   # total score
   # dt_score[["score"]]
   total_score <- card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)
-  # dt_score <- dt_woe[,c(paste0(coef[-1,var], "_points"), y, "score"), with=FALSE]
+  # dt_score <- dt_woe[,c(paste0(coef[-1,variable], "_points"), y, "score"), with=FALSE]
 
   if (only_total_score) {
     return(total_score)

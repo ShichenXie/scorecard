@@ -17,7 +17,7 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 credit score points
 }
 \description{
-This function calculates credit score using the scorecard.
+\code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression

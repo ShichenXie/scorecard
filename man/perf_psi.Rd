@@ -35,7 +35,7 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 psi
 }
 \description{
-This function provides population stability index (PSI).
+\code{perf_psi} provides population stability index (PSI).
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression

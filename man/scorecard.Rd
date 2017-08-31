@@ -21,7 +21,7 @@ scorecard(bins, model, p0 = 600, odds0 = 1/60, pdo = 50)
 scorecard
 }
 \description{
-This function creates scorecard based on the results from \code{woebin} and \code{glm}.
+\code{scorecard} creates scorecard based on the results from \code{woebin} and \code{glm}.
 }
 \examples{
 # # Traditional Credit Scoring Using Logistic Regression

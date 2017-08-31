@@ -2,7 +2,7 @@
 % Please edit documentation in R/perf.R
 \name{perf_score_bad}
 \alias{perf_score_bad}
-\title{score_bad}
+\title{Score distribution and bad probability}
 \usage{
 perf_score_bad(label, score, title = "Socre distribution and bad probability",
   positive = "bad|1", x_limits = c(100, 700), x_tick_break = 50,
@@ -24,5 +24,5 @@ perf_score_bad(label, score, title = "Socre distribution and bad probability",
 \item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }
 \description{
-Score distribution and bad probability
+\code{perf_score_bad} provides a plot with score distribution and bad probability trends.
 }

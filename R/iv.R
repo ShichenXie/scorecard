@@ -61,6 +61,7 @@ iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
 # #' dtm[, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols="good"]
 
 # calculating IV of total based on good and bad vectors
+#' @import data.table
 iv_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
@@ -72,6 +73,7 @@ iv_01 <- function(good, bad) {
 }
 
 # calculating IV of each bin based on good and bad vectors
+#' @import data.table
 miv_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad
@@ -82,6 +84,7 @@ miv_01 <- function(good, bad) {
 }
 
 # calculating WOE of each bin based on good and bad vectors
+#' @import data.table
 woe_01 <- function(good, bad) {
   data.table(
     good = good, bad = bad

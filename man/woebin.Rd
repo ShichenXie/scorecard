@@ -28,7 +28,7 @@ woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
 List of binning information for each variable.
 }
 \description{
-This function generates optimal binning for both numerical and character variables using tree-like segmentation.
+\code{woebin} generates optimal binning for both numerical and character variables using tree-like segmentation.
 }
 \examples{
 # load germancredit data
