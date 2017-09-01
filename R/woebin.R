@@ -303,7 +303,14 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
     stop_limit_i <- stop_limit[i]
 
     # print x
-    if (print_step) print(x_i)
+    if (length(unique(dt[[x_i]])) > 1) {
+      if (print_step) print(x_i)
+    } else {
+      print(paste0(x_i, "------next"))
+      next
+
+    }
+
 
     # woebining on one variable
     if (anyNA(breaks_list)) { # is.na(breaks_list)
@@ -435,7 +442,7 @@ woebin_ply <- function(dt, bins) { # dt, y, x=NA, bins
 #'
 woebin_plot <- function(bins, x=NULL, title="") {
 
-  pf <- function(bin) {
+  pf <- function(bin, title) {
     # data
     dat <- bin[,.(
       variable, bin, count_num=count, count=count/sum(count), count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
@@ -450,6 +457,9 @@ woebin_plot <- function(bins, x=NULL, title="") {
       ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
       ]
 
+    # title
+    if (title != "" & !is.na(title)) title <- paste0(title, "-")
+
     # plot
     ggplot() +
       geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
@@ -458,7 +468,7 @@ woebin_plot <- function(bins, x=NULL, title="") {
       geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
       geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour="blue", vjust = -0.5) +
       scale_y_continuous(sec.axis = sec_axis(~./max(dat$count), name = "Bad probability")) +
-      labs(title = paste0(title, "-", dat[1, variable]), x=NULL, y="Bin count distribution", fill=NULL) +
+      labs(title = paste0(title, dat[1, variable]), x=NULL, y="Bin count distribution", fill=NULL) +
       theme_bw() +
       theme(legend.position="bottom", legend.direction="horizontal")
 
@@ -471,7 +481,7 @@ woebin_plot <- function(bins, x=NULL, title="") {
 
   # plot export
   plotlist <- list()
-  for (i in x) plotlist[[i]] <- pf(bins[[i]])
+  for (i in x) plotlist[[i]] <- pf(bins[[i]], title)
 
 
   return(plotlist)

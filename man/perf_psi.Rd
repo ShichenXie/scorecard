@@ -4,9 +4,9 @@
 \alias{perf_psi}
 \title{psi}
 \usage{
-perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
-  positive = "bad|1", show_plot = TRUE, x_limits = c(100, 700),
-  x_tick_break = 50, line_total = FALSE, seed = 186)
+perf_psi(label_train, score_train, label_test, score_test, type = c("psi",
+  "score_distr"), title = "", positive = "bad|1", x_limits = c(100, 700),
+  x_tick_break = 50, only_total = FALSE, seed = 186)
 }
 \arguments{
 \item{label_train}{label values of training dataset, such as 0s and 1s.}
@@ -17,17 +17,17 @@ perf_psi(label_train, score_train, label_test, score_test, title = "PSI",
 
 \item{score_test}{credit score of testing dataset.}
 
-\item{title}{plot title, default "PSI".}
+\item{type}{Plot of stability type, such as "psi", "score_distr". Default c("psi", "score_distr"), which means to export both psi and score distibution plot.}
+
+\item{title}{Title of plot, default "".}
 
 \item{positive}{Value of positive class, default "bad|1".}
-
-\item{show_plot}{Logical value, default TRUE. It means whether to display plot.}
 
 \item{x_limits}{x-axis limits, default c(0, 800)}
 
 \item{x_tick_break}{xaxis ticker break, default 100}
 
-\item{line_total}{logical value, default FALSE, which means not display the line of total PSI}
+\item{only_total}{logical value, default FALSE, which means whether to show total score only.}
 
 \item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }
@@ -92,7 +92,7 @@ psi
 # perf_psi(train$y, train$score, test$y, test$score,
 #          x_limits = c(0, 700), x_tick_break = 100)
 #
-# perf_score_bad(c(train$y,test$y), c(train$score, test$score),
+# perf_psi(c(train$y,test$y), c(train$score, test$score),
 #                x_limits = c(0, 700), x_tick_break = 100)
 
 }

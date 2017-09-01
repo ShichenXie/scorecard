@@ -20,7 +20,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{show_plot}{Logical value, default TRUE. It means whether to display plot.}
+\item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
 
 \item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }
