@@ -14,50 +14,53 @@
 #' @return ks, roc, lift, pr
 #'
 #' @examples
-#' # library(data.table)
-#' # library(scorecard)
-#' #
-#' # # Traditional Credit Scoring Using Logistic Regression
-#' # # load germancredit data
-#' # data("germancredit")
-#' #
-#' # # rename creditability as y
-#' # dt <- data.table(germancredit)[, `:=`(
-#' #   y = ifelse(creditability == "bad", 1, 0),
-#' #   creditability = NULL
-#' # )]
-#' #
-#' # # woe binning ------
-#' # bins <- woebin(dt, "y")
-#' # dt_woe <- woebin_ply(dt, bins)
-#' #
-#' # # glm ------
-#' # m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-#' # # summary(m1)
-#' #
-#' # # Select a formula-based model by AIC
-#' # m_step <- step(m1, direction="both")
-#' # m2 <- eval(m_step$call)
-#' # # summary(m2)
-#' #
-#' # # performance ------
-#' # # predicted proability
-#' # dt_woe$pred <- predict(m2, type='response', dt_woe)
-#' #
-#' # # performace
-#' # # only ks & auc values
-#' # perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
-#' #
-#' # # ks & roc plot
-#' # perf_plot(dt_woe$y, dt_woe$pred)
-#' #
-#' # # ks, lift, roc & pr plot
-#' # perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+#' \dontrun{
+#' library(data.table)
+#' library(scorecard)
 #'
+#' # Traditional Credit Scoring Using Logistic Regression
+#' # load germancredit data
+#' data("germancredit")
+#'
+#' # rename creditability as y
+#' dt <- data.table(germancredit)[, `:=`(
+#'   y = ifelse(creditability == "bad", 1, 0),
+#'   creditability = NULL
+#' )]
+#'
+#' # woe binning ------
+#' bins <- woebin(dt, "y")
+#' dt_woe <- woebin_ply(dt, bins)
+#'
+#' # glm ------
+#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' # summary(m1)
+#'
+#' # Select a formula-based model by AIC
+#' m_step <- step(m1, direction="both")
+#' m2 <- eval(m_step$call)
+#' # summary(m2)
+#'
+#' # performance ------
+#' # predicted proability
+#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#'
+#' # performace
+#' # only ks & auc values
+#' perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
+#'
+#' # ks & roc plot
+#' perf_plot(dt_woe$y, dt_woe$pred)
+#'
+#' # ks, lift, roc & pr plot
+#' perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+#' }
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
 perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", show_plot=TRUE, seed=186) {
+  group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
+
   # inputs checking
   if (!is.vector(label) | !is.vector(pred)) break
   if (length(label) != length(pred)) break
@@ -211,74 +214,76 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @return psi
 #'
 #' @examples
-#' # library(data.table)
-#' # library(scorecard)
-#' #
-#' # # Traditional Credit Scoring Using Logistic Regression
-#' # # load germancredit data
-#' # data("germancredit")
-#' #
-#' # # rename creditability as y
-#' # dt <- data.table(germancredit)[, `:=`(
-#' #   y = ifelse(creditability == "bad", 1, 0),
-#' #   creditability = NULL
-#' # )]
-#' #
-#' # # breaking dt into train and test ------
-#' # set.seed(125)
-#' # dt <- dt[sample(nrow(dt))]
-#' # # rowname of train
-#' # set.seed(345)
-#' # rn <- sample(nrow(dt), nrow(dt)*0.6)
-#' # # train and test dt
-#' # dt_train <- dt[rn]; dt_test <- dt[-rn];
-#' #
-#' # # woe binning ------
-#' # bins <- woebin(dt_train, "y")
-#' #
-#' # train <- woebin_ply(dt_train, bins)
-#' # test <- woebin_ply(dt_test, bins)
-#' #
-#' # # glm ------
-#' # m1 <- glm( y ~ ., family = "binomial", data = train)
-#' # # summary(m1)
-#' #
-#' # # Select a formula-based model by AIC
-#' # m_step <- step(m1, direction="both")
-#' # m2 <- eval(m_step$call)
-#' # # summary(m2)
-#' #
-#' # # performance ------
-#' # # predicted proability
-#' # train$pred <- predict(m2, type='response', train)
-#' # test$pred <- predict(m2, type='response', test)
-#' #
-#' # # ks & roc plot
-#' # perf_plot(train$y, train$pred, title = "train")
-#' # perf_plot(train$y, train$pred, title = "test")
-#' #
-#' # # score
-#' # card <- scorecard(bins, m2)
-#' #
-#' # # score
-#' # train$score <- scorecard_ply(dt_train, card)
-#' # test$score <- scorecard_ply(dt_test, card)
-#' #
-#' # # psi
-#' # perf_psi(train$y, train$score, test$y, test$score,
-#' #   x_limits = c(0, 700), x_tick_break = 100)
-#' #
-#' # perf_psi(train$y, train$score, test$y, test$score,
-#' #   type = "psi", x_limits = c(0, 700), x_tick_break = 100)
-#' #
-#' # perf_psi(train$y, train$score, test$y, test$score,
-#' #   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
+#' \dontrun{
+#' library(data.table)
+#' library(scorecard)
 #'
+#' # Traditional Credit Scoring Using Logistic Regression
+#' # load germancredit data
+#' data("germancredit")
+#'
+#' # rename creditability as y
+#' dt <- data.table(germancredit)[, `:=`(
+#'   y = ifelse(creditability == "bad", 1, 0),
+#'   creditability = NULL
+#' )]
+#'
+#' # breaking dt into train and test ------
+#' set.seed(125)
+#' dt <- dt[sample(nrow(dt))]
+#' # rowname of train
+#' set.seed(345)
+#' rn <- sample(nrow(dt), nrow(dt)*0.6)
+#' # train and test dt
+#' dt_train <- dt[rn]; dt_test <- dt[-rn];
+#'
+#' # woe binning ------
+#' bins <- woebin(dt_train, "y")
+#'
+#' train <- woebin_ply(dt_train, bins)
+#' test <- woebin_ply(dt_test, bins)
+#'
+#' # glm ------
+#' m1 <- glm( y ~ ., family = "binomial", data = train)
+#' # summary(m1)
+#'
+#' # Select a formula-based model by AIC
+#' m_step <- step(m1, direction="both")
+#' m2 <- eval(m_step$call)
+#' # summary(m2)
+#'
+#' # performance ------
+#' # predicted proability
+#' train$pred <- predict(m2, type='response', train)
+#' test$pred <- predict(m2, type='response', test)
+#'
+#' # ks & roc plot
+#' perf_plot(train$y, train$pred, title = "train")
+#' perf_plot(train$y, train$pred, title = "test")
+#'
+#' # score
+#' card <- scorecard(bins, m2)
+#'
+#' # score
+#' train$score <- scorecard_ply(dt_train, card)
+#' test$score <- scorecard_ply(dt_test, card)
+#'
+#' # psi
+#' perf_psi(train$y, train$score, test$y, test$score,
+#'   x_limits = c(0, 700), x_tick_break = 100)
+#'
+#' perf_psi(train$y, train$score, test$y, test$score,
+#'   type = "psi", x_limits = c(0, 700), x_tick_break = 100)
+#'
+#' perf_psi(train$y, train$score, test$y, test$score,
+#'   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
+#' }
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
 perf_psi <- function(label_train, score_train, label_test, score_test, type=c("psi", "score_distr"), title="", positive="bad|1", x_limits=c(100,700), x_tick_break=50, only_total=FALSE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
+  . = id = label = score = bin = distr = count = train = test = A = E = AE = logAE = PSI = goodbad = count = bad = badprob = distr = midbin = bin1 = bin2 = badprob2 = NULL # no visible binding for global variable
 
   # inputs checking
   if (!is.vector(label_train) | !is.vector(score_train) | !is.vector(label_test) | !is.vector(score_test)) break

@@ -20,6 +20,8 @@
 #' @export
 #'
 iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
+  good = bad = DistrBad = DistrGood = miv = V1 = . = NULL # no visible binding for global variable
+
   if (anyNA(x) & length(x)==1) x <- setdiff(names(dt), y)
 
   dt <- data.table(dt)[
@@ -64,6 +66,8 @@ iv <- function(dt, y, x=NA, positive="bad|1", order="TRUE") {
 # #'
 # #' @import data.table
 iv_01 <- function(good, bad) {
+  DistrBad = DistrGood = miv = NULL # no visible binding for global variable
+
   data.table(
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
@@ -83,6 +87,8 @@ iv_01 <- function(good, bad) {
 # #' @import data.table
 # #'
 miv_01 <- function(good, bad) {
+  DistrBad = DistrGood = miv = NULL # no visible binding for global variable
+
   data.table(
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
@@ -100,6 +106,8 @@ miv_01 <- function(good, bad) {
 # #'
 # #' @import data.table
 woe_01 <- function(good, bad) {
+  DistrBad = DistrGood = woe = NULL # no visible binding for global variable
+
   data.table(
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column

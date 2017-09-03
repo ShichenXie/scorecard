@@ -1,6 +1,8 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
 woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step=FALSE) {
+  value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
+
   # method="tree",
 
   # data(germancredit)
@@ -8,7 +10,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
   # dt <- setDT(germancredit)[, .(y=creditability, age.in.years)];
   # y="y"; x="age.in.years"
 
-  # character data
+  # categorical data
   # dt <- setDT(germancredit)[, .(y=creditability, status.of.existing.checking.account)]
   # y="y"; x="status.of.existing.checking.account"
 
@@ -56,6 +58,8 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
   # functions ------
   ###### get breakpoints of initial binning
   breakpoints <- function(dtm, min_perc_total) {
+    . = value = variable = bad = good = badprob = NULL # no visible binding for global variable
+
     if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
       xvec <- dtm[, value]
 
@@ -106,9 +110,12 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
   # add one tree-like best breakpoints
   # requried by all_bst_brkp
   add_bst_brkp <- function(initial_brkpdt, bst_brkp = c()) {
+    patterns = . = good = bad = variable = total_iv = bstbin = NULL # no visible binding for global variable
 
     # best breakpoints
     bestbreakpoints <- function(initial_brkpdt, bst_brkp, only_total_iv=TRUE) {
+      value = bstbin = . = good = bad = variable = woe = bin_iv = total_iv = bstbrkp = badprob = NULL # no visible binding for global variable
+
       if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
         initial_brkpdt[
           , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
@@ -175,6 +182,8 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
   }
   ###### all tree-like best breakpoints
   all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, print_step=FALSE) {
+    total_iv = bstbrkp = NULL# no visible binding for global variable
+
     len_brkp <- length( setdiff(initial_brkpdt[, brkp], c(-Inf, Inf, NA)) )
 
     # best breakpoints for two bins
@@ -217,7 +226,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 
 #' woe binning
 #'
-#' \code{woebin} generates optimal binning for both numerical and character variables using tree-like segmentation.
+#' \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
 #'
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
@@ -231,6 +240,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' @return List of binning information for each variable.
 #'
 #' @examples
+#' \dontrun{
 #' # load germancredit data
 #' data(germancredit)
 #'
@@ -243,7 +253,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' bins
 #'
 #'
-#' # set binning breakpoints manually
+#' # customized binning breakpoints
 #' breaks_list <- list(
 #'   age.in.years = c(25, 35, 40, 60),
 #'   credit.amount = NULL,
@@ -251,14 +261,17 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #'   purpose = NULL
 #' )
 #'
-#' bins2 <- woebin(dt, y="creditability", breaks_list=breaks_list)
-#' bins2
+#' bins_c <- woebin(dt, y="creditability", breaks_list=breaks_list)
+#' bins_c
+#' }
 #'
 #' @import data.table
 #' @importFrom stats IQR quantile
 #' @export
 #'
 woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step = FALSE) {
+  bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
+
   # method="tree",
 
   # transfer dt to data.table
@@ -361,6 +374,8 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
 #' @export
 #'
 woebin_ply <- function(dt, bins) { # dt, y, x=NA, bins
+  . = variable = bin = woe = V1 = NULL  # no visible binding for global variable
+
   kdt <- copy(setDT(dt))
   kdt[kdt==""] <- NA
 
@@ -431,18 +446,23 @@ woebin_ply <- function(dt, bins) { # dt, y, x=NA, bins
 #' @return A list of ggplot objects.
 #'
 #' @examples
+#' \dontrun{
 #' data(germancredit)
 #' bins <- woebin(germancredit, y="creditability")
 #'
 #' plotlist <- woebin_plot(bins)
 #' plotlist
+#' }
 #'
 #' @import data.table ggplot2
 #' @export
 #'
 woebin_plot <- function(bins, x=NULL, title="") {
+  variable = NULL # no visible binding for global variable
 
   pf <- function(bin, title) {
+    . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = NULL # no visible binding for global variable
+
     # data
     dat <- bin[,.(
       variable, bin, count_num=count, count=count/sum(count), count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe

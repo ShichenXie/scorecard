@@ -22,6 +22,7 @@
 #' @export
 #'
 var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NA, var_kp = NA) {
+  V1 = variable = NULL # no visible binding for global variable
 
   # transfer dt to data.table
   dt <- data.table(dt)

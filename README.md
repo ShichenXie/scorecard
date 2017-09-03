@@ -1,6 +1,6 @@
 # scorecard
 
-This R package makes the development of credit risk scorecard efficiently by providing functions such as information value (iv), variable filter (var_filter), optimal woe binning (woebin, woebin_ply, woebin_plot), scorecard scaling (scorecard, scorecard_ply) and performace evaluation (perf_plot, perf_psi).
+This R package makes the development of credit risk scorecard easily and efficiently by providing functions such as information value (iv), variable filter (var_filter), optimal woe binning (woebin, woebin_ply, woebin_plot), scorecard scaling (scorecard, scorecard_ply) and performace evaluation (perf_plot, perf_psi).
 
 ## Installation
 

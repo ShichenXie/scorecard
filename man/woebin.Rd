@@ -28,9 +28,10 @@ woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
 List of binning information for each variable.
 }
 \description{
-\code{woebin} generates optimal binning for both numerical and character variables using tree-like segmentation.
+\code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
 }
 \examples{
+\dontrun{
 # load germancredit data
 data(germancredit)
 
@@ -43,7 +44,7 @@ bins <- woebin(dt, y = "creditability",
 bins
 
 
-# set binning breakpoints manually
+# customized binning breakpoints
 breaks_list <- list(
   age.in.years = c(25, 35, 40, 60),
   credit.amount = NULL,
@@ -51,7 +52,8 @@ breaks_list <- list(
   purpose = NULL
 )
 
-bins2 <- woebin(dt, y="creditability", breaks_list=breaks_list)
-bins2
+bins_c <- woebin(dt, y="creditability", breaks_list=breaks_list)
+bins_c
+}
 
 }

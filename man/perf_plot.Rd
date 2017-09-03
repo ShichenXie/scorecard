@@ -31,44 +31,45 @@ ks, roc, lift, pr
 \code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 }
 \examples{
-# library(data.table)
-# library(scorecard)
-#
-# # Traditional Credit Scoring Using Logistic Regression
-# # load germancredit data
-# data("germancredit")
-#
-# # rename creditability as y
-# dt <- data.table(germancredit)[, `:=`(
-#   y = ifelse(creditability == "bad", 1, 0),
-#   creditability = NULL
-# )]
-#
-# # woe binning ------
-# bins <- woebin(dt, "y")
-# dt_woe <- woebin_ply(dt, bins)
-#
-# # glm ------
-# m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-# # summary(m1)
-#
-# # Select a formula-based model by AIC
-# m_step <- step(m1, direction="both")
-# m2 <- eval(m_step$call)
-# # summary(m2)
-#
-# # performance ------
-# # predicted proability
-# dt_woe$pred <- predict(m2, type='response', dt_woe)
-#
-# # performace
-# # only ks & auc values
-# perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
-#
-# # ks & roc plot
-# perf_plot(dt_woe$y, dt_woe$pred)
-#
-# # ks, lift, roc & pr plot
-# perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+\dontrun{
+library(data.table)
+library(scorecard)
 
+# Traditional Credit Scoring Using Logistic Regression
+# load germancredit data
+data("germancredit")
+
+# rename creditability as y
+dt <- data.table(germancredit)[, `:=`(
+  y = ifelse(creditability == "bad", 1, 0),
+  creditability = NULL
+)]
+
+# woe binning ------
+bins <- woebin(dt, "y")
+dt_woe <- woebin_ply(dt, bins)
+
+# glm ------
+m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+# summary(m1)
+
+# Select a formula-based model by AIC
+m_step <- step(m1, direction="both")
+m2 <- eval(m_step$call)
+# summary(m2)
+
+# performance ------
+# predicted proability
+dt_woe$pred <- predict(m2, type='response', dt_woe)
+
+# performace
+# only ks & auc values
+perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
+
+# ks & roc plot
+perf_plot(dt_woe$y, dt_woe$pred)
+
+# ks, lift, roc & pr plot
+perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+}
 }

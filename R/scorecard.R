@@ -28,50 +28,53 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' @return scorecard
 #'
 #' @examples
-#' # library(data.table)
-#' # library(scorecard)
-#' #
-#' # # Traditional Credit Scoring Using Logistic Regression
-#' # # load germancredit data
-#' # data("germancredit")
-#' #
-#' # # rename creditability as y
-#' # dt <- setDT(germancredit)[, `:=`(
-#' #   y = ifelse(creditability == "bad", 1, 0),
-#' #   creditability = NULL
-#' # )]
-#' #
-#' # # woe binning ------
-#' # bins <- woebin(dt, "y")
-#' # dt_woe <- woebin_ply(dt, bins)
-#' #
-#' # # glm ------
-#' # m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-#' # # summary(m1)
-#' #
-#' # # Select a formula-based model by AIC
-#' # m_step <- step(m1, direction="both")
-#' # m2 <- eval(m_step$call)
-#' # # summary(m2)
-#' #
-#' # # performance ------
-#' # # predicted proability
-#' # dt_woe$pred <- predict(m2, type='response', dt_woe)
-#' #
-#' # # performace
-#' # # ks & roc plot
-#' # perf_plot(dt_woe$y, dt_woe$pred)
-#' #
-#' # # card
-#' # card <- scorecard(bins, m2)
-#' #
-#' # # score
-#' # dt_woe$score <- scorecard_ply(dt, card)
+#' \dontrun{
+#' library(data.table)
+#' library(scorecard)
 #'
+#' # Traditional Credit Scoring Using Logistic Regression
+#' # load germancredit data
+#' data("germancredit")
+#'
+#' # rename creditability as y
+#' dt <- setDT(germancredit)[, `:=`(
+#'   y = ifelse(creditability == "bad", 1, 0),
+#'   creditability = NULL
+#' )]
+#'
+#' # woe binning ------
+#' bins <- woebin(dt, "y")
+#' dt_woe <- woebin_ply(dt, bins)
+#'
+#' # glm ------
+#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' # summary(m1)
+#'
+#' # Select a formula-based model by AIC
+#' m_step <- step(m1, direction="both")
+#' m2 <- eval(m_step$call)
+#' # summary(m2)
+#'
+#' # performance ------
+#' # predicted proability
+#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#'
+#' # performace
+#' # ks & roc plot
+#' perf_plot(dt_woe$y, dt_woe$pred)
+#'
+#' # card
+#' card <- scorecard(bins, m2)
+#'
+#' # score
+#' dt_woe$score <- scorecard_ply(dt, card)
+#' }
 #' @import data.table
 #' @export
 #'
 scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
+  variable = var_woe = Estimate = points = woe = NULL # no visible binding for global variable
+
   aabb <- ab(p0, odds0, pdo)
   a <- aabb$a; b <- aabb$b;
   # odds <- pred/(1-pred); score <- a - b*log(odds)
@@ -111,50 +114,53 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' @return credit score points
 #'
 #' @examples
-#' # library(data.table)
-#' # library(scorecard)
-#' #
-#' # # Traditional Credit Scoring Using Logistic Regression
-#' # # load germancredit data
-#' # data("germancredit")
-#' #
-#' # # rename creditability as y
-#' # dt <- setDT(germancredit)[, `:=`(
-#' #   y = ifelse(creditability == "bad", 1, 0),
-#' #   creditability = NULL
-#' # )]
-#' #
-#' # # woe binning ------
-#' # bins <- woebin(dt, "y")
-#' # dt_woe <- woebin_ply(dt, bins)
-#' #
-#' # # glm ------
-#' # m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-#' # # summary(m1)
-#' #
-#' # # Select a formula-based model by AIC
-#' # m_step <- step(m1, direction="both")
-#' # m2 <- eval(m_step$call)
-#' # # summary(m2)
-#' #
-#' # # performance ------
-#' # # predicted proability
-#' # dt_woe$pred <- predict(m2, type='response', dt_woe)
-#' #
-#' # # performace
-#' # # ks & roc plot
-#' # perf_plot(dt_woe$y, dt_woe$pred)
-#' #
-#' # # card
-#' # card <- scorecard(bins, m2)
-#' #
-#' # # score
-#' # dt_woe$score <- scorecard_ply(dt, card)
+#' \dontrun{
+#' library(data.table)
+#' library(scorecard)
 #'
+#' # Traditional Credit Scoring Using Logistic Regression
+#' # load germancredit data
+#' data("germancredit")
+#'
+#' # rename creditability as y
+#' dt <- setDT(germancredit)[, `:=`(
+#'   y = ifelse(creditability == "bad", 1, 0),
+#'   creditability = NULL
+#' )]
+#'
+#' # woe binning ------
+#' bins <- woebin(dt, "y")
+#' dt_woe <- woebin_ply(dt, bins)
+#'
+#' # glm ------
+#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' # summary(m1)
+#'
+#' # Select a formula-based model by AIC
+#' m_step <- step(m1, direction="both")
+#' m2 <- eval(m_step$call)
+#' # summary(m2)
+#'
+#' # performance ------
+#' # predicted proability
+#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#'
+#' # performace
+#' # ks & roc plot
+#' perf_plot(dt_woe$y, dt_woe$pred)
+#'
+#' # card
+#' card <- scorecard(bins, m2)
+#'
+#' # score
+#' dt_woe$score <- scorecard_ply(dt, card)
+#' }
 #' @import data.table
 #' @export
 #'
 scorecard_ply <- function(dt, card, only_total_score = TRUE) {
+  variable = bin = points = . = V1 = NULL # no visible binding for global variable
+
   kdt <- copy(setDT(dt))
   kdt[kdt==""] <- NA
 

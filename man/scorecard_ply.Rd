@@ -20,44 +20,45 @@ credit score points
 \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
 }
 \examples{
-# library(data.table)
-# library(scorecard)
-#
-# # Traditional Credit Scoring Using Logistic Regression
-# # load germancredit data
-# data("germancredit")
-#
-# # rename creditability as y
-# dt <- setDT(germancredit)[, `:=`(
-#   y = ifelse(creditability == "bad", 1, 0),
-#   creditability = NULL
-# )]
-#
-# # woe binning ------
-# bins <- woebin(dt, "y")
-# dt_woe <- woebin_ply(dt, bins)
-#
-# # glm ------
-# m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-# # summary(m1)
-#
-# # Select a formula-based model by AIC
-# m_step <- step(m1, direction="both")
-# m2 <- eval(m_step$call)
-# # summary(m2)
-#
-# # performance ------
-# # predicted proability
-# dt_woe$pred <- predict(m2, type='response', dt_woe)
-#
-# # performace
-# # ks & roc plot
-# perf_plot(dt_woe$y, dt_woe$pred)
-#
-# # card
-# card <- scorecard(bins, m2)
-#
-# # score
-# dt_woe$score <- scorecard_ply(dt, card)
+\dontrun{
+library(data.table)
+library(scorecard)
 
+# Traditional Credit Scoring Using Logistic Regression
+# load germancredit data
+data("germancredit")
+
+# rename creditability as y
+dt <- setDT(germancredit)[, `:=`(
+  y = ifelse(creditability == "bad", 1, 0),
+  creditability = NULL
+)]
+
+# woe binning ------
+bins <- woebin(dt, "y")
+dt_woe <- woebin_ply(dt, bins)
+
+# glm ------
+m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+# summary(m1)
+
+# Select a formula-based model by AIC
+m_step <- step(m1, direction="both")
+m2 <- eval(m_step$call)
+# summary(m2)
+
+# performance ------
+# predicted proability
+dt_woe$pred <- predict(m2, type='response', dt_woe)
+
+# performace
+# ks & roc plot
+perf_plot(dt_woe$y, dt_woe$pred)
+
+# card
+card <- scorecard(bins, m2)
+
+# score
+dt_woe$score <- scorecard_ply(dt, card)
+}
 }
