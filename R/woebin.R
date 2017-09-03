@@ -40,9 +40,9 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
       bin <- merge(
         data.table(bin = breaks, value = breaks )[
           , strsplit(as.character(value), "%,%", fixed=TRUE), by = .(bin) ][, `:=`(value = V1, V1=NULL)],
-        dtm
+        dtm, all.y = TRUE
       )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
-      ][, `:=`(badprob = bad/(good+bad) )
+      ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
       ][order(badprob)
       ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
       ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
@@ -238,20 +238,21 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #'       "credit.amount", "housing", "purpose")]
 #'
 #' # set stop_limit (infovalue grain ratio) for each x variable
-#' bins <- woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01, 0.1))
+#' bins <- woebin(dt, y = "creditability",
+#'         stop_limit = c(0.05, 0.1, 0.01, 0.1))
 #' bins
 #'
 #'
 #' # set binning breakpoints manually
-#' breaks_adj <- list(
+#' breaks_list <- list(
 #'   age.in.years = c(25, 35, 40, 60),
 #'   credit.amount = NULL,
 #'   housing = c("own", "for free%,%rent"),
 #'   purpose = NULL
 #' )
 #'
-#' bins_adj <- woebin(dt, y="creditability", breaks_list=breaks_adj)
-#' bins_adj
+#' bins2 <- woebin(dt, y="creditability", breaks_list=breaks_list)
+#' bins2
 #'
 #' @import data.table
 #' @importFrom stats IQR quantile
@@ -308,7 +309,6 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
     } else {
       print(paste0(x_i, "------next"))
       next
-
     }
 
 

@@ -38,6 +38,9 @@ psi
 \code{perf_psi} provides population stability index (PSI).
 }
 \examples{
+# library(data.table)
+# library(scorecard)
+#
 # # Traditional Credit Scoring Using Logistic Regression
 # # load germancredit data
 # data("germancredit")
@@ -90,9 +93,12 @@ psi
 #
 # # psi
 # perf_psi(train$y, train$score, test$y, test$score,
-#          x_limits = c(0, 700), x_tick_break = 100)
+#   x_limits = c(0, 700), x_tick_break = 100)
 #
-# perf_psi(c(train$y,test$y), c(train$score, test$score),
-#                x_limits = c(0, 700), x_tick_break = 100)
+# perf_psi(train$y, train$score, test$y, test$score,
+#   type = "psi", x_limits = c(0, 700), x_tick_break = 100)
+#
+# perf_psi(train$y, train$score, test$y, test$score,
+#   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
 
 }

@@ -28,6 +28,9 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' @return scorecard
 #'
 #' @examples
+#' # library(data.table)
+#' # library(scorecard)
+#' #
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
 #' # data("germancredit")
@@ -108,6 +111,9 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' @return credit score points
 #'
 #' @examples
+#' # library(data.table)
+#' # library(scorecard)
+#' #
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
 #' # data("germancredit")

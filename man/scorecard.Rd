@@ -24,6 +24,9 @@ scorecard
 \code{scorecard} creates scorecard based on the results from \code{woebin} and \code{glm}.
 }
 \examples{
+# library(data.table)
+# library(scorecard)
+#
 # # Traditional Credit Scoring Using Logistic Regression
 # # load germancredit data
 # data("germancredit")

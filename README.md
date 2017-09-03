@@ -16,6 +16,9 @@ devtools::install_github("shichenxie/scorecard")
 This is a basic example which shows you how to develop a common credit risk scorecard:
 
 ``` r
+library(data.table)
+library(scorecard)
+
 # Traditional Credit Scoring Using Logistic Regression
 # load germancredit data
 data("germancredit")

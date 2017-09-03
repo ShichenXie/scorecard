@@ -38,19 +38,20 @@ dt <- germancredit[, c("creditability", "age.in.years",
       "credit.amount", "housing", "purpose")]
 
 # set stop_limit (infovalue grain ratio) for each x variable
-bins <- woebin(dt, y = "creditability", stop_limit = c(0.05, 0.1, 0.01, 0.1))
+bins <- woebin(dt, y = "creditability",
+        stop_limit = c(0.05, 0.1, 0.01, 0.1))
 bins
 
 
 # set binning breakpoints manually
-breaks_adj <- list(
+breaks_list <- list(
   age.in.years = c(25, 35, 40, 60),
   credit.amount = NULL,
   housing = c("own", "for free\%,\%rent"),
   purpose = NULL
 )
 
-bins_adj <- woebin(dt, y="creditability", breaks_list=breaks_adj)
-bins_adj
+bins2 <- woebin(dt, y="creditability", breaks_list=breaks_list)
+bins2
 
 }

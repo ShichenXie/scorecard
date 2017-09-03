@@ -14,6 +14,9 @@
 #' @return ks, roc, lift, pr
 #'
 #' @examples
+#' # library(data.table)
+#' # library(scorecard)
+#' #
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
 #' # data("germancredit")
@@ -181,13 +184,13 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
       eval(parse(text = paste0(plist[2:length(plist)], " = ", plist[2:length(plist)], " + ggtitle(title)")))
 
       # Arrange multiple plots
-      eval(parse(
+      p <- eval(parse(
         text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
       ))
     }
   }
 
-
+  return(p)
 }
 
 #' psi
@@ -208,6 +211,9 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @return psi
 #'
 #' @examples
+#' # library(data.table)
+#' # library(scorecard)
+#' #
 #' # # Traditional Credit Scoring Using Logistic Regression
 #' # # load germancredit data
 #' # data("germancredit")
@@ -260,10 +266,13 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' #
 #' # # psi
 #' # perf_psi(train$y, train$score, test$y, test$score,
-#' #          x_limits = c(0, 700), x_tick_break = 100)
+#' #   x_limits = c(0, 700), x_tick_break = 100)
 #' #
-#' # perf_psi(c(train$y,test$y), c(train$score, test$score),
-#' #                x_limits = c(0, 700), x_tick_break = 100)
+#' # perf_psi(train$y, train$score, test$y, test$score,
+#' #   type = "psi", x_limits = c(0, 700), x_tick_break = 100)
+#' #
+#' # perf_psi(train$y, train$score, test$y, test$score,
+#' #   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
 #'
 #' @import data.table ggplot2 gridExtra
 #' @export
@@ -416,7 +425,8 @@ perf_psi <- function(label_train, score_train, label_test, score_test, type=c("p
   # Arrange multiple plots
   if (length(type)==1) {
     if (type == "score_distr") {
-      return(list(p=p_score_distr, d=distr_prob))
+      return(p_score_distr)
+      # return(list(p=p_score_distr, d=distr_prob))
     } else if (type == "psi") {
       return(p_psi)
     } else {

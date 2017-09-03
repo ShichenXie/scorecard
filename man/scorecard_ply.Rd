@@ -20,6 +20,9 @@ credit score points
 \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
 }
 \examples{
+# library(data.table)
+# library(scorecard)
+#
 # # Traditional Credit Scoring Using Logistic Regression
 # # load germancredit data
 # data("germancredit")

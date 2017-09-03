@@ -31,6 +31,9 @@ ks, roc, lift, pr
 \code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 }
 \examples{
+# library(data.table)
+# library(scorecard)
+#
 # # Traditional Credit Scoring Using Logistic Regression
 # # load germancredit data
 # data("germancredit")
