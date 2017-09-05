@@ -12,6 +12,7 @@
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return ks, roc, lift, pr
+#' @seealso \code{\link{perf_psi}}
 #'
 #' @examples
 #' \dontrun{
@@ -90,10 +91,15 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   }
 
 
+  # return list
+  rt <- list()
+
   # plot, KS ------
   if ("ks" %in% type) {
     dfks <- dfkslift[ks == max(ks)][order(group)][1]
-    print(paste0("KS: ", round(dfks$ks, 4) ))
+    # return list
+    rt$KS <- round(dfks$ks, 4)
+    # print(paste0("KS: ", round(dfks$ks, 4) ))
 
     if (show_plot == TRUE) {
       pks <- ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
@@ -140,7 +146,9 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   # plot, ROC ------
   if ("roc" %in% type) {
     AUC <- dfrocpr[, sum(TP/(TP+FN)*(FP/(TN+FP)-shift(FP/(TN+FP), fill=0, type="lead")))]
-    print(paste0("AUC: ", round(AUC,4)))
+    # return list
+    rt$AUC <- round(AUC,4)
+    # print(paste0("AUC: ", round(AUC,4)))
 
     if (show_plot == TRUE) {
       proc <- ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
@@ -180,7 +188,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
     eval(parse(text = paste0(plist[1], " = ", plist[1], " + ggtitle(title)")))
 
     if (length(plist) == 1) {
-      eval(parse(text = plist))
+      p <- eval(parse(text = plist))
     } else if (length(plist) > 1) {
       # add title for second plot
       title=""
@@ -191,9 +199,12 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
         text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
       ))
     }
+
+    # return list
+    rt$p <- p
   }
 
-  return(p)
+  return(rt)
 }
 
 #' psi
@@ -212,6 +223,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param only_total logical value, default FALSE, which means whether to show total score only.
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return psi
+#' @seealso \code{\link{perf_plot}}
 #'
 #' @examples
 #' \dontrun{
@@ -327,14 +339,23 @@ perf_psi <- function(label_train, score_train, label_test, score_test, type=c("p
   }
 
 
+  # return list
+  rt <- list()
+
   # plot PSI ------
   if ("psi" %in% type) {
     # print psi
-    print(paste0(
-      "PSI: Total=", round(psi(dat), 4),
-      "; Good=", round(psi(dat[label==0]), 4),
-      "; Bad=", round(psi(dat[label==1]), 4), ";"
-    ))
+    rt$psi <-
+      paste0(
+        "PSI: Total=", round(psi(dat), 4),
+        "; Good=", round(psi(dat[label==0]), 4),
+        "; Bad=", round(psi(dat[label==1]), 4), ";"
+      )
+    # print(paste0(
+    #   "PSI: Total=", round(psi(dat), 4),
+    #   "; Good=", round(psi(dat[label==0]), 4),
+    #   "; Bad=", round(psi(dat[label==1]), 4), ";"
+    # ))
 
     # plot PSI
     if (only_total) {
@@ -430,14 +451,18 @@ perf_psi <- function(label_train, score_train, label_test, score_test, type=c("p
   # Arrange multiple plots
   if (length(type)==1) {
     if (type == "score_distr") {
-      return(p_score_distr)
-      # return(list(p=p_score_distr, d=distr_prob))
+      rt$p <- p_score_distr
+      # return(p_score_distr)
     } else if (type == "psi") {
-      return(p_psi)
+      rt$p <- p_psi
+      # return(p_psi)
     } else {
       break
     }
   } else {
-    return(grid.arrange(p_psi, p_score_distr, nrow=1, padding=0))
+    rt$p <- grid.arrange(p_psi, p_score_distr, nrow=1, padding=0)
+    # return(grid.arrange(p_psi, p_score_distr, nrow=1, padding=0))
   }
+
+  return(rt)
 }

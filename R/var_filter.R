@@ -26,7 +26,7 @@ var_filter <- function(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95, ele
 
   # transfer dt to data.table
   dt <- data.table(dt)
-  dt[dt==""] <- NA
+
   # x variable names
   if (anyNA(x)) x <- setdiff(names(dt), y)
 

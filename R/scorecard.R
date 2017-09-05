@@ -26,6 +26,7 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' @param odds0 Target odds, default 1/60.
 #' @param pdo Points to Double the Odds, default 50.
 #' @return scorecard
+#' @seealso \code{\link{scorecard_ply}}
 #'
 #' @examples
 #' \dontrun{
@@ -112,6 +113,7 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.
 #' @return credit score points
+#' @seealso \code{\link{scorecard}}
 #'
 #' @examples
 #' \dontrun{
@@ -162,7 +164,6 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE) {
   variable = bin = points = . = V1 = NULL # no visible binding for global variable
 
   kdt <- copy(setDT(dt))
-  kdt[kdt==""] <- NA
 
   # card # if (is.list(card)) rbindlist(card)
   if (!is.data.table(card)) {

@@ -21,12 +21,23 @@ WOE value for each variable.
 # load germancredit data
 data(germancredit)
 
-dt <- germancredit[, c("creditability", "age.in.years",
-      "credit.amount", "housing", "purpose")]
+dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
 
 # binning
 bins <- woebin(dt, y = "creditability")
 
+# converting original value to woe
 dt_woe <- woebin_ply(dt, bins=bins)
 
+\dontrun{
+# binning for germancredit dataset
+bins_germ <- woebin(germancredit, y="creditability")
+
+# converting the values of germancredit to woe
+germancredit_woe <- woebin_ply(germancredit, bins_germ)
+}
+
+}
+\seealso{
+\code{\link{woebin}} \code{\link{woebin_plot}}
 }

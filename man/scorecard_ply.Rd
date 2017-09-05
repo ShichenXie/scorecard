@@ -62,3 +62,6 @@ card <- scorecard(bins, m2)
 dt_woe$score <- scorecard_ply(dt, card)
 }
 }
+\seealso{
+\code{\link{scorecard}}
+}

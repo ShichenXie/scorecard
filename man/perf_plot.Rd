@@ -73,3 +73,6 @@ perf_plot(dt_woe$y, dt_woe$pred)
 perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
 }
 }
+\seealso{
+\code{\link{perf_psi}}
+}

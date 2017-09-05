@@ -31,20 +31,27 @@ List of binning information for each variable.
 \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
 }
 \examples{
-\dontrun{
 # load germancredit data
 data(germancredit)
 
-dt <- germancredit[, c("creditability", "age.in.years",
+dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
+
+bins <- woebin(dt, y = "creditability")
+
+\dontrun{
+# binning for germancredit dataset
+bins_germ <- woebin(germancredit, y = "creditability")
+
+# subset dataset
+dt2 <- germancredit[, c("creditability", "age.in.years",
       "credit.amount", "housing", "purpose")]
 
-# set stop_limit (infovalue grain ratio) for each x variable
-bins <- woebin(dt, y = "creditability",
+# customizing stop_limit (infovalue grain ratio) for each x variable
+bins2 <- woebin(dt2, y = "creditability",
         stop_limit = c(0.05, 0.1, 0.01, 0.1))
-bins
 
 
-# customized binning breakpoints
+# customizing the breakpoints of binning
 breaks_list <- list(
   age.in.years = c(25, 35, 40, 60),
   credit.amount = NULL,
@@ -52,8 +59,10 @@ breaks_list <- list(
   purpose = NULL
 )
 
-bins_c <- woebin(dt, y="creditability", breaks_list=breaks_list)
-bins_c
+bins_c <- woebin(dt2, y="creditability", breaks_list=breaks_list)
 }
 
+}
+\seealso{
+\code{\link{woebin_ply}} \code{\link{woebin_plot}}
 }

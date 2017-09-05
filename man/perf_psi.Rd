@@ -103,3 +103,6 @@ perf_psi(train$y, train$score, test$y, test$score,
   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
 }
 }
+\seealso{
+\code{\link{perf_plot}}
+}

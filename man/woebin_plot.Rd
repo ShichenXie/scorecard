@@ -20,12 +20,23 @@ A list of ggplot objects.
 \code{woebin_plot} create plots of count distribution and bad probability for each bin. The binning informations are generates by  \code{woebin}.
 }
 \examples{
-\dontrun{
+# Load German credit data
 data(germancredit)
-bins <- woebin(germancredit, y="creditability")
 
+dt <- germancredit[, c("creditability", "credit.amount")]
+
+# binning
+bins1 <- woebin(dt, y="creditability")
+
+# binning plot
+woebin_plot(bins1)
+
+\dontrun{
+bins <- woebin(germancredit, y="creditability")
 plotlist <- woebin_plot(bins)
-plotlist
 }
 
+}
+\seealso{
+\code{\link{woebin}} \code{\link{woebin_ply}}
 }
