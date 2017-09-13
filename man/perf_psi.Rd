@@ -2,40 +2,31 @@
 % Please edit documentation in R/perf.R
 \name{perf_psi}
 \alias{perf_psi}
-\title{psi}
+\title{PSI}
 \usage{
-perf_psi(label_train, score_train, label_test, score_test, type = c("psi",
-  "score_distr"), title = "", positive = "bad|1", x_limits = c(100, 700),
-  x_tick_break = 50, only_total = FALSE, seed = 186)
+perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
+  x_tick_break = 50, show_plot = TRUE, seed = 186)
 }
 \arguments{
-\item{label_train}{label values of training dataset, such as 0s and 1s.}
+\item{score}{List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframe.}
 
-\item{score_train}{credit score of training dataset.}
-
-\item{label_test}{label values of testing dataset, such as 0s and 1s.}
-
-\item{score_test}{credit score of testing dataset.}
-
-\item{type}{Plot of stability type, such as "psi", "score_distr". Default c("psi", "score_distr"), which means to export both psi and score distibution plot.}
+\item{label}{List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
 
 \item{title}{Title of plot, default "".}
 
-\item{positive}{Value of positive class, default "bad|1".}
+\item{x_limits}{x-axis limits, default c(0, 800).}
 
-\item{x_limits}{x-axis limits, default c(0, 800)}
+\item{x_tick_break}{x-axis ticker break, default 100.}
 
-\item{x_tick_break}{xaxis ticker break, default 100}
+\item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
 
-\item{only_total}{logical value, default FALSE, which means whether to show total score only.}
-
-\item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
+\item{seed}{An integer. The specify seed is used for random sorting data, default 186.}
 }
 \value{
-psi
+a dataframe of psi & plots of credit score distribution
 }
 \description{
-\code{perf_psi} provides population stability index (PSI).
+\code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 }
 \examples{
 \dontrun{
@@ -64,6 +55,7 @@ dt_train <- dt[rn]; dt_test <- dt[-rn];
 # woe binning ------
 bins <- woebin(dt_train, "y")
 
+# converting train and test into woe values
 train <- woebin_ply(dt_train, bins)
 test <- woebin_ply(dt_test, bins)
 
@@ -78,29 +70,47 @@ m2 <- eval(m_step$call)
 
 # performance ------
 # predicted proability
-train$pred <- predict(m2, type='response', train)
-test$pred <- predict(m2, type='response', test)
+train_pred <- predict(m2, type='response', train)
+test_pred <- predict(m2, type='response', test)
 
 # ks & roc plot
-perf_plot(train$y, train$pred, title = "train")
-perf_plot(train$y, train$pred, title = "test")
+perf_plot(train$y, train_pred, title = "train")
+perf_plot(train$y, train_pred, title = "test")
 
 # score
 card <- scorecard(bins, m2)
 
-# score
-train$score <- scorecard_ply(dt_train, card)
-test$score <- scorecard_ply(dt_test, card)
+# credit score, only_total_score = TRUE
+train_score <- scorecard_ply(dt_train, card)
+test_score <- scorecard_ply(dt_test, card)
 
 # psi
-perf_psi(train$y, train$score, test$y, test$score,
-  x_limits = c(0, 700), x_tick_break = 100)
+psi <- perf_psi(
+  score = list(train = train_score, test = test_score),
+  label = list(train = train[,"y"], test = test[, "y"])
+)
+# psi$psi # psi dataframe
+# psi$p   # plot of score distribution
 
-perf_psi(train$y, train$score, test$y, test$score,
-  type = "psi", x_limits = c(0, 700), x_tick_break = 100)
+# specifying score range
+psi_s <- perf_psi(
+  score = list(train = train_score, test = test_score),
+  label = list(train = train[,"y"], test = test[, "y"]),
+  x_limits = c(150, 750),
+  x_tick_break = 50
+  )
 
-perf_psi(train$y, train$score, test$y, test$score,
-  type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
+# credit score, only_total_score = FALSE
+train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
+test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
+
+# psi
+psi2 <- perf_psi(
+  score = list(train = train_score2, test = test_score2),
+  label = list(train = train[,"y"], test = test[, "y"])
+)
+# psi2$psi # psi dataframe
+# psi2$p   # plot of score distribution
 }
 }
 \seealso{

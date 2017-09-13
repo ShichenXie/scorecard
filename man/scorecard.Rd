@@ -2,18 +2,18 @@
 % Please edit documentation in R/scorecard.R
 \name{scorecard}
 \alias{scorecard}
-\title{create scorecard}
+\title{Creating a Scorecard}
 \usage{
-scorecard(bins, model, p0 = 600, odds0 = 1/60, pdo = 50)
+scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}
 
 \item{model}{A glm model object.}
 
-\item{p0}{Target points, default 600.}
+\item{points0}{Target points, default 600.}
 
-\item{odds0}{Target odds, default 1/60.}
+\item{odds0}{Target odds, default 1/19. Odds = p/(1-p).}
 
 \item{pdo}{Points to Double the Odds, default 50.}
 }
@@ -21,10 +21,9 @@ scorecard(bins, model, p0 = 600, odds0 = 1/60, pdo = 50)
 scorecard
 }
 \description{
-\code{scorecard} creates scorecard based on the results from \code{woebin} and \code{glm}.
+\code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.
 }
 \examples{
-\dontrun{
 library(data.table)
 library(scorecard)
 
@@ -32,8 +31,9 @@ library(scorecard)
 # load germancredit data
 data("germancredit")
 
+# random subset 10 x variables
 # rename creditability as y
-dt <- setDT(germancredit)[, `:=`(
+dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
@@ -43,27 +43,34 @@ bins <- woebin(dt, "y")
 dt_woe <- woebin_ply(dt, bins)
 
 # glm ------
-m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-# summary(m1)
+m <- glm( y ~ ., family = "binomial", data = dt_woe)
+# summary(m)
 
+\dontrun{
 # Select a formula-based model by AIC
-m_step <- step(m1, direction="both")
-m2 <- eval(m_step$call)
-# summary(m2)
+m_step <- step(m, direction="both")
+m <- eval(m_step$call)
+# summary(m)
 
 # performance ------
 # predicted proability
-dt_woe$pred <- predict(m2, type='response', dt_woe)
+# dt_woe$pred <- predict(m, type='response', dt_woe)
 
 # performace
 # ks & roc plot
-perf_plot(dt_woe$y, dt_woe$pred)
+# perf_plot(dt_woe$y, dt_woe$pred)
+}
 
 # card
-card <- scorecard(bins, m2)
+card <- scorecard(bins, m)
 
 # score
-dt_woe$score <- scorecard_ply(dt, card)
+# only total score
+score1 <- scorecard_ply(dt, card)
+
+\dontrun{
+# credit score for both total and each variable
+score2 <- scorecard_ply(dt, card, only_total_score = F)
 }
 }
 \seealso{

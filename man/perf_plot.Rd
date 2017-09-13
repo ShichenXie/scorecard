@@ -2,13 +2,13 @@
 % Please edit documentation in R/perf.R
 \name{perf_plot}
 \alias{perf_plot}
-\title{ks, roc, lift, pr}
+\title{KS, ROC, Lift, PR}
 \usage{
 perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
-  "roc"), positive = "bad|1", show_plot = TRUE, seed = 186)
+  "roc"), show_plot = TRUE, seed = 186)
 }
 \arguments{
-\item{label}{Label values, such as 0s and 1s.}
+\item{label}{Label values, such as 0s and 1s, 0 represent for good and 1 for bad.}
 
 \item{pred}{Predicted probability values.}
 
@@ -17,8 +17,6 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 \item{groupnum}{The group numbers when calculating bad probability, default 20.}
 
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
-
-\item{positive}{Value of positive class, default "bad|1".}
 
 \item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
 

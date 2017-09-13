@@ -2,7 +2,7 @@
 % Please edit documentation in R/scorecard.R
 \name{scorecard_ply}
 \alias{scorecard_ply}
-\title{calculates credit score}
+\title{Application of Scorecard}
 \usage{
 scorecard_ply(dt, card, only_total_score = TRUE)
 }
@@ -14,13 +14,12 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 \item{only_total_score}{Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.}
 }
 \value{
-credit score points
+Credit score
 }
 \description{
 \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
 }
 \examples{
-\dontrun{
 library(data.table)
 library(scorecard)
 
@@ -28,8 +27,9 @@ library(scorecard)
 # load germancredit data
 data("germancredit")
 
+# random subset 10 x variables
 # rename creditability as y
-dt <- setDT(germancredit)[, `:=`(
+dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
@@ -39,27 +39,34 @@ bins <- woebin(dt, "y")
 dt_woe <- woebin_ply(dt, bins)
 
 # glm ------
-m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-# summary(m1)
+m <- glm( y ~ ., family = "binomial", data = dt_woe)
+# summary(m)
 
+\dontrun{
 # Select a formula-based model by AIC
-m_step <- step(m1, direction="both")
-m2 <- eval(m_step$call)
-# summary(m2)
+m_step <- step(m, direction="both")
+m <- eval(m_step$call)
+# summary(m)
 
 # performance ------
 # predicted proability
-dt_woe$pred <- predict(m2, type='response', dt_woe)
+# dt_woe$pred <- predict(m, type='response', dt_woe)
 
 # performace
 # ks & roc plot
-perf_plot(dt_woe$y, dt_woe$pred)
+# perf_plot(dt_woe$y, dt_woe$pred)
+}
 
 # card
-card <- scorecard(bins, m2)
+card <- scorecard(bins, m)
 
 # score
-dt_woe$score <- scorecard_ply(dt, card)
+# only total score
+score1 <- scorecard_ply(dt, card)
+
+\dontrun{
+# credit score for both total and each variable
+score2 <- scorecard_ply(dt, card, only_total_score = F)
 }
 }
 \seealso{

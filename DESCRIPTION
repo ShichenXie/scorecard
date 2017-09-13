@@ -4,7 +4,7 @@ Title: Credit Risk Scorecard
 Version: 0.1.0
 Author: Shichen Xie
 Maintainer: Shichen Xie <xie@shichen.name>
-Description: Makes the development of credit risk scorecard easily and efficiently by providing functions such as information value (iv()), variable filter (var_filter()), optimal woe binning (woebin()) and scorecard scaling (scorecard()) etc.
+Description: Makes the development of credit risk scorecard easily and efficiently by providing functions such as information value (iv()), variable filter (var_filter()), optimal woe binning (woebin(), woebin_ply(), woebin_plot()), scorecard scaling (scorecard(), scorecard_ply()) and performace evaluation (perf_plot(), perf_psi()) etc. The references including: -1. Refaat, M. (2011). Credit Risk Scorecard: Development and Implementation Using SAS. Lulu. com. -2. Siddiqi, N. (2006). Credit risk scorecards. Developing and Implementing Intelligent Credit Scoring.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

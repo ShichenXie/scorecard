@@ -2,7 +2,7 @@
 % Please edit documentation in R/woebin.R
 \name{woebin_plot}
 \alias{woebin_plot}
-\title{binning visualization}
+\title{WOE Binning Visualization}
 \usage{
 woebin_plot(bins, x = NULL, title = "")
 }
@@ -14,7 +14,7 @@ woebin_plot(bins, x = NULL, title = "")
 \item{title}{String added to the front of plot title, default "".}
 }
 \value{
-A list of ggplot objects.
+List of binning plot
 }
 \description{
 \code{woebin_plot} create plots of count distribution and bad probability for each bin. The binning informations are generates by  \code{woebin}.
@@ -23,20 +23,27 @@ A list of ggplot objects.
 # Load German credit data
 data(germancredit)
 
-dt <- germancredit[, c("creditability", "credit.amount")]
+dt1 <- germancredit[, c("creditability", "credit.amount")]
 
 # binning
-bins1 <- woebin(dt, y="creditability")
+bins1 <- woebin(dt1, y="creditability")
 
 # binning plot
-woebin_plot(bins1)
+p1 <- woebin_plot(bins1)
 
 \dontrun{
 bins <- woebin(germancredit, y="creditability")
 plotlist <- woebin_plot(bins)
+
+# save binning plot
+for (i in 1:length(plist)) {
+  ggplot2::ggsave(
+     paste0("./", names(plist[i]), ".png"), plist[[i]],
+     width = 15, height = 9, units="cm" )
+  }
 }
 
 }
 \seealso{
-\code{\link{woebin}} \code{\link{woebin_ply}}
+\code{\link{woebin}}, \code{\link{woebin_ply}}
 }

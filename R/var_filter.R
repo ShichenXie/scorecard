@@ -1,6 +1,6 @@
-#' variable filter
+#' Variable Filter
 #'
-#' This function filter variables base on their minimum iv, maximum na percentage and maximum element percentage.
+#' This function filter variables base on the specified conditions, including minimum iv, maximum na percentage and maximum element percentage.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
@@ -10,13 +10,14 @@
 #' @param ele_perc_limit The maximum element (excluding NAs) percentage in each kept variable, default 0.95.
 #' @param var_rm Name vector of force removed variables, default NA.
 #' @param var_kp Name vector of force kept variables, default NA.
+#' @return A dataframe with y and selected x variables
 #'
 #' @examples
 #' # Load German credit data
 #' data(germancredit)
 #'
 #' # variable filter
-#' var_filter(germancredit, y = "creditability")
+#' dt_selected <- var_filter(germancredit, y = "creditability")
 #'
 #' @import data.table
 #' @export

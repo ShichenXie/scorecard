@@ -41,6 +41,7 @@ dt_train <- dt[rn]; dt_test <- dt[-rn];
 # woe binning ------
 bins <- woebin(dt_train, "y")
 
+# converting train and test into woe values
 train <- woebin_ply(dt_train, bins)
 test <- woebin_ply(dt_test, bins)
 
@@ -55,21 +56,26 @@ m2 <- eval(m_step$call)
 
 # performance ------
 # predicted proability
-train$pred <- predict(m2, type='response', train)
-test$pred <- predict(m2, type='response', test)
+train_pred <- predict(m2, type='response', train)
+test_pred <- predict(m2, type='response', test)
 
 # ks & roc plot
-perf_plot(train$y, train$pred, title = "train")
-perf_plot(train$y, train$pred, title = "test")
+perf_plot(train$y, train_pred, title = "train")
+perf_plot(train$y, train_pred, title = "test")
 
 # score
 card <- scorecard(bins, m2)
 
-# score
-train$score <- scorecard_ply(dt_train, card)
-test$score <- scorecard_ply(dt_test, card)
+# credit score, only_total_score = TRUE
+train_score <- scorecard_ply(dt_train, card)
+test_score <- scorecard_ply(dt_test, card)
 
 # psi
-perf_psi(train$y, train$score, test$y, test$score, x_limits = c(0, 700), x_tick_break = 100)
+psi <- perf_psi(
+  score = list(train = train_score, test = test_score),
+  label = list(train = train[,"y"], test = test[, "y"]),
+  x_limits = c(150, 750),
+  x_tick_break = 50
+  )
 
 ```

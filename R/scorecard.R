@@ -1,35 +1,43 @@
-# scorecard
-ab <- function(p0=600, odds0=1/60, pdo=50) {
+# coefficients in scorecard
+ab <- function(points0=600, odds0=1/60, pdo=50) {
   # ab(600, 1/30, 60)
 
   # sigmoid function
   # library(ggplot2)
   # ggplot(data.frame(x = c(-5, 5)), aes(x)) + stat_function(fun = function(x) 1/(1+exp(-x)))
 
-  # p(y=1) <- 1/(1+exp(-z)), # z = beta0+beta1*x1+...+betar*xr = beta*x
-  #==># z <- log(p/(1-p)), # odds = p/(1-p) # bad/good #==># p= odds/1+odds
-  #==># z <- log(odds)
-  #==># score = a - b*log(odds)
+  # logistic function
+  # p(y=1) <- 1/(1+exp(-z)),
+      # z = beta0+beta1*x1+...+betar*xr = beta*x
+  ##==> z <- log(p/(1-p)),
+      # odds = p/(1-p) # bad/good <==>
+      # p = odds/1+odds
+  ##==> z <- log(odds)
+  ##==> score = a - b*log(odds)
+
+  # two hypothesis
+  # points0 = a - b*log(odds0)
+  # points0 - PDO = a - b*log(2*odds0)
 
   b <- pdo/log(2)
-  a <- p0 + b*log(odds0/(1+odds0))
+  a <- points0 + b*log(odds0/(1+odds0))
 
   return(list(a=a, b=b))
 }
-#' create scorecard
+#' Creating a Scorecard
 #'
-#' \code{scorecard} creates scorecard based on the results from \code{woebin} and \code{glm}.
+#' \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.
 #'
 #' @param bins Binning information generated from \code{woebin} function.
 #' @param model A glm model object.
-#' @param p0 Target points, default 600.
-#' @param odds0 Target odds, default 1/60.
+#' @param points0 Target points, default 600.
+#' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @return scorecard
+#'
 #' @seealso \code{\link{scorecard_ply}}
 #'
 #' @examples
-#' \dontrun{
 #' library(data.table)
 #' library(scorecard)
 #'
@@ -37,8 +45,9 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' # load germancredit data
 #' data("germancredit")
 #'
+#' # random subset 10 x variables
 #' # rename creditability as y
-#' dt <- setDT(germancredit)[, `:=`(
+#' dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
@@ -48,35 +57,42 @@ ab <- function(p0=600, odds0=1/60, pdo=50) {
 #' dt_woe <- woebin_ply(dt, bins)
 #'
 #' # glm ------
-#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-#' # summary(m1)
+#' m <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' # summary(m)
 #'
+#' \dontrun{
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both")
-#' m2 <- eval(m_step$call)
-#' # summary(m2)
+#' m_step <- step(m, direction="both")
+#' m <- eval(m_step$call)
+#' # summary(m)
 #'
 #' # performance ------
 #' # predicted proability
-#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#' # dt_woe$pred <- predict(m, type='response', dt_woe)
 #'
 #' # performace
 #' # ks & roc plot
-#' perf_plot(dt_woe$y, dt_woe$pred)
+#' # perf_plot(dt_woe$y, dt_woe$pred)
+#' }
 #'
 #' # card
-#' card <- scorecard(bins, m2)
+#' card <- scorecard(bins, m)
 #'
 #' # score
-#' dt_woe$score <- scorecard_ply(dt, card)
+#' # only total score
+#' score1 <- scorecard_ply(dt, card)
+#'
+#' \dontrun{
+#' # credit score for both total and each variable
+#' score2 <- scorecard_ply(dt, card, only_total_score = F)
 #' }
 #' @import data.table
 #' @export
 #'
-scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
+scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
   variable = var_woe = Estimate = points = woe = NULL # no visible binding for global variable
 
-  aabb <- ab(p0, odds0, pdo)
+  aabb <- ab(points0, odds0, pdo)
   a <- aabb$a; b <- aabb$b;
   # odds <- pred/(1-pred); score <- a - b*log(odds)
 
@@ -106,17 +122,18 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
   return(scorecard)
 }
 
-#' calculates credit score
+#' Application of Scorecard
 #'
 #' \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
+#'
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.
-#' @return credit score points
+#' @return Credit score
+#'
 #' @seealso \code{\link{scorecard}}
 #'
 #' @examples
-#' \dontrun{
 #' library(data.table)
 #' library(scorecard)
 #'
@@ -124,8 +141,9 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' # load germancredit data
 #' data("germancredit")
 #'
+#' # random subset 10 x variables
 #' # rename creditability as y
-#' dt <- setDT(germancredit)[, `:=`(
+#' dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
@@ -135,33 +153,40 @@ scorecard <- function(bins, model, p0=600, odds0=1/60, pdo=50) {
 #' dt_woe <- woebin_ply(dt, bins)
 #'
 #' # glm ------
-#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
-#' # summary(m1)
+#' m <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' # summary(m)
 #'
+#' \dontrun{
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both")
-#' m2 <- eval(m_step$call)
-#' # summary(m2)
+#' m_step <- step(m, direction="both")
+#' m <- eval(m_step$call)
+#' # summary(m)
 #'
 #' # performance ------
 #' # predicted proability
-#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#' # dt_woe$pred <- predict(m, type='response', dt_woe)
 #'
 #' # performace
 #' # ks & roc plot
-#' perf_plot(dt_woe$y, dt_woe$pred)
+#' # perf_plot(dt_woe$y, dt_woe$pred)
+#' }
 #'
 #' # card
-#' card <- scorecard(bins, m2)
+#' card <- scorecard(bins, m)
 #'
 #' # score
-#' dt_woe$score <- scorecard_ply(dt, card)
+#' # only total score
+#' score1 <- scorecard_ply(dt, card)
+#'
+#' \dontrun{
+#' # credit score for both total and each variable
+#' score2 <- scorecard_ply(dt, card, only_total_score = F)
 #' }
 #' @import data.table
 #' @export
 #'
 scorecard_ply <- function(dt, card, only_total_score = TRUE) {
-  variable = bin = points = . = V1 = NULL # no visible binding for global variable
+  variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
 
   kdt <- copy(setDT(dt))
 
@@ -227,14 +252,16 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE) {
 
   # total score
   # dt_score[["score"]]
-  total_score <- card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)
+  dt_score <- kdt[, paste0(x, "_points"), with=FALSE]
+  dt_score[, score := card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)]
+
+  # total_score <- card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)
   # dt_score <- dt_woe[,c(paste0(coef[-1,variable], "_points"), y, "score"), with=FALSE]
 
   if (only_total_score) {
-    return(total_score)
+    return(dt_score[, .(score)])
   } else {
-    kdt[["score"]] <- total_score
-    return(kdt)
+    return(dt_score)
   }
 
 }

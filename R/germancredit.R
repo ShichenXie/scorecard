@@ -19,3 +19,5 @@
 #' # Display structure of the subset (data frame)
 #' str(df)
 NULL
+
+# source: source code of woebinning package

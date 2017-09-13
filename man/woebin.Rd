@@ -2,7 +2,7 @@
 % Please edit documentation in R/woebin.R
 \name{woebin}
 \alias{woebin}
-\title{woe binning}
+\title{WOE Binning}
 \usage{
 woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
   stop_limit = 0.1, positive = "bad|1", print_step = FALSE)
@@ -25,7 +25,7 @@ woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
 \item{print_step}{Logical. If it is TRUE, print the variable name  when generate binning.}
 }
 \value{
-List of binning information for each variable.
+Information of optimal or customized binning
 }
 \description{
 \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
@@ -47,8 +47,7 @@ dt2 <- germancredit[, c("creditability", "age.in.years",
       "credit.amount", "housing", "purpose")]
 
 # customizing stop_limit (infovalue grain ratio) for each x variable
-bins2 <- woebin(dt2, y = "creditability",
-        stop_limit = c(0.05, 0.1, 0.01, 0.1))
+bins_cus_sl <- woebin(dt2, y="creditability", stop_limit=c(0.05,0.1,0.01,0.1))
 
 
 # customizing the breakpoints of binning
@@ -59,10 +58,10 @@ breaks_list <- list(
   purpose = NULL
 )
 
-bins_c <- woebin(dt2, y="creditability", breaks_list=breaks_list)
+bins_cus_brk <- woebin(dt2, y="creditability", breaks_list=breaks_list)
 }
 
 }
 \seealso{
-\code{\link{woebin_ply}} \code{\link{woebin_plot}}
+\code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 }

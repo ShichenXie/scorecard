@@ -1,13 +1,15 @@
 #' Information Value
 #'
-#' This function calculates information value (IV) for all x variables.
+#' This function calculates information value (IV) for multiple x variables.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.
 #' @param positive Value of positive class, default "bad|1".
 #' @param order Logical. If it is TRUE, return descending sorted iv values.
-#' @return IV of all x variables.
+#'
+#' @return Information Value
+#' @details IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionGood_{i} - DistributionBad_{i})*\ln(\frac{DistributionGood_{i}}{DistributionBad_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionGood_{i}}{DistributionBad_{i}}).} The relationship between information value and predictive power is as follows: <0.02 (useless for prediction), 0.02 to 0.1 (Weak predictor), 0.1 to 0.3 (Medium predictor), 0.3 to 0.5 (Strong predictor) and >0.5 (Suspicious or too good to be true).
 #'
 #' @examples
 #' # Load German credit data

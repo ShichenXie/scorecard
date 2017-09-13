@@ -2,7 +2,7 @@
 % Please edit documentation in R/var_filter.R
 \name{var_filter}
 \alias{var_filter}
-\title{variable filter}
+\title{Variable Filter}
 \usage{
 var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
   ele_perc_limit = 0.95, var_rm = NA, var_kp = NA)
@@ -24,14 +24,17 @@ var_filter(dt, y, x = NA, iv_limit = 0.02, na_perc_limit = 0.95,
 
 \item{var_kp}{Name vector of force kept variables, default NA.}
 }
+\value{
+A dataframe with y and selected x variables
+}
 \description{
-This function filter variables base on their minimum iv, maximum na percentage and maximum element percentage.
+This function filter variables base on the specified conditions, including minimum iv, maximum na percentage and maximum element percentage.
 }
 \examples{
 # Load German credit data
 data(germancredit)
 
 # variable filter
-var_filter(germancredit, y = "creditability")
+dt_selected <- var_filter(germancredit, y = "creditability")
 
 }

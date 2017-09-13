@@ -1,14 +1,13 @@
-#' ks, roc, lift, pr
+#' KS, ROC, Lift, PR
 #'
 #' \code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 #'
 #' @name perf_plot
-#' @param label Label values, such as 0s and 1s.
+#' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability values.
 #' @param title Title of plot, default "train".
 #' @param groupnum The group numbers when calculating bad probability, default 20.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
-#' @param positive Value of positive class, default "bad|1".
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return ks, roc, lift, pr
@@ -59,7 +58,7 @@
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), positive="bad|1", show_plot=TRUE, seed=186) {
+perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
@@ -79,12 +78,12 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 
     dfkslift <-
       df1[order(-pred)
-        ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
-        ][,.(good = sum(label==0), bad = sum(label==1)), by=group
-        ][,`:=`(group= as.integer(row.names(.SD))/.N,
-                good = good/sum(good), bad  = bad/sum(bad),
-                cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
-        ][, ks := cumbad - cumgood]
+          ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
+            ][,.(good = sum(label==0), bad = sum(label==1)), by=group
+              ][,`:=`(group= as.integer(row.names(.SD))/.N,
+                      good = good/sum(good), bad  = bad/sum(bad),
+                      cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
+                ][, ks := cumbad - cumgood]
 
     dfkslift <- rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
 
@@ -136,10 +135,10 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   if ("roc" %in% type | "pr" %in% type) {
     dfrocpr <-
       df1[order(pred)
-      ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
-      ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
-      ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
-      ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
+          ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
+            ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
+              ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
+                ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
 
   }
 
@@ -207,22 +206,19 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   return(rt)
 }
 
-#' psi
+#' PSI
 #'
-#' \code{perf_psi} provides population stability index (PSI).
+#' \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 #'
-#' @param label_train label values of training dataset, such as 0s and 1s.
-#' @param score_train credit score of training dataset.
-#' @param label_test label values of testing dataset, such as 0s and 1s.
-#' @param score_test credit score of testing dataset.
-#' @param type Plot of stability type, such as "psi", "score_distr". Default c("psi", "score_distr"), which means to export both psi and score distibution plot.
+#' @param score List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframe.
+#' @param label List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default "".
-#' @param positive Value of positive class, default "bad|1".
-#' @param x_limits x-axis limits, default c(0, 800)
-#' @param x_tick_break xaxis ticker break, default 100
-#' @param only_total logical value, default FALSE, which means whether to show total score only.
-#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
-#' @return psi
+#' @param x_limits x-axis limits, default c(0, 800).
+#' @param x_tick_break x-axis ticker break, default 100.
+#' @param show_plot Logical value, default TRUE. It means whether to show plot.
+#' @param seed An integer. The specify seed is used for random sorting data, default 186.
+#'
+#' @return a dataframe of psi & plots of credit score distribution
 #' @seealso \code{\link{perf_plot}}
 #'
 #' @examples
@@ -252,6 +248,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # woe binning ------
 #' bins <- woebin(dt_train, "y")
 #'
+#' # converting train and test into woe values
 #' train <- woebin_ply(dt_train, bins)
 #' test <- woebin_ply(dt_test, bins)
 #'
@@ -266,203 +263,179 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #'
 #' # performance ------
 #' # predicted proability
-#' train$pred <- predict(m2, type='response', train)
-#' test$pred <- predict(m2, type='response', test)
+#' train_pred <- predict(m2, type='response', train)
+#' test_pred <- predict(m2, type='response', test)
 #'
 #' # ks & roc plot
-#' perf_plot(train$y, train$pred, title = "train")
-#' perf_plot(train$y, train$pred, title = "test")
+#' perf_plot(train$y, train_pred, title = "train")
+#' perf_plot(train$y, train_pred, title = "test")
 #'
 #' # score
 #' card <- scorecard(bins, m2)
 #'
-#' # score
-#' train$score <- scorecard_ply(dt_train, card)
-#' test$score <- scorecard_ply(dt_test, card)
+#' # credit score, only_total_score = TRUE
+#' train_score <- scorecard_ply(dt_train, card)
+#' test_score <- scorecard_ply(dt_test, card)
 #'
 #' # psi
-#' perf_psi(train$y, train$score, test$y, test$score,
-#'   x_limits = c(0, 700), x_tick_break = 100)
+#' psi <- perf_psi(
+#'   score = list(train = train_score, test = test_score),
+#'   label = list(train = train[,"y"], test = test[, "y"])
+#' )
+#' # psi$psi # psi dataframe
+#' # psi$p   # plot of score distribution
 #'
-#' perf_psi(train$y, train$score, test$y, test$score,
-#'   type = "psi", x_limits = c(0, 700), x_tick_break = 100)
+#' # specifying score range
+#' psi_s <- perf_psi(
+#'   score = list(train = train_score, test = test_score),
+#'   label = list(train = train[,"y"], test = test[, "y"]),
+#'   x_limits = c(150, 750),
+#'   x_tick_break = 50
+#'   )
 #'
-#' perf_psi(train$y, train$score, test$y, test$score,
-#'   type = "score_distr", x_limits = c(0, 700), x_tick_break = 100)
+#' # credit score, only_total_score = FALSE
+#' train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
+#' test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
+#'
+#' # psi
+#' psi2 <- perf_psi(
+#'   score = list(train = train_score2, test = test_score2),
+#'   label = list(train = train[,"y"], test = test[, "y"])
+#' )
+#' # psi2$psi # psi dataframe
+#' # psi2$p   # plot of score distribution
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi <- function(label_train, score_train, label_test, score_test, type=c("psi", "score_distr"), title="", positive="bad|1", x_limits=c(100,700), x_tick_break=50, only_total=FALSE, seed=186) {
+perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
-  . = id = label = score = bin = distr = count = train = test = A = E = AE = logAE = PSI = goodbad = count = bad = badprob = distr = midbin = bin1 = bin2 = badprob2 = NULL # no visible binding for global variable
+
+  . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL # no visible binding for global variable
+  rt = rt_psi = rt_p = list() # return list
+  rt$psi <- NULL
+  rt$p <- NULL
 
   # inputs checking
-  if (!is.vector(label_train) | !is.vector(score_train) | !is.vector(label_test) | !is.vector(score_test)) break
-  if (length(label_train) != length(score_train) | length(label_test) != length(score_test)) break
+  if (length(score) != 2) {
+    break
+  } else {
+    if (!is.data.frame(score[[1]]) | !is.data.frame(score[[2]])) break
+    if (!identical( names(score[[1]]), names(score[[2]]) )) break
 
-  # breakpoints
-  brkp <- unique(c(
-    floor(min(c(score_train, score_test))/x_tick_break)*x_tick_break,
-    seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
-    ceiling(max(c(score_train, score_test))/x_tick_break)*x_tick_break
-  ))
+    if (!is.null(label)) {
+      if (length(label) != 2) break
+      if (!is.data.frame(label[[1]]) | !is.data.frame(label[[2]])) break
+      if (!identical( names(label[[1]]), names(label[[2]]) )) break
 
-  # random sort datatable
-  set.seed(seed)
-  dat <- rbindlist(
-    list(
-      train=data.table(label=label_train, score=score_train),
-      test=data.table(label=label_test, score=score_test)
-    ), idcol = "id"
-  )[
-    sample(1:(length(label_train)+length(label_test)))
-  ][,.(id, label, score)
-  ][, `:=`(id=factor(id, levels=c("train", "test")),
-           goodbad=ifelse(label==1, "bad", "good"))
-  ][, bin:=cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
+      if (!identical(names(score), names(label))) break
+    }
+  }
 
+
+  # merge score label into one dataframe
+  score_names <- names(score[[1]])
+
+  if (!is.null(label)) {
+    score[[1]]$y <- label[[names(score)[1]]][,1]
+    score[[2]]$y <- label[[names(score)[2]]][,1]
+
+  } else {
+    score[[1]]$y <- NA
+    score[[2]]$y <- NA
+
+  }
+  dt_sl <- cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
 
   # PSI function
   psi <- function(dat) {
+    AE = NULL
+
     dcast(
-      dat[,.(count=.N), keyby=c("id", "bin")
-        ][,distr := count/sum(count), by="id"],
-      bin ~ id, value.var="count", fill = 0
+      dat[,.(count=.N), keyby=c("ae", "bin")
+          ][,distr := count/sum(count), by="ae"],
+      bin ~ ae, value.var="count", fill = 0
     )[
       # , (c("train", "test")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("train", "test")][
-        , `:=`(A=train/sum(train), E=test/sum(test))
+      , `:=`(A=train/sum(train), E=test/sum(test))
       ][, `:=`(AE = A-E, logAE = log(A/E))
-      ][, `:=`(PSI = AE*logAE)
-      ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
-
+        ][, `:=`(PSI = AE*logAE)
+          ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
   }
 
 
-  # return list
-  rt <- list()
+  for ( sn in score_names ) {
+    if (length(unique(dt_sl[[sn]])) > 10) {
+      # breakpoints
+      brkp <- unique(c(
+        floor(min(dt_sl[[sn]])/x_tick_break)*x_tick_break,
+        seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
+        ceiling(max(dt_sl[[sn]])/x_tick_break)*x_tick_break
+      ))
 
-  # plot PSI ------
-  if ("psi" %in% type) {
-    # print psi
-    rt$psi <-
-      paste0(
-        "PSI: Total=", round(psi(dat), 4),
-        "; Good=", round(psi(dat[label==0]), 4),
-        "; Bad=", round(psi(dat[label==1]), 4), ";"
-      )
-    # print(paste0(
-    #   "PSI: Total=", round(psi(dat), 4),
-    #   "; Good=", round(psi(dat[label==0]), 4),
-    #   "; Bad=", round(psi(dat[label==1]), 4), ";"
-    # ))
+      # random sort datatable
+      set.seed(seed)
+      dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
 
-    # plot PSI
-    if (only_total) {
-      p_psi <-
-        ggplot() +
-        geom_density(data = dat, aes(score, linetype=id), colour="grey50") +
-        annotate("text", x = x_limits[1], y=Inf, label=paste0("Total=", round(psi(dat), 4), ";" ), vjust=5, hjust=0, size=3)
-      # x = (x_limits[1]+x_limits[2])/2
+      dat$bin <- cut(dat[[sn]], brkp, right = FALSE, dig.lab = 10, ordered_result = F)
 
     } else {
-      p_psi <-
-        ggplot() +
-        geom_density(data=dat, aes(score, linetype=id, colour=goodbad)) +
-        annotate("text", x = x_limits[1], y=Inf, label=paste0("Total=", round(psi(dat), 4), "; Good=", round(psi(dat[label==0]), 4), "; Bad=", round(psi(dat[label==1]), 4), ";" ), vjust=5, hjust=0, size=3)
+      # random sort datatable
+      set.seed(seed)
+      dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
+      dat$bin <- dat[[sn]]
 
     }
 
-    p_psi <-
-      p_psi +
-      annotate("text", x = x_limits[1], y=Inf, label="PSI", vjust=1.5, hjust=0, size=6) +
-      # ggtitle(title, subtitle = paste0(
-      #   "Total=", round(psi(dat), 4),
-      #   "; Good=", round(psi(dat[label==0]), 4),
-      #   "; Bad=", round(psi(dat[label==1]), 4), ";"
-      # ) ) +
-      labs(x=NULL, y="Score distribution", linetype=NULL, colour=NULL) +
-      scale_x_continuous(expand = c(0, 0), breaks = seq(x_limits[1], x_limits[2], by=x_tick_break), limits = x_limits) +
-      scale_y_continuous(expand = c(0, 0)) +
-      theme_bw() +
-      theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
-
-    if (title != "" & !is.na(title)) p_psi <- p_psi + ggtitle(title)
-  }
+    # psi ------
+    # rt[[paste0(sn, "_psi")]] <- round(psi(dat), 4)
+    rt_psi[[sn]] <- data.frame(PSI = round(psi(dat), 4))
 
 
-  # plot score distribution and bad probability ------
-  if ("score_distr" %in% type) {
-    # score distribution and bad probability
-    if (only_total) {
+
+    # plot ------
+    # distribution of scorecard probability
+    if (show_plot) {
+      # score distribution and bad probability
       distr_prob <- dat[
         order(bin)
-        ][,.(count=.N, bad=sum(label==1)), keyby=c("bin")
+        ][,.(count=.N, bad=sum(y==1)), keyby=c("ae", "bin")
           ][,`:=`(
             distr = count/sum(count),
             badprob=bad/count
-          )][,`:=`(badprob2=badprob*max(distr))]
-    } else {
-      distr_prob <- dat[
-        order(bin)
-        ][,.(count=.N, bad=sum(label==1)), keyby=c("id", "bin")
-          ][,`:=`(
-            distr = count/sum(count),
-            badprob=bad/count
-          ), by = "id"][,`:=`(badprob2=badprob*max(distr)), by = "id"]
-    }
-    distr_prob <-
-      distr_prob[, `:=`(
-        bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
-        bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
-      )][, midbin := (bin1+bin2)/2 ]
+          ), by = "ae"][,`:=`(badprob2=badprob*max(distr)), by = "ae"][, `:=`(
+            bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
+            bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
+          )][, midbin := (bin1+bin2)/2 ]
 
 
-    # plot
-    if (only_total) {
+      # plot
       p_score_distr <-
         ggplot(distr_prob) +
-        geom_bar(aes(x=bin, y=distr), stat="identity", fill="lightblue") +
-        geom_line(aes(x=bin, y=badprob2, group=1), colour = "blue") +
-        geom_point(aes(x=bin, y=badprob2), colour = "blue", shape=21, fill="white")
-
-    } else {
-      p_score_distr <-
-        ggplot(distr_prob[, id:=factor(id, levels=c( "train", "test"))]) +
-        geom_bar(aes(x=bin, y=distr, fill=id), alpha=0.6, stat="identity", position="dodge") +
-        geom_line(aes(x=bin, y=badprob2, group=id, colour=id, linetype=id)) +
-        geom_point(aes(x=bin, y=badprob2, colour=id), shape=21, fill="white") +
-        guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability"))
-    }
-    p_score_distr <-
-      p_score_distr +
-      scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
-      labs(x=NULL, y="Score distribution") +
-      theme_bw() +
-      # theme(legend.position="bottom", legend.direction="horizontal") +
-      theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
+        geom_bar(aes(x=bin, y=distr, fill=ae), alpha=0.6, stat="identity", position="dodge") +
+        geom_line(aes(x=bin, y=badprob2, group=ae, colour=ae, linetype=ae)) +
+        geom_point(aes(x=bin, y=badprob2, colour=ae), shape=21, fill="white") +
+        guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
+        scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
+        labs(x=NULL, y="Score distribution") +
+        theme_bw() +
+        # theme(legend.position="bottom", legend.direction="horizontal") +
+        theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
 
 
-    if (title != "" & !is.na(title)) p_score_distr <- p_score_distr + ggtitle(title)
-  }
+      if (title != "" & !is.na(title)) {
+        p_score_distr <- p_score_distr + ggtitle(paste0(title, " PSI: ", round(psi(dat), 4)))
+      } else {
+        p_score_distr <- p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))
+      }
 
-  plist <- paste0("p_", type)
+      # rt[[paste0(sn, "_p")]] <- p_score_distr
+      rt_p[[sn]] <- p_score_distr
 
-  # Arrange multiple plots
-  if (length(type)==1) {
-    if (type == "score_distr") {
-      rt$p <- p_score_distr
-      # return(p_score_distr)
-    } else if (type == "psi") {
-      rt$p <- p_psi
-      # return(p_psi)
-    } else {
-      break
-    }
-  } else {
-    rt$p <- grid.arrange(p_psi, p_score_distr, nrow=1, padding=0)
-    # return(grid.arrange(p_psi, p_score_distr, nrow=1, padding=0))
-  }
+    } # end of show plot
+  } # end of for loop
+  rt$psi <- rbindlist(rt_psi, idcol = "variable")
+  rt$p <- rt_p
 
   return(rt)
 }
