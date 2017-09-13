@@ -71,7 +71,7 @@ train_score <- scorecard_ply(dt_train, card)
 test_score <- scorecard_ply(dt_test, card)
 
 # psi
-psi <- perf_psi(
+perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"]),
   x_limits = c(150, 750),
