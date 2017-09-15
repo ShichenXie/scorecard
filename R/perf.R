@@ -349,16 +349,23 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
 
   # PSI function
   psi <- function(dat) {
+    # dat <- copy(dat)[,y:=NULL][complete.cases(dat),]
     AE = NULL
 
-    dcast(
+    # dataframe of bin, actual, expected
+    dt_bae <- dcast(
       dat[,.(count=.N), keyby=c("ae", "bin")
-          ][,distr := count/sum(count), by="ae"],
-      bin ~ ae, value.var="count", fill = 0
-    )[
-      # , (c("train", "test")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("train", "test")][
-      , `:=`(A=train/sum(train), E=test/sum(test))
-      ][, `:=`(AE = A-E, logAE = log(A/E))
+          ][,distr := count/sum(count), by="ae"][],
+      bin ~ ae, value.var="distr", fill = 0
+    )
+
+    names_ae <- setdiff(names(dt_bae), "bin")
+    dt_bae <- dt_bae[, `:=`(
+      A = dt_bae[[names_ae[1]]],
+      E = dt_bae[[names_ae[2]]]
+    )]
+
+    dt_bae[, `:=`(AE = A-E, logAE = log(A/E))
         ][, `:=`(PSI = AE*logAE)
           ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
   }
