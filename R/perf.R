@@ -1,6 +1,6 @@
 #' KS, ROC, Lift, PR
 #'
-#' \code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
+#' \code{perf_plot} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 #'
 #' @name perf_plot
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
@@ -45,7 +45,7 @@
 #' # predicted proability
 #' dt_woe$pred <- predict(m2, type='response', dt_woe)
 #'
-#' # performace
+#' # performance
 #' # only ks & auc values
 #' perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 #'
