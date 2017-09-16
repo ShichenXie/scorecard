@@ -26,7 +26,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 ks, roc, lift, pr
 }
 \description{
-\code{perf_plot} provides performace evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
+\code{perf_plot} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 }
 \examples{
 \dontrun{
@@ -60,7 +60,7 @@ m2 <- eval(m_step$call)
 # predicted proability
 dt_woe$pred <- predict(m2, type='response', dt_woe)
 
-# performace
+# performance
 # only ks & auc values
 perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 
