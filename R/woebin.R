@@ -237,7 +237,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
 #' @param positive Value of positive class, default "bad|1".
 #' @param print_step Logical. If it is TRUE, print the variable name  when generate binning.
-#' @return Information of optimal or customized binning
+#' @return Optimal or customized binning information
 #'
 #' @seealso \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'

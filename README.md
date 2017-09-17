@@ -4,8 +4,12 @@ This R package makes the development of credit risk scorecard easily and efficie
 
 ## Installation
 
-You can install scorecard from github with:
+1. Install the release version of `scorecard` from CRAN with:
+``` r
+install.package("scorecard")
+```
 
+2. Install the latest version of `scorecard` from github with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("shichenxie/scorecard")

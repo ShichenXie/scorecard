@@ -25,7 +25,7 @@ woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
 \item{print_step}{Logical. If it is TRUE, print the variable name  when generate binning.}
 }
 \value{
-Information of optimal or customized binning
+Optimal or customized binning information
 }
 \description{
 \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
