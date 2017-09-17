@@ -6,7 +6,7 @@ This R package makes the development of credit risk scorecard easily and efficie
 
 1. Install the release version of `scorecard` from CRAN with:
 ``` r
-install.package("scorecard")
+install.packages("scorecard")
 ```
 
 2. Install the latest version of `scorecard` from github with:
