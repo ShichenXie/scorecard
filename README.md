@@ -9,12 +9,12 @@ This R package makes the development of credit risk scorecard easily and efficie
 
 ## Installation
 
--1. Install the release version of `scorecard` from [CRAN](https://cran.r-project.org/package=scorecard) with:
+1. Install the release version of `scorecard` from [CRAN](https://cran.r-project.org/package=scorecard) with:
 ``` r
 install.packages("scorecard")
 ```
 
--2. Install the latest version of `scorecard` from [github](https://github.com/ShichenXie/scorecard) with:
+2. Install the latest version of `scorecard` from [github](https://github.com/ShichenXie/scorecard) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("shichenxie/scorecard")
