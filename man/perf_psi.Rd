@@ -28,6 +28,9 @@ a dataframe of psi & plots of credit score distribution
 \description{
 \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 }
+\details{
+The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
+}
 \examples{
 \dontrun{
 library(data.table)

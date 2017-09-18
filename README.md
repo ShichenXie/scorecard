@@ -1,15 +1,20 @@
 # scorecard
 
-This R package makes the development of credit risk scorecard easily and efficiently by providing functions such as information value (iv), variable filter (var_filter), optimal woe binning (woebin, woebin_ply, woebin_plot), scorecard scaling (scorecard, scorecard_ply) and performace evaluation (perf_plot, perf_psi).
+This R package makes the development of credit risk scorecard easily and efficiently by providing functions as follows: 
+- information value (iv), 
+- variable filter (var_filter), 
+- optimal woe binning (woebin, woebin_ply, woebin_plot), 
+- scorecard scaling (scorecard, scorecard_ply) 
+- and performace evaluation (perf_plot, perf_psi).
 
 ## Installation
 
-1. Install the release version of `scorecard` from CRAN with:
+1. Install the release version of `scorecard` from [CRAN](https://cran.r-project.org/package=scorecard) with:
 ``` r
 install.packages("scorecard")
 ```
 
-2. Install the latest version of `scorecard` from github with:
+2. Install the latest version of `scorecard` from [github](https://github.com/ShichenXie/scorecard) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("shichenxie/scorecard")

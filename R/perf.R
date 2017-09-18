@@ -219,6 +219,8 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @param seed An integer. The specify seed is used for random sorting data, default 186.
 #'
 #' @return a dataframe of psi & plots of credit score distribution
+#' @details The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
+#'
 #' @seealso \code{\link{perf_plot}}
 #'
 #' @examples
