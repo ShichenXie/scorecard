@@ -78,12 +78,12 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 
     dfkslift <-
       df1[order(-pred)
-          ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
-            ][,.(good = sum(label==0), bad = sum(label==1)), by=group
-              ][,`:=`(group= as.integer(row.names(.SD))/.N,
-                      good = good/sum(good), bad  = bad/sum(bad),
-                      cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
-                ][, ks := cumbad - cumgood]
+        ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
+        ][,.(good = sum(label==0), bad = sum(label==1)), by=group
+        ][,`:=`(group= as.integer(row.names(.SD))/.N,
+                good = good/sum(good), bad  = bad/sum(bad),
+                cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
+        ][, ks := cumbad - cumgood]
 
     dfkslift <- rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
 

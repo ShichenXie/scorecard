@@ -41,7 +41,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 
       bin <- merge(
         data.table(bin = breaks, value = breaks )[
-          , strsplit(as.character(value), "%,%", fixed=TRUE), by = .(bin) ][, `:=`(value = V1, V1=NULL)],
+          , strsplit(as.character(value), "%,%", fixed=TRUE), by = bin ][, `:=`(value = V1, V1=NULL)],
         dtm, all.y = TRUE
       )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
       ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
