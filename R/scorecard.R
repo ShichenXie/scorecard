@@ -76,11 +76,11 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #' # Example I # creat a scorecard
 #' card <- scorecard(bins, m)
 #'
+#' \dontrun{
 #' # credit score
 #' # Example I # only total score
 #' score1 <- scorecard_ply(dt, card)
 #'
-#' \dontrun{
 #' # Example II # credit score for both total and each variable
 #' score2 <- scorecard_ply(dt, card, only_total_score = F)
 #' }
