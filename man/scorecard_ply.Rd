@@ -23,13 +23,11 @@ Credit score
 library(data.table)
 library(scorecard)
 
-# Traditional Credit Scoring Using Logistic Regression
 # load germancredit data
 data("germancredit")
 
-# random subset 10 x variables
-# rename creditability as y
-dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
+# select only 5 x variables and rename creditability as y
+dt <- setDT(germancredit)[, c(1:5, 21)][, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
@@ -48,7 +46,6 @@ m_step <- step(m, direction="both")
 m <- eval(m_step$call)
 # summary(m)
 
-# performance ------
 # predicted proability
 # dt_woe$pred <- predict(m, type='response', dt_woe)
 
@@ -57,15 +54,16 @@ m <- eval(m_step$call)
 # perf_plot(dt_woe$y, dt_woe$pred)
 }
 
-# card
+# scorecard
+# Example I # creat a scorecard
 card <- scorecard(bins, m)
 
-# score
-# only total score
+# credit score
+# Example I # only total score
 score1 <- scorecard_ply(dt, card)
 
 \dontrun{
-# credit score for both total and each variable
+# Example II # credit score for both total and each variable
 score2 <- scorecard_ply(dt, card, only_total_score = F)
 }
 }

@@ -25,10 +25,10 @@ devtools::install_github("shichenxie/scorecard")
 This is a basic example which shows you how to develop a common credit risk scorecard:
 
 ``` r
+# Traditional Credit Scoring Using Logistic Regression
 library(data.table)
 library(scorecard)
 
-# Traditional Credit Scoring Using Logistic Regression
 # load germancredit data
 data("germancredit")
 
@@ -49,6 +49,7 @@ dt_train <- dt[rn]; dt_test <- dt[-rn];
 
 # woe binning ------
 bins <- woebin(dt_train, "y")
+# woebin_plot(bins)
 
 # converting train and test into woe values
 train <- woebin_ply(dt_train, bins)

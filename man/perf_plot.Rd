@@ -56,18 +56,17 @@ m_step <- step(m1, direction="both")
 m2 <- eval(m_step$call)
 # summary(m2)
 
-# performance ------
 # predicted proability
 dt_woe$pred <- predict(m2, type='response', dt_woe)
 
-# performance
-# only ks & auc values
+# performance ------
+# Example I # only ks & auc values
 perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 
-# ks & roc plot
+# Example II # ks & roc plot
 perf_plot(dt_woe$y, dt_woe$pred)
 
-# ks, lift, roc & pr plot
+# Example III # ks, lift, roc & pr plot
 perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
 }
 }

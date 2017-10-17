@@ -41,13 +41,11 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #' library(data.table)
 #' library(scorecard)
 #'
-#' # Traditional Credit Scoring Using Logistic Regression
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # random subset 10 x variables
-#' # rename creditability as y
-#' dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
+#' # select only 5 x variables and rename creditability as y
+#' dt <- setDT(germancredit)[, c(1:5, 21)][, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
@@ -66,7 +64,6 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #' m <- eval(m_step$call)
 #' # summary(m)
 #'
-#' # performance ------
 #' # predicted proability
 #' # dt_woe$pred <- predict(m, type='response', dt_woe)
 #'
@@ -75,15 +72,16 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #' # perf_plot(dt_woe$y, dt_woe$pred)
 #' }
 #'
-#' # card
+#' # scorecard
+#' # Example I # creat a scorecard
 #' card <- scorecard(bins, m)
 #'
-#' # score
-#' # only total score
+#' # credit score
+#' # Example I # only total score
 #' score1 <- scorecard_ply(dt, card)
 #'
 #' \dontrun{
-#' # credit score for both total and each variable
+#' # Example II # credit score for both total and each variable
 #' score2 <- scorecard_ply(dt, card, only_total_score = F)
 #' }
 #' @import data.table
@@ -113,10 +111,16 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 
   # scorecard
   scorecard <- list()
-  scorecard[["basepoints"]] <- data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
+  scorecard[["basepoints"]] <- setDF(
+    data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
+  )
+
 
   for (i in coef[-1,variable]) {
-    scorecard[[i]] <- bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)] # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[variable==i, Estimate]*woe) )]
+    scorecard[[i]] <- setDF(
+      bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
+    )
+    # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[variable==i, Estimate]*woe) )]
   }
 
   return(scorecard)
@@ -137,13 +141,11 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' library(data.table)
 #' library(scorecard)
 #'
-#' # Traditional Credit Scoring Using Logistic Regression
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # random subset 10 x variables
-#' # rename creditability as y
-#' dt <- setDT(germancredit)[, c(sample(20, 10), 21)][, `:=`(
+#' # select only 5 x variables and rename creditability as y
+#' dt <- setDT(germancredit)[, c(1:5, 21)][, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
@@ -162,7 +164,6 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' m <- eval(m_step$call)
 #' # summary(m)
 #'
-#' # performance ------
 #' # predicted proability
 #' # dt_woe$pred <- predict(m, type='response', dt_woe)
 #'
@@ -171,15 +172,16 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' # perf_plot(dt_woe$y, dt_woe$pred)
 #' }
 #'
-#' # card
+#' # scorecard
+#' # Example I # creat a scorecard
 #' card <- scorecard(bins, m)
 #'
-#' # score
-#' # only total score
+#' # credit score
+#' # Example I # only total score
 #' score1 <- scorecard_ply(dt, card)
 #'
 #' \dontrun{
-#' # credit score for both total and each variable
+#' # Example II # credit score for both total and each variable
 #' score2 <- scorecard_ply(dt, card, only_total_score = F)
 #' }
 #' @import data.table
@@ -188,6 +190,10 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 scorecard_ply <- function(dt, card, only_total_score = TRUE) {
   variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
 
+  # conditions # https://adv-r.hadley.nz/debugging
+  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
+
+  # set dt as data.table
   kdt <- copy(setDT(dt))
 
   # card # if (is.list(card)) rbindlist(card)
@@ -259,9 +265,9 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE) {
   # dt_score <- dt_woe[,c(paste0(coef[-1,variable], "_points"), y, "score"), with=FALSE]
 
   if (only_total_score) {
-    return(dt_score[, .(score)])
+    return( dt_score[, .(score)] )
   } else {
-    return(dt_score)
+    return( dt_score )
   }
 
 }

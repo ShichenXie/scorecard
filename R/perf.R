@@ -41,18 +41,17 @@
 #' m2 <- eval(m_step$call)
 #' # summary(m2)
 #'
-#' # performance ------
 #' # predicted proability
 #' dt_woe$pred <- predict(m2, type='response', dt_woe)
 #'
-#' # performance
-#' # only ks & auc values
+#' # performance ------
+#' # Example I # only ks & auc values
 #' perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 #'
-#' # ks & roc plot
+#' # Example II # ks & roc plot
 #' perf_plot(dt_woe$y, dt_woe$pred)
 #'
-#' # ks, lift, roc & pr plot
+#' # Example III # ks, lift, roc & pr plot
 #' perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
 #' }
 #' @import data.table ggplot2 gridExtra
@@ -62,8 +61,8 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
-  if (!is.vector(label) | !is.vector(pred)) break
-  if (length(label) != length(pred)) break
+  if (!is.vector(label) || !is.vector(pred)) stop("Incorrect inputs; both label and pred should be vectors")
+  if (length(label) != length(pred)) stop("Incorrect inputs; length of label and pred should be the same")
 
   # random sort datatable
   set.seed(seed)
@@ -210,8 +209,8 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #'
 #' \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 #'
-#' @param score List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframe.
-#' @param label List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
+#' @param score List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
+#' @param label List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default "".
 #' @param x_limits x-axis limits, default c(0, 800).
 #' @param x_tick_break x-axis ticker break, default 100.
@@ -228,7 +227,6 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' library(data.table)
 #' library(scorecard)
 #'
-#' # Traditional Credit Scoring Using Logistic Regression
 #' # load germancredit data
 #' data("germancredit")
 #'
@@ -263,23 +261,22 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' m2 <- eval(m_step$call)
 #' # summary(m2)
 #'
-#' # performance ------
 #' # predicted proability
 #' train_pred <- predict(m2, type='response', train)
 #' test_pred <- predict(m2, type='response', test)
 #'
-#' # ks & roc plot
-#' perf_plot(train$y, train_pred, title = "train")
-#' perf_plot(train$y, train_pred, title = "test")
+#' # # ks & roc plot
+#' # perf_plot(train$y, train_pred, title = "train")
+#' # perf_plot(train$y, train_pred, title = "test")
 #'
-#' # score
+#' #' # scorecard
 #' card <- scorecard(bins, m2)
 #'
 #' # credit score, only_total_score = TRUE
 #' train_score <- scorecard_ply(dt_train, card)
 #' test_score <- scorecard_ply(dt_test, card)
 #'
-#' # psi
+#' # Example I # psi
 #' psi <- perf_psi(
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"])
@@ -287,7 +284,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # psi$psi # psi dataframe
 #' # psi$p   # plot of score distribution
 #'
-#' # specifying score range
+#' # Example II # specifying score range
 #' psi_s <- perf_psi(
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"]),
@@ -295,7 +292,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #'   x_tick_break = 50
 #'   )
 #'
-#' # credit score, only_total_score = FALSE
+#' # Example III # credit score, only_total_score = FALSE
 #' train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
 #' test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
 #'
@@ -318,19 +315,29 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
   rt$psi <- NULL
   rt$p <- NULL
 
+
   # inputs checking
-  if (length(score) != 2) {
-    break
+  # score
+  if (!is.list(score)) {
+    stop("Incorrect inputs; score should be a list.")
+  } else if (length(score) != 2) {
+    stop("Incorrect inputs; the length of score should be 2.")
   } else {
-    if (!is.data.frame(score[[1]]) | !is.data.frame(score[[2]])) break
-    if (!identical( names(score[[1]]), names(score[[2]]) )) break
+    if (!is.data.frame(score[[1]]) | !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframe.")
 
-    if (!is.null(label)) {
-      if (length(label) != 2) break
-      if (!is.data.frame(label[[1]]) | !is.data.frame(label[[2]])) break
-      if (!identical( names(label[[1]]), names(label[[2]]) )) break
+    if (!identical( names(score[[1]]), names(score[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in score should be the same.")
+  }
 
-      if (!identical(names(score), names(label))) break
+  # label
+  if ( !is.null(label) ) {
+    if (!is.list(label)) {
+      stop("Incorrect inputs; label should be a list.")
+    } else if (length(label) != 2) {
+      stop("Incorrect inputs; the length of label should be 2.")
+    } else {
+      if (!is.data.frame(label[[1]]) | !is.data.frame(label[[2]])) stop("Incorrect inputs; label is a list of two dataframe.")
+
+      if (!identical( names(label[[1]]), names(label[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in label should be the same.")
     }
   }
 

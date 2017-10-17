@@ -42,7 +42,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 
       bin <- merge(
         data.table(bin = breaks, value = breaks )[
-          , strsplit(as.character(value), "%,%", fixed=TRUE), by = bin ][, `:=`(value = V1, V1=NULL)],
+          , strsplit(as.character(value), "%,%", fixed=TRUE), by = bin ][, .(bin, value = V1)],
         dtm, all.y = TRUE
       )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
       ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
@@ -232,8 +232,8 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.
-#' @param breaks_list List of break points, defaults NA. If it is not NA,  variable binning will based on the provided breaks.
+#' @param x Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.
+#' @param breaks_list List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.
 #' @param min_perc_total The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
 #' @param positive Value of positive class, default "bad|1".
@@ -246,22 +246,22 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' # load germancredit data
 #' data(germancredit)
 #'
-#' dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
-#'
-#' bins <- woebin(dt, y = "creditability")
+#' # Example I
+#' # binning for two variables in germancredit dataset
+#' bins_2var <- woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
 #'
 #' \dontrun{
+#' # Example II
 #' # binning for germancredit dataset
 #' bins_germ <- woebin(germancredit, y = "creditability")
 #'
-#' # subset dataset
-#' dt2 <- germancredit[, c("creditability", "age.in.years",
-#'       "credit.amount", "housing", "purpose")]
+#' # Example III
+#' # customizing stop_limit (info-value grain ratio) for each variable
+#' bins_cus_sl <- woebin(germancredit, y="creditability",
+#'   x=c("age.in.years", "credit.amount", "housing", "purpose"),
+#'   stop_limit=c(0.05,0.1,0.01,0.1))
 #'
-#' # customizing stop_limit (infovalue grain ratio) for each x variable
-#' bins_cus_sl <- woebin(dt2, y="creditability", stop_limit=c(0.05,0.1,0.01,0.1))
-#'
-#'
+#' # Example IV
 #' # customizing the breakpoints of binning
 #' breaks_list <- list(
 #'   age.in.years = c(25, 35, 40, 60),
@@ -270,30 +270,38 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #'   purpose = NULL
 #' )
 #'
-#' bins_cus_brk <- woebin(dt2, y="creditability", breaks_list=breaks_list)
+#' bins_cus_brk <- woebin(germancredit, y="creditability",
+#'   x=c("age.in.years", "credit.amount", "housing", "purpose"),
+#'   breaks_list=breaks_list)
 #' }
 #'
 #' @import data.table
 #' @importFrom stats IQR quantile
 #' @export
 #'
-woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step = FALSE) {
-  bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
-
+woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step=FALSE) {
   # method="tree",
 
-  # transfer dt to data.table
-  dt <- setDT(dt)
+  bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
 
+  # conditions # https://adv-r.hadley.nz/debugging
+  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
+  if (ncol(dt) <=1) stop("Incorrect inputs; dt should have at least two columns.")
+  if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
+
+  # set dt as data.table
+  dt <- setDT(dt)
   # x variable names vector
-  if (anyNA(x)) x <- setdiff(names(dt), y)
+  if (is.null(x)) x <- setdiff(names(dt), y)
 
   # breaks_list
-  if (!anyNA(breaks_list)) {
+  if (!is.null(breaks_list)) {
     if (!is.list(breaks_list)) {
-      break
+      stop("Incorrect inputs; breaks_list should be a list.")
     } else if (length(breaks_list) != length(x)) {
-      break
+      stop("Incorrect inputs; the length of breaks_list and x variables should be the same.")
+    } else if (anyNA(breaks_list)) {
+      stop("Incorrect inputs; NA in breaks_list should replace by NULL.")
     }
   }
 
@@ -301,7 +309,7 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
   if (length(stop_limit) == 1) {
     stop_limit = rep(stop_limit, length(x))
   } else if (length(stop_limit) != length(x)) {
-    break
+    stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
   }
   # stop_limit range
   if ( stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit) ) {
@@ -328,7 +336,7 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
     if (length(unique(dt[[x_i]])) > 1) {
       if (print_step) print(x_i)
     } else {
-      print(paste0(x_i, "------next"))
+      if (print_step) print(paste0(x_i, "------next"))
       next
     }
 
@@ -351,7 +359,9 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
   # reorder bins by iv
   bins_list <- list()
   for (v in total_iv_list$variable) {
-    bins_list[[v]] <- bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
+    bins_list[[v]] <- setDF(
+      bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
+    )
   }
 
   # return(list(bins = bins_list, iv=total_iv_list))
@@ -373,20 +383,27 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
 #' # load germancredit data
 #' data(germancredit)
 #'
+#' # Example I
 #' dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
 #'
-#' # binning
+#' # binning for dt
 #' bins <- woebin(dt, y = "creditability")
 #'
 #' # converting original value to woe
 #' dt_woe <- woebin_ply(dt, bins=bins)
 #'
 #' \dontrun{
+#' # Example II
 #' # binning for germancredit dataset
-#' bins_all <- woebin(germancredit, y="creditability")
+#' bins_germancredit <- woebin(germancredit, y="creditability")
 #'
 #' # converting the values of germancredit into woe
-#' germancredit_woe <- woebin_ply(germancredit, bins_all)
+#' # bins is a list which generated from woebin()
+#' germancredit_woe <- woebin_ply(germancredit, bins_germancredit)
+#'
+#' # bins is a dataframe
+#' bins_df <- data.table::rbindlist(bins_germancredit)
+#' germancredit_woe <- woebin_ply(germancredit, bins_df)
 #' }
 #'
 #' @import data.table
@@ -395,6 +412,10 @@ woebin <- function(dt, y, x=NA, breaks_list=NA, min_perc_total=0.02, stop_limit=
 woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
   . = variable = bin = woe = V1 = NULL  # no visible binding for global variable
 
+  # conditions # https://adv-r.hadley.nz/debugging
+  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
+
+  # set dt as data.table
   kdt <- copy(setDT(dt))
 
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -422,6 +443,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
     binsx <- bins[variable==a] #bins[[a]]
     na_woe <- binsx[bin == "missing", woe]
 
+    # factor or character variable
     if (is.factor(kdt[[a]]) | is.character(kdt[[a]])) {
       # # separate_rows
       # # https://stackoverflow.com/questions/13773770/split-comma-separated-column-into-separate-rows
@@ -434,6 +456,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
       )[kdt, on=a
       ][, (a) := NULL] #[!is.na(bin)]
 
+    # logical or numeric variables
     } else if (is.logical(kdt[[a]]) | is.numeric(kdt[[a]])) {
       if (is.logical(kdt[[a]])) kdt[[a]] <- as.numeric(kdt[[a]]) # convert logical variable to numeric
 
@@ -446,6 +469,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
       ][, (a) := NULL]
 
     }
+
     kdt[[paste0(a, "_woe")]] <- ifelse(is.na(kdt[[paste0(a, "_woe")]]), na_woe,  kdt[[paste0(a, "_woe")]])
 
   }
@@ -459,7 +483,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
 #'
 #' @name woebin_plot
 #' @param bins Binning information generated by \code{woebin}.
-#' @param x Name vector of x variables. Default NA.
+#' @param x Name of x variables. Default NULL
 #' @param title String added to the front of plot title, default "".
 #' @return List of binning plot
 #'
@@ -469,24 +493,23 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
 #' # Load German credit data
 #' data(germancredit)
 #'
+#' # Example I
 #' dt1 <- germancredit[, c("creditability", "credit.amount")]
 #'
-#' # binning
 #' bins1 <- woebin(dt1, y="creditability")
-#'
-#' # binning plot
 #' p1 <- woebin_plot(bins1)
 #'
 #' \dontrun{
+#' # Example II
 #' bins <- woebin(germancredit, y="creditability")
 #' plotlist <- woebin_plot(bins)
 #'
-#' # save binning plot
-#' for (i in 1:length(plist)) {
-#'   ggplot2::ggsave(
-#'      paste0("./", names(plist[i]), ".png"), plist[[i]],
-#'      width = 15, height = 9, units="cm" )
-#'   }
+#' # # save binning plot
+#' # for (i in 1:length(plotlist)) {
+#' #   ggplot2::ggsave(
+#' #      paste0("./woebinplot/", names(plotlist[i]), ".png"), plotlist[[i]],
+#' #      width = 15, height = 9, units="cm" )
+#' #   }
 #' }
 #'
 #' @import data.table ggplot2
@@ -499,7 +522,7 @@ woebin_plot <- function(bins, x=NULL, title="") {
     . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = NULL # no visible binding for global variable
 
     # data
-    dat <- bin[,.(
+    dat <- setDT(bin)[,.(
       variable, bin, count_num=count, count=count/sum(count), count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
     )][, `:=`(
       bin = ifelse(is.na(bin), "NA", bin),

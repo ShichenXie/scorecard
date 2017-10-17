@@ -4,7 +4,7 @@
 \alias{woebin}
 \title{WOE Binning}
 \usage{
-woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
+woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
   stop_limit = 0.1, positive = "bad|1", print_step = FALSE)
 }
 \arguments{
@@ -12,9 +12,9 @@ woebin(dt, y, x = NA, breaks_list = NA, min_perc_total = 0.02,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
+\item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
 
-\item{breaks_list}{List of break points, defaults NA. If it is not NA,  variable binning will based on the provided breaks.}
+\item{breaks_list}{List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.}
 
 \item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.}
 
@@ -34,22 +34,22 @@ Optimal or customized binning information
 # load germancredit data
 data(germancredit)
 
-dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
-
-bins <- woebin(dt, y = "creditability")
+# Example I
+# binning for two variables in germancredit dataset
+bins_2var <- woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
 
 \dontrun{
+# Example II
 # binning for germancredit dataset
 bins_germ <- woebin(germancredit, y = "creditability")
 
-# subset dataset
-dt2 <- germancredit[, c("creditability", "age.in.years",
-      "credit.amount", "housing", "purpose")]
+# Example III
+# customizing stop_limit (info-value grain ratio) for each variable
+bins_cus_sl <- woebin(germancredit, y="creditability",
+  x=c("age.in.years", "credit.amount", "housing", "purpose"),
+  stop_limit=c(0.05,0.1,0.01,0.1))
 
-# customizing stop_limit (infovalue grain ratio) for each x variable
-bins_cus_sl <- woebin(dt2, y="creditability", stop_limit=c(0.05,0.1,0.01,0.1))
-
-
+# Example IV
 # customizing the breakpoints of binning
 breaks_list <- list(
   age.in.years = c(25, 35, 40, 60),
@@ -58,7 +58,9 @@ breaks_list <- list(
   purpose = NULL
 )
 
-bins_cus_brk <- woebin(dt2, y="creditability", breaks_list=breaks_list)
+bins_cus_brk <- woebin(germancredit, y="creditability",
+  x=c("age.in.years", "credit.amount", "housing", "purpose"),
+  breaks_list=breaks_list)
 }
 
 }

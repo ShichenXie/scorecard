@@ -4,14 +4,14 @@
 \alias{iv}
 \title{Information Value}
 \usage{
-iv(dt, y, x = NA, positive = "bad|1", order = "TRUE")
+iv(dt, y, x = NULL, positive = "bad|1", order = "TRUE")
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name vector of x variables. Default NA. If x is NA, all variables exclude y will counted as x variables.}
+\item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 
@@ -31,6 +31,6 @@ IV is a very useful concept for variable selection while developing credit score
 data(germancredit)
 
 # information values
-iv(germancredit, y = "creditability")
+dt_infovalue <- iv(germancredit, y = "creditability")
 
 }

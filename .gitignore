@@ -7,3 +7,4 @@
 /data/dim_*.RData
 /data/*.csv
 
+inst/doc

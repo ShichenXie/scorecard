@@ -8,9 +8,9 @@ perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
   x_tick_break = 50, show_plot = TRUE, seed = 186)
 }
 \arguments{
-\item{score}{List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframe.}
+\item{score}{List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.}
 
-\item{label}{List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
+\item{label}{List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
 
 \item{title}{Title of plot, default "".}
 
@@ -36,7 +36,6 @@ The population stability index (PSI) formula is displayed below: \deqn{PSI = \su
 library(data.table)
 library(scorecard)
 
-# Traditional Credit Scoring Using Logistic Regression
 # load germancredit data
 data("germancredit")
 
@@ -71,23 +70,22 @@ m_step <- step(m1, direction="both")
 m2 <- eval(m_step$call)
 # summary(m2)
 
-# performance ------
 # predicted proability
 train_pred <- predict(m2, type='response', train)
 test_pred <- predict(m2, type='response', test)
 
-# ks & roc plot
-perf_plot(train$y, train_pred, title = "train")
-perf_plot(train$y, train_pred, title = "test")
+# # ks & roc plot
+# perf_plot(train$y, train_pred, title = "train")
+# perf_plot(train$y, train_pred, title = "test")
 
-# score
+#' # scorecard
 card <- scorecard(bins, m2)
 
 # credit score, only_total_score = TRUE
 train_score <- scorecard_ply(dt_train, card)
 test_score <- scorecard_ply(dt_test, card)
 
-# psi
+# Example I # psi
 psi <- perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"])
@@ -95,7 +93,7 @@ psi <- perf_psi(
 # psi$psi # psi dataframe
 # psi$p   # plot of score distribution
 
-# specifying score range
+# Example II # specifying score range
 psi_s <- perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"]),
@@ -103,7 +101,7 @@ psi_s <- perf_psi(
   x_tick_break = 50
   )
 
-# credit score, only_total_score = FALSE
+# Example III # credit score, only_total_score = FALSE
 train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
 test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
 
