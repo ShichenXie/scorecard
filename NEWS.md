@@ -1,4 +1,4 @@
-# scorecard 0.1.1.1
+# scorecard 0.1.2
 
 * fixed a bug in var_filter
 
