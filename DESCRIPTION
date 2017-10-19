@@ -9,9 +9,9 @@ Author: Shichen Xie
 Maintainer: Shichen Xie <xie@shichen.name>
 Depends: R (>= 3.1.0)
 Imports: data.table (>= 1.10.0), ggplot2, gridExtra
-License: MIT + file LICENSE
 URL: https://github.com/ShichenXie/scorecard
 BugReports: https://github.com/ShichenXie/scorecard/issues
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

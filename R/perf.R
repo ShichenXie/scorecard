@@ -99,6 +99,15 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
     rt$KS <- round(dfks$ks, 4)
     # print(paste0("KS: ", round(dfks$ks, 4) ))
 
+
+    # gini
+    gini <- dfkslift[, sum(
+      (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag"))
+    )]-1
+    rt$Gini <- round(gini, 4)
+
+
+
     if (show_plot == TRUE) {
       pks <- ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
         geom_line() + coord_fixed() +
@@ -143,7 +152,9 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 
   # plot, ROC ------
   if ("roc" %in% type) {
-    AUC <- dfrocpr[, sum(TP/(TP+FN)*(FP/(TN+FP)-shift(FP/(TN+FP), fill=0, type="lead")))]
+    AUC <- dfrocpr[order(FPR,TPR)][, sum(
+      (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
+    )]
     # return list
     rt$AUC <- round(AUC,4)
     # print(paste0("AUC: ", round(AUC,4)))
