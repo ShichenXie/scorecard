@@ -23,7 +23,7 @@
 #' @export
 #'
 var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL) {
-  InfoValue = variable = NULL # no visible binding for global variable
+  info_value = variable = NULL # no visible binding for global variable
 
   # conditions # https://adv-r.hadley.nz/debugging
   if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
@@ -46,7 +46,7 @@ var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, e
 
   # remove na_perc>95 | ele_perc>0.95 | iv<0.02
   var_kept <- list(
-    as.character( iv_list[InfoValue >= iv_limit, variable] ),
+    as.character( iv_list[info_value >= iv_limit, variable] ),
     names(na_perc[,na_perc <= na_perc_limit, with=FALSE]),
     names(ele_perc[,ele_perc <= ele_perc_limit, with=FALSE])
   )
