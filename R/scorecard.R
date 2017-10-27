@@ -2,9 +2,14 @@
 ab <- function(points0=600, odds0=1/60, pdo=50) {
   # ab(600, 1/30, 60)
 
-  # sigmoid function
+
   # library(ggplot2)
+  # sigmoid function
   # ggplot(data.frame(x = c(-5, 5)), aes(x)) + stat_function(fun = function(x) 1/(1+exp(-x)))
+
+  # log_odds function
+  # ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = function(x) log(x/(1-x)))
+
 
   # logistic function
   # p(y=1) <- 1/(1+exp(-z)),

@@ -5,7 +5,8 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, positive = "bad|1", print_step = FALSE)
+  stop_limit = 0.1, max_bin_num = 6, positive = "bad|1", order = FALSE,
+  print_step = FALSE)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -20,7 +21,11 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.}
 
+\item{max_bin_num}{Integer. The maximum binning number.}
+
 \item{positive}{Value of positive class, default "bad|1".}
+
+\item{order}{Logical. If it is TRUE, return binning information by descending sorted iv values.}
 
 \item{print_step}{Logical. If it is TRUE, print the variable name  when generate binning.}
 }

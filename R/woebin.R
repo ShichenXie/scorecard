@@ -1,6 +1,6 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step=FALSE) {
+woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", print_step=FALSE) {
 
   value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
 
@@ -182,7 +182,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
     # return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[1, total_iv]))
   }
   ###### all tree-like best breakpoints
-  all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, print_step=FALSE) {
+  all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, max_bin_num=6, print_step=FALSE) {
     total_iv = bstbrkp = NULL# no visible binding for global variable
 
     len_brkp <- length( setdiff(initial_brkpdt[, brkp], c(-Inf, Inf, NA)) )
@@ -208,7 +208,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
       IVt1 <- IVt2
 
       len_step = len_step + 1
-      if (len_step >= len_brkp) break
+      if (len_step >= len_brkp | len_step >= max_bin_num) break
     }
     }
 
@@ -222,7 +222,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
   # run functions ------
   initial_brkpdt <- breakpoints(dtm, min_perc_total)
   if (stop_limit == "N") return(initial_brkpdt)
-  all_bst_brkp(initial_brkpdt, stop_limit, print_step)
+  all_bst_brkp(initial_brkpdt, stop_limit, max_bin_num, print_step)
 }
 
 #' WOE Binning
@@ -236,7 +236,9 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' @param breaks_list List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.
 #' @param min_perc_total The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
+#' @param max_bin_num Integer. The maximum binning number.
 #' @param positive Value of positive class, default "bad|1".
+#' @param order Logical. If it is TRUE, return binning information by descending sorted iv values.
 #' @param print_step Logical. If it is TRUE, print the variable name  when generate binning.
 #' @return Optimal or customized binning information
 #'
@@ -279,7 +281,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, po
 #' @importFrom stats IQR quantile
 #' @export
 #'
-woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, positive="bad|1", print_step=FALSE) {
+woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", order=FALSE, print_step=FALSE) {
   # method="tree",
 
   bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
@@ -323,6 +325,10 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
     min_perc_total = 0.02
   }
 
+  # max_bin_num
+  if (!is.numeric(max_bin_num)) {
+    stop("Incorrect inputs; max_bin_num should be numeric variable.")
+  }
 
 
 
@@ -333,20 +339,26 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
     stop_limit_i <- stop_limit[i]
 
     # print x
-    if (length(unique(dt[[x_i]])) > 1) {
-      if (print_step) print(x_i)
+    if ( is.character(dt[[x_i]]) || is.factor(dt[[x_i]]) || is.numeric(dt[[x_i]]) || is.logical(dt[[x_i]]) ) {
+      if (length(unique(dt[[x_i]])) > 1) {
+        if (print_step) print(x_i)
+      } else {
+        if (print_step) print(paste0(x_i, "------skiped"))
+        next
+      }
     } else {
-      if (print_step) print(paste0(x_i, "------next"))
+      if (print_step) print(paste0(x_i, "------skiped"))
       next
     }
 
 
+
     # woebining on one variable
-    if (anyNA(breaks_list)) { # is.na(breaks_list)
-      bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, min_perc_total=min_perc_total, stop_limit=stop_limit_i, positive=positive)
-    } else { # breaks_list provided
-      bin2 <- woebin2(dt[, c(x_i, y), with=FALSE], y, x_i, breaks = breaks_list[[x_i]], positive=positive)
-    }
+    bin2 <- woebin2(
+      dt[, c(x_i, y), with=FALSE], y, x_i,
+      breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
+      stop_limit=stop_limit_i, max_bin_num = max_bin_num,
+      positive=positive)
 
 
     # renmae NA as missing
@@ -354,7 +366,8 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
   }
 
   # total_iv list
-  total_iv_list <- unique(rbindlist(bins)[, .(variable, total_iv)])[order(-total_iv)]
+  total_iv_list <- unique(rbindlist(bins)[, .(variable, total_iv)])
+  if (order == TRUE) total_iv_list <- total_iv_list[order(-total_iv)]
 
   # reorder bins by iv
   bins_list <- list()
@@ -482,7 +495,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
 #' \code{woebin_plot} create plots of count distribution and bad probability for each bin. The binning informations are generates by  \code{woebin}.
 #'
 #' @name woebin_plot
-#' @param bins Binning information generated by \code{woebin}.
+#' @param bins A list or data frame. Binning information generated by \code{woebin}.
 #' @param x Name of x variables. Default NULL
 #' @param title String added to the front of plot title, default "".
 #' @return List of binning plot
@@ -518,6 +531,7 @@ woebin_ply <- function(dt, bins, print_step=TRUE) { # dt, y, x=NA, bins
 woebin_plot <- function(bins, x=NULL, title="") {
   variable = NULL # no visible binding for global variable
 
+  # plot function
   pf <- function(bin, title) {
     . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = NULL # no visible binding for global variable
 
@@ -552,10 +566,21 @@ woebin_plot <- function(bins, x=NULL, title="") {
 
   }
 
+  # converting data.frame into list
+  bins_list <- list()
   if (is.data.frame(bins)) {
-    bins <- eval(parse(text = paste0("list(", bins[1, variable], " = bins)")))
+    bins_dt <- setDT(bins)
+    x <- bins_dt[1, unique(variable)]
+
+    bins <- list()
+    for (i in x) {
+      bins[[i]] <- bins_dt[variable == i]
+    }
+
+    # bins <- eval(parse(text = paste0("list(", setDT(bins)[1, variable], " = bins)")))
   }
-  if (is.null(x) | anyNA(x)) x = names(bins)
+  # x variable names
+  if (is.null(x) || anyNA(x)) x = names(bins)
 
   # plot export
   plotlist <- list()

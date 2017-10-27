@@ -61,8 +61,16 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
-  if (!is.vector(label) || !is.vector(pred)) stop("Incorrect inputs; both label and pred should be vectors")
-  if (length(label) != length(pred)) stop("Incorrect inputs; length of label and pred should be the same")
+  if ( is.data.frame(label) || is.data.frame(pred) || is.list(label) || is.list(pred) ) {
+    stop("Incorrect inputs; both label and pred should be vectors.")
+  } else if ( !is.vector(label) || !is.vector(pred) ) {
+    warning("Incorrect inputs; both label and pred should be vectors, which were set to vectors.")
+    label <- as.vector(label)
+    pred <- as.vector(pred)
+  }
+
+  if ( length(label) != length(pred) ) stop("Incorrect inputs; label and pred should be vectors with the same length.")
+
 
   # random sort datatable
   set.seed(seed)
