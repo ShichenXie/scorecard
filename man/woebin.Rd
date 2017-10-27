@@ -5,7 +5,7 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, max_bin_num = 6, positive = "bad|1", order = FALSE,
+  stop_limit = 0.1, max_bin_num = 5, positive = "bad|1", order = FALSE,
   print_step = FALSE)
 }
 \arguments{

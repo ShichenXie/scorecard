@@ -1,6 +1,6 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", print_step=FALSE) {
+woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", print_step=FALSE) {
 
   value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
 
@@ -182,7 +182,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
     # return(list(best_breakpoints = bst_brkp, best_bins_datatable = bst_bins_dt, total_iv = bst_bins_dt[1, total_iv]))
   }
   ###### all tree-like best breakpoints
-  all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, max_bin_num=6, print_step=FALSE) {
+  all_bst_brkp <- function(initial_brkpdt, stop_limit=0.1, max_bin_num=5, print_step=FALSE) {
     total_iv = bstbrkp = NULL# no visible binding for global variable
 
     len_brkp <- length( setdiff(initial_brkpdt[, brkp], c(-Inf, Inf, NA)) )
@@ -208,7 +208,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
       IVt1 <- IVt2
 
       len_step = len_step + 1
-      if (len_step >= len_brkp | len_step >= max_bin_num) break
+      if (len_step >= len_brkp | len_step >= max_bin_num-1) break
     }
     }
 
@@ -281,7 +281,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
 #' @importFrom stats IQR quantile
 #' @export
 #'
-woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", order=FALSE, print_step=FALSE) {
+woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", order=FALSE, print_step=FALSE) {
   # method="tree",
 
   bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
@@ -372,9 +372,13 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
   # reorder bins by iv
   bins_list <- list()
   for (v in total_iv_list$variable) {
-    bins_list[[v]] <- setDF(
-      bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
-    )
+    bins_adj <- bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
+
+    if ( "missing" %in% bins_adj$bin ) {
+      bins_adj <- rbind(bins_adj[bin == "missing"], bins_adj[bin != "missing"])
+    }
+
+    bins_list[[v]] <- setDF( bins_adj )
   }
 
   # return(list(bins = bins_list, iv=total_iv_list))
