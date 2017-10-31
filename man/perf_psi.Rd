@@ -75,8 +75,8 @@ train_pred <- predict(m2, type='response', train)
 test_pred <- predict(m2, type='response', test)
 
 # # ks & roc plot
-# perf_plot(train$y, train_pred, title = "train")
-# perf_plot(train$y, train_pred, title = "test")
+# perf_eva(train$y, train_pred, title = "train")
+# perf_eva(train$y, train_pred, title = "test")
 
 #' # scorecard
 card <- scorecard(bins, m2)
@@ -115,5 +115,5 @@ psi2 <- perf_psi(
 }
 }
 \seealso{
-\code{\link{perf_plot}}
+\code{\link{perf_eva}}
 }

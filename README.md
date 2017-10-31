@@ -5,7 +5,7 @@ This R package makes the development of credit risk scorecard easily and efficie
 - variable filter (var_filter), 
 - optimal woe binning (woebin, woebin_ply, woebin_plot), 
 - scorecard scaling (scorecard, scorecard_ply) 
-- and performace evaluation (perf_plot, perf_psi).
+- and performace evaluation (perf_eva, perf_psi).
 
 ## Installation
 
@@ -70,8 +70,8 @@ train_pred <- predict(m2, type='response', train)
 test_pred <- predict(m2, type='response', test)
 
 # ks & roc plot
-perf_plot(train$y, train_pred, title = "train")
-perf_plot(train$y, train_pred, title = "test")
+perf_eva(train$y, train_pred, title = "train")
+perf_eva(train$y, train_pred, title = "test")
 
 # score
 card <- scorecard(bins, m2)

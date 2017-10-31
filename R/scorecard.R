@@ -1,3 +1,62 @@
+#' Split a dataset
+#'
+#' @param dt A data frame.
+#' @param y Name of y variable, defaults NULL. The dataset dt will split based on the predictor y, if it is specified.
+#' @param ratio A numeric value, defults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
+#' @param seed A random seed, defaults 186. The specify seed is used for random sorting data.
+#'
+#' @examples
+#' library(data.table)
+#' library(scorecard)
+#' data(germancredit)
+#' dts <- split_df(germancredit, y="creditability")
+#' train <- dts$train
+#' test <- dts$test
+#'
+#' @import data.table
+#' @export
+split_df <- function(dt, y=NULL, ratio=0.7, seed=186) {
+  # inputs check
+  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
+  if (!is.numeric(ratio) || length(ratio) != 1 || sum(ratio)>=1) {
+    warning("Incorrect inputs; ratio must be a numeric that length equal to 1 and less than 1. It was set to 0.7.")
+    ratio <- 0.7
+  }
+
+
+  # pre
+  set.seed(seed)
+  dt <- setDT(dt)
+
+  rs <- list(train=NULL, test=NULL)
+  if (is.null(y)) {
+    rn_sel <- sample(nrow(dt), round(nrow(dt)*ratio))
+
+    rs$train <- dt[rn_sel]
+    rs$test <- dt[-rn_sel]
+  } else {
+    # dt$y <- dt[[y]]; dt[[y]] <- NULL
+    y_unique <- table(dt[[y]])
+
+    for (i in names(y_unique)) {
+      dti <- dt[dt[[y]] == i]
+      rn_sel <- sample(nrow(dti), round(nrow(dti)*ratio))
+
+      rs$train[[i]] <- dti[rn_sel]
+      rs$test[[i]] <- dti[-rn_sel]
+    }
+    # rbindlist
+    rs$train <- rbindlist(rs$train)
+    rs$test <- rbindlist(rs$test)
+  }
+
+  # random sort
+  rs$train <- rs$train[sample(nrow(rs$train))];
+  rs$test <- rs$test[sample(nrow(rs$test))]
+
+  return(rs)
+}
+
 # coefficients in scorecard
 ab <- function(points0=600, odds0=1/60, pdo=50) {
   # ab(600, 1/30, 60)
@@ -74,7 +133,7 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #'
 #' # performace
 #' # ks & roc plot
-#' # perf_plot(dt_woe$y, dt_woe$pred)
+#' # perf_eva(dt_woe$y, dt_woe$pred)
 #' }
 #'
 #' # scorecard
@@ -138,6 +197,7 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.
+#' @param print_step Logical. If it is TRUE, print the variable name when converting data into credit score.
 #' @return Credit score
 #'
 #' @seealso \code{\link{scorecard}}
@@ -174,7 +234,7 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #'
 #' # performace
 #' # ks & roc plot
-#' # perf_plot(dt_woe$y, dt_woe$pred)
+#' # perf_eva(dt_woe$y, dt_woe$pred)
 #' }
 #'
 #' # scorecard
@@ -192,7 +252,7 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' @import data.table
 #' @export
 #'
-scorecard_ply <- function(dt, card, only_total_score = TRUE) {
+scorecard_ply <- function(dt, card, only_total_score = TRUE, print_step=TRUE) {
   variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
 
   # conditions # https://adv-r.hadley.nz/debugging
@@ -222,7 +282,7 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE) {
 
   # loop on x variables
   for (a in x) {
-    print(a)
+    if (print_step) print(a)
     cardx <- card[variable==a] #card[[a]]
     na_points <- cardx[bin == "missing", points]
 

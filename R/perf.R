@@ -1,8 +1,23 @@
 #' KS, ROC, Lift, PR
 #'
-#' \code{perf_plot} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
+#' The function perf_plot has renamed as perf_eva.
 #'
-#' @name perf_plot
+#' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
+#' @param pred Predicted probability values.
+#' @param title Title of plot, default "train".
+#' @param groupnum The group numbers when calculating bad probability, default 20.
+#' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
+#' @param show_plot Logical value, default TRUE. It means whether to show plot.
+#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
+#'
+#' @export
+perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
+
+#' KS, ROC, Lift, PR
+#'
+#' \code{perf_eva} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
+#'
+#' @name perf_eva
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability values.
 #' @param title Title of plot, default "train".
@@ -46,18 +61,18 @@
 #'
 #' # performance ------
 #' # Example I # only ks & auc values
-#' perf_plot(dt_woe$y, dt_woe$pred, show_plot=FALSE)
+#' perf_eva(dt_woe$y, dt_woe$pred, show_plot=FALSE)
 #'
 #' # Example II # ks & roc plot
-#' perf_plot(dt_woe$y, dt_woe$pred)
+#' perf_eva(dt_woe$y, dt_woe$pred)
 #'
 #' # Example III # ks, lift, roc & pr plot
-#' perf_plot(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+#' perf_eva(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
+perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
@@ -239,7 +254,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @return a dataframe of psi & plots of credit score distribution
 #' @details The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
 #'
-#' @seealso \code{\link{perf_plot}}
+#' @seealso \code{\link{perf_eva}}
 #'
 #' @examples
 #' \dontrun{
@@ -285,8 +300,8 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' test_pred <- predict(m2, type='response', test)
 #'
 #' # # ks & roc plot
-#' # perf_plot(train$y, train_pred, title = "train")
-#' # perf_plot(train$y, train_pred, title = "test")
+#' # perf_eva(train$y, train_pred, title = "train")
+#' # perf_eva(train$y, train_pred, title = "test")
 #'
 #' #' # scorecard
 #' card <- scorecard(bins, m2)
@@ -399,6 +414,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
   }
 
 
+  set.seed(seed)
   for ( sn in score_names ) {
     if (length(unique(dt_sl[[sn]])) > 10) {
       # breakpoints
@@ -409,14 +425,12 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
       ))
 
       # random sort datatable
-      set.seed(seed)
       dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
 
       dat$bin <- cut(dat[[sn]], brkp, right = FALSE, dig.lab = 10, ordered_result = F)
 
     } else {
       # random sort datatable
-      set.seed(seed)
       dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
       dat$bin <- dat[[sn]]
 

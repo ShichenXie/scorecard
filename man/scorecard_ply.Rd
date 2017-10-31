@@ -4,7 +4,7 @@
 \alias{scorecard_ply}
 \title{Application of Scorecard}
 \usage{
-scorecard_ply(dt, card, only_total_score = TRUE)
+scorecard_ply(dt, card, only_total_score = TRUE, print_step = TRUE)
 }
 \arguments{
 \item{dt}{Original data}
@@ -12,6 +12,8 @@ scorecard_ply(dt, card, only_total_score = TRUE)
 \item{card}{Scorecard generated from \code{scorecard}.}
 
 \item{only_total_score}{Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.}
+
+\item{print_step}{Logical. If it is TRUE, print the variable name when converting data into credit score.}
 }
 \value{
 Credit score
@@ -51,7 +53,7 @@ m <- eval(m_step$call)
 
 # performace
 # ks & roc plot
-# perf_plot(dt_woe$y, dt_woe$pred)
+# perf_eva(dt_woe$y, dt_woe$pred)
 }
 
 # scorecard

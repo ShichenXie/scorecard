@@ -55,7 +55,7 @@ m <- eval(m_step$call)
 
 # performace
 # ks & roc plot
-# perf_plot(dt_woe$y, dt_woe$pred)
+# perf_eva(dt_woe$y, dt_woe$pred)
 }
 
 # scorecard
