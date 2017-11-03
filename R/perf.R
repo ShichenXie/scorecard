@@ -1,4 +1,4 @@
-#' KS, ROC, Lift, PR
+#' renamed as perf_eva
 #'
 #' The function perf_plot has renamed as perf_eva.
 #'
@@ -233,7 +233,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
     }
 
     # return list
-    rt$p <- p
+    rt$pic <- p
   }
 
   return(rt)
@@ -315,8 +315,8 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"])
 #' )
-#' # psi$psi # psi dataframe
-#' # psi$p   # plot of score distribution
+#' # psi$psi  # psi dataframe
+#' # psi$pic  # pic of score distribution
 #'
 #' # Example II # specifying score range
 #' psi_s <- perf_psi(
@@ -335,8 +335,8 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'   score = list(train = train_score2, test = test_score2),
 #'   label = list(train = train[,"y"], test = test[, "y"])
 #' )
-#' # psi2$psi # psi dataframe
-#' # psi2$p   # plot of score distribution
+#' # psi2$psi  # psi dataframe
+#' # psi2$pic  # pic of score distribution
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
@@ -345,9 +345,10 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL # no visible binding for global variable
-  rt = rt_psi = rt_p = list() # return list
+  rt = rt_psi = rt_pic = rt_dat = list() # return list
   rt$psi <- NULL
-  rt$p <- NULL
+  rt$pic <- NULL
+  rt$dat <- NULL
 
 
   # inputs checking
@@ -388,6 +389,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     score[[2]]$y <- NA
 
   }
+  # dateset of score and label
   dt_sl <- cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
 
   # PSI function
@@ -416,6 +418,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
 
   set.seed(seed)
   for ( sn in score_names ) {
+    # data manipulation to calculating psi and plot
     if (length(unique(dt_sl[[sn]])) > 10) {
       # breakpoints
       brkp <- unique(c(
@@ -435,6 +438,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
       dat$bin <- dat[[sn]]
 
     }
+
 
     # psi ------
     # rt[[paste0(sn, "_psi")]] <- round(psi(dat), 4)
@@ -478,13 +482,21 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
         p_score_distr <- p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))
       }
 
-      # rt[[paste0(sn, "_p")]] <- p_score_distr
-      rt_p[[sn]] <- p_score_distr
+
+      # return of pic
+      rt_pic[[sn]] <- p_score_distr
+      rt_dat[[sn]] <- setDF(dcast(
+        distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
+        bin ~ ae, value.var=c("count","bad","badprob"), sep="\n"
+      )[,c(1,2,4,6,3,5,7)])
 
     } # end of show plot
   } # end of for loop
+
+  # return
   rt$psi <- rbindlist(rt_psi, idcol = "variable")
-  rt$p <- rt_p
+  rt$pic <- rt_pic
+  rt$dat <- rt_dat
 
   return(rt)
 }

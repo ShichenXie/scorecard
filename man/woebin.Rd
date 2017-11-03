@@ -6,7 +6,7 @@
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
   stop_limit = 0.1, max_bin_num = 5, positive = "bad|1", order = FALSE,
-  print_step = FALSE)
+  print_step = 1L)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -27,7 +27,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{order}{Logical. If it is TRUE, return binning information by descending sorted iv values.}
 
-\item{print_step}{Logical. If it is TRUE, print the variable name  when generate binning.}
+\item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
 }
 \value{
 Optimal or customized binning information

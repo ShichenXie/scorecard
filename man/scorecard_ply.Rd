@@ -4,16 +4,16 @@
 \alias{scorecard_ply}
 \title{Application of Scorecard}
 \usage{
-scorecard_ply(dt, card, only_total_score = TRUE, print_step = TRUE)
+scorecard_ply(dt, card, only_total_score = TRUE, print_step = 1L)
 }
 \arguments{
 \item{dt}{Original data}
 
 \item{card}{Scorecard generated from \code{scorecard}.}
 
-\item{only_total_score}{Logical, default TRUE. If it is TRUE, return total credit score only; if FALSE, return both total credit score and score points of each variables.}
+\item{only_total_score}{A logical value. Default is TRUE, which means only total credit score is return. Otherwise, if it is FALSE, which means both total credit score and score points of each variables are return.}
 
-\item{print_step}{Logical. If it is TRUE, print the variable name when converting data into credit score.}
+\item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
 }
 \value{
 Credit score

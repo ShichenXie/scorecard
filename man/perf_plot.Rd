@@ -2,7 +2,7 @@
 % Please edit documentation in R/perf.R
 \name{perf_plot}
 \alias{perf_plot}
-\title{KS, ROC, Lift, PR}
+\title{renamed as perf_eva}
 \usage{
 perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
   "roc"), show_plot = TRUE, seed = 186)

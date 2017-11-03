@@ -90,8 +90,8 @@ psi <- perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"])
 )
-# psi$psi # psi dataframe
-# psi$p   # plot of score distribution
+# psi$psi  # psi dataframe
+# psi$pic  # pic of score distribution
 
 # Example II # specifying score range
 psi_s <- perf_psi(
@@ -110,8 +110,8 @@ psi2 <- perf_psi(
   score = list(train = train_score2, test = test_score2),
   label = list(train = train[,"y"], test = test[, "y"])
 )
-# psi2$psi # psi dataframe
-# psi2$p   # plot of score distribution
+# psi2$psi  # psi dataframe
+# psi2$pic  # pic of score distribution
 }
 }
 \seealso{
