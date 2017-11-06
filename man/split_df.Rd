@@ -23,6 +23,7 @@ Split a dataset
 \examples{
 library(scorecard)
 data(germancredit)
+
 dts <- split_df(germancredit, y="creditability")
 train <- dts$train
 test <- dts$test

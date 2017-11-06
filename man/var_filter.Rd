@@ -5,7 +5,8 @@
 \title{Variable Filter}
 \usage{
 var_filter(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95,
-  ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL)
+  ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL,
+  return_rm_reason = FALSE)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -16,13 +17,15 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95,
 
 \item{iv_limit}{The minimum IV of each kept variable, default 0.02.}
 
-\item{na_perc_limit}{The maximum NA percent of each kept variable, default 0.95.}
+\item{na_perc_limit}{The maximum rate of NAs in each kept variable, default 0.95.}
 
-\item{ele_perc_limit}{The maximum element (excluding NAs) percentage in each kept variable, default 0.95.}
+\item{ele_perc_limit}{The maximum rate of identical value (excluding NAs) in each kept variable, default 0.95.}
 
 \item{var_rm}{Name vector of force removed variables, default NULL.}
 
 \item{var_kp}{Name vector of force kept variables, default NULL.}
+
+\item{return_rm_reason}{Logical, default FALSE.}
 }
 \value{
 A data.table with y and selected x variables
@@ -35,6 +38,7 @@ This function filter variables base on the specified conditions, including minim
 data(germancredit)
 
 # variable filter
-dt_selected <- var_filter(germancredit, y = "creditability")
+dt_sel <- var_filter(germancredit, y = "creditability")
+
 
 }

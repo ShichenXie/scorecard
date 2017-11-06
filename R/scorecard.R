@@ -232,7 +232,7 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE, print_step=1L) {
   # loop on x variables
   for (a in x) {
     # print variables
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), "  ", a,"\n")
+    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), a,"\n")
     x_num <- x_num+1
 
     cardx <- card[variable==a] #card[[a]]

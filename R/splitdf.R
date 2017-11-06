@@ -9,6 +9,7 @@
 #' @examples
 #' library(scorecard)
 #' data(germancredit)
+#'
 #' dts <- split_df(germancredit, y="creditability")
 #' train <- dts$train
 #' test <- dts$test
@@ -48,13 +49,13 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
       rn_sel <- sample(rn_dti, round(length(rn_dti)*ratio))
 
       rn_train <- c(rn_train, rn_sel)
-      rn_test <- c(rn_test, setdiff(rn_dti, rn_sel))
+      rn_test  <- c(rn_test, setdiff(rn_dti, rn_sel))
     }
   }
 
   # random sort
   rt$train <- dt[sample(rn_train)]
-  rt$test <- dt[sample(rn_test)]
+  rt$test  <- dt[sample(rn_test)]
 
   return(rt)
 }

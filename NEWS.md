@@ -2,7 +2,7 @@
 
 * Modified the format of printing message.
 * Added the split_df function which split a dataframe into two.
-* Reorder the binning information. Put the missing as the first binning.
+* Reorder the binning information. Move the missing to the first binning.
 
 # scorecard 0.1.2
 

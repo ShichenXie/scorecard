@@ -350,13 +350,13 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
     # print x
     if ( is.character(dt[[x_i]]) || is.factor(dt[[x_i]]) || is.numeric(dt[[x_i]]) || is.logical(dt[[x_i]]) ) {
       if (length(unique(dt[[x_i]])) > 1) {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), "  ", x_i,"\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i,"\n")
       } else {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), "  ", x_i, "------skiped","\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i, "------skiped","\n")
         next
       }
     } else {
-      if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), "  ", x_i, "------skiped","\n")
+      if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i, "------skiped","\n")
       next
     }
     x_num <- x_num+1
@@ -471,7 +471,7 @@ woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   x_num <- 1
   x_length <- length(x)
   for (a in x) {
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), "  ", a,"\n")
+    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), a,"\n")
     x_num <- x_num+1
 
     binsx <- bins[variable==a] #bins[[a]]
@@ -598,10 +598,11 @@ woebin_plot <- function(bins, x=NULL, title="") {
       theme_bw() +
       theme(
         legend.position="bottom", legend.direction="horizontal",
+        axis.title.y.right =element_text(colour = "blue"),
         axis.line.y.right = element_line(colour = "blue"),
         axis.ticks.y.right =element_line(colour = "blue"),
-        axis.text.y.right = element_text(colour = "blue"),
-        axis.title.y.right =element_text(colour = "blue"))
+        axis.text.y.right = element_text(colour = "blue",angle=90, hjust = 0.5),
+        axis.text.y.left = element_text(angle=90, hjust = 0.5) )
 
   }
 

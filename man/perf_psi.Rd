@@ -5,7 +5,8 @@
 \title{PSI}
 \usage{
 perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
-  x_tick_break = 50, show_plot = TRUE, seed = 186)
+  x_tick_break = 50, show_plot = TRUE, seed = 186,
+  return_distr_dat = FALSE)
 }
 \arguments{
 \item{score}{List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.}
@@ -21,6 +22,8 @@ perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
 \item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
 
 \item{seed}{An integer. The specify seed is used for random sorting data, default 186.}
+
+\item{return_distr_dat}{Logical, default FALSE.}
 }
 \value{
 a dataframe of psi & plots of credit score distribution

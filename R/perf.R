@@ -249,6 +249,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' @param x_limits x-axis limits, default c(0, 800).
 #' @param x_tick_break x-axis ticker break, default 100.
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
+#' @param return_distr_dat Logical, default FALSE.
 #' @param seed An integer. The specify seed is used for random sorting data, default 186.
 #'
 #' @return a dataframe of psi & plots of credit score distribution
@@ -341,14 +342,14 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186) {
+perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL # no visible binding for global variable
   rt = rt_psi = rt_pic = rt_dat = list() # return list
-  rt$psi <- NULL
-  rt$pic <- NULL
-  rt$dat <- NULL
+  # rt$psi <- NULL
+  # rt$pic <- NULL
+  # rt$dat <- NULL
 
 
   # inputs checking
@@ -485,18 +486,20 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
 
       # return of pic
       rt_pic[[sn]] <- p_score_distr
-      rt_dat[[sn]] <- setDF(dcast(
-        distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
-        bin ~ ae, value.var=c("count","bad","badprob"), sep="\n"
-      )[,c(1,2,4,6,3,5,7)])
 
+      if (return_distr_dat) {
+        rt_dat[[sn]] <- setDF(dcast(
+          distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
+          bin ~ ae, value.var=c("count","bad","badprob"), sep="\n"
+        )[,c(1,2,4,6,3,5,7)])
+      }
     } # end of show plot
   } # end of for loop
 
   # return
   rt$psi <- rbindlist(rt_psi, idcol = "variable")
   rt$pic <- rt_pic
-  rt$dat <- rt_dat
+  if (return_distr_dat) rt$dat <- rt_dat
 
   return(rt)
 }
