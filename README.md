@@ -33,10 +33,13 @@ library(scorecard)
 data("germancredit")
 
 # rename creditability as y
-dt <- setDT(germancredit)[, `:=`(
+dt0 <- setDT(germancredit)[, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
+
+# filter variable via missing rate, iv, identical value rate
+dt <- var_filter(dt0, "y")
 
 # breaking dt into train and test ------
 dt_list <- split_df(dt, y="y", ratio = 0.6, seed = 21)
@@ -79,7 +82,7 @@ test_score <- scorecard_ply(test, card, print_step = 0)
 perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"]),
-  x_limits = c(200, 750),
+  x_limits = c(250, 750),
   x_tick_break = 50
   )
 
