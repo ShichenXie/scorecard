@@ -298,6 +298,12 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
 
   # set dt as data.table
   dt <- setDT(dt)
+  # replace "" by NA
+  if ( any(dt == '') ) {
+    warning("Incorrect inputs; there is a blank character(\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    dt[dt == ""] <- NA
+  }
+
   # x variable names vector
   if (is.null(x)) x <- setdiff(names(dt), y)
 
@@ -447,6 +453,10 @@ woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 
   # set dt as data.table
   kdt <- copy(setDT(dt))
+  if ( any(kdt == '') ) {
+    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(kdt)[kdt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    kdt[kdt == ""] <- NA
+  }
 
   # bins # if (is.list(bins)) rbindlist(bins)
   if (!is.data.table(bins)) {

@@ -206,6 +206,11 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE, print_step=1L) {
 
   # set dt as data.table
   kdt <- copy(setDT(dt))
+  # replace "" by NA
+  if ( any(kdt == '') ) {
+    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(kdt)[kdt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    kdt[kdt == ""] <- NA
+  }
 
   # card # if (is.list(card)) rbindlist(card)
   if (!is.data.table(card)) {

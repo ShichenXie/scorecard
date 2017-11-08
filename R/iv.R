@@ -32,9 +32,16 @@ iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
   # x variable names vector
   if (is.null(x)) x <- setdiff(names(dt), y)
 
+  # set dt as data.table
+  dt <- setDT(dt)
+  # replace "" by NA
+  if ( any(dt == '') ) {
+    warning("Incorrect inputs; there is a blank character(\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    dt[dt == ""] <- NA
+  }
 
   # data prep
-  dt <- setDT(dt)[
+  dt <- dt[
     , x, with = FALSE
     ][, `:=`(
       rowid = as.integer(row.names(.SD)),

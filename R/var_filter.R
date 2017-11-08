@@ -34,6 +34,12 @@ var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, e
 
   # set dt as data.table
   dt <- setDT(dt)
+  # replace "" by NA
+  if ( any(dt == '') ) {
+    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    dt[dt == ""] <- NA
+  }
+
   # x variable names
   x_all <- setdiff(names(dt), y)
   if (is.null(x)) {
