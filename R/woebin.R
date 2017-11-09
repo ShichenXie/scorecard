@@ -628,7 +628,7 @@ woebin_plot <- function(bins, x=NULL, title="") {
         legend.position="bottom", legend.direction="horizontal",
         axis.title.y.right = element_text(colour = "blue"),
         axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
-        axis.text.y.left = element_text(angle=90, hjust = 0.5) )
+        axis.text.y = element_text(angle=90, hjust = 0.5) )
 
   }
 
