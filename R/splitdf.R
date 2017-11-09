@@ -28,11 +28,26 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
 
   # set dt as data.table
   dt <- setDT(dt)
-  # check y
-  if ( anyNA(dt[[y]]) ) {
-    warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
-    y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
+  if (!is.null(y)) {
+    # check y
+    if ( anyNA(dt[[y]]) ) {
+      warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
+      y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
+    }
+    if (length(unique(dt[[y]])) == 2) {
+      if (!identical(unique(dt[[y]]), c(0,1))) {
+        warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
+        if (any(grepl(positive, dt[[y]])==TRUE)) {
+          dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
+        } else {
+          stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
+        }
+      }
+    } else {
+      stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
+    }
   }
+
   # replace "" by NA
   if ( any(dt == '') ) {
     warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
@@ -41,9 +56,6 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
 
   # set seed
   set.seed(seed)
-  # set y as 1 or 0
-  dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
-
 
   rt <- list(train=NULL, test=NULL)
   if (is.null(y)) {
