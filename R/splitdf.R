@@ -4,7 +4,6 @@
 #' @param y Name of y variable, defaults NULL. The dataset dt will split based on the predictor y, if it is specified.
 #' @param ratio A numeric value, defults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
 #' @param seed A random seed, defaults 186. The specify seed is used for random sorting data.
-#' @param positive Value of positive class, default "bad|1".
 #'
 #' @examples
 #' library(scorecard)
@@ -16,7 +15,7 @@
 #'
 #' @import data.table
 #' @export
-split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
+split_df <- function(dt, y=NULL, ratio=0.7, seed=186) {
   rt = rn_train = rn_test = NULL
 
   # inputs check
@@ -28,25 +27,6 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
 
   # set dt as data.table
   dt <- setDT(dt)
-  if (!is.null(y)) {
-    # check y
-    if ( anyNA(dt[[y]]) ) {
-      warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
-      y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
-    }
-    if (length(unique(dt[[y]])) == 2) {
-      if (!identical(unique(dt[[y]]), c(0,1))) {
-        warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
-        if (any(grepl(positive, dt[[y]])==TRUE)) {
-          dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
-        } else {
-          stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
-        }
-      }
-    } else {
-      stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
-    }
-  }
 
   # replace "" by NA
   if ( any(dt == '') ) {
@@ -67,7 +47,7 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186, positive="bad|1") {
     # dt$y <- dt[[y]]; dt[[y]] <- NULL
     y_unique <- table(dt[[y]])
 
-    for (i in as.integer(names(y_unique))) {
+    for (i in names(y_unique)) {
       # dti <- dt[.(i)]
       rn_dti <- which(dt[[y]]==i)
       rn_sel <- sample(rn_dti, round(length(rn_dti)*ratio))
