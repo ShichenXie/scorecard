@@ -11,7 +11,8 @@
 #' @param var_rm Name vector of force removed variables, default NULL.
 #' @param var_kp Name vector of force kept variables, default NULL.
 #' @param return_rm_reason Logical, default FALSE.
-#' @return A data.table with y and selected x variables
+#' @param positive Value of positive class, default "bad|1".
+#' @return A data.table with y and selected x variables and a data.table with the reason of removed x variable if return_rm_reason == TRUE.
 #'
 #' @examples
 #' # Load German credit data
@@ -24,7 +25,7 @@
 #' @import data.table
 #' @export
 #'
-var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE) {
+var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad|1") {
   . = info_value = variable = rt = rm_reason = NULL # no visible binding for global variable
 
   # conditions # https://adv-r.hadley.nz/debugging
@@ -34,6 +35,23 @@ var_filter <- function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, e
 
   # set dt as data.table
   dt <- setDT(dt)
+  # check y
+  if ( anyNA(dt[[y]]) ) {
+    warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
+    y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
+  }
+  if (length(unique(dt[[y]])) == 2) {
+    if (!identical(unique(dt[[y]]), c(0,1))) {
+      warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
+      if (any(grepl(positive, dt[[y]])==TRUE)) {
+        dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
+      } else {
+        stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
+      }
+    }
+  } else {
+    stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
+  }
   # replace "" by NA
   if ( any(dt == '') ) {
     warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")

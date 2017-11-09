@@ -82,7 +82,7 @@ test_score <- scorecard_ply(test, card, print_step = 0)
 perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"]),
-  x_limits = c(250, 750),
+  x_limits = c(250, 700),
   x_tick_break = 50
   )
 

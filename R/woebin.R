@@ -1,6 +1,6 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", print_step=FALSE) {
+woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, print_step=FALSE) {
 
   value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
 
@@ -19,7 +19,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
 
 
   # input data.table
-  dtm <- data.table(y = dt[[y]], variable=x, value = dt[[x]])[, y := ifelse(grepl(positive, y), 1, 0)]
+  dtm <- data.table(y = dt[[y]], variable=x, value = dt[[x]])
   # convert logical value into numeric
   if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
 
@@ -298,6 +298,24 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
 
   # set dt as data.table
   dt <- setDT(dt)
+  # check y
+  if ( anyNA(dt[[y]]) ) {
+    warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
+    y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
+  }
+  if (length(unique(dt[[y]])) == 2) {
+    if (!identical(unique(dt[[y]]), c(0,1))) {
+      warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
+      if (any(grepl(positive, dt[[y]])==TRUE)) {
+        dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
+      } else {
+        stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
+      }
+
+    }
+  } else {
+    stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
+  }
   # replace "" by NA
   if ( any(dt == '') ) {
     warning("Incorrect inputs; there is a blank character(\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
@@ -372,8 +390,7 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
     bin2 <- woebin2(
       dt[, c(x_i, y), with=FALSE], y, x_i,
       breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
-      stop_limit=stop_limit_i, max_bin_num = max_bin_num,
-      positive=positive)
+      stop_limit=stop_limit_i, max_bin_num = max_bin_num)
 
 
     # renmae NA as missing
@@ -453,6 +470,7 @@ woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 
   # set dt as data.table
   kdt <- copy(setDT(dt))
+  # replace "" by NA
   if ( any(kdt == '') ) {
     warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(kdt)[kdt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
     kdt[kdt == ""] <- NA
@@ -608,10 +626,8 @@ woebin_plot <- function(bins, x=NULL, title="") {
       theme_bw() +
       theme(
         legend.position="bottom", legend.direction="horizontal",
-        axis.title.y.right =element_text(colour = "blue"),
-        axis.line.y.right = element_line(colour = "blue"),
-        axis.ticks.y.right =element_line(colour = "blue"),
-        axis.text.y.right = element_text(colour = "blue",angle=90, hjust = 0.5),
+        axis.title.y.right = element_text(colour = "blue"),
+        axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
         axis.text.y.left = element_text(angle=90, hjust = 0.5) )
 
   }
