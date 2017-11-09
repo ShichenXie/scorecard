@@ -29,7 +29,7 @@ split_df <- function(dt, y=NULL, ratio=0.7, seed=186) {
   dt <- setDT(dt)
 
   # replace "" by NA
-  if ( any(dt == '') ) {
+  if ( any(dt == '', na.rm=TRUE) ) {
     warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
     dt[dt == ""] <- NA
   }
