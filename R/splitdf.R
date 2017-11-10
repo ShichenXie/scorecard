@@ -18,22 +18,16 @@
 split_df <- function(dt, y=NULL, ratio=0.7, seed=186) {
   rt = rn_train = rn_test = NULL
 
-  # inputs check
-  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
+  # set dt as data.table
+  dt <- setDT(dt)
+  # replace "" by NA
+  dt <- rep_blank_na(dt)
+
+  # set ratio range
   if (!is.numeric(ratio) || length(ratio) != 1 || sum(ratio)>=1) {
     warning("Incorrect inputs; ratio must be a numeric that length equal to 1 and less than 1. It was set to 0.7.")
     ratio <- 0.7
   }
-
-  # set dt as data.table
-  dt <- setDT(dt)
-
-  # replace "" by NA
-  if ( any(dt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
-    dt[dt == ""] <- NA
-  }
-
   # set seed
   set.seed(seed)
 

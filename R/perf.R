@@ -81,7 +81,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
   } else if ( !is.vector(label) || !is.vector(pred) ) {
     warning("Incorrect inputs; both label and pred should be vectors, which were set to vectors.")
     label <- as.vector(label)
-    pred <- as.vector(pred)
+    pred  <- as.vector(pred)
   }
 
   if ( length(label) != length(pred) ) stop("Incorrect inputs; label and pred should be vectors with the same length.")
@@ -100,9 +100,9 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
     dfkslift <-
       df1[order(-pred)
-        ][, group := ceiling(as.integer(row.names(.SD))/(.N/groupnum))
+        ][, group := ceiling(.I/(.N/groupnum))
         ][,.(good = sum(label==0), bad = sum(label==1)), by=group
-        ][,`:=`(group= as.integer(row.names(.SD))/.N,
+        ][,`:=`(group= .I/.N,
                 good = good/sum(good), bad  = bad/sum(bad),
                 cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
         ][, ks := cumbad - cumgood]

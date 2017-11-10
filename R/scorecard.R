@@ -196,21 +196,12 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 scorecard_ply <- function(dt, card, only_total_score = TRUE, print_step=1L) {
   x_num = variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
 
-  # conditions # https://adv-r.hadley.nz/debugging
-  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
-
-  if (!is.numeric(print_step) || print_step<0) {
-    warning("Incorrect inputs; print_step should be a non-negative integer. It was set to 1L.")
-    print_step <- 1L
-  }
-
   # set dt as data.table
   kdt <- copy(setDT(dt))
   # replace "" by NA
-  if ( any(kdt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(kdt)[kdt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
-    kdt[kdt == ""] <- NA
-  }
+  kdt <- rep_blank_na(kdt)
+  # print_step
+  print_step <- check_print_step(print_step)
 
   # card # if (is.list(card)) rbindlist(card)
   if (!is.data.table(card)) {
@@ -223,13 +214,6 @@ scorecard_ply <- function(dt, card, only_total_score = TRUE, print_step=1L) {
 
   # x variables
   x <- card[variable != "basepoints", unique(variable)]
-  # if (anyNA(x)) {
-  #   if (length(setdiff(names(kdt), y)) >= length(card[,unique(variable)])) {
-  #     x <- card[,unique(variable)]
-  #   } else {
-  #     x <- setdiff(names(kdt), y)
-  #   }
-  # }
 
   # parameter for print
   x_num <- 1

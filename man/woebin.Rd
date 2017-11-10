@@ -33,7 +33,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 Optimal or customized binning information
 }
 \description{
-\code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
+\code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. For the categorical variables, the binning segmentation will ordered by the levels for factor and by the bad probability for character. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
 }
 \examples{
 # load germancredit data

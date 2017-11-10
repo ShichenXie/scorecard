@@ -23,7 +23,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
   # convert logical value into numeric
   if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
 
-  # return binning if provide breakpoints
+  # return binning if provide breakpoints ------
   if ( !anyNA(breaks) & !is.null(breaks) ) {
     if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
       brkp <- unique(c(-Inf, breaks, Inf))
@@ -46,8 +46,15 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
         dtm, all.y = TRUE
       )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
       ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
-      ][order(badprob)
-      ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+      ]
+
+      if (is.factor(dtm[,value])) {
+        bin <- bin[order(bin)]
+      } else {
+        bin <- bin[order(badprob)]
+      }
+      bin <- bin[
+        , woe := lapply(.SD, woe_01, bad), .SDcols = "good"
       ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
       ][, total_iv := sum(bin_iv)
       ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
@@ -93,15 +100,27 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
         ][, .(variable, bin, brkp, good, bad, badprob)]
 
     } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
-
       brkdt <- copy(dtm)[
         , .(variable = unique(variable), good = sum(y==0), bad = sum(y==1)), by=value
-        ][, badprob := bad/(good+bad)
-        ][order(badprob)
-        ][, brkp := ifelse(is.na(value), NA, as.integer(row.names(.SD)))
-        ][order(brkp)
-        ][, brkp := ifelse(is.na(value), NA, as.integer(row.names(.SD)))
+        ][, badprob := bad/(good+bad)]
+
+      # order by bin if is.factor, or by badprob if is.character
+      if (is.factor(dtm[,value])) {
+        brkdt <- brkdt[
+          order(value)
+        ][, brkp := ifelse(is.na(value), NA, .I)
         ][, .(variable, bin=value, brkp, good, bad, badprob)]
+
+      } else {
+        brkdt <- brkdt[
+          order(badprob)
+        # next 3 lines make NA located at the last rows
+        ][, brkp := ifelse(is.na(value), NA, .I)
+        ][order(brkp)
+        ][, brkp := ifelse(is.na(value), NA, .I)
+        ][, .(variable, bin=value, brkp, good, bad, badprob)]
+
+      }
 
     }
 
@@ -227,7 +246,7 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
 
 #' WOE Binning
 #'
-#' \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
+#' \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. For the categorical variables, the binning segmentation will ordered by the levels for factor and by the bad probability for character. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
 #'
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
@@ -286,43 +305,16 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
 
   x_num = bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
 
-  # conditions # https://adv-r.hadley.nz/debugging
-  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
-  if (ncol(dt) <=1) stop("Incorrect inputs; dt should have at least two columns.")
-  if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
-  if (!is.numeric(print_step) || print_step<0) {
-    warning("Incorrect inputs; print_step should be a non-negative integer. It was set to 1L.")
-    print_step <- 1L
-  }
-
-
   # set dt as data.table
   dt <- setDT(dt)
-  # check y
-  if ( anyNA(dt[[y]]) ) {
-    warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
-    y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
-  }
-  if (length(unique(dt[[y]])) == 2) {
-    if (!(1 %in% unique(dt[[y]]) || 0 %in% unique(dt[[y]]))) {
-      warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
-      if (any(grepl(positive, dt[[y]])==TRUE)) {
-        dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
-      } else {
-        stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
-      }
-    }
-  } else {
-    stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
-  }
   # replace "" by NA
-  if ( any(dt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character(\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
-    dt[dt == ""] <- NA
-  }
-
-  # x variable names vector
-  if (is.null(x)) x <- setdiff(names(dt), y)
+  dt <- rep_blank_na(dt)
+  # check y
+  dt <- check_y(dt, y, positive)
+  # x variable names
+  x <- x_variable(dt,y,x)
+  # print_step
+  print_step <- check_print_step(print_step)
 
   # breaks_list
   if (!is.null(breaks_list)) {
@@ -460,20 +452,15 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
 woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   . = variable = bin = woe = V1 = NULL  # no visible binding for global variable
 
-  # conditions # https://adv-r.hadley.nz/debugging
-  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
-  if (!is.numeric(print_step) || print_step<0) {
-    warning("Incorrect inputs; print_step should be a non-negative integer. It was set to 1L.")
-    print_step <- 1L
-  }
-
   # set dt as data.table
   kdt <- copy(setDT(dt))
   # replace "" by NA
-  if ( any(kdt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(kdt)[kdt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
-    kdt[kdt == ""] <- NA
-  }
+  kdt <- rep_blank_na(kdt)
+  # ncol of dt
+  if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
+  # print_step
+  print_step <- check_print_step(print_step)
+
 
   # bins # if (is.list(bins)) rbindlist(bins)
   if (!is.data.table(bins)) {
@@ -603,7 +590,7 @@ woebin_plot <- function(bins, x=NULL, title="") {
       bin = ifelse(is.na(bin), "NA", bin),
       badprob2 = badprob*(y_left_max/y_right_max),
       badprob = round(badprob,4),
-      rowid = as.integer(row.names(.SD))
+      rowid = .I
     )][, bin := factor(bin, levels = bin)]
 
     dat_melt <- melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[

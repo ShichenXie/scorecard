@@ -24,44 +24,20 @@
 iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
   good = bad = DistrBad = DistrGood = miv = info_value = . = NULL # no visible binding for global variable
 
-  # conditions # https://adv-r.hadley.nz/debugging
-  if (!is.data.frame(dt)) stop("Incorrect inputs; dt should be a dataframe.")
-  if (ncol(dt) <=1) stop("Incorrect inputs; dt should have at least two columns.")
-  if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
-
-  # x variable names vector
-  if (is.null(x)) x <- setdiff(names(dt), y)
-
   # set dt as data.table
   dt <- setDT(dt)
-  # check y
-  if ( anyNA(dt[[y]]) ) {
-    warning(paste0("Incorrect inputs; there are NAs in the label variable ", y, ". The rows with NA in ", y, " were removed from input dataset."))
-    y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
-  }
-  if (length(unique(dt[[y]])) == 2) {
-    if (!(1 %in% unique(dt[[y]]) || 0 %in% unique(dt[[y]]))) {
-      warning(paste0("Incorrect inputs; the label variable ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
-      if (any(grepl(positive, dt[[y]])==TRUE)) {
-        dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
-      } else {
-        stop(paste0("Incorrect inputs; the positive value in the label variable ", y, " is not specified"))
-      }
-    }
-  } else {
-    stop(paste0("Incorrect inputs; the length of unique values in label variable ",y , " != 2."))
-  }
   # replace "" by NA
-  if ( any(dt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character(\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
-    dt[dt == ""] <- NA
-  }
+  dt <- rep_blank_na(dt)
+  # check y
+  dt <- check_y(dt, y, positive)
+  # x variable names
+  x <- x_variable(dt,y,x)
 
   # data prep
   dt <- dt[
     , x, with = FALSE
     ][, `:=`(
-      rowid = as.integer(row.names(.SD)),
+      rowid = .I,
       y = ifelse(grepl(positive, dt[[y]]), 1, 0)
     )]
 
@@ -104,6 +80,8 @@ iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
 # #' dtm[, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols# ="good"]
 # #'
 # #' @import data.table
+#' @import data.table
+#'
 iv_01 <- function(good, bad) {
   DistrBad = DistrGood = miv = NULL # no visible binding for global variable
 
@@ -125,6 +103,8 @@ iv_01 <- function(good, bad) {
 # #'
 # #' @import data.table
 # #'
+#' @import data.table
+#'
 miv_01 <- function(good, bad) {
   DistrBad = DistrGood = miv = NULL # no visible binding for global variable
 
@@ -144,6 +124,8 @@ miv_01 <- function(good, bad) {
 # #' @param bad vector of bad numbers
 # #'
 # #' @import data.table
+#' @import data.table
+#'
 woe_01 <- function(good, bad) {
   DistrBad = DistrGood = woe = NULL # no visible binding for global variable
 
