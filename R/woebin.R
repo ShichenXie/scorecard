@@ -1,6 +1,6 @@
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, print_step=FALSE) {
+woebin2 <- function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, print_step=FALSE) {
 
   value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
 
@@ -38,23 +38,14 @@ woebin2 <- function(dt, y, x, breaks=NA, min_perc_total=0.02, stop_limit=0.1, ma
         ][, total_iv := sum(bin_iv)
         ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
 
-    } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
+    } else if (is.factor(dtm[,value]) | is.character(dtm[,value])) {
 
       bin <- merge(
-        data.table(bin = breaks, value = breaks )[
-          , strsplit(as.character(value), "%,%", fixed=TRUE), by = bin ][, .(bin, value = V1)],
+        data.table(rowid=1:length(breaks), bin = breaks, value = breaks )[, strsplit(as.character(value), "%,%", fixed=TRUE), by = c("rowid","bin") ][, .(rowid, bin, value = V1)],
         dtm, all.y = TRUE
-      )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
+      )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = c("rowid","bin")
       ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
-      ]
-
-      if (is.factor(dtm[,value])) {
-        bin <- bin[order(bin)]
-      } else {
-        bin <- bin[order(badprob)]
-      }
-      bin <- bin[
-        , woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+      ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
       ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
       ][, total_iv := sum(bin_iv)
       ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
@@ -320,10 +311,17 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
   if (!is.null(breaks_list)) {
     if (!is.list(breaks_list)) {
       stop("Incorrect inputs; breaks_list should be a list.")
-    } else if (length(breaks_list) != length(x)) {
-      stop("Incorrect inputs; the length of breaks_list and x variables should be the same.")
-    } else if (anyNA(breaks_list)) {
-      stop("Incorrect inputs; NA in breaks_list should replace by NULL.")
+    } else {
+      # length of breaks_list != x
+      if (length(breaks_list) < length(x)) {
+        x_bl <- setdiff(x, names(breaks_list))
+        warning(paste0("Incorrect inputs; the length of breaks_list < x's. The variables (", paste0(x_bl, collapse = ","), "=NULL) were added into breaks_list."))
+        for (i in x_bl) { breaks_list[[i]] <- NULL }
+
+      } else if (length(breaks_list) > length(x)) {
+        warning(paste0("Incorrect inputs; the length of breaks_list > x's. The variables (", paste0(setdiff(names(breaks_list),x), collapse = ","), ") were removed from breaks_list."))
+
+      }
     }
   }
 
