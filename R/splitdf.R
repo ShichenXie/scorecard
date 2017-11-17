@@ -2,7 +2,7 @@
 #'
 #' @param dt A data frame.
 #' @param y Name of y variable, defaults NULL. The dataset dt will split based on the predictor y, if it is specified.
-#' @param ratio A numeric value, defults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
+#' @param ratio A numeric value, defaults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
 #' @param seed A random seed, defaults 186. The specify seed is used for random sorting data.
 #'
 #' @examples

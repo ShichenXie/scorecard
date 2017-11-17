@@ -11,7 +11,7 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 186)
 
 \item{y}{Name of y variable, defaults NULL. The dataset dt will split based on the predictor y, if it is specified.}
 
-\item{ratio}{A numeric value, defults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
+\item{ratio}{A numeric value, defaults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
 
 \item{seed}{A random seed, defaults 186. The specify seed is used for random sorting data.}
 }
