@@ -33,16 +33,16 @@ library(scorecard)
 data("germancredit")
 
 # rename creditability as y
-dt0 <- setDT(germancredit)[, `:=`(
+dt <- setDT(germancredit)[, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
 
 # filter variable via missing rate, iv, identical value rate
-dt <- var_filter(dt0, "y")
+dt_s <- var_filter(dt, "y")
 
 # breaking dt into train and test ------
-dt_list <- split_df(dt, y="y", ratio = 0.6, seed = 21)
+dt_list <- split_df(dt_s, y="y", ratio = 0.6, seed = 21)
 train <- dt_list$train; test <- dt_list$test;
 
 # woe binning ------

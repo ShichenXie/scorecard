@@ -116,15 +116,11 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 
   # scorecard
   scorecard <- list()
-  scorecard[["basepoints"]] <- setDF(
-    data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
-  )
+  scorecard[["basepoints"]] <- data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
 
 
   for (i in coef[-1,variable]) {
-    scorecard[[i]] <- setDF(
-      bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
-    )
+    scorecard[[i]] <- bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
     # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[variable==i, Estimate]*woe) )]
   }
 

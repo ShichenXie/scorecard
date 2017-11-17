@@ -70,8 +70,10 @@ x_variable <- function(dt, y, x) {
 
   if (is.null(x)) {
     x <- x_all
-  } else if (!identical(x, x_all)) {
-    warning(paste0("Incorrect inputs; there is no \"", paste0(setdiff(x,x_all),collapse = ","), "\" column in dt. It was removed from x variables."))
+  }
+
+  if ( length(setdiff(x,x_all)) > 0 ) {
+    warning(paste0("Incorrect inputs; there is no \"", paste0(setdiff(x,x_all),collapse = ","), "\" column in dt. It was removed from x variables vector."))
     x <- intersect(x, x_all)
   }
 

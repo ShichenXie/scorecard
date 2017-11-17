@@ -315,7 +315,7 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
       # length of breaks_list != x
       if (length(breaks_list) < length(x)) {
         x_bl <- setdiff(x, names(breaks_list))
-        warning(paste0("Incorrect inputs; the length of breaks_list < x's. The variables (", paste0(x_bl, collapse = ","), "=NULL) were added into breaks_list."))
+        warning(paste0("Incorrect inputs; the length of breaks_list < x's. The variables that donot specified in breaks_list were set as NULL."))
         for (i in x_bl) { breaks_list[[i]] <- NULL }
 
       } else if (length(breaks_list) > length(x)) {
@@ -399,7 +399,7 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
       bins_adj <- rbind(bins_adj[bin == "missing"], bins_adj[bin != "missing"])
     }
 
-    bins_list[[v]] <- setDF( bins_adj )
+    bins_list[[v]] <- bins_adj
   }
 
   # return(list(bins = bins_list, iv=total_iv_list))
@@ -470,14 +470,9 @@ woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   }
 
   # x variables
-  x <- bins[,unique(variable)]
-  # if (anyNA(x)) {
-  # if (length(setdiff(names(kdt), y)) >= length(bins[,unique(variable)])) {
-  #   x <- bins[,unique(variable)]
-  # } else {
-  #   x <- setdiff(names(kdt), y)
-  # }
-  # }
+  x_bin <- bins[,unique(variable)]
+  x_dt <- names(dt)
+  x <- intersect(x_bin, x_dt)
 
   # loop on x variables
   x_num <- 1

@@ -488,10 +488,10 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
       rt_pic[[sn]] <- p_score_distr
 
       if (return_distr_dat) {
-        rt_dat[[sn]] <- setDF(dcast(
+        rt_dat[[sn]] <- dcast(
           distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
-          bin ~ ae, value.var=c("count","bad","badprob"), sep="\n"
-        )[,c(1,2,4,6,3,5,7)])
+          bin ~ ae, value.var=c("count","bad","badprob"), sep="_"
+        )[,c(1,2,4,6,3,5,7)]
       }
     } # end of show plot
   } # end of for loop
