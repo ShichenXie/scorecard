@@ -312,15 +312,19 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
     if (!is.list(breaks_list)) {
       stop("Incorrect inputs; breaks_list should be a list.")
     } else {
-      # length of breaks_list != x
-      if (length(breaks_list) < length(x)) {
-        x_bl <- setdiff(x, names(breaks_list))
-        warning(paste0("Incorrect inputs; the length of breaks_list < x's. The variables that donot specified in breaks_list were set as NULL."))
-        for (i in x_bl) { breaks_list[[i]] <- NULL }
 
-      } else if (length(breaks_list) > length(x)) {
-        warning(paste0("Incorrect inputs; the length of breaks_list > x's. The variables (", paste0(setdiff(names(breaks_list),x), collapse = ","), ") were removed from breaks_list."))
+      names_breakslist <- names(breaks_list)
+      if (!identical(names_breakslist, x)) {
 
+        names_bl_x <- setdiff(names_breakslist, x)
+        if (length(names_bl_x) > 0) {
+          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in breaks_list donot exist in x."))
+        }
+
+        names_x_bl <- setdiff(x, names_breakslist)
+        if (length(names_x_bl) >0) {
+          warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list were set as NULL, which means optimal binning.")
+        }
       }
     }
   }
@@ -548,7 +552,7 @@ woebin_ply <- function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 #' # # save binning plot
 #' # for (i in 1:length(plotlist)) {
 #' #   ggplot2::ggsave(
-#' #      paste0("./woebinplot/", names(plotlist[i]), ".png"), plotlist[[i]],
+#' #      paste0(names(plotlist[i]), ".png"), plotlist[[i]],
 #' #      width = 15, height = 9, units="cm" )
 #' #   }
 #' }

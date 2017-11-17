@@ -44,7 +44,7 @@ m <- glm( y ~ ., family = "binomial", data = dt_woe)
 
 \dontrun{
 # Select a formula-based model by AIC
-m_step <- step(m, direction="both")
+m_step <- step(m, direction="both", trace=FALSE)
 m <- eval(m_step$call)
 # summary(m)
 

@@ -37,7 +37,7 @@ plotlist <- woebin_plot(bins)
 # # save binning plot
 # for (i in 1:length(plotlist)) {
 #   ggplot2::ggsave(
-#      paste0("./woebinplot/", names(plotlist[i]), ".png"), plotlist[[i]],
+#      paste0(names(plotlist[i]), ".png"), plotlist[[i]],
 #      width = 15, height = 9, units="cm" )
 #   }
 }

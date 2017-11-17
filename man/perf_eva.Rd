@@ -52,22 +52,22 @@ m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
 # summary(m1)
 
 # Select a formula-based model by AIC
-m_step <- step(m1, direction="both")
+m_step <- step(m1, direction="both", trace=FALSE)
 m2 <- eval(m_step$call)
 # summary(m2)
 
 # predicted proability
-dt_woe$pred <- predict(m2, type='response', dt_woe)
+dt_pred <- predict(m2, type='response', dt_woe)
 
 # performance ------
 # Example I # only ks & auc values
-perf_eva(dt_woe$y, dt_woe$pred, show_plot=FALSE)
+perf_eva(dt_woe$y, dt_pred, show_plot=FALSE)
 
 # Example II # ks & roc plot
-perf_eva(dt_woe$y, dt_woe$pred)
+perf_eva(dt_woe$y, dt_pred)
 
 # Example III # ks, lift, roc & pr plot
-perf_eva(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+perf_eva(dt_woe$y, dt_pred, type = c("ks","lift","roc","pr"))
 }
 }
 \seealso{

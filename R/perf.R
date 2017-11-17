@@ -52,22 +52,22 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both")
+#' m_step <- step(m1, direction="both", trace=FALSE)
 #' m2 <- eval(m_step$call)
 #' # summary(m2)
 #'
 #' # predicted proability
-#' dt_woe$pred <- predict(m2, type='response', dt_woe)
+#' dt_pred <- predict(m2, type='response', dt_woe)
 #'
 #' # performance ------
 #' # Example I # only ks & auc values
-#' perf_eva(dt_woe$y, dt_woe$pred, show_plot=FALSE)
+#' perf_eva(dt_woe$y, dt_pred, show_plot=FALSE)
 #'
 #' # Example II # ks & roc plot
-#' perf_eva(dt_woe$y, dt_woe$pred)
+#' perf_eva(dt_woe$y, dt_pred)
 #'
 #' # Example III # ks, lift, roc & pr plot
-#' perf_eva(dt_woe$y, dt_woe$pred, type = c("ks","lift","roc","pr"))
+#' perf_eva(dt_woe$y, dt_pred, type = c("ks","lift","roc","pr"))
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
@@ -243,8 +243,8 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'
 #' \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 #'
-#' @param score List of credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
-#' @param label List of label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
+#' @param score A list of two dataframe, which are credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
+#' @param label A list of two dataframe, which are label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default "".
 #' @param x_limits x-axis limits, default c(0, 800).
 #' @param x_tick_break x-axis ticker break, default 100.
@@ -272,13 +272,8 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' )]
 #'
 #' # breaking dt into train and test ------
-#' set.seed(125)
-#' dt <- dt[sample(nrow(dt))]
-#' # rowname of train
-#' set.seed(345)
-#' rn <- sample(nrow(dt), nrow(dt)*0.6)
-#' # train and test dt
-#' dt_train <- dt[rn]; dt_test <- dt[-rn];
+#' dt_list <- split_df(dt, "y", ratio = 0.6, seed=21)
+#' dt_train <- dt_list$train; dt_test <- dt_list$test
 #'
 #' # woe binning ------
 #' bins <- woebin(dt_train, "y")
@@ -292,7 +287,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both")
+#' m_step <- step(m1, direction="both", trace=FALSE)
 #' m2 <- eval(m_step$call)
 #' # summary(m2)
 #'
@@ -323,7 +318,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' psi_s <- perf_psi(
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"]),
-#'   x_limits = c(150, 750),
+#'   x_limits = c(200, 750),
 #'   x_tick_break = 50
 #'   )
 #'

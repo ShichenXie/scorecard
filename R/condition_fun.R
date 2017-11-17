@@ -7,7 +7,7 @@ rep_blank_na <- function(dt) {
   dt <- setDT(dt)
 
   if ( any(dt == '', na.rm=TRUE) ) {
-    warning("Incorrect inputs; there is a blank character (\"\") in the columns of ", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,". It was replaced by NA.")
+    warning("There is a blank character in the columns of \"", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,"\", which was replaced by NA.")
     dt[dt == ""] <- NA
   }
 
@@ -27,26 +27,28 @@ check_y <- function(dt, y, positive){
   if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
 
   # length of y == 1
-  if (length(y) != 1) stop("Incorrect inputs; the length of y is not equal 1.")
+  if (length(y) != 1) stop("Incorrect inputs; the length of \"",y,"\" != 1.")
 
   # remove na in y
   if ( anyNA(dt[[y]]) ) {
-    warning(paste0("Incorrect inputs; there are NAs in ", y, ". The rows with NA in ", y, " were removed from input dataset."))
+    warning(paste0("There are NAs in ", y, ". The rows with NA in \"", y, "\" were removed from input data."))
     y_sel <- !is.na(dt[[y]]); dt <- dt[y_sel]
   }
 
  # length of unique values in y
   if (length(unique(dt[[y]])) == 2) {
-    if (!(1 %in% unique(dt[[y]]) & 0 %in% unique(dt[[y]]))) {
-      warning(paste0("Incorrect inputs; ", y, " should take only two values, 0 and 1. The positive value was replaced by 1 and negative value by 0."))
+    if (!( (1 %in% unique(dt[[y]])) & (0 %in% unique(dt[[y]])) )) {
+
       if (any(grepl(positive, dt[[y]])==TRUE)) {
+        warning(paste0("The positive value in \"", y,"\" was replaced by 1 and negative value by 0."))
         dt[[y]] <- ifelse(grepl(positive, dt[[y]]), 1, 0)
       } else {
-        stop(paste0("Incorrect inputs; the positive value in ", y, " is not specified"))
+        stop(paste0("Incorrect inputs; the positive value in \"", y, "\" is not specified"))
       }
+
     }
   } else {
-    stop(paste0("Incorrect inputs; the length of unique values in ",y , " != 2."))
+    stop(paste0("Incorrect inputs; the length of unique values in \"",y , "\" != 2."))
   }
 
   return(dt)
@@ -73,7 +75,7 @@ x_variable <- function(dt, y, x) {
   }
 
   if ( length(setdiff(x,x_all)) > 0 ) {
-    warning(paste0("Incorrect inputs; there is no \"", paste0(setdiff(x,x_all),collapse = ","), "\" column in dt. It was removed from x variables vector."))
+    warning(paste0("Incorrect inputs; the variables \n\"", paste0(setdiff(x,x_all),collapse = ","), "\"\n are not exist in input data, which are removed."))
     x <- intersect(x, x_all)
   }
 

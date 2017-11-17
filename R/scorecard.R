@@ -65,7 +65,7 @@ ab <- function(points0=600, odds0=1/60, pdo=50) {
 #'
 #' \dontrun{
 #' # Select a formula-based model by AIC
-#' m_step <- step(m, direction="both")
+#' m_step <- step(m, direction="both", trace=FALSE)
 #' m <- eval(m_step$call)
 #' # summary(m)
 #'
@@ -162,7 +162,7 @@ scorecard <- function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #'
 #' \dontrun{
 #' # Select a formula-based model by AIC
-#' m_step <- step(m, direction="both")
+#' m_step <- step(m, direction="both", trace=FALSE)
 #' m <- eval(m_step$call)
 #' # summary(m)
 #'
