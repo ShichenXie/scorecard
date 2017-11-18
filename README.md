@@ -42,16 +42,20 @@ dt <- setDT(germancredit)[, `:=`(
 dt_s <- var_filter(dt, "y")
 
 # breaking dt into train and test ------
-dt_list <- split_df(dt_s, y="y", ratio = 0.6, seed = 21)
+dt_list <- split_df(dt_s, y="y", ratio = 0.6, seed = 30)
 train <- dt_list$train; test <- dt_list$test;
 
 # woe binning ------
-bins <- woebin(train, "y", print_step = 5)
+bins <- woebin(dt_s, "y", print_step = 5)
 # woebin_plot(bins)
 
+# binning adjustment
+breaks_adj <- list(age.in.years=c(26, 35, 40))
+bins_adj <- woebin(dt_s,"y", breaks_list=breaks_adj, print_step = 5)
+
 # converting train and test into woe values
-train_woe <- woebin_ply(train, bins, print_step = 5)
-test_woe <- woebin_ply(test, bins, print_step = 5)
+train_woe <- woebin_ply(train, bins_adj, print_step = 5)
+test_woe <- woebin_ply(test, bins_adj, print_step = 5)
 
 # glm ------
 m1 <- glm( y ~ ., family = "binomial", data = train_woe)
@@ -68,11 +72,11 @@ train_pred <- predict(m2, type='response', train_woe)
 test_pred <- predict(m2, type='response', test_woe)
 
 # ks & roc plot
-perf_eva(train$y, train_pred, title = "train")
-perf_eva(test$y, test_pred, title = "test")
+train_perf <- perf_eva(train$y, train_pred, title = "train")
+test_perf <- perf_eva(test$y, test_pred, title = "test")
 
 # score
-card <- scorecard(bins, m2)
+card <- scorecard(bins_adj, m2)
 
 # credit score, only_total_score = TRUE
 train_score <- scorecard_ply(train, card, print_step = 0)
