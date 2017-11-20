@@ -372,18 +372,16 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     }
   }
 
-
-  # merge score label into one dataframe
+  # score dataframe column names
   score_names <- names(score[[1]])
 
-  if (!is.null(label)) {
-    score[[1]]$y <- label[[names(score)[1]]][,1]
-    score[[2]]$y <- label[[names(score)[2]]][,1]
-
-  } else {
-    score[[1]]$y <- NA
-    score[[2]]$y <- NA
-
+  # merge score label into one dataframe
+  for (i in names(score)) {
+    if (!is.null(label)) {
+      score[[i]]$y <- label[[i]][,1]
+    } else {
+      score[[i]]$y <- NA
+    }
   }
   # dateset of score and label
   dt_sl <- cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
