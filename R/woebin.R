@@ -397,7 +397,7 @@ woebin <- function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_li
   # reorder bins by iv
   bins_list <- list()
   for (v in total_iv_list$variable) {
-    bins_adj <- setDF(bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)])
+    bins_adj <- bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
 
     if ( "missing" %in% bins_adj$bin ) {
       bins_adj <- rbind(bins_adj[bin == "missing"], bins_adj[bin != "missing"])

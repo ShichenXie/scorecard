@@ -80,7 +80,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
 
   # if pred is score
-  if ( !(max(pred, na.rm=TRUE)<=1 & min(pred,na.rm=TRUE)>=0) ) {
+  if ( !(max(pred, na.rm=TRUE)<=1 & min(pred, na.rm=TRUE)>=0) ) {
     warning("Since pred is not in [0,1], it is treated as predicted score but not probability.")
     pred <- -pred
   }
@@ -410,7 +410,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     # dataframe of bin, actual, expected
     dt_bae <- dcast(
       dat[,.(count=.N), keyby=c("ae", "bin")
-          ][,distr := count/sum(count), by="ae"][],
+        ][,distr := count/sum(count), by="ae"][],
       bin ~ ae, value.var="distr", fill = 0
     )
 
@@ -421,8 +421,8 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     )]
 
     dt_bae[, `:=`(AE = A-E, logAE = log(A/E))
-        ][, `:=`(PSI = AE*logAE)
-          ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
+         ][, `:=`(PSI = AE*logAE)
+         ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
   }
 
 
