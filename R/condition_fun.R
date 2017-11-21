@@ -37,7 +37,7 @@ check_y <- function(dt, y, positive){
 
  # length of unique values in y
   if (length(unique(dt[[y]])) == 2) {
-    if (!( (1 %in% unique(dt[[y]])) & (0 %in% unique(dt[[y]])) )) {
+    if ( any(c(0,1) %in% unique(dt[[y]]) == FALSE) ) {
 
       if (any(grepl(positive, dt[[y]])==TRUE)) {
         warning(paste0("The positive value in \"", y,"\" was replaced by 1 and negative value by 0."))

@@ -1,3 +1,7 @@
+# scorecard 0.1.4
+
+* perf_eva supports both predicted probability and score.
+
 # scorecard 0.1.3
 
 * Modified the format of printing message and added condition functions.

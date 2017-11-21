@@ -5,12 +5,12 @@
 \title{KS, ROC, Lift, PR}
 \usage{
 perf_eva(label, pred, title = "train", groupnum = 20, type = c("ks",
-  "roc"), show_plot = TRUE, seed = 186)
+  "roc"), show_plot = TRUE, positive = "bad|1", seed = 186)
 }
 \arguments{
 \item{label}{Label values, such as 0s and 1s, 0 represent for good and 1 for bad.}
 
-\item{pred}{Predicted probability values.}
+\item{pred}{Predicted probability or score.}
 
 \item{title}{Title of plot, default "train".}
 
@@ -19,6 +19,8 @@ perf_eva(label, pred, title = "train", groupnum = 20, type = c("ks",
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 
 \item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
+
+\item{positive}{Value of positive class, default "bad|1".}
 
 \item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
 }

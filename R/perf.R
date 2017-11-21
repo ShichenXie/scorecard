@@ -19,11 +19,12 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #'
 #' @name perf_eva
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
-#' @param pred Predicted probability values.
+#' @param pred Predicted probability or score.
 #' @param title Title of plot, default "train".
 #' @param groupnum The group numbers when calculating bad probability, default 20.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
+#' @param positive Value of positive class, default "bad|1".
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #' @return ks, roc, lift, pr
 #' @seealso \code{\link{perf_psi}}
@@ -72,27 +73,42 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
+perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
-  if ( is.data.frame(label) || is.data.frame(pred) || is.list(label) || is.list(pred) ) {
-    stop("Incorrect inputs; both label and pred should be vectors.")
-  } else if ( !is.vector(label) || !is.vector(pred) ) {
-    warning("Incorrect inputs; both label and pred should be vectors, which were set to vectors.")
-    label <- as.vector(label)
-    pred  <- as.vector(pred)
+  if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
+
+  # if pred is score
+  if ( !(max(pred, na.rm=TRUE)<=1 & min(pred,na.rm=TRUE)>=0) ) {
+    warning("Since pred is not in [0,1], it is treated as predicted score but not probability.")
+    pred <- -pred
   }
-
-  if ( length(label) != length(pred) ) stop("Incorrect inputs; label and pred should be vectors with the same length.")
-
 
   # random sort datatable
   set.seed(seed)
-  df1 <- data.table(
-    label=ifelse(grepl("bad|1", as.character(label)), 1, 0),
-    pred=pred
-  )[!is.na(label)][sample(1:length(pred))]
+  df1 <- data.table(label=label, pred=pred)[sample(1:.N)]
+
+  # remove NAs
+  if (anyNA(label) || anyNA(pred)) {
+    warning("The NAs in \"label\" or \"pred\" were removed.")
+    df1 <- df1[!is.na(label) & !is.na(pred)]
+  }
+
+  # check label
+  if (length(unique(df1$label)) != 2) {
+    stop("Incorrect inputs; the length of unique values in label != 2.")
+  } else {
+    if (any((c(0,1) %in% unique(df1$label)) == FALSE)) {
+      if (any(grepl(positive, df1[[label]]) == TRUE)) {
+        warning(paste0("The positive value in \"label\" was replaced by 1 and negative value by 0."))
+        df1[[label]] <- ifelse(grepl(positive, df1[[label]]), 1, 0)
+      } else {
+        stop(paste0("Incorrect inputs; the positive value in \"label\" is not specified"))
+      }
+    }
+  }
+
 
   # data, dfkslift ------
   if ("ks" %in% type | "lift" %in% type) {
@@ -105,7 +121,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
         ][,`:=`(group= .I/.N,
                 good = good/sum(good), bad  = bad/sum(bad),
                 cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
-        ][, ks := cumbad - cumgood]
+        ][, ks := abs(cumbad - cumgood)]
 
     dfkslift <- rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
 
@@ -354,7 +370,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
   } else if (length(score) != 2) {
     stop("Incorrect inputs; the length of score should be 2.")
   } else {
-    if (!is.data.frame(score[[1]]) | !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframe.")
+    if (!is.data.frame(score[[1]]) || !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframe.")
 
     if (!identical( names(score[[1]]), names(score[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in score should be the same.")
   }
@@ -366,7 +382,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     } else if (length(label) != 2) {
       stop("Incorrect inputs; the length of label should be 2.")
     } else {
-      if (!is.data.frame(label[[1]]) | !is.data.frame(label[[2]])) stop("Incorrect inputs; label is a list of two dataframe.")
+      if (!identical(names(score), names(label))) stop("Incorrect inputs; the names of score and label should be the same. ")
 
       if (!identical( names(label[[1]]), names(label[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in label should be the same.")
     }
