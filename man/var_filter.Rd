@@ -40,7 +40,7 @@ This function filter variables base on the specified conditions, including minim
 data(germancredit)
 
 # variable filter
-dt_sel <- var_filter(germancredit, y = "creditability")
+dt_sel = var_filter(germancredit, y = "creditability")
 
 
 }

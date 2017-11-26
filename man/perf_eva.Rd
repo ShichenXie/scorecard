@@ -40,26 +40,26 @@ library(scorecard)
 data("germancredit")
 
 # rename creditability as y
-dt <- data.table(germancredit)[, `:=`(
+dt = data.table(germancredit)[, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
 
 # woe binning ------
-bins <- woebin(dt, "y")
-dt_woe <- woebin_ply(dt, bins)
+bins = woebin(dt, "y")
+dt_woe = woebin_ply(dt, bins)
 
 # glm ------
-m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+m1 = glm( y ~ ., family = "binomial", data = dt_woe)
 # summary(m1)
 
 # Select a formula-based model by AIC
-m_step <- step(m1, direction="both", trace=FALSE)
-m2 <- eval(m_step$call)
+m_step = step(m1, direction="both", trace=FALSE)
+m2 = eval(m_step$call)
 # summary(m2)
 
 # predicted proability
-dt_pred <- predict(m2, type='response', dt_woe)
+dt_pred = predict(m2, type='response', dt_woe)
 
 # performance ------
 # Example I # only ks & auc values

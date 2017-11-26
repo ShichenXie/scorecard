@@ -24,26 +24,26 @@ Binning information
 data(germancredit)
 
 # Example I
-dt <- germancredit[, c("creditability", "credit.amount", "purpose")]
+dt = germancredit[, c("creditability", "credit.amount", "purpose")]
 
 # binning for dt
-bins <- woebin(dt, y = "creditability")
+bins = woebin(dt, y = "creditability")
 
 # converting original value to woe
-dt_woe <- woebin_ply(dt, bins=bins)
+dt_woe = woebin_ply(dt, bins=bins)
 
 \dontrun{
 # Example II
 # binning for germancredit dataset
-bins_germancredit <- woebin(germancredit, y="creditability")
+bins_germancredit = woebin(germancredit, y="creditability")
 
 # converting the values of germancredit into woe
 # bins is a list which generated from woebin()
-germancredit_woe <- woebin_ply(germancredit, bins_germancredit)
+germancredit_woe = woebin_ply(germancredit, bins_germancredit)
 
 # bins is a dataframe
-bins_df <- data.table::rbindlist(bins_germancredit)
-germancredit_woe <- woebin_ply(germancredit, bins_df)
+bins_df = data.table::rbindlist(bins_germancredit)
+germancredit_woe = woebin_ply(germancredit, bins_df)
 }
 
 }

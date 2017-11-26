@@ -9,9 +9,9 @@ perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
   return_distr_dat = FALSE)
 }
 \arguments{
-\item{score}{A list of two dataframe, which are credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.}
+\item{score}{A list of two dataframe, which are credit score for both actual and expected data sample. For example, score = list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.}
 
-\item{label}{A list of two dataframe, which are label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
+\item{label}{A list of two dataframe, which are label values for both actual and expected data sample. For example, label = list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
 
 \item{title}{Title of plot, default "".}
 
@@ -43,48 +43,48 @@ library(scorecard)
 data("germancredit")
 
 # rename creditability as y
-dt <- data.table(germancredit)[, `:=`(
+dt = data.table(germancredit)[, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
 
 # breaking dt into train and test ------
-dt_list <- split_df(dt, "y", ratio = 0.6, seed=21)
-dt_train <- dt_list$train; dt_test <- dt_list$test
+dt_list = split_df(dt, "y", ratio = 0.6, seed=21)
+dt_train = dt_list$train; dt_test = dt_list$test
 
 # woe binning ------
-bins <- woebin(dt_train, "y")
+bins = woebin(dt_train, "y")
 
 # converting train and test into woe values
-train <- woebin_ply(dt_train, bins)
-test <- woebin_ply(dt_test, bins)
+train = woebin_ply(dt_train, bins)
+test = woebin_ply(dt_test, bins)
 
 # glm ------
-m1 <- glm( y ~ ., family = "binomial", data = train)
+m1 = glm( y ~ ., family = "binomial", data = train)
 # summary(m1)
 
 # Select a formula-based model by AIC
-m_step <- step(m1, direction="both", trace=FALSE)
-m2 <- eval(m_step$call)
+m_step = step(m1, direction="both", trace=FALSE)
+m2 = eval(m_step$call)
 # summary(m2)
 
 # predicted proability
-train_pred <- predict(m2, type='response', train)
-test_pred <- predict(m2, type='response', test)
+train_pred = predict(m2, type='response', train)
+test_pred = predict(m2, type='response', test)
 
 # # ks & roc plot
 # perf_eva(train$y, train_pred, title = "train")
 # perf_eva(train$y, train_pred, title = "test")
 
 #' # scorecard
-card <- scorecard(bins, m2)
+card = scorecard(bins, m2)
 
 # credit score, only_total_score = TRUE
-train_score <- scorecard_ply(dt_train, card)
-test_score <- scorecard_ply(dt_test, card)
+train_score = scorecard_ply(dt_train, card)
+test_score = scorecard_ply(dt_test, card)
 
 # Example I # psi
-psi <- perf_psi(
+psi = perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"])
 )
@@ -92,7 +92,7 @@ psi <- perf_psi(
 # psi$pic  # pic of score distribution
 
 # Example II # specifying score range
-psi_s <- perf_psi(
+psi_s = perf_psi(
   score = list(train = train_score, test = test_score),
   label = list(train = train[,"y"], test = test[, "y"]),
   x_limits = c(200, 750),
@@ -100,11 +100,11 @@ psi_s <- perf_psi(
   )
 
 # Example III # credit score, only_total_score = FALSE
-train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
-test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
+train_score2 = scorecard_ply(dt_train, card, only_total_score=FALSE)
+test_score2 = scorecard_ply(dt_test, card, only_total_score=FALSE)
 
 # psi
-psi2 <- perf_psi(
+psi2 = perf_psi(
   score = list(train = train_score2, test = test_score2),
   label = list(train = train[,"y"], test = test[, "y"])
 )

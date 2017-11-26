@@ -29,27 +29,27 @@ library(scorecard)
 data("germancredit")
 
 # select only 5 x variables and rename creditability as y
-dt <- setDT(germancredit)[, c(1:5, 21)][, `:=`(
+dt = setDT(germancredit)[, c(1:5, 21)][, `:=`(
   y = ifelse(creditability == "bad", 1, 0),
   creditability = NULL
 )]
 
 # woe binning ------
-bins <- woebin(dt, "y")
-dt_woe <- woebin_ply(dt, bins)
+bins = woebin(dt, "y")
+dt_woe = woebin_ply(dt, bins)
 
 # glm ------
-m <- glm( y ~ ., family = "binomial", data = dt_woe)
+m = glm( y ~ ., family = "binomial", data = dt_woe)
 # summary(m)
 
 \dontrun{
 # Select a formula-based model by AIC
-m_step <- step(m, direction="both", trace=FALSE)
-m <- eval(m_step$call)
+m_step = step(m, direction="both", trace=FALSE)
+m = eval(m_step$call)
 # summary(m)
 
 # predicted proability
-# dt_woe$pred <- predict(m, type='response', dt_woe)
+# dt_woe$pred = predict(m, type='response', dt_woe)
 
 # performace
 # ks & roc plot
@@ -58,15 +58,15 @@ m <- eval(m_step$call)
 
 # scorecard
 # Example I # creat a scorecard
-card <- scorecard(bins, m)
+card = scorecard(bins, m)
 
 # credit score
 # Example I # only total score
-score1 <- scorecard_ply(dt, card)
+score1 = scorecard_ply(dt, card)
 
 \dontrun{
 # Example II # credit score for both total and each variable
-score2 <- scorecard_ply(dt, card, only_total_score = F)
+score2 = scorecard_ply(dt, card, only_total_score = F)
 }
 }
 \seealso{

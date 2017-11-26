@@ -41,29 +41,29 @@ data(germancredit)
 
 # Example I
 # binning for two variables in germancredit dataset
-bins_2var <- woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
+bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
 
 \dontrun{
 # Example II
 # binning for germancredit dataset
-bins_germ <- woebin(germancredit, y = "creditability")
+bins_germ = woebin(germancredit, y = "creditability")
 
 # Example III
 # customizing stop_limit (info-value grain ratio) for each variable
-bins_cus_sl <- woebin(germancredit, y="creditability",
+bins_cus_sl = woebin(germancredit, y="creditability",
   x=c("age.in.years", "credit.amount", "housing", "purpose"),
   stop_limit=c(0.05,0.1,0.01,0.1))
 
 # Example IV
 # customizing the breakpoints of binning
-breaks_list <- list(
+breaks_list = list(
   age.in.years = c(25, 35, 40, 60),
   credit.amount = NULL,
   housing = c("own", "for free\%,\%rent"),
   purpose = NULL
 )
 
-bins_cus_brk <- woebin(germancredit, y="creditability",
+bins_cus_brk = woebin(germancredit, y="creditability",
   x=c("age.in.years", "credit.amount", "housing", "purpose"),
   breaks_list=breaks_list)
 }

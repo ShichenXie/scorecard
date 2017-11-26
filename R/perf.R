@@ -11,7 +11,7 @@
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #'
 #' @export
-perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
+perf_plot = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
 
 #' KS, ROC, Lift, PR
 #'
@@ -39,26 +39,26 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' data("germancredit")
 #'
 #' # rename creditability as y
-#' dt <- data.table(germancredit)[, `:=`(
+#' dt = data.table(germancredit)[, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
 #'
 #' # woe binning ------
-#' bins <- woebin(dt, "y")
-#' dt_woe <- woebin_ply(dt, bins)
+#' bins = woebin(dt, "y")
+#' dt_woe = woebin_ply(dt, bins)
 #'
 #' # glm ------
-#' m1 <- glm( y ~ ., family = "binomial", data = dt_woe)
+#' m1 = glm( y ~ ., family = "binomial", data = dt_woe)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both", trace=FALSE)
-#' m2 <- eval(m_step$call)
+#' m_step = step(m1, direction="both", trace=FALSE)
+#' m2 = eval(m_step$call)
 #' # summary(m2)
 #'
 #' # predicted proability
-#' dt_pred <- predict(m2, type='response', dt_woe)
+#' dt_pred = predict(m2, type='response', dt_woe)
 #'
 #' # performance ------
 #' # Example I # only ks & auc values
@@ -73,7 +73,7 @@ perf_plot <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
+perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
 
   # inputs checking
@@ -82,17 +82,17 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
   # if pred is score
   if ( !(max(pred, na.rm=TRUE)<=1 & min(pred, na.rm=TRUE)>=0) ) {
     warning("Since pred is not in [0,1], it is treated as predicted score but not probability.")
-    pred <- -pred
+    pred = -pred
   }
 
   # random sort datatable
   set.seed(seed)
-  df1 <- data.table(label=label, pred=pred)[sample(1:.N)]
+  df1 = data.table(label=label, pred=pred)[sample(1:.N)]
 
   # remove NAs
   if (anyNA(label) || anyNA(pred)) {
     warning("The NAs in \"label\" or \"pred\" were removed.")
-    df1 <- df1[!is.na(label) & !is.na(pred)]
+    df1 = df1[!is.na(label) & !is.na(pred)]
   }
 
   # check label
@@ -102,7 +102,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
     if (any((c(0,1) %in% unique(df1$label)) == FALSE)) {
       if (any(grepl(positive, df1[[label]]) == TRUE)) {
         warning(paste0("The positive value in \"label\" was replaced by 1 and negative value by 0."))
-        df1[[label]] <- ifelse(grepl(positive, df1[[label]]), 1, 0)
+        df1[[label]] = ifelse(grepl(positive, df1[[label]]), 1, 0)
       } else {
         stop(paste0("Incorrect inputs; the positive value in \"label\" is not specified"))
       }
@@ -112,9 +112,9 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # data, dfkslift ------
   if ("ks" %in% type | "lift" %in% type) {
-    if (groupnum == "N") groupnum <- length(pred)
+    if (groupnum == "N") groupnum = length(pred)
 
-    dfkslift <-
+    dfkslift =
       df1[order(-pred)
         ][, group := ceiling(.I/(.N/groupnum))
         ][,.(good = sum(label==0), bad = sum(label==1)), by=group
@@ -123,32 +123,31 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
                 cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
         ][, ks := abs(cumbad - cumgood)]
 
-    dfkslift <- rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
-
+    dfkslift = rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
   }
 
 
   # return list
-  rt <- list()
+  rt = list()
 
   # plot, KS ------
   if ("ks" %in% type) {
-    dfks <- dfkslift[ks == max(ks)][order(group)][1]
+    dfks = dfkslift[ks == max(ks)][order(group)][1]
     # return list
-    rt$KS <- round(dfks$ks, 4)
+    rt$KS = round(dfks$ks, 4)
     # print(paste0("KS: ", round(dfks$ks, 4) ))
 
 
     # gini
-    gini <- dfkslift[, sum(
+    gini = dfkslift[, sum(
       (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag"))
     )]-1
-    rt$Gini <- round(gini, 4)
+    rt$Gini = round(gini, 4)
 
 
 
     if (show_plot == TRUE) {
-      pks <- ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
+      pks = ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
         geom_line() + coord_fixed() +
         geom_segment(aes(x = dfks$group, y = 0, xend = dfks$group, yend = dfks$ks), colour = "red", linetype = "dashed", arrow=arrow(ends="both", length=unit(.2,"cm"))) +
         labs(x = "% of population", y = "% of total Good/Bad") +
@@ -165,7 +164,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # plot, Lift ------
   if ("lift" %in% type) {
-    plift <- ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
+    plift = ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
       geom_bar(stat = "identity", fill=NA, colour = "black") + coord_fixed() +
       geom_segment(aes(x = 0, y = 1/groupnum, xend = 1, yend = 1/groupnum), colour = "red", linetype = "dashed") +
       labs(x="% of population", y="%of total Bad") +
@@ -180,7 +179,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # data, dfrocpr ------
   if ("roc" %in% type | "pr" %in% type) {
-    dfrocpr <-
+    dfrocpr =
       df1[order(pred)
           ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
             ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
@@ -191,15 +190,15 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # plot, ROC ------
   if ("roc" %in% type) {
-    AUC <- dfrocpr[order(FPR,TPR)][, sum(
+    AUC = dfrocpr[order(FPR,TPR)][, sum(
       (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
     )]
     # return list
-    rt$AUC <- round(AUC,4)
+    rt$AUC = round(AUC,4)
     # print(paste0("AUC: ", round(AUC,4)))
 
     if (show_plot == TRUE) {
-      proc <- ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
+      proc = ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
         geom_ribbon(aes(ymin=0, ymax=TPR), fill="blue", alpha=0.1) +
         geom_line() + coord_fixed() +
         geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
@@ -214,10 +213,10 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # plot, P-R ------
   if ("pr" %in% type) {
-    dfpr <- dfrocpr[precision == recall]
+    dfpr = dfrocpr[precision == recall]
     # print(paste0("BEP: ", round(dfpr$recall, 4)))
     if (show_plot == TRUE) {
-      ppr <- ggplot(dfrocpr, aes(x=recall, y=precision)) +
+      ppr = ggplot(dfrocpr, aes(x=recall, y=precision)) +
         geom_line() + coord_fixed() +
         geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
         labs(x = "Recall", y = "Precision") +
@@ -231,25 +230,25 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 
   # export plot
   if (show_plot == TRUE) {
-    plist <- paste0("p", type)
+    plist = paste0("p", type)
     # add title for first plot
     eval(parse(text = paste0(plist[1], " = ", plist[1], " + ggtitle(title)")))
 
     if (length(plist) == 1) {
-      p <- eval(parse(text = plist))
+      p = eval(parse(text = plist))
     } else if (length(plist) > 1) {
       # add title for second plot
       title=""
       eval(parse(text = paste0(plist[2:length(plist)], " = ", plist[2:length(plist)], " + ggtitle(title)")))
 
       # Arrange multiple plots
-      p <- eval(parse(
+      p = eval(parse(
         text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
       ))
     }
 
     # return list
-    rt$pic <- p
+    rt$pic = p
   }
 
   return(rt)
@@ -259,8 +258,8 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'
 #' \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 #'
-#' @param score A list of two dataframe, which are credit score for both actual and expected data sample. For example, score <- list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
-#' @param label A list of two dataframe, which are label values for both actual and expected data sample. For example, label <- list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
+#' @param score A list of two dataframe, which are credit score for both actual and expected data sample. For example, score = list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
+#' @param label A list of two dataframe, which are label values for both actual and expected data sample. For example, label = list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default "".
 #' @param x_limits x-axis limits, default c(0, 800).
 #' @param x_tick_break x-axis ticker break, default 100.
@@ -282,48 +281,48 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' data("germancredit")
 #'
 #' # rename creditability as y
-#' dt <- data.table(germancredit)[, `:=`(
+#' dt = data.table(germancredit)[, `:=`(
 #'   y = ifelse(creditability == "bad", 1, 0),
 #'   creditability = NULL
 #' )]
 #'
 #' # breaking dt into train and test ------
-#' dt_list <- split_df(dt, "y", ratio = 0.6, seed=21)
-#' dt_train <- dt_list$train; dt_test <- dt_list$test
+#' dt_list = split_df(dt, "y", ratio = 0.6, seed=21)
+#' dt_train = dt_list$train; dt_test = dt_list$test
 #'
 #' # woe binning ------
-#' bins <- woebin(dt_train, "y")
+#' bins = woebin(dt_train, "y")
 #'
 #' # converting train and test into woe values
-#' train <- woebin_ply(dt_train, bins)
-#' test <- woebin_ply(dt_test, bins)
+#' train = woebin_ply(dt_train, bins)
+#' test = woebin_ply(dt_test, bins)
 #'
 #' # glm ------
-#' m1 <- glm( y ~ ., family = "binomial", data = train)
+#' m1 = glm( y ~ ., family = "binomial", data = train)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
-#' m_step <- step(m1, direction="both", trace=FALSE)
-#' m2 <- eval(m_step$call)
+#' m_step = step(m1, direction="both", trace=FALSE)
+#' m2 = eval(m_step$call)
 #' # summary(m2)
 #'
 #' # predicted proability
-#' train_pred <- predict(m2, type='response', train)
-#' test_pred <- predict(m2, type='response', test)
+#' train_pred = predict(m2, type='response', train)
+#' test_pred = predict(m2, type='response', test)
 #'
 #' # # ks & roc plot
 #' # perf_eva(train$y, train_pred, title = "train")
 #' # perf_eva(train$y, train_pred, title = "test")
 #'
 #' #' # scorecard
-#' card <- scorecard(bins, m2)
+#' card = scorecard(bins, m2)
 #'
 #' # credit score, only_total_score = TRUE
-#' train_score <- scorecard_ply(dt_train, card)
-#' test_score <- scorecard_ply(dt_test, card)
+#' train_score = scorecard_ply(dt_train, card)
+#' test_score = scorecard_ply(dt_test, card)
 #'
 #' # Example I # psi
-#' psi <- perf_psi(
+#' psi = perf_psi(
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"])
 #' )
@@ -331,7 +330,7 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' # psi$pic  # pic of score distribution
 #'
 #' # Example II # specifying score range
-#' psi_s <- perf_psi(
+#' psi_s = perf_psi(
 #'   score = list(train = train_score, test = test_score),
 #'   label = list(train = train[,"y"], test = test[, "y"]),
 #'   x_limits = c(200, 750),
@@ -339,11 +338,11 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'   )
 #'
 #' # Example III # credit score, only_total_score = FALSE
-#' train_score2 <- scorecard_ply(dt_train, card, only_total_score=FALSE)
-#' test_score2 <- scorecard_ply(dt_test, card, only_total_score=FALSE)
+#' train_score2 = scorecard_ply(dt_train, card, only_total_score=FALSE)
+#' test_score2 = scorecard_ply(dt_test, card, only_total_score=FALSE)
 #'
 #' # psi
-#' psi2 <- perf_psi(
+#' psi2 = perf_psi(
 #'   score = list(train = train_score2, test = test_score2),
 #'   label = list(train = train[,"y"], test = test[, "y"])
 #' )
@@ -353,76 +352,83 @@ perf_eva <- function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
+perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL # no visible binding for global variable
   rt = rt_psi = rt_pic = rt_dat = list() # return list
-  # rt$psi <- NULL
-  # rt$pic <- NULL
-  # rt$dat <- NULL
+  # rt$psi = NULL
+  # rt$pic = NULL
+  # rt$dat = NULL
 
 
   # inputs checking
   # score
   if (!is.list(score)) {
     stop("Incorrect inputs; score should be a list.")
-  } else if (length(score) != 2) {
-    stop("Incorrect inputs; the length of score should be 2.")
   } else {
-    if (!is.data.frame(score[[1]]) || !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframe.")
+    if (length(score) != 2) {
+      stop("Incorrect inputs; the length of score should be 2.")
+    } else {
+      if (!is.data.frame(score[[1]]) || !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframes.")
 
-    if (!identical( names(score[[1]]), names(score[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in score should be the same.")
+      if (!identical( names(score[[1]]), names(score[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in score should be the same.")
+    }
   }
 
   # label
   if ( !is.null(label) ) {
     if (!is.list(label)) {
       stop("Incorrect inputs; label should be a list.")
-    } else if (length(label) != 2) {
-      stop("Incorrect inputs; the length of label should be 2.")
     } else {
-      if (!identical(names(score), names(label))) stop("Incorrect inputs; the names of score and label should be the same. ")
+      if (length(label) != 2) {
+        stop("Incorrect inputs; the length of label should be 2.")
+      } else {
+        if (!identical(names(score), names(label))) stop("Incorrect inputs; the names of score and label should be the same. ")
 
-      if (!identical( names(label[[1]]), names(label[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in label should be the same.")
+        if (is.data.frame(label[[1]]) & is.data.frame(label[[2]]) & ncol(label[[1]]) == ncol(label[[2]]) & ncol(label[[1]]) == 1 ) {
+          label[[1]] = label[[1]][[1]]
+          label[[2]] = label[[2]][[1]]
+        }
+      }
     }
   }
 
   # score dataframe column names
-  score_names <- names(score[[1]])
+  score_names = names(score[[1]])
 
   # merge score label into one dataframe
   for (i in names(score)) {
     if (!is.null(label)) {
-      score[[i]]$y <- label[[i]][,1]
+      score[[i]]$y = label[[i]]
     } else {
-      score[[i]]$y <- NA
+      score[[i]]$y = NA
     }
   }
   # dateset of score and label
-  dt_sl <- cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
+  dt_sl = cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
 
   # PSI function
-  psi <- function(dat) {
-    # dat <- copy(dat)[,y:=NULL][complete.cases(dat),]
-    AE = NULL
+  psi = function(dat) {
+    # dat = copy(dat)[,y:=NULL][complete.cases(dat),]
+    AE = bin_PSI = NULL
 
     # dataframe of bin, actual, expected
-    dt_bae <- dcast(
+    dt_bae = dcast(
       dat[,.(count=.N), keyby=c("ae", "bin")
-        ][,distr := count/sum(count), by="ae"][],
-      bin ~ ae, value.var="distr", fill = 0
+        ],#[,distr := count/sum(count), by="ae"][],
+      bin ~ ae, value.var="count", fill = 0
     )
+    dt_bae[dt_bae == 0] = 0.9 # replace 0 by 0.9
 
-    names_ae <- setdiff(names(dt_bae), "bin")
-    dt_bae <- dt_bae[, `:=`(
-      A = dt_bae[[names_ae[1]]],
-      E = dt_bae[[names_ae[2]]]
-    )]
+    names_ae = setdiff(names(dt_bae), "bin")
+    psi_dt = dt_bae[
+      , (c("A","E")) := lapply(.SD, function(x) x/sum(x)), .SDcols = names_ae
+    ][, `:=`(AE = A-E, logAE = log(A/E))
+    ][, `:=`(bin_PSI = AE*logAE)
+    ][][, sum(bin_PSI)]
 
-    dt_bae[, `:=`(AE = A-E, logAE = log(A/E))
-         ][, `:=`(PSI = AE*logAE)
-         ][, `:=`(PSI = ifelse(PSI==Inf, 0, PSI))][, sum(PSI)]
+    return(psi_dt)
   }
 
 
@@ -431,28 +437,28 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     # data manipulation to calculating psi and plot
     if (length(unique(dt_sl[[sn]])) > 10) {
       # breakpoints
-      brkp <- unique(c(
+      brkp = unique(c(
         floor(min(dt_sl[[sn]])/x_tick_break)*x_tick_break,
         seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
         ceiling(max(dt_sl[[sn]])/x_tick_break)*x_tick_break
       ))
 
       # random sort datatable
-      dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
+      dat = dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
 
-      dat$bin <- cut(dat[[sn]], brkp, right = FALSE, dig.lab = 10, ordered_result = F)
+      dat$bin = cut(dat[[sn]], brkp, right = FALSE, dig.lab = 10, ordered_result = F)
 
     } else {
       # random sort datatable
-      dat <- dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
-      dat$bin <- dat[[sn]]
+      dat = dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
+      dat$bin = dat[[sn]]
 
     }
 
 
     # psi ------
-    # rt[[paste0(sn, "_psi")]] <- round(psi(dat), 4)
-    rt_psi[[sn]] <- data.frame(PSI = round(psi(dat), 4))
+    # rt[[paste0(sn, "_psi")]] = round(psi(dat), 4)
+    rt_psi[[sn]] = data.frame(PSI = round(psi(dat), 4))
 
 
 
@@ -460,7 +466,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
     # distribution of scorecard probability
     if (show_plot) {
       # score distribution and bad probability
-      distr_prob <- dat[
+      distr_prob = dat[
         order(bin)
         ][,.(count=.N, bad=sum(y==1)), keyby=c("ae", "bin")
           ][,`:=`(
@@ -473,7 +479,7 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
 
 
       # plot
-      p_score_distr <-
+      p_score_distr =
         ggplot(distr_prob) +
         geom_bar(aes(x=bin, y=distr, fill=ae), alpha=0.6, stat="identity", position="dodge") +
         geom_line(aes(x=bin, y=badprob2, group=ae, colour=ae, linetype=ae)) +
@@ -487,17 +493,17 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
 
 
       if (title != "" & !is.na(title)) {
-        p_score_distr <- p_score_distr + ggtitle(paste0(title, " PSI: ", round(psi(dat), 4)))
+        p_score_distr = p_score_distr + ggtitle(paste0(title, " PSI: ", round(psi(dat), 4)))
       } else {
-        p_score_distr <- p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))
+        p_score_distr = p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))
       }
 
 
       # return of pic
-      rt_pic[[sn]] <- p_score_distr
+      rt_pic[[sn]] = p_score_distr
 
       if (return_distr_dat) {
-        rt_dat[[sn]] <- dcast(
+        rt_dat[[sn]] = dcast(
           distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
           bin ~ ae, value.var=c("count","bad","badprob"), sep="_"
         )[,c(1,2,4,6,3,5,7)]
@@ -506,9 +512,9 @@ perf_psi <- function(score, label = NULL, title="", x_limits=c(100,800), x_tick_
   } # end of for loop
 
   # return
-  rt$psi <- rbindlist(rt_psi, idcol = "variable")
-  rt$pic <- rt_pic
-  if (return_distr_dat) rt$dat <- rt_dat
+  rt$psi = rbindlist(rt_psi, idcol = "variable")
+  rt$pic = rt_pic
+  if (return_distr_dat) rt$dat = rt_dat
 
   return(rt)
 }

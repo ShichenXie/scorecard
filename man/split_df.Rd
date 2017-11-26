@@ -22,8 +22,8 @@ Split a dataset
 library(scorecard)
 data(germancredit)
 
-dts <- split_df(germancredit, y="creditability")
-train <- dts$train
-test <- dts$test
+dts = split_df(germancredit, y="creditability")
+train = dts$train
+test = dts$test
 
 }

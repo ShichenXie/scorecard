@@ -16,25 +16,25 @@
 #' data(germancredit)
 #'
 #' # information values
-#' dt_infovalue <- iv(germancredit, y = "creditability")
+#' dt_infovalue = iv(germancredit, y = "creditability")
 #'
 #' @import data.table
 #' @export
 #'
-iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
+iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
   good = bad = DistrBad = DistrGood = miv = info_value = . = NULL # no visible binding for global variable
 
   # set dt as data.table
-  dt <- setDT(dt)
+  dt = setDT(dt)
   # replace "" by NA
-  dt <- rep_blank_na(dt)
+  dt = rep_blank_na(dt)
   # check y
-  dt <- check_y(dt, y, positive)
+  dt = check_y(dt, y, positive)
   # x variable names
-  x <- x_variable(dt,y,x)
+  x = x_variable(dt,y,x)
 
   # data prep
-  dt <- dt[
+  dt = dt[
     , x, with = FALSE
     ][, `:=`(
       rowid = .I,
@@ -42,7 +42,7 @@ iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
     )]
 
   # info_value
-  ivlist <- melt(
+  ivlist = melt(
     setDT(dt)[, (x) := lapply(.SD, as.character), .SDcols = x],
     id = c("rowid", "y")
   )[
@@ -73,7 +73,7 @@ iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
 # #'
 # #' @examples
 # #' # iv_01(good, bad)
-# #' dtm <- melt(dt, id = 'creditability')[, .(
+# #' dtm = melt(dt, id = 'creditability')[, .(
 # #' good = sum(creditability=="good"), bad = sum(creditability=="bad")
 # #' ), keyby = c("variable", "value")]
 # #'
@@ -82,7 +82,7 @@ iv <- function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
 # #' @import data.table
 #' @import data.table
 #'
-iv_01 <- function(good, bad) {
+iv_01 = function(good, bad) {
   DistrBad = DistrGood = miv = NULL # no visible binding for global variable
 
   data.table(
@@ -105,7 +105,7 @@ iv_01 <- function(good, bad) {
 # #'
 #' @import data.table
 #'
-miv_01 <- function(good, bad) {
+miv_01 = function(good, bad) {
   DistrBad = DistrGood = miv = NULL # no visible binding for global variable
 
   data.table(
@@ -126,7 +126,7 @@ miv_01 <- function(good, bad) {
 # #' @import data.table
 #' @import data.table
 #'
-woe_01 <- function(good, bad) {
+woe_01 = function(good, bad) {
   DistrBad = DistrGood = woe = NULL # no visible binding for global variable
 
   data.table(
