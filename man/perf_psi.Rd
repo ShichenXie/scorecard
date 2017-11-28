@@ -9,9 +9,9 @@ perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
   return_distr_dat = FALSE)
 }
 \arguments{
-\item{score}{A list of two dataframe, which are credit score for both actual and expected data sample. For example, score = list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.}
+\item{score}{A list of credit score for actual and expected data samples. For example, score = list(train = score_A, test = score_E), both score_A and score_E are dataframes with the same column names.}
 
-\item{label}{A list of two dataframe, which are label values for both actual and expected data sample. For example, label = list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
+\item{label}{A list of label values for actual and expected data samples. For example, label = list(train = label_A, test = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
 
 \item{title}{Title of plot, default "".}
 
@@ -86,7 +86,7 @@ test_score = scorecard_ply(dt_test, card)
 # Example I # psi
 psi = perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train[,"y"], test = test[, "y"])
+  label = list(train = train$y, test = test$y)
 )
 # psi$psi  # psi dataframe
 # psi$pic  # pic of score distribution
@@ -94,7 +94,7 @@ psi = perf_psi(
 # Example II # specifying score range
 psi_s = perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train[,"y"], test = test[, "y"]),
+  label = list(train = train$y, test = test$y),
   x_limits = c(200, 750),
   x_tick_break = 50
   )
@@ -106,7 +106,7 @@ test_score2 = scorecard_ply(dt_test, card, only_total_score=FALSE)
 # psi
 psi2 = perf_psi(
   score = list(train = train_score2, test = test_score2),
-  label = list(train = train[,"y"], test = test[, "y"])
+  label = list(train = train$y, test = test$y)
 )
 # psi2$psi  # psi dataframe
 # psi2$pic  # pic of score distribution

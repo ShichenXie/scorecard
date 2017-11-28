@@ -258,8 +258,8 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 #'
 #' \code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
 #'
-#' @param score A list of two dataframe, which are credit score for both actual and expected data sample. For example, score = list(train = df1, test = df2), both df1 and df2 are dataframes with the same column names.
-#' @param label A list of two dataframe, which are label values for both actual and expected data sample. For example, label = list(train = df1, test = df2), both df1 and df2 are dataframe with the same column names. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
+#' @param score A list of credit score for actual and expected data samples. For example, score = list(train = score_A, test = score_E), both score_A and score_E are dataframes with the same column names.
+#' @param label A list of label values for actual and expected data samples. For example, label = list(train = label_A, test = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default "".
 #' @param x_limits x-axis limits, default c(0, 800).
 #' @param x_tick_break x-axis ticker break, default 100.
@@ -324,7 +324,7 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 #' # Example I # psi
 #' psi = perf_psi(
 #'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train[,"y"], test = test[, "y"])
+#'   label = list(train = train$y, test = test$y)
 #' )
 #' # psi$psi  # psi dataframe
 #' # psi$pic  # pic of score distribution
@@ -332,7 +332,7 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 #' # Example II # specifying score range
 #' psi_s = perf_psi(
 #'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train[,"y"], test = test[, "y"]),
+#'   label = list(train = train$y, test = test$y),
 #'   x_limits = c(200, 750),
 #'   x_tick_break = 50
 #'   )
@@ -344,7 +344,7 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 #' # psi
 #' psi2 = perf_psi(
 #'   score = list(train = train_score2, test = test_score2),
-#'   label = list(train = train[,"y"], test = test[, "y"])
+#'   label = list(train = train$y, test = test$y)
 #' )
 #' # psi2$psi  # psi dataframe
 #' # psi2$pic  # pic of score distribution
@@ -386,9 +386,19 @@ perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_b
       } else {
         if (!identical(names(score), names(label))) stop("Incorrect inputs; the names of score and label should be the same. ")
 
-        if (is.data.frame(label[[1]]) & is.data.frame(label[[2]]) & ncol(label[[1]]) == ncol(label[[2]]) & ncol(label[[1]]) == 1 ) {
-          label[[1]] = label[[1]][[1]]
-          label[[2]] = label[[2]][[1]]
+        if (is.data.frame(label[[1]])) {
+          if (ncol(label[[1]]) == 1) {
+            label[[1]] = label[[1]][[1]]
+          } else (
+            stop("Incorrect inputs; the number of columns in label should be 1.")
+          )
+        }
+        if (is.data.frame(label[[2]])) {
+          if (ncol(label[[2]]) == 1) {
+            label[[2]] = label[[2]][[1]]
+          } else {
+            stop("Incorrect inputs; the number of columns in label should be 1.")
+          }
         }
       }
     }
@@ -451,7 +461,7 @@ perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_b
     } else {
       # random sort datatable
       dat = dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
-      dat$bin = dat[[sn]]
+      dat$bin = factor(dat[[sn]])
 
     }
 
