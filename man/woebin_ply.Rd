@@ -48,5 +48,5 @@ germancredit_woe = woebin_ply(germancredit, bins_df)
 
 }
 \seealso{
-\code{\link{woebin}}, \code{\link{woebin_plot}}
+\code{\link{woebin}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
 }

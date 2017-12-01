@@ -70,5 +70,5 @@ bins_cus_brk = woebin(germancredit, y="creditability",
 
 }
 \seealso{
-\code{\link{woebin_ply}}, \code{\link{woebin_plot}}
+\code{\link{woebin_ply}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
 }

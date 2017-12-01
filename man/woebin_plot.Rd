@@ -44,5 +44,5 @@ plotlist = woebin_plot(bins)
 
 }
 \seealso{
-\code{\link{woebin}}, \code{\link{woebin_ply}}
+\code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_adj}}
 }

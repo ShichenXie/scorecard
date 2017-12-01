@@ -20,6 +20,8 @@ split_df = function(dt, y=NULL, ratio=0.7, seed=186) {
 
   # set dt as data.table
   dt = setDT(dt)
+  # remove date/time col
+  dt = rm_datetime_col(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
 

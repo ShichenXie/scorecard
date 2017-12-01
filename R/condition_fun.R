@@ -1,12 +1,28 @@
 # conditions # https://adv-r.hadley.nz/debugging
 
+# remove date time
+rm_datetime_col = function(dt) {
+  dt = setDT(dt)
+
+  isdatetime = function(x) (class(x)[1] %in% c("date","POSIXlt","POSIXct","POSIXt")) == TRUE
+  datetime_col = names(which(dt[,sapply(.SD, isdatetime)]))
+
+  if (length(datetime_col) > 0) {
+    warning(paste0("The date/times columns (",paste0(datetime_col,collapse = ","),") are removed from input dataset."))
+
+    dt = dt[,(datetime_col) := NULL]
+  }
+
+  return(dt)
+}
+
 # replace blank by NA
 #' @import data.table
 #'
 rep_blank_na = function(dt) {
   dt = setDT(dt)
 
-  if ( any(dt == '', na.rm=TRUE) ) {
+  if ("" %in% dt) {
     warning("There is a blank character in the columns of \"", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,"\", which was replaced by NA.")
     dt[dt == ""] = NA
   }

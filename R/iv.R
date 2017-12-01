@@ -26,6 +26,8 @@ iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
 
   # set dt as data.table
   dt = setDT(dt)
+  # remove date/time col
+  dt = rm_datetime_col(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
   # check y
@@ -49,10 +51,8 @@ iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
     , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
     ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0 by 0.99 in good/bad columns
     ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
-    ][, `:=`(
-      # woe = log(DistrBad/DistrGood),
-      miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood)
-   )][, .(info_value = sum(miv)), by="variable"]
+    ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
+    ][, .(info_value = sum(miv)), by="variable"]
 
 
   if (order==TRUE) {
@@ -89,7 +89,7 @@ iv_01 = function(good, bad) {
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
   ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, `:=`(miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+  ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
   ][, sum(miv)]
 
 }
@@ -112,7 +112,7 @@ miv_01 = function(good, bad) {
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
   ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, `:=`( miv = log(DistrBad/DistrGood)*(DistrBad-DistrGood) )
+  ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
   ][, miv]
 }
 
@@ -133,6 +133,6 @@ woe_01 = function(good, bad) {
     good = good, bad = bad
   )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
   ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, `:=`(woe = log(DistrBad/DistrGood))
+  ][, woe := log(DistrBad/DistrGood)
   ][, woe]
 }
