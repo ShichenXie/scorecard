@@ -329,6 +329,9 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 
   # breaks_list
   if (!is.null(breaks_list)) {
+    if (is.character(breaks_list)) {
+      breaks_list = eval(parse(text = breaks_list))
+    }
     if (!is.list(breaks_list)) {
       stop("Incorrect inputs; breaks_list should be a list.")
     } else {
@@ -405,7 +408,6 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
       breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
       stop_limit=stop_limit_i, max_bin_num = max_bin_num)
 
-
     # renmae NA as missing
     bins[[x_i]] = bin2[, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin))]
   }
@@ -477,11 +479,11 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   # set dt as data.table
   kdt = copy(setDT(dt))
   # remove date/time col
-  dt = rm_datetime_col(dt)
+  kdt = rm_datetime_col(kdt)
   # replace "" by NA
   kdt = rep_blank_na(kdt)
   # ncol of dt
-  if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
+  if (ncol(kdt) <=1 & !is.null(ncol(kdt))) stop("Incorrect inputs; dt should have at least two columns.")
   # print_step
   print_step = check_print_step(print_step)
 
@@ -496,15 +498,15 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   }
 
   # x variables
-  x_bin = bins[,unique(variable)]
-  x_dt = names(dt)
-  x = intersect(x_bin, x_dt)
+  xs_bin = bins[,unique(variable)]
+  xs_dt = names(dt)
+  xs = intersect(xs_bin, xs_dt)
 
   # loop on x variables
   x_num = 1
-  x_length = length(x)
-  for (a in x) {
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), a,"\n")
+  xs_len = length(xs)
+  for (a in xs) {
+    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), a,"\n")
     x_num = x_num+1
 
     binsx = bins[variable==a] #bins[[a]]
@@ -544,6 +546,60 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
   return(kdt)
 }
 
+
+#' @import data.table ggplot2
+#'
+plot_bin = function(bin, title) {
+  . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = count_distr2 = total_iv = NULL # no visible binding for global variable
+
+  # data
+  ## y_right_max
+  y_right_max = ceiling(max(bin$badprob, na.rm=T)*10)
+  if (y_right_max %% 2 ==1) y_right_max=y_right_max+1
+  if (y_right_max - max(bin$badprob, na.rm=T)*10 <= 0.3) y_right_max = y_right_max+2
+  y_right_max = y_right_max/10
+  if (y_right_max>1 || y_right_max<=0 || is.na(y_right_max) || is.null(y_right_max)) y_right_max=1
+
+  ## y_left_max
+  y_left_max = ceiling(max(bin$count_distr, na.rm=T)*10)/10
+  if (y_left_max>1 || y_left_max<=0 || is.na(y_left_max) || is.null(y_left_max)) y_left_max=1
+
+
+  ## data set
+  bin = setDT(bin)
+  dat = bin[,.(
+    variable, bin, count_num=count, count_distr2=count_distr, count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
+  )][, `:=`(
+    bin = ifelse(is.na(bin), "NA", bin),
+    badprob2 = badprob*(y_left_max/y_right_max),
+    badprob = round(badprob,4),
+    rowid = .I
+  )][, bin := factor(bin, levels = bin)]
+
+  dat_melt = melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[
+    ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
+    ]
+
+  # title
+  if (!is.null(title)) title = paste0(title, "-")
+
+  # plot
+  ggplot() +
+    geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
+    geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
+    geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
+    geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
+    geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour="blue", vjust = -0.5) +
+    scale_y_continuous(limits = c(0,y_left_max), sec.axis = sec_axis(~./(y_left_max/y_right_max), name = "Bad probability")) +
+    labs(title = paste0(title, dat[1, variable],"  (iv:",bin[1,round(total_iv,4)],")"), x=NULL, y="Bin count distribution", fill=NULL) +
+    theme_bw() +
+    theme(
+      legend.position="bottom", legend.direction="horizontal",
+      axis.title.y.right = element_text(colour = "blue"),
+      axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
+      axis.text.y = element_text(angle=90, hjust = 0.5) )
+
+}
 #' WOE Binning Visualization
 #'
 #' \code{woebin_plot} create plots of count distribution and bad probability for each bin. The binning informations are generates by  \code{woebin}.
@@ -585,59 +641,6 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 woebin_plot = function(bins, x=NULL, title=NULL) {
   variable = NULL # no visible binding for global variable
 
-  # plot function
-  pf = function(bin, title) {
-    . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = count_distr2 = total_iv = NULL # no visible binding for global variable
-
-    # data
-    ## y_right_max
-    y_right_max = ceiling(max(bin$badprob, na.rm=T)*10)
-    if (y_right_max %% 2 ==1) y_right_max=y_right_max+1
-    if (y_right_max - max(bin$badprob, na.rm=T)*10 <= 0.3) y_right_max = y_right_max+2
-    y_right_max = y_right_max/10
-    if (y_right_max>1 || y_right_max<=0 || is.na(y_right_max) || is.null(y_right_max)) y_right_max=1
-
-    ## y_left_max
-    y_left_max = ceiling(max(bin$count_distr, na.rm=T)*10)/10
-    if (y_left_max>1 || y_left_max<=0 || is.na(y_left_max) || is.null(y_left_max)) y_left_max=1
-
-
-    ## data set
-    bin = setDT(bin)
-    dat = bin[,.(
-      variable, bin, count_num=count, count_distr2=count_distr, count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
-    )][, `:=`(
-      bin = ifelse(is.na(bin), "NA", bin),
-      badprob2 = badprob*(y_left_max/y_right_max),
-      badprob = round(badprob,4),
-      rowid = .I
-    )][, bin := factor(bin, levels = bin)]
-
-    dat_melt = melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[
-      ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
-      ]
-
-    # title
-    if (!is.null(title)) title = paste0(title, "-")
-
-    # plot
-    ggplot() +
-      geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
-      geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
-      geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
-      geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
-      geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour="blue", vjust = -0.5) +
-      scale_y_continuous(limits = c(0,y_left_max), sec.axis = sec_axis(~./(y_left_max/y_right_max), name = "Bad probability")) +
-      labs(title = paste0(title, dat[1, variable],"  (iv:",bin[1,round(total_iv,4)],")"), x=NULL, y="Bin count distribution", fill=NULL) +
-      theme_bw() +
-      theme(
-        legend.position="bottom", legend.direction="horizontal",
-        axis.title.y.right = element_text(colour = "blue"),
-        axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
-        axis.text.y = element_text(angle=90, hjust = 0.5) )
-
-  }
-
   # converting data.frame into list
   bins_list = list()
   if (is.data.frame(bins)) {
@@ -656,7 +659,7 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 
   # plot export
   plotlist = list()
-  for (i in x) plotlist[[i]] = pf(bins[[i]], title)
+  for (i in x) plotlist[[i]] = plot_bin(bins[[i]], title)
 
 
   return(plotlist)
@@ -678,10 +681,19 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #' # Load German credit data
 #' data(germancredit)
 #'
+#' # Example II
 #' dt1 = germancredit[, c("creditability", "credit.amount")]
-#'
 #' bins1 = woebin(dt1, y="creditability")
-#' break_adj = woebin_adj(bins1, dt1, "creditability")
+#' breaks_adj1 = woebin_adj(bins1, dt1, y="creditability")
+#' bins1_final = woebin(dt1, y="creditability",
+#'                     breaks_list=breaks_adj1)
+#'
+#' # Example II
+#' bins = woebin(germancredit, y="creditability")
+#' breaks_adj = woebin_adj(bins, germancredit, "creditability")
+#' bins_final = woebin(germancredit, y="creditability",
+#'                     breaks_list=breaks_adj)
+#'
 #' }
 #'
 #' @import data.table
@@ -692,6 +704,7 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 woebin_adj = function(bins, dt, y) {
   variable = p = NULL
 
+  dt = setDT(dt)
   # bins # if (is.list(bins)) rbindlist(bins)
   if (!is.data.table(bins)) {
     if (is.data.frame(bins)) {
@@ -709,7 +722,7 @@ woebin_adj = function(bins, dt, y) {
   for (i in 1:xs_len) {
     # x variable
     x = xs[i]
-    cat("########", paste0(i,"/",xs_len), x, "########\n")
+    cat("--------", paste0(i,"/",xs_len), x, "--------\n")
     bin = bins[variable==x]
     breaks = NULL
 
@@ -720,8 +733,10 @@ woebin_adj = function(bins, dt, y) {
       print(table(dt[[x]]))
       cat("\n")
     } else {
-      ht = hist(dt[[x]], plot = FALSE)
-      plot(ht, main = x, xlab = NULL)
+      if ( is.numeric(dt[[x]])) {
+        ht = hist(dt[[x]], plot = FALSE)
+        plot(ht, main = x, xlab = NULL)
+      }
     }
     ## summary
     cat(paste0("summary(",x,"): "),"\n")
@@ -734,7 +749,6 @@ woebin_adj = function(bins, dt, y) {
     while (menu(c("No", "Yes"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x, "?")) == 2) {
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$","",breaks) #gsub("，",",",breaks)
-
 
       # woebin adj plotting
       tryCatch(
@@ -754,7 +768,7 @@ woebin_adj = function(bins, dt, y) {
       break_list = paste0(break_list, collapse=", \n")
     }
   }
-
+  break_list = paste0(c("list(",break_list,")"),collapse = "\n")
   cat(break_list,"\n")
   return(break_list)
 }
