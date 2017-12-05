@@ -68,8 +68,8 @@ m2 = eval(m_step$call)
 
 # performance ------
 # predicted proability
-train_pred = predict(m2, type='response', train_woe)
-test_pred = predict(m2, type='response', test_woe)
+train_pred = predict(m2, train_woe, type='response')
+test_pred = predict(m2, test_woe, type='response')
 
 # ks & roc plot
 train_perf = perf_eva(train$y, train_pred, title = "train")
