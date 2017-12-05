@@ -14,7 +14,7 @@ woebin_adj(bins, dt, y)
 \item{y}{Name of y variable.}
 }
 \description{
-\code{woebin_adj} adjust the binning breaks from \code{woebin}.
+\code{woebin_adj} interactively adjust the binning breaks.
 }
 \examples{
 \dontrun{

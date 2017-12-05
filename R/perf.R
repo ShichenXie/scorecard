@@ -80,8 +80,8 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
 
   # if pred is score
-  if ( !(max(pred, na.rm=TRUE)<=1 & min(pred, na.rm=TRUE)>=0) ) {
-    warning("Since pred is not in [0,1], it is treated as predicted score but not probability.")
+  if ( !(mean(pred, na.rm=TRUE)<=1 & mean(pred, na.rm=TRUE)>=0) ) {
+    warning("Since the average of pred is not in [0,1], it is treated as predicted score but not probability.")
     pred = -pred
   }
 
