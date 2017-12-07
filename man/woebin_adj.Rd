@@ -21,19 +21,18 @@ woebin_adj(bins, dt, y)
 # Load German credit data
 data(germancredit)
 
-# Example II
-dt1 = germancredit[, c("creditability", "credit.amount")]
-bins1 = woebin(dt1, y="creditability")
-breaks_adj1 = woebin_adj(bins1, dt1, y="creditability")
-bins1_final = woebin(dt1, y="creditability",
-                    breaks_list=breaks_adj1)
-
-# Example II
-bins = woebin(germancredit, y="creditability")
-breaks_adj = woebin_adj(bins, germancredit, "creditability")
-bins_final = woebin(germancredit, y="creditability",
+# Example I
+dt = germancredit[, c("creditability", "age.in.years", "credit.amount")]
+bins = woebin(dt1, y="creditability")
+breaks_adj = woebin_adj(bins1, dt1, y="creditability")
+bins_final = woebin(dt, y="creditability",
                     breaks_list=breaks_adj)
 
+# Example II
+binsII = woebin(germancredit, y="creditability")
+breaks_adjII = woebin_adj(binsII, germancredit, "creditability")
+bins_finalII = woebin(germancredit, y="creditability",
+                    breaks_list=breaks_adjII)
 }
 
 }

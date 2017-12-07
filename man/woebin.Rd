@@ -47,6 +47,8 @@ bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "pu
 # Example II
 # binning for germancredit dataset
 bins_germ = woebin(germancredit, y = "creditability")
+# converting bins_germ into a dataframe
+# bins_germ_df = data.table::rbindlist(bins_germ)
 
 # Example III
 # customizing stop_limit (info-value grain ratio) for each variable

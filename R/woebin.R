@@ -284,6 +284,8 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #' # Example II
 #' # binning for germancredit dataset
 #' bins_germ = woebin(germancredit, y = "creditability")
+#' # converting bins_germ into a dataframe
+#' # bins_germ_df = data.table::rbindlist(bins_germ)
 #'
 #' # Example III
 #' # customizing stop_limit (info-value grain ratio) for each variable
@@ -681,19 +683,18 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #' # Load German credit data
 #' data(germancredit)
 #'
-#' # Example II
-#' dt1 = germancredit[, c("creditability", "credit.amount")]
-#' bins1 = woebin(dt1, y="creditability")
-#' breaks_adj1 = woebin_adj(bins1, dt1, y="creditability")
-#' bins1_final = woebin(dt1, y="creditability",
-#'                     breaks_list=breaks_adj1)
-#'
-#' # Example II
-#' bins = woebin(germancredit, y="creditability")
-#' breaks_adj = woebin_adj(bins, germancredit, "creditability")
-#' bins_final = woebin(germancredit, y="creditability",
+#' # Example I
+#' dt = germancredit[, c("creditability", "age.in.years", "credit.amount")]
+#' bins = woebin(dt1, y="creditability")
+#' breaks_adj = woebin_adj(bins1, dt1, y="creditability")
+#' bins_final = woebin(dt, y="creditability",
 #'                     breaks_list=breaks_adj)
 #'
+#' # Example II
+#' binsII = woebin(germancredit, y="creditability")
+#' breaks_adjII = woebin_adj(binsII, germancredit, "creditability")
+#' bins_finalII = woebin(germancredit, y="creditability",
+#'                     breaks_list=breaks_adjII)
 #' }
 #'
 #' @import data.table
@@ -702,7 +703,7 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #' @export
 #'
 woebin_adj = function(bins, dt, y) {
-  variable = p = NULL
+  variable = p = bin_adj = NULL
 
   dt = setDT(dt)
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -729,7 +730,7 @@ woebin_adj = function(bins, dt, y) {
     # summary data
     ## table
     if (length(table(dt[[x]])) < 10) {
-      cat(paste0("table(",x,"): "))
+      cat(paste0("> table(",x,"): "))
       print(table(dt[[x]]))
       cat("\n")
     } else {
@@ -739,29 +740,58 @@ woebin_adj = function(bins, dt, y) {
       }
     }
     ## summary
-    cat(paste0("summary(",x,"): "),"\n")
+    cat(paste0("> summary(",x,"): "),"\n")
     print(summary(dt[[x]]))
     cat("\n")
-    # woebin plotting
+    ## breaks
+    breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin$bin), c("-Inf","Inf","missing"))
+    breaks_bin = ifelse(
+      is.numeric(dt[[x]]),
+      paste0(breaks_bin, collapse=", "),
+      paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+    cat("> Current breaks: ", "\n", breaks_bin, "\n")
+    ## woebin plotting
     plist = woebin_plot(bin)
     print(plist[[1]])
 
     while (menu(c("No", "Yes"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x, "?")) == 2) {
       breaks = readline("> Enter modified breaks: ")
-      breaks = gsub("^[,\\.]+|[,\\.]+$","",breaks) #gsub("，",",",breaks)
+      breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
 
       # woebin adj plotting
-      tryCatch(
+      try(
         eval(parse(text = paste0(
-          "print(woebin_plot(woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L))[[1]])"
-        ))),
-        finally = next
+          "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)"
+        )))#, finally = next
       )
 
-      breaks = unique(c(breaks,breaks))
-      # print(breaks)
-      if (breaks == "") breaks = NULL
+      ## print adjust breaks
+      breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
+      breaks_bin = ifelse(
+        is.numeric(dt[[x]]),
+        paste0(breaks_bin, collapse=", "),
+        paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+      cat("> Current breaks: ", "\n", breaks_bin, "\n")
+      # print bin_adj
+      print(woebin_plot(bin_adj)[[1]])
+      # # breaks
+      if (breaks == "") breaks = breaks_bin
     }
+
+    # if (is.null(breaks))  {
+    #   try( eval(parse(text = paste0(
+    #       "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",print_step=0L)"
+    #     ))), silent = TRUE )
+    #   breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
+    #
+    #   breaks_bin = ifelse(
+    #     is.numeric(dt[[x]]),
+    #     paste0(breaks_bin, collapse=", "),
+    #     paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+    #
+    # }
+
+    if (is.null(breaks)) breaks = breaks_bin
     # break_list
     if (length(breaks)>0) {
       break_list = c(break_list, paste0(x,"=c(",breaks,")"))
@@ -770,5 +800,6 @@ woebin_adj = function(bins, dt, y) {
   }
   break_list = paste0(c("list(",break_list,")"),collapse = "\n")
   cat(break_list,"\n")
+
   return(break_list)
 }

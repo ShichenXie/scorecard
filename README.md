@@ -50,7 +50,8 @@ bins = woebin(dt_s, "y", print_step = 5)
 # woebin_plot(bins)
 
 # binning adjustment
-breaks_adj = list(age.in.years=c(26, 35, 40))
+# breaks_adj = woebin_adj(bins, dt_s, "y") # adjust breaks interactively
+breaks_adj = list(age.in.years=c(26, 35, 40)) # or specify breaks manually
 bins_adj = woebin(dt_s,"y", breaks_list=breaks_adj, print_step = 5)
 
 # converting train and test into woe values
