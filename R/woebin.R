@@ -728,10 +728,17 @@ woebin_adj = function(bins, dt, y) {
     breaks = NULL
 
     # summary data
+    ## class
+    cat(paste0("> class(",x,"): "),"\n")
+    cat(class(dt[[x]]),"\n")
+    ## summary
+    cat(paste0("> summary(",x,"): "),"\n")
+    print(summary(dt[[x]]))
+    cat("\n")
     ## table
     if (length(table(dt[[x]])) < 10) {
       cat(paste0("> table(",x,"): "))
-      print(table(dt[[x]]))
+      cat(table(dt[[x]]))
       cat("\n")
     } else {
       if ( is.numeric(dt[[x]])) {
@@ -739,10 +746,7 @@ woebin_adj = function(bins, dt, y) {
         plot(ht, main = x, xlab = NULL)
       }
     }
-    ## summary
-    cat(paste0("> summary(",x,"): "),"\n")
-    print(summary(dt[[x]]))
-    cat("\n")
+
     ## breaks
     breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin$bin), c("-Inf","Inf","missing"))
     breaks_bin = ifelse(
@@ -759,10 +763,11 @@ woebin_adj = function(bins, dt, y) {
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
 
       # woebin adj plotting
-      try(
+      tryCatch(
         eval(parse(text = paste0(
           "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)"
-        )))#, finally = next
+        ))),
+        finally = next
       )
 
       ## print adjust breaks
