@@ -20,4 +20,4 @@
 #' str(df)
 NULL
 
-# source: source code of woebinning package
+# the dataset is modified from woebinning package

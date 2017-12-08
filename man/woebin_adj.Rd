@@ -23,8 +23,8 @@ data(germancredit)
 
 # Example I
 dt = germancredit[, c("creditability", "age.in.years", "credit.amount")]
-bins = woebin(dt1, y="creditability")
-breaks_adj = woebin_adj(bins1, dt1, y="creditability")
+bins = woebin(dt, y="creditability")
+breaks_adj = woebin_adj(bins, dt, y="creditability")
 bins_final = woebin(dt, y="creditability",
                     breaks_list=breaks_adj)
 

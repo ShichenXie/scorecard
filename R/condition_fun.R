@@ -22,8 +22,9 @@ rm_datetime_col = function(dt) {
 rep_blank_na = function(dt) {
   dt = setDT(dt)
 
-  if ("" %in% dt) {
-    warning("There is a blank character in the columns of \"", paste0(names(dt)[dt[,sapply(.SD, function(x) "" %in% x)]], collapse = ",") ,"\", which was replaced by NA.")
+  if (any(dt == "", na.rm = TRUE)) {
+    warning("There are blank characters in the columns of \"", paste0(names(which(dt[,sapply(.SD, function(x) any(x=="",na.rm = T))])), collapse = ",") ,"\", which were replaced by NAs.")
+
     dt[dt == ""] = NA
   }
 

@@ -685,8 +685,8 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #'
 #' # Example I
 #' dt = germancredit[, c("creditability", "age.in.years", "credit.amount")]
-#' bins = woebin(dt1, y="creditability")
-#' breaks_adj = woebin_adj(bins1, dt1, y="creditability")
+#' bins = woebin(dt, y="creditability")
+#' breaks_adj = woebin_adj(bins, dt, y="creditability")
 #' bins_final = woebin(dt, y="creditability",
 #'                     breaks_list=breaks_adj)
 #'
@@ -727,10 +727,9 @@ woebin_adj = function(bins, dt, y) {
     bin = bins[variable==x]
     breaks = NULL
 
-    # summary data
+    # print basic information of data
     ## class
-    cat(paste0("> class(",x,"): "),"\n")
-    cat(class(dt[[x]]),"\n")
+    cat(paste0("> class(",x,"): "),"\n",class(dt[[x]]),"\n","\n")
     ## summary
     cat(paste0("> summary(",x,"): "),"\n")
     print(summary(dt[[x]]))
@@ -738,7 +737,7 @@ woebin_adj = function(bins, dt, y) {
     ## table
     if (length(table(dt[[x]])) < 10) {
       cat(paste0("> table(",x,"): "))
-      cat(table(dt[[x]]))
+      print(table(dt[[x]]))
       cat("\n")
     } else {
       if ( is.numeric(dt[[x]])) {
@@ -746,55 +745,47 @@ woebin_adj = function(bins, dt, y) {
         plot(ht, main = x, xlab = NULL)
       }
     }
-
-    ## breaks
+    ## current breaks
     breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin$bin), c("-Inf","Inf","missing"))
     breaks_bin = ifelse(
       is.numeric(dt[[x]]),
       paste0(breaks_bin, collapse=", "),
       paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
-    cat("> Current breaks: ", "\n", breaks_bin, "\n")
+    cat("> Current breaks: ","\n", breaks_bin,"\n","\n")
     ## woebin plotting
     plist = woebin_plot(bin)
     print(plist[[1]])
 
+    # adjusting breaks
     while (menu(c("No", "Yes"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x, "?")) == 2) {
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
 
       # woebin adj plotting
-      tryCatch(
+      show_binadj_plot = function(dt, y, x, breaks) {
         eval(parse(text = paste0(
-          "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)"
-        ))),
-        finally = next
-      )
+          "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)")))
 
-      ## print adjust breaks
-      breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
-      breaks_bin = ifelse(
-        is.numeric(dt[[x]]),
-        paste0(breaks_bin, collapse=", "),
-        paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
-      cat("> Current breaks: ", "\n", breaks_bin, "\n")
-      # print bin_adj
-      print(woebin_plot(bin_adj)[[1]])
-      # # breaks
-      if (breaks == "") breaks = breaks_bin
+        ## print adjust breaks
+        breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
+        breaks_bin = ifelse(
+          is.numeric(dt[[x]]),
+          paste0(breaks_bin, collapse=", "),
+          paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+        cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
+
+        # print bin_adj
+        print(woebin_plot(bin_adj)[[1]])
+
+        # # breaks
+        if (breaks == "") breaks = breaks_bin
+
+        return(breaks)
+      }
+
+      tryCatch(show_binadj_plot(dt, y, x, breaks), finally=next)
     }
 
-    # if (is.null(breaks))  {
-    #   try( eval(parse(text = paste0(
-    #       "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",print_step=0L)"
-    #     ))), silent = TRUE )
-    #   breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
-    #
-    #   breaks_bin = ifelse(
-    #     is.numeric(dt[[x]]),
-    #     paste0(breaks_bin, collapse=", "),
-    #     paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
-    #
-    # }
 
     if (is.null(breaks)) breaks = breaks_bin
     # break_list
