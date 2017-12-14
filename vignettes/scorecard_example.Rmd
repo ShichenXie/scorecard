@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+This vignette shows you how to create a simple scorecard with the `scorecard` package.
+
 ```{r, fig.height=3, fig.width=6}
 # load packages
 library(data.table)

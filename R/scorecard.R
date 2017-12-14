@@ -189,7 +189,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score = TRUE, print_step=1L) {
+scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
   x_num = variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
 
   # set dt as data.table
@@ -209,19 +209,20 @@ scorecard_ply = function(dt, card, only_total_score = TRUE, print_step=1L) {
   }
 
   # x variables
-  x = card[variable != "basepoints", unique(variable)]
+  xs = card[variable != "basepoints", unique(variable)]
 
   # parameter for print
   x_num = 1
-  x_length = length(x)
+  xs_len = length(xs)
   # loop on x variables
-  for (a in x) {
+  for (a in xs) {
     # print variables
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), a,"\n")
+    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), a,"\n")
     x_num = x_num+1
 
     cardx = card[variable==a] #card[[a]]
     na_points = cardx[bin == "missing", points]
+    cardx_narm = cardx[bin != "missing"]
 
 
     if (is.factor(kdt[[a]]) | is.character(kdt[[a]])) {
@@ -234,12 +235,12 @@ scorecard_ply = function(dt, card, only_total_score = TRUE, print_step=1L) {
         cardx[, strsplit(as.character(bin), "%,%", fixed=TRUE), by = .(bin) ][cardx[, .(bin, points)], on="bin"][,.(V1, points)],
         c(a, paste0(a, "_points"))
       )[kdt, on=a
-        ][, (a) := NULL] #[!is.na(bin)]
+        ][, (a) := NULL][] #[!is.na(bin)]
 
     } else if (is.logical(kdt[[a]]) | is.numeric(kdt[[a]])) {
       if (is.logical(kdt[[a]])) kdt[[a]] = as.numeric(kdt[[a]]) # convert logical variable to numeric
 
-      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, cardx[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
+      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, cardx_narm[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
 
       # return
       kdt = setnames(
@@ -249,7 +250,7 @@ scorecard_ply = function(dt, card, only_total_score = TRUE, print_step=1L) {
 
     }
 
-    # if is.na(kdt) == missing_points
+    # if is.na(kdt) == na_points
     kdt[[paste0(a, "_points")]] = ifelse(is.na(kdt[[paste0(a, "_points")]]), na_points,  kdt[[paste0(a, "_points")]])
 
   }
@@ -260,8 +261,8 @@ scorecard_ply = function(dt, card, only_total_score = TRUE, print_step=1L) {
 
   # total score
   # dt_score[["score"]]
-  dt_score = kdt[, paste0(x, "_points"), with=FALSE]
-  dt_score[, score := card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)]
+  dt_score = kdt[, paste0(xs, "_points"), with=FALSE]
+  dt_score[, score := card[variable == "basepoints", points] + rowSums(kdt[, paste0(xs, "_points"), with=FALSE], na.rm = TRUE)]
 
   # total_score = card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)
   # dt_score = dt_woe[,c(paste0(coef[-1,variable], "_points"), y, "score"), with=FALSE]

@@ -23,7 +23,7 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
   # convert logical value into numeric
   if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
 
-  # return binning if provide breakpoints ------
+  # 1.return binning if provide breakpoints ------
   if ( !anyNA(breaks) & !is.null(breaks) ) {
     if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
       brkp = unique(c(-Inf, breaks, Inf))
@@ -54,7 +54,7 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
     return(bin)
   }
 
-  # functions ------
+  # 2.functions ------
   ###### get breakpoints of initial binning
   breakpoints = function(dtm, min_perc_total) {
     . = value = variable = bad = good = badprob = NULL # no visible binding for global variable
@@ -73,10 +73,16 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 
       # number of initial binning
       n = trunc(1/min_perc_total)
-      if (length(unique(xvec_rm_outlier)) < n) n = length(unique(xvec_rm_outlier))
+      len_uniq_x = length(setdiff(unique(xvec_rm_outlier), c(NA,Inf,-Inf)))
+      if (len_uniq_x < n) n = length(unique(xvec_rm_outlier))
 
       # initial breakpoints
-      brkp = pretty(xvec_rm_outlier, n)
+      if (len_uniq_x < 10) {
+        brkp = setdiff(unique(xvec_rm_outlier), c(NA, Inf, -Inf))
+      } else {
+        brkp = pretty(xvec_rm_outlier, n)
+      }
+      brkp = sort(brkp)
       # brkp = quantile(xvec, (0:n)/n, na.rm=TRUE)
       brkp = unique(c(-Inf, brkp[2:(length(brkp)-1)], Inf))
       if (anyNA(xvec)) brkp = c(brkp, NA)
@@ -188,7 +194,11 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
     while (min_count_distr < min_perc_total) {
 
       if (!is.null(rm_bst_brkp)) bstbin_total_iv = bstbin_total_iv[!(bstbin %in% rm_bst_brkp)]
-      sel_bstbin_max_total_iv = bstbin_total_iv[total_iv==max(total_iv), bstbin]
+      # if (nrow(bstbin_total_iv) != 0) {
+        sel_bstbin_max_total_iv = bstbin_total_iv[total_iv==max(total_iv, na.rm = TRUE), bstbin]
+      # } else {
+      #   sel_bstbin_max_total_iv = NULL
+      # }
       # print(sel_bstbin_max_total_iv)
 
       # return
@@ -245,7 +255,7 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
   # system.time(add_bst_brkp(initial_brkpdt))
   # system.time(all_bst_brkp(initial_brkpdt, print_step = TRUE))
 
-  # run functions ------
+  # 3.run functions ------
   initial_brkpdt = breakpoints(dtm, min_perc_total)
   if (stop_limit == "N") return(initial_brkpdt)
   bst_brkpdt = all_bst_brkp(initial_brkpdt, stop_limit, max_bin_num, print_step)
@@ -325,7 +335,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
   # check y
   dt = check_y(dt, y, positive)
   # x variable names
-  x = x_variable(dt,y,x)
+  xs = x_variable(dt,y,x)
   # print_step
   print_step = check_print_step(print_step)
 
@@ -338,15 +348,15 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
       stop("Incorrect inputs; breaks_list should be a list.")
     } else {
 
-      names_breakslist = names(breaks_list)
-      if (!identical(names_breakslist, x)) {
+      xs_breakslist = names(breaks_list)
+      if (!identical(xs_breakslist, xs)) {
 
-        names_bl_x = setdiff(names_breakslist, x)
+        names_bl_x = setdiff(xs_breakslist, xs)
         if (length(names_bl_x) > 0) {
           warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in breaks_list donot exist in x."))
         }
 
-        names_x_bl = setdiff(x, names_breakslist)
+        names_x_bl = setdiff(xs, xs_breakslist)
         if (length(names_x_bl) >0) {
           warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list were set as NULL, which means optimal binning.")
         }
@@ -356,8 +366,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 
   # stop_limit vector
   if (length(stop_limit) == 1) {
-    stop_limit = rep(stop_limit, length(x))
-  } else if (length(stop_limit) != length(x)) {
+    stop_limit = rep(stop_limit, length(xs))
+  } else if (length(stop_limit) != length(xs)) {
     stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
   }
   # stop_limit range
@@ -380,51 +390,53 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 
 
 
-  # parameter for print
+  # parameter for print ------
   x_num = 1
-  x_length = length(x)
+  xs_len = length(xs)
   # export the bins of all columns
   bins = list()
-  for (i in 1:length(x)) {
-    x_i = x[i]
+  for (i in 1:length(xs)) {
+    x_i = xs[i]
     stop_limit_i = stop_limit[i]
 
-    # print x
+    # print xs
     if ( is.character(dt[[x_i]]) || is.factor(dt[[x_i]]) || is.numeric(dt[[x_i]]) || is.logical(dt[[x_i]]) ) {
       if (length(unique(dt[[x_i]])) > 1) {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i,"\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i,"\n")
       } else {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i, "------skiped","\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
         next
       }
     } else {
-      if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,x_length)),collapse = "/"), x_i, "------skiped","\n")
+      if (print_step>0 & x_num %% print_step == 0) cat("#",paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
       next
     }
     x_num = x_num+1
 
 
     # woebining on one variable
-    bin2 = woebin2(
-      dt[, c(x_i, y), with=FALSE], y, x_i,
-      breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
-      stop_limit=stop_limit_i, max_bin_num = max_bin_num)
-
-    # renmae NA as missing
-    bins[[x_i]] = bin2[, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin))]
+    tryCatch(
+      bins[[x_i]] <- woebin2(
+        dt[, c(x_i, y), with=FALSE], y, x_i,
+        breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
+        stop_limit=stop_limit_i, max_bin_num = max_bin_num
+      )[, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # renmae NA as missing
+      ],
+      finally = next
+    )
   }
 
-  # total_iv list
+  # reorder bins by iv ------
   total_iv_list = unique(rbindlist(bins)[, .(variable, total_iv)])
   if (order == TRUE) total_iv_list = total_iv_list[order(-total_iv)]
 
-  # reorder bins by iv
   bins_list = list()
   for (v in total_iv_list$variable) {
     bins_adj = bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
 
+    # move missing from last row to first
     if ( "missing" %in% bins_adj$bin ) {
-      bins_adj = rbind(bins_adj[bin == "missing"], bins_adj[bin != "missing"])
+      bins_adj = rbind(bins_adj[bin=="missing"], bins_adj[bin != "missing"])
     }
 
     bins_list[[v]] = bins_adj
@@ -513,6 +525,7 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 
     binsx = bins[variable==a] #bins[[a]]
     na_woe = binsx[bin == "missing", woe]
+    binsx_narm = binsx[bin != "missing"]
 
     # factor or character variable
     if (is.factor(kdt[[a]]) | is.character(kdt[[a]])) {
@@ -531,7 +544,7 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
     } else if (is.logical(kdt[[a]]) | is.numeric(kdt[[a]])) {
       if (is.logical(kdt[[a]])) kdt[[a]] = as.numeric(kdt[[a]]) # convert logical variable to numeric
 
-      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, binsx[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
+      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, binsx_narm[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
 
       # return
       kdt = setnames(
@@ -541,6 +554,7 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 
     }
 
+    # if is.na(kdt) == na_woe
     kdt[[paste0(a, "_woe")]] = ifelse(is.na(kdt[[paste0(a, "_woe")]]), na_woe,  kdt[[paste0(a, "_woe")]])
 
   }
@@ -549,8 +563,8 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 }
 
 
+# required in woebin_plot
 #' @import data.table ggplot2
-#'
 plot_bin = function(bin, title) {
   . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = count_distr2 = total_iv = NULL # no visible binding for global variable
 
@@ -787,7 +801,7 @@ woebin_adj = function(bins, dt, y) {
     }
 
 
-    if (is.null(breaks)) breaks = breaks_bin
+    if (is.null(breaks) | breaks == "") breaks = breaks_bin
     # break_list
     if (length(breaks)>0) {
       break_list = c(break_list, paste0(x,"=c(",breaks,")"))
