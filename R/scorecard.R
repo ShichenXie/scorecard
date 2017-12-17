@@ -93,7 +93,8 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @export
 #'
 scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50) {
-  variable = var_woe = Estimate = points = woe = NULL # no visible binding for global variable
+  # global variables or functions
+  variable = var_woe = Estimate = points = woe = NULL
 
   aabb = ab(points0, odds0, pdo)
   a = aabb$a; b = aabb$b;
@@ -190,7 +191,8 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50) {
 #' @export
 #'
 scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
-  x_num = variable = bin = points = . = V1 = score = NULL # no visible binding for global variable
+  # global variables or functions
+  x_num = variable = bin = points = . = V1 = score = NULL
 
   # set dt as data.table
   kdt = copy(setDT(dt))

@@ -1,10 +1,273 @@
+# required in woebin2 # return binning if provide breaks
+#' @import data.table
+woebin2_breaks = function(dtm, breaks) {
+  # global variables or functions
+  value = bin = . = y = variable = bad = good = V1 = badprob = NULL
+
+  dtm = setDT(dtm)
+  if (is.numeric(dtm[,value])) {
+    # numeric variable ------
+    bstbrks = c(-Inf, setdiff(unique(breaks), c(NA, Inf, -Inf)), Inf)
+
+    binning = dtm[
+      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)
+      ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
+      ][order(bin)]
+
+  } else if (is.factor(dtm[,value]) || is.character(dtm[,value])) {
+    # other variable ------
+    dtm = dtm[,value := as.character(value)]
+
+    binning = merge(
+      data.table(rowid=1:length(breaks), bin = breaks, value = breaks )[, strsplit(as.character(value), "%,%", fixed=TRUE), by = c("rowid","bin") ][, .(rowid, bin, value = V1)],
+      dtm, all.y = TRUE
+    )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = c("rowid","bin")]
+
+  }
+
+  return(binning)
+}
+
+# required in woebin2 # return initial binning
+woebin2_init_bin = function(dtm, min_perc_total) {
+  # global variables or functions
+  value = bin = . = y = variable = bad = good = brkp = badprob = count = merge_tolead = brkp2 = NULL
+
+  dtm = setDT(dtm)
+  if (is.numeric(dtm[,value])) {
+    # numeric variable ------
+    xvalue = dtm[, value]
+
+    # breaks vector & outlier
+    iq = quantile(xvalue, na.rm = TRUE)
+    iqr = IQR(xvalue, na.rm = TRUE)
+    if (iqr == 0) {
+      xvalue_rm_outlier = xvalue
+    } else {
+      xvalue_rm_outlier = xvalue[which(xvalue > iq[2]-3*iqr & xvalue <= iq[4]+3*iqr)]
+    }
+
+    # number of initial binning
+    n = trunc(1/min_perc_total)
+    len_uniq_x = length(setdiff(unique(xvalue_rm_outlier), c(NA,Inf,-Inf)))
+    if (len_uniq_x < n) n = len_uniq_x
+
+    # initial breaks
+    if (len_uniq_x < 10) {
+      brk = setdiff(unique(xvalue_rm_outlier), c(NA, Inf, -Inf))
+    } else {
+      brk = pretty(xvalue_rm_outlier, n)
+    }
+    brk = sort(brk)
+    brk = unique(c(-Inf, brk[2:(length(brk)-1)], Inf))
+    if (anyNA(xvalue)) brk = c(brk, NA)
+
+    # initial binning datatable
+    init_bin = dtm[
+      , bin := cut(value, brk, right = FALSE, dig.lab = 10, ordered_result = FALSE)
+    ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
+    ][order(bin)
+    ][, `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad))
+    ][, .(variable, bin, brkp, good, bad, badprob)]
+
+  } else if ( is.logical(dtm[,value]) || is.factor(dtm[,value]) || is.character(dtm[,value]) ) {
+    # other variable ------
+
+    # initial binning datatable
+    init_bin = dtm[
+      , .(variable = unique(variable), good = sum(y==0), bad = sum(y==1)), by=value
+      ][, badprob := bad/(good+bad)]
+
+    # order by bin if is.factor, or by badprob if is.character
+    if (is.logical(dtm[,value]) || is.factor(dtm[,value])) {
+      init_bin = init_bin[
+        order(value)
+      ][, brkp := ifelse(is.na(value), NA, .I)
+      ][, .(variable, bin=value, brkp, good, bad, badprob)]
+
+    } else {
+
+      init_bin = init_bin[
+        order(badprob)
+        # next 3 lines make NA located at the last rows
+      ][, brkp := ifelse(is.na(value), NA, .I)
+      ][order(brkp)
+      ][, brkp := ifelse(is.na(value), NA, .I)
+      ][, .(variable, bin=value, brkp, good, bad, badprob)]
+    }
+
+  }
+
+  # remove brkp that good == 0 | bad == 0 ------
+  while (init_bin[!is.na(brkp)][good==0 | bad==0,.N] > 0) {
+    # brkp needs to be removed if good==0 or bad==0
+    rm_brkp = init_bin[!is.na(brkp)][
+      ,count := good+bad
+    ][, merge_tolead := shift(count,type="lag", fill=nrow(dtm)+1) > shift(count,type="lead", fill=nrow(dtm)+1)
+    ][good == 0 | bad == 0][count == min(count)]
+
+    # set brkp to lead's or lag's
+    if (rm_brkp[1,merge_tolead]) {
+      init_bin = init_bin[
+        ,brkp2 := shift(brkp,type="lead")
+      ][brkp == rm_brkp[1,brkp], brkp := brkp2]
+
+    } else {
+
+      init_bin = init_bin[
+        ,brkp2 := shift(brkp,type="lag")
+      ][brkp == rm_brkp[1,brkp], brkp := brkp2]
+    }
+
+    # groupby brkp
+    init_bin = init_bin[
+      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), brkp=unique(brkp), good=sum(good), bad=sum(bad)), by=brkp
+    ][, badprob:=bad/(good+bad)]
+  }
+
+  if (is.numeric(dtm[,value])) {
+    init_bin = init_bin[grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)]
+  }
+
+  return(init_bin)
+}
+
+# required in woebin2_tree # add 1 best break for tree-like binning
+woebin2_tree_1bst = function(dtm, initial_binning, min_perc_total, bestbreaks=NULL) {
+  # global variables or functions
+  brkp = patterns = . = good = bad = variable = count_distr = value = min_count_distr = bstbin = min_count_distr = total_iv = bstbin = brkp = bin = NULL
+
+  # total_iv for all best breaks
+  total_iv_all_breaks = function(initial_binning, bestbreaks) {
+    # best breaks set
+    breaks_set = setdiff( initial_binning[,brkp], c(bestbreaks, -Inf, Inf, NA) )
+
+    init_bin_all_breaks = copy(initial_binning)
+    # loop on breaks_set
+    for (i in breaks_set) {
+      # best break + i
+      bestbreaks_i = sort(c(bestbreaks, i))
+
+      # best break datatable
+      init_bin_all_breaks = init_bin_all_breaks[
+        , paste0("bstbin",i) := cut(brkp, c(-Inf, bestbreaks_i, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE) ]
+    }
+
+    # best break dt
+    total_iv_all_brks = melt(
+      init_bin_all_breaks, id = c("variable", "good", "bad"), variable.name = "bstbin", measure = patterns("bstbin.+")
+    )[, .(good = sum(good), bad = sum(bad), variable = unique(variable))
+      , keyby=c("bstbin", "value")
+    ][, count_distr := (good+bad)/sum(good+bad), by="bstbin"
+    ][!is.na(value), min_count_distr := min(count_distr), by="bstbin"
+    ][, .(total_iv = iv_01(good, bad), variable = unique(variable), min_count_distr = min(min_count_distr,na.rm=TRUE)), keyby="bstbin"
+    ][, bstbin := as.numeric(sub("bstbin(.+)", "\\1", bstbin))][]
+
+    return(total_iv_all_brks)
+  }
+  total_iv_all_brks = total_iv_all_breaks(initial_binning, bestbreaks)
+
+  # bestbreaks: total_iv==max(total_iv) & min(count_distr)>=0.2
+  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_total][total_iv==max(total_iv), bstbin]
+  # add 1best break to bestbreaks
+  bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
+
+  # binning add 1best break
+  binning_add_1bst = function(initial_binning, bestbreaks) {
+    value = bstbin = . = good = bad = variable = woe = bin_iv = total_iv = bstbrkp = badprob = NULL # no visible binding for global variable
+
+    if ( is.numeric(dtm[,value]) ) {
+      binning_1bst_brk = initial_binning[
+        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
+        ][, .(variable=unique(variable), bin=unique(bstbin), good = sum(good), bad = sum(bad)) , keyby = bstbin
+          ]
+
+    } else if (is.logical(dtm[,value]) || is.factor(dtm[,value]) || is.character(dtm[,value]) ) {
+
+      bestbreaks = setdiff(bestbreaks, min(initial_binning[,brkp]))
+
+      binning_1bst_brk = initial_binning[
+        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = FALSE,dig.lab = 10, ordered_result = FALSE)
+        ][, .(variable=unique(variable), bin = paste0(bin, collapse = "%,%"), good = sum(good), bad = sum(bad)), keyby = bstbin ]
+    }
+
+    binning_1bst_brk = binning_1bst_brk[
+      order(bstbin)
+    ][, total_iv := iv_01(good, bad)
+    ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
+    ][, .(variable, bin, bstbin, bstbrkp, good, bad, total_iv)]
+
+    return(binning_1bst_brk)
+  }
+  bin_add_1bst = binning_add_1bst(initial_binning, bestbreaks)
+
+  return(bin_add_1bst)
+}
+# required in woebin2 # return tree-like binning
+woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5) {
+  # global variables or functions
+  brkp = bstbrkp = total_iv = binning_tree = NULL
+
+  # initialize parameters
+  len_brks = initial_binning[!is.na(brkp), .N] ## length all breaks
+  bestbreaks=NULL ## best breaks
+  IVt1 = IVt2 = 1e-10
+  IVchg = 1 ## IV gain ratio
+  step_num = 1
+
+  # best breaks from three to n+1 bins
+  while ( IVchg >= stop_limit & step_num+1 <= min(max_bin_num, len_brks) ) {
+    binning_tree = woebin2_tree_1bst(dtm, initial_binning, min_perc_total, bestbreaks)
+    # print(binning_tree)
+
+    # best breaks
+    bestbreaks = binning_tree[bstbrkp != -Inf & !is.na(bstbrkp), bstbrkp]
+    # print(bestbreaks)
+
+    # information value
+    IVt2 = binning_tree[1, total_iv]
+    IVchg = IVt2/IVt1-1 ## ratio gain
+    IVt1 = IVt2
+    # print(IVchg)
+
+    step_num = step_num + 1
+  }
+
+  if (is.null(binning_tree)) binning_tree = initial_binning
+
+  return(binning_tree)
+}
+# examples
+# system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_total) )
+# system.time( woebin2_tree_1bst(dtm, initial_binning, min_perc_total) )
+# system.time(woebin2_tree(dtm, initial_binning, min_perc_total))
+
+# required in woebin2 # # format binning output
+binning_format = function(binning) {
+  # global variables or functions
+  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
+  # required columns in input binning: variable, bin, good, bad
+  binning = binning[
+    , badprob:=bad/(good+bad)
+  ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
+  ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
+  ][, total_iv := sum(bin_iv)
+  ][, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # replace NA by missing
+  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv)]
+
+  # move missing from last row to first
+  if ( "missing" %in% binning$bin ) {
+    binning = rbind(binning[bin=="missing"], binning[bin != "missing"])
+  }
+
+  return(binning)
+}
+
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, print_step=FALSE) {
-
-  value = . = variable = bad = good = woe = bin_iv = total_iv = badprob = V1 = NULL # no visible binding for global variable
-
-  # method="tree",
+woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5) {
+  # global variables or functions
+  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
 
   # data(germancredit)
   # numerical data
@@ -12,255 +275,32 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
   # y="y"; x="age.in.years"
 
   # categorical data
-  # dt = setDT(germancredit)[, .(y=creditability, status.of.existing.checking.account)]
+  # dt = setDT(germancredit)[, .(y=creditability, status.of.existing.checking.account)][,y:=ifelse(y=="good",1,0)];
   # y="y"; x="status.of.existing.checking.account"
 
-  # dt = setDT(germancredit)[, .(creditability, present.employment.since, age.in.years)]
+  # melt data.table
+  dtm = data.table(y=dt[[y]], variable=x, value=dt[[x]])
 
 
-  # input data.table
-  dtm = data.table(y = dt[[y]], variable=x, value = dt[[x]])
-  # convert logical value into numeric
-  if (is.logical(dtm[,value])) dtm[, value := as.numeric(value)]
+  # binning
+  if (!anyNA(breaks) & !is.null(breaks)) {
 
-  # 1.return binning if provide breakpoints ------
-  if ( !anyNA(breaks) & !is.null(breaks) ) {
-    if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
-      brkp = unique(c(-Inf, breaks, Inf))
+    # 1.return binning if breaks provided
+    binning = woebin2_breaks(dtm, breaks)
 
-      bin = copy(dtm)[
-        , bin := cut(value, brkp, right = FALSE, dig.lab = 10, ordered_result = FALSE)
-        ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
-        ][order(bin)
-        ][, `:=`(bstbin=bin, bstbrkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad) )
-        ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-        ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
-        ][, total_iv := sum(bin_iv)
-        ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
+  } else {
 
-    } else if (is.factor(dtm[,value]) | is.character(dtm[,value])) {
-
-      bin = merge(
-        data.table(rowid=1:length(breaks), bin = breaks, value = breaks )[, strsplit(as.character(value), "%,%", fixed=TRUE), by = c("rowid","bin") ][, .(rowid, bin, value = V1)],
-        dtm, all.y = TRUE
-      )[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = c("rowid","bin")
-      ][, `:=`(badprob = bad/(good+bad), bin = ifelse(is.na(bin), "missing", bin) )
-      ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-      ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
-      ][, total_iv := sum(bin_iv)
-      ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
-
+    # 2.tree-like best breaks
+    initial_binning = woebin2_init_bin(dtm, min_perc_total)
+    if (stop_limit == "N") {
+      binning = initial_binning
+    } else {
+      binning = woebin2_tree(dtm, initial_binning, min_perc_total, stop_limit, max_bin_num)
     }
-    return(bin)
+
   }
 
-  # 2.functions ------
-  ###### get breakpoints of initial binning
-  breakpoints = function(dtm, min_perc_total) {
-    . = value = variable = bad = good = badprob = NULL # no visible binding for global variable
-
-    if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
-      xvec = dtm[, value]
-
-      # breakpoints vector & outlier
-      iq = quantile(xvec, na.rm = TRUE)
-      iqr = IQR(xvec, na.rm = TRUE)
-      if (iqr == 0) {
-        xvec_rm_outlier = xvec
-      } else {
-        xvec_rm_outlier = xvec[which(xvec > iq[2]-1.5*iqr & xvec <= iq[4]+1.5*iqr)]
-      }
-
-      # number of initial binning
-      n = trunc(1/min_perc_total)
-      len_uniq_x = length(setdiff(unique(xvec_rm_outlier), c(NA,Inf,-Inf)))
-      if (len_uniq_x < n) n = length(unique(xvec_rm_outlier))
-
-      # initial breakpoints
-      if (len_uniq_x < 10) {
-        brkp = setdiff(unique(xvec_rm_outlier), c(NA, Inf, -Inf))
-      } else {
-        brkp = pretty(xvec_rm_outlier, n)
-      }
-      brkp = sort(brkp)
-      # brkp = quantile(xvec, (0:n)/n, na.rm=TRUE)
-      brkp = unique(c(-Inf, brkp[2:(length(brkp)-1)], Inf))
-      if (anyNA(xvec)) brkp = c(brkp, NA)
-
-
-      # binned datatable
-      brkdt = copy(dtm)[
-        , bin := cut(value, brkp, right = FALSE, dig.lab = 10, ordered_result = FALSE)
-        ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
-        ][order(bin)
-        ][, `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad) )
-        ][, .(variable, bin, brkp, good, bad, badprob)]
-
-    } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
-      brkdt = copy(dtm)[
-        , .(variable = unique(variable), good = sum(y==0), bad = sum(y==1)), by=value
-        ][, badprob := bad/(good+bad)]
-
-      # order by bin if is.factor, or by badprob if is.character
-      if (is.factor(dtm[,value])) {
-        brkdt = brkdt[
-          order(value)
-        ][, brkp := ifelse(is.na(value), NA, .I)
-        ][, .(variable, bin=value, brkp, good, bad, badprob)]
-
-      } else {
-        brkdt = brkdt[
-          order(badprob)
-        # next 3 lines make NA located at the last rows
-        ][, brkp := ifelse(is.na(value), NA, .I)
-        ][order(brkp)
-        ][, brkp := ifelse(is.na(value), NA, .I)
-        ][, .(variable, bin=value, brkp, good, bad, badprob)]
-
-      }
-
-    }
-
-    return(brkdt)
-  }
-
-  # add one tree-like best breakpoints
-  # requried by all_bst_brkp
-  add_bst_brkp = function(initial_brkpdt, bst_brkp = NULL) {
-    patterns = . = good = bad = variable = total_iv = bstbin = NULL # no visible binding for global variable
-
-    # best breakpoints
-    bestbreakpoints = function(initial_brkpdt, bst_brkp, only_total_iv=TRUE) {
-      value = bstbin = . = good = bad = variable = woe = bin_iv = total_iv = bstbrkp = badprob = NULL # no visible binding for global variable
-
-      if ( is.numeric(dtm[,value]) | is.logical(dtm[,value]) ) {
-        initial_brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE)
-          ][, .(good = sum(good), bad = sum(bad), variable=unique(variable)) , keyby = bstbin
-          ][, `:=`(badprob = bad/(good+bad), bin = bstbin )
-          ][order(bstbin)
-          ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-          ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
-          ][, total_iv := sum(bin_iv)
-          ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, bin_iv, total_iv)]
-
-
-      } else if ( is.factor(dtm[,value]) | is.character(dtm[,value]) ) {
-        bst_brkp = setdiff(bst_brkp, min(initial_brkpdt[,brkp]))
-
-        initial_brkpdt[
-          , bstbin := cut(brkp, c(-Inf, bst_brkp, Inf), right = FALSE,dig.lab = 10, ordered_result = FALSE)
-          ][, .(variable=unique(variable), bin = paste0(bin, collapse = "%,%"), good = sum(good), bad = sum(bad)), keyby = bstbin
-          ][, badprob:=bad/(good+bad)
-          ][order(bstbin)
-          ][, woe := lapply(.SD, woe_01, bad), .SDcols = "good"
-          ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
-          ][, total_iv := sum(bin_iv)
-          ][, bstbrkp := as.numeric( sub("^\\[(.*),.+", "\\1", bstbin) )
-          ][, .(variable, bin, bstbin, bstbrkp, good, bad, badprob, woe, bin_iv, total_iv) ]
-        # variable bstbin bstbrkp good bad badprob woe miv total_iv
-
-      }
-
-
-    }
-
-    # best breakpoints set
-    bst_brkp_set = setdiff( initial_brkpdt[,brkp], c(bst_brkp, -Inf, Inf, NA) )
-
-    # loop on bst_brkp_set
-    for (i in bst_brkp_set) {
-      # best breakpoint + i
-      bst_brkp_i = sort(c(bst_brkp, i))
-
-      # best breakpoint datatable
-      bst_brkpdt = initial_brkpdt[
-        , paste0("bstbin",i) := cut(brkp, c(-Inf, bst_brkp_i, Inf), right = FALSE, dig.lab = 10, ordered_result = FALSE) ]
-    }
-    # best breakpoint dt
-    bstbin_total_iv = melt(
-      bst_brkpdt, id = c("variable", "good", "bad"), variable.name = "bstbin", measure = patterns("bstbin.+")
-    )[, .(good = sum(good), bad = sum(bad), variable = unique(variable))
-      , keyby=c("bstbin", "value")
-    ][, .(total_iv = iv_01(good, bad), variable = unique(variable))
-      , keyby="bstbin"
-    ][, bstbin := as.numeric(sub("bstbin(.+)", "\\1", bstbin))][]
-
-
-    # bst_brkp that total_iv==max(total_iv) & min(count_distr)>=0.2
-    rm_bst_brkp = NULL
-    min_count_distr = 0
-    while (min_count_distr < min_perc_total) {
-
-      if (!is.null(rm_bst_brkp)) bstbin_total_iv = bstbin_total_iv[!(bstbin %in% rm_bst_brkp)]
-      # if (nrow(bstbin_total_iv) != 0) {
-        sel_bstbin_max_total_iv = bstbin_total_iv[total_iv==max(total_iv, na.rm = TRUE), bstbin]
-      # } else {
-      #   sel_bstbin_max_total_iv = NULL
-      # }
-      # print(sel_bstbin_max_total_iv)
-
-      # return
-      bst_brkp = sort(unique(c(bst_brkp,sel_bstbin_max_total_iv)))
-      bst_bins_dt = bestbreakpoints(initial_brkpdt, bst_brkp, only_total_iv=FALSE)
-
-
-      # minimum count_distr
-      min_count_distr = bst_bins_dt[!is.na(bstbin)][,min(count_distr=(good+bad)/sum(good+bad))]
-      # excluded bst_brkp that min_count_distr < 0.2
-      if (min_count_distr < min_perc_total) {
-        bst_brkp = setdiff(bst_brkp, sel_bstbin_max_total_iv)
-
-        rm_bst_brkp = c(rm_bst_brkp, sel_bstbin_max_total_iv)
-      }
-    }
-
-    return(bst_bins_dt)
-  }
-  ###### all tree-like best breakpoints
-  all_bst_brkp = function(initial_brkpdt, stop_limit=0.1, max_bin_num=5, print_step=TRUE) {
-    total_iv = bstbrkp = NULL# no visible binding for global variable
-
-    len_brkp = length( setdiff(initial_brkpdt[, brkp], c(-Inf, Inf, NA)) )
-
-    # best breakpoints for two bins
-    ALL_bst_brkp = add_bst_brkp(initial_brkpdt)
-    if (print_step) print(ALL_bst_brkp)
-    IVt1 = ALL_bst_brkp[1, total_iv]
-
-    len_step = 2
-    if (len_brkp >= 2) {
-      # initial information value gain ratio
-      IVchg = 1
-    # best breakpoints from three to n+1 bins
-    while ( IVchg >= stop_limit & len_step+1 <= min(max_bin_num, len_brkp) ) {
-      ALL_bst_brkp = add_bst_brkp(initial_brkpdt, ALL_bst_brkp[bstbrkp != -Inf, bstbrkp])
-      if (print_step) print(ALL_bst_brkp)
-
-      IVt2 = ALL_bst_brkp[1, total_iv]
-      # information value gain ratio
-      IVchg = IVt2/IVt1-1
-      # print(IVchg,"\n")
-      IVt1 = IVt2
-
-      len_step = len_step + 1
-    }
-    }
-
-    return(ALL_bst_brkp)
-  }
-  # examples
-  # system.time( initial_brkpdt = breakpoints(dtm, min_perc_total) )
-  # system.time(add_bst_brkp(initial_brkpdt))
-  # system.time(all_bst_brkp(initial_brkpdt, print_step = TRUE))
-
-  # 3.run functions ------
-  initial_brkpdt = breakpoints(dtm, min_perc_total)
-  if (stop_limit == "N") return(initial_brkpdt)
-  bst_brkpdt = all_bst_brkp(initial_brkpdt, stop_limit, max_bin_num, print_step)
-
-  return(bst_brkpdt)
+  return(binning_format(binning))
 }
 
 #' WOE Binning
@@ -276,7 +316,6 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
 #' @param max_bin_num Integer. The maximum binning number.
 #' @param positive Value of positive class, default "bad|1".
-#' @param order Logical. If it is TRUE, return binning information by descending sorted iv values.
 #' @param print_step A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
 #' @return Optimal or customized binning information
 #'
@@ -321,10 +360,7 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #' @importFrom stats IQR quantile
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", order=FALSE, print_step=1L) {
-  # method="tree",
-
-  x_num = bin = variable = total_iv = good = bad = badprob = woe = bin_iv = . = NULL # no visible binding for global variable
+woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", print_step=1L) {
 
   # set dt as data.table
   dt = setDT(dt)
@@ -390,7 +426,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 
 
 
-  # parameter for print ------
+  # binning for each x variable ------
   x_num = 1
   xs_len = length(xs)
   # export the bins of all columns
@@ -420,30 +456,12 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
         dt[, c(x_i, y), with=FALSE], y, x_i,
         breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
         stop_limit=stop_limit_i, max_bin_num = max_bin_num
-      )[, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # renmae NA as missing
-      ],
+      ),
       finally = next
     )
   }
 
-  # reorder bins by iv ------
-  total_iv_list = unique(rbindlist(bins)[, .(variable, total_iv)])
-  if (order == TRUE) total_iv_list = total_iv_list[order(-total_iv)]
-
-  bins_list = list()
-  for (v in total_iv_list$variable) {
-    bins_adj = bins[[v]][,.(variable, bin, count=good+bad,  count_distr=(good+bad)/(sum(good)+sum(bad)), good, bad, badprob, woe, bin_iv, total_iv)]
-
-    # move missing from last row to first
-    if ( "missing" %in% bins_adj$bin ) {
-      bins_adj = rbind(bins_adj[bin=="missing"], bins_adj[bin != "missing"])
-    }
-
-    bins_list[[v]] = bins_adj
-  }
-
-  # return(list(bins = bins_list, iv=total_iv_list))
-  return(bins_list)
+  return(bins)
 }
 
 #' Application of Binning
@@ -487,8 +505,9 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
-  . = variable = bin = woe = V1 = NULL  # no visible binding for global variable
+woebin_ply = function(dt, bins, print_step=1L) {
+  # global variables or functions
+  . = V1 = bin = variable = woe = NULL
 
   # set dt as data.table
   kdt = copy(setDT(dt))
@@ -566,7 +585,8 @@ woebin_ply = function(dt, bins, print_step=1L) { # dt, y, x=NA, bins
 # required in woebin_plot
 #' @import data.table ggplot2
 plot_bin = function(bin, title) {
-  . = variable = count = count_distr = good = bad = badprob = woe = goodbad = value = count_num = badprob2 = count_distr2 = total_iv = NULL # no visible binding for global variable
+  # global variables or functions
+  . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = NULL
 
   # data
   ## y_right_max
@@ -655,7 +675,8 @@ plot_bin = function(bin, title) {
 #' @export
 #'
 woebin_plot = function(bins, x=NULL, title=NULL) {
-  variable = NULL # no visible binding for global variable
+  # global variables or functions
+  variable = NULL
 
   # converting data.frame into list
   bins_list = list()
@@ -717,6 +738,7 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #' @export
 #'
 woebin_adj = function(bins, dt, y) {
+  # global variables or functions
   variable = p = bin_adj = NULL
 
   dt = setDT(dt)
@@ -729,11 +751,32 @@ woebin_adj = function(bins, dt, y) {
     }
   }
 
+  # function woebin adj plotting
+  show_binadj_plot = function(dt, y, x, breaks) {
+    eval(parse(text = paste0(
+      "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)")))
+
+    ## print adjust breaks
+    breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
+    breaks_bin = ifelse(
+      is.numeric(dt[[x]]),
+      paste0(breaks_bin, collapse=", "),
+      paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+    cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
+
+    # print bin_adj
+    print(woebin_plot(bin_adj)[[1]])
+
+    # # breaks
+    if (breaks == "") breaks = breaks_bin
+
+    return(breaks)
+  }
+
   # x variables
   xs = bins[,unique(variable)]
   xs_len = length(xs)
   break_list = NULL
-
   for (i in 1:xs_len) {
     # x variable
     x = xs[i]
@@ -741,7 +784,7 @@ woebin_adj = function(bins, dt, y) {
     bin = bins[variable==x]
     breaks = NULL
 
-    # print basic information of data
+    # basic information of x variable ------
     ## class
     cat(paste0("> class(",x,"): "),"\n",class(dt[[x]]),"\n","\n")
     ## summary
@@ -770,46 +813,24 @@ woebin_adj = function(bins, dt, y) {
     plist = woebin_plot(bin)
     print(plist[[1]])
 
-    # adjusting breaks
+    # adjusting breaks ------
     while (menu(c("No", "Yes"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x, "?")) == 2) {
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
-
-      # woebin adj plotting
-      show_binadj_plot = function(dt, y, x, breaks) {
-        eval(parse(text = paste0(
-          "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)")))
-
-        ## print adjust breaks
-        breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
-        breaks_bin = ifelse(
-          is.numeric(dt[[x]]),
-          paste0(breaks_bin, collapse=", "),
-          paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
-        cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
-
-        # print bin_adj
-        print(woebin_plot(bin_adj)[[1]])
-
-        # # breaks
-        if (breaks == "") breaks = breaks_bin
-
-        return(breaks)
-      }
 
       tryCatch(show_binadj_plot(dt, y, x, breaks), finally=next)
     }
 
 
-    if (is.null(breaks) | breaks == "") breaks = breaks_bin
+    if (is.null(breaks) || breaks == "") breaks = breaks_bin
     # break_list
     if (length(breaks)>0) {
       break_list = c(break_list, paste0(x,"=c(",breaks,")"))
       break_list = paste0(break_list, collapse=", \n")
     }
   }
+
   break_list = paste0(c("list(",break_list,")"),collapse = "\n")
   cat(break_list,"\n")
-
   return(break_list)
 }

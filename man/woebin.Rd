@@ -5,7 +5,7 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, max_bin_num = 5, positive = "bad|1", order = FALSE,
+  stop_limit = 0.1, max_bin_num = 5, positive = "bad|1",
   print_step = 1L)
 }
 \arguments{
@@ -24,8 +24,6 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 \item{max_bin_num}{Integer. The maximum binning number.}
 
 \item{positive}{Value of positive class, default "bad|1".}
-
-\item{order}{Logical. If it is TRUE, return binning information by descending sorted iv values.}
 
 \item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
 }

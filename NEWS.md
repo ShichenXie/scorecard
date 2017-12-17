@@ -2,8 +2,8 @@
 
 * perf_eva supports both predicted probability and score.
 * Added the woebin_adj function which can interactively adjust the binning info from woebin.
-* use GPL-3 license instead of MIT
 * Added a simple socrecard example in vignette 
+* Reviewed woebin function.
 
 # scorecard 0.1.3
 
