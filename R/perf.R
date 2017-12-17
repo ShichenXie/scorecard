@@ -74,7 +74,8 @@ perf_plot = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #' @export
 #'
 perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
-  group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL # no visible binding for global variable
+  # global variables
+  group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL
 
   # inputs checking
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
@@ -209,7 +210,6 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
         theme_bw()
     }
   }
-
 
   # plot, P-R ------
   if ("pr" %in% type) {
@@ -355,11 +355,11 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
-  . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL # no visible binding for global variable
-  rt = rt_psi = rt_pic = rt_dat = list() # return list
-  # rt$psi = NULL
-  # rt$pic = NULL
-  # rt$dat = NULL
+  # global variables
+  . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL
+  # return list
+  rt = rt_psi = rt_pic = rt_dat = list()
+
 
 
   # inputs checking
@@ -520,6 +520,7 @@ perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_b
       }
     } # end of show plot
   } # end of for loop
+
 
   # return
   rt$psi = rbindlist(rt_psi, idcol = "variable")
