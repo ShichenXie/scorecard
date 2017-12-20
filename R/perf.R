@@ -13,6 +13,111 @@
 #' @export
 perf_plot = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
 
+
+
+eva_dfkslift = function(df, groupnum = 20) {
+  # global variables
+  pred=group=.=label=good=bad=ks=cumbad=cumgood=NULL
+
+  if (groupnum == "N") groupnum = nrow(df)
+
+  df_kslift = df[
+    order(-pred)
+  ][, group := ceiling(.I/(.N/groupnum))
+  ][, .(good = sum(label==0), bad = sum(label==1)), by=group
+  ][, `:=`(
+    group = .I/.N,
+    good=good/sum(good), bad=bad/sum(bad),
+    cumgood=cumsum(good)/sum(good), cumbad=cumsum(bad)/sum(bad))
+  ][, ks := abs(cumbad - cumgood)]
+
+  df_kslift = rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), df_kslift)
+
+  return(df_kslift)
+}
+eva_pks = function(dfkslift) {
+  # global variables
+  ks=group=.=cumgood=cumbad=value=variable=NULL
+
+  dfks = dfkslift[ks == max(ks)][order(group)]
+
+  pks = ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
+    geom_line() + coord_fixed() +
+    geom_segment(aes(x = dfks$group, y = 0, xend = dfks$group, yend = dfks$ks), colour = "red", linetype = "dashed", arrow=arrow(ends="both", length=unit(.2,"cm"))) +
+    labs(x = "% of population", y = "% of total Good/Bad") +
+    annotate("text", x=0.50, y=Inf, label="K-S", vjust=1.5, size=6)+
+    annotate("text", x=dfks$group, y=dfks$ks, vjust = -0.2, label=paste0("KS: ", round(dfks$ks,4) ), colour = "blue") +
+    annotate("text", x=0.20, y=0.80, vjust = -0.2, label="Bad", colour = "black") +
+    annotate("text", x=0.80, y=0.55, vjust = -0.2, label="Good", colour = "black") +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_colour_manual(values=c("black", "black", "blue")) +
+    theme_bw() + theme(legend.position="none")
+
+  return(pks)
+}
+eva_plift = function(dfkslift) {
+  # global variables
+  .=group=bad=model=groupnum=NULL
+
+  plift = ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
+    geom_bar(stat = "identity", fill=NA, colour = "black") + coord_fixed() +
+    geom_segment(aes(x = 0, y = 1/groupnum, xend = 1, yend = 1/groupnum), colour = "red", linetype = "dashed") +
+    labs(x="% of population", y="%of total Bad") +
+    annotate("text", x = 0.50, y=Inf, label="Lift", vjust=1.5, size=6)+
+    guides(fill=guide_legend(title=NULL)) +
+    scale_fill_manual(values=c("white", "grey")) +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    theme_bw() + theme(legend.position=c(0.5, 0.9), legend.direction="horizontal")
+
+  return(plift)
+}
+
+eva_dfrocpr = function(df) {
+  # global variables
+  pred=.=label=countP=countN=FN=TN=TP=FP=NULL
+
+  dfrocpr = df[
+    order(pred)
+  ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
+  ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
+  ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
+  ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
+
+  return(dfrocpr)
+}
+eva_proc = function(dfrocpr, auc) {
+  # global variables
+  FPR=TPR=NULL
+
+  proc = ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
+    geom_ribbon(aes(ymin=0, ymax=TPR), fill="blue", alpha=0.1) +
+    geom_line() + coord_fixed() +
+    geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
+    annotate("text", x = 0.5, y=Inf, label="ROC", vjust=1.5, size=6) +
+    annotate("text", x=0.55, y=0.45, label=paste0("AUC: ", round(auc,4)), colour = "blue") +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    theme_bw()
+
+  return(proc)
+}
+eva_ppr = function(dfrocpr) {
+  # global variables
+  recall=precision=NULL
+
+  ppr = ggplot(dfrocpr, aes(x=recall, y=precision)) +
+    geom_line() + coord_fixed() +
+    geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
+    labs(x = "Recall", y = "Precision") +
+    annotate("text", x = 0.5, y=Inf, label="P-R", vjust=1.5, size=6) +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    theme_bw()
+
+  return(ppr)
+}
 #' KS, ROC, Lift, PR
 #'
 #' \code{perf_eva} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
@@ -75,7 +180,7 @@ perf_plot = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"
 #'
 perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   # global variables
-  group = . = good = bad = ks = cumbad = cumgood = value = variable = model = countP = countN = FN = TN = TP = FP = FPR = TPR = precision = recall = NULL
+  FPR = TPR = cumbad = group = ks = NULL
 
   # inputs checking
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
@@ -88,22 +193,22 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 
   # random sort datatable
   set.seed(seed)
-  df1 = data.table(label=label, pred=pred)[sample(1:.N)]
+  df = data.table(label=label, pred=pred)[sample(.N)]
 
   # remove NAs
   if (anyNA(label) || anyNA(pred)) {
     warning("The NAs in \"label\" or \"pred\" were removed.")
-    df1 = df1[!is.na(label) & !is.na(pred)]
+    df = df[!is.na(label) & !is.na(pred)]
   }
 
   # check label
-  if (length(unique(df1$label)) != 2) {
+  if (length(unique(df$label)) != 2) {
     stop("Incorrect inputs; the length of unique values in label != 2.")
   } else {
-    if (any((c(0,1) %in% unique(df1$label)) == FALSE)) {
-      if (any(grepl(positive, df1[[label]]) == TRUE)) {
+    if (any((c(0,1) %in% unique(df$label)) == FALSE)) {
+      if (any(grepl(positive, df[[label]]) == TRUE)) {
         warning(paste0("The positive value in \"label\" was replaced by 1 and negative value by 0."))
-        df1[[label]] = ifelse(grepl(positive, df1[[label]]), 1, 0)
+        df[[label]] = ifelse(grepl(positive, df[[label]]), 1, 0)
       } else {
         stop(paste0("Incorrect inputs; the positive value in \"label\" is not specified"))
       }
@@ -112,20 +217,7 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 
 
   # data, dfkslift ------
-  if ("ks" %in% type | "lift" %in% type) {
-    if (groupnum == "N") groupnum = length(pred)
-
-    dfkslift =
-      df1[order(-pred)
-        ][, group := ceiling(.I/(.N/groupnum))
-        ][,.(good = sum(label==0), bad = sum(label==1)), by=group
-        ][,`:=`(group= .I/.N,
-                good = good/sum(good), bad  = bad/sum(bad),
-                cumgood= cumsum(good)/sum(good), cumbad = cumsum(bad)/sum(bad))
-        ][, ks := abs(cumbad - cumgood)]
-
-    dfkslift = rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), dfkslift)
-  }
+  if (any(c("ks","lift") %in% type)) dfkslift = eva_dfkslift(df, groupnum)
 
 
   # return list
@@ -133,61 +225,23 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
 
   # plot, KS ------
   if ("ks" %in% type) {
-    dfks = dfkslift[ks == max(ks)][order(group)][1]
     # return list
-    rt$KS = round(dfks$ks, 4)
-    # print(paste0("KS: ", round(dfks$ks, 4) ))
-
+    rt$KS = dfkslift[ks == max(ks)][order(group)][1,round(ks, 4)]
 
     # gini
     gini = dfkslift[, sum(
-      (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag"))
-    )]-1
+      (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag")) )]-1
     rt$Gini = round(gini, 4)
 
-
-
-    if (show_plot == TRUE) {
-      pks = ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
-        geom_line() + coord_fixed() +
-        geom_segment(aes(x = dfks$group, y = 0, xend = dfks$group, yend = dfks$ks), colour = "red", linetype = "dashed", arrow=arrow(ends="both", length=unit(.2,"cm"))) +
-        labs(x = "% of population", y = "% of total Good/Bad") +
-        annotate("text", x=0.50, y=Inf, label="K-S", vjust=1.5, size=6)+
-        annotate("text", x=dfks$group, y=dfks$ks, vjust = -0.2, label=paste0("KS: ", round(dfks$ks,4) ), colour = "blue") +
-        annotate("text", x=0.20, y=0.80, vjust = -0.2, label="Bad", colour = "black") +
-        annotate("text", x=0.80, y=0.55, vjust = -0.2, label="Good", colour = "black") +
-        scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        scale_colour_manual(values=c("black", "black", "blue")) +
-        theme_bw() + theme(legend.position="none")
-    }
+    # plot ks
+    if (show_plot == TRUE) pks = eva_pks(dfkslift)
   }
 
   # plot, Lift ------
-  if ("lift" %in% type) {
-    plift = ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
-      geom_bar(stat = "identity", fill=NA, colour = "black") + coord_fixed() +
-      geom_segment(aes(x = 0, y = 1/groupnum, xend = 1, yend = 1/groupnum), colour = "red", linetype = "dashed") +
-      labs(x="% of population", y="%of total Bad") +
-      annotate("text", x = 0.50, y=Inf, label="Lift", vjust=1.5, size=6)+
-      guides(fill=guide_legend(title=NULL)) +
-      scale_fill_manual(values=c("white", "grey")) +
-      scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-      scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-      theme_bw() + theme(legend.position=c(0.5, 0.9), legend.direction="horizontal")
-
-  }
+  if ("lift" %in% type) plift = eva_plift(dfkslift)
 
   # data, dfrocpr ------
-  if ("roc" %in% type | "pr" %in% type) {
-    dfrocpr =
-      df1[order(pred)
-          ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
-            ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
-              ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
-                ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
-
-  }
+  if (any(c("roc","pr") %in% type)) dfrocpr = eva_dfrocpr(df)
 
   # plot, ROC ------
   if ("roc" %in% type) {
@@ -196,35 +250,23 @@ perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc")
     )]
     # return list
     rt$AUC = round(AUC,4)
-    # print(paste0("AUC: ", round(AUC,4)))
 
-    if (show_plot == TRUE) {
-      proc = ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
-        geom_ribbon(aes(ymin=0, ymax=TPR), fill="blue", alpha=0.1) +
-        geom_line() + coord_fixed() +
-        geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
-        annotate("text", x = 0.5, y=Inf, label="ROC", vjust=1.5, size=6) +
-        annotate("text", x=0.55, y=0.45, label=paste0("AUC: ", round(AUC,4)), colour = "blue") +
-        scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        theme_bw()
-    }
+    # plot roc
+    if (show_plot == TRUE) proc = eva_proc(dfrocpr, AUC)
   }
 
   # plot, P-R ------
   if ("pr" %in% type) {
-    dfpr = dfrocpr[precision == recall]
-    # print(paste0("BEP: ", round(dfpr$recall, 4)))
-    if (show_plot == TRUE) {
-      ppr = ggplot(dfrocpr, aes(x=recall, y=precision)) +
-        geom_line() + coord_fixed() +
-        geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
-        labs(x = "Recall", y = "Precision") +
-        annotate("text", x = 0.5, y=Inf, label="P-R", vjust=1.5, size=6) +
-        scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-        theme_bw()
-    }
+    # # break-even point
+    # BEP = dfrocpr[precision == recall][,precision]
+
+    # F1
+    # 1/F1 = 1/2*(1/P+1/R)
+    # F_beta
+    # 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
+
+    # plot pr
+    if (show_plot == TRUE) ppr = eva_ppr(dfrocpr)
   }
 
 

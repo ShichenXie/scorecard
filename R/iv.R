@@ -83,7 +83,8 @@ iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
 #' @import data.table
 #'
 iv_01 = function(good, bad) {
-  DistrBad = DistrGood = miv = NULL # no visible binding for global variable
+  # global variables
+  DistrBad = DistrGood = miv = NULL
 
   data.table(
     good = good, bad = bad
@@ -106,7 +107,8 @@ iv_01 = function(good, bad) {
 #' @import data.table
 #'
 miv_01 = function(good, bad) {
-  DistrBad = DistrGood = miv = NULL # no visible binding for global variable
+  # global variables
+  DistrBad = DistrGood = miv = NULL
 
   data.table(
     good = good, bad = bad
@@ -127,7 +129,8 @@ miv_01 = function(good, bad) {
 #' @import data.table
 #'
 woe_01 = function(good, bad) {
-  DistrBad = DistrGood = woe = NULL # no visible binding for global variable
+  # global variables
+  DistrBad = DistrGood = woe = NULL
 
   data.table(
     good = good, bad = bad

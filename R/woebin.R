@@ -240,7 +240,7 @@ woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.
 # examples
 # system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_total) )
 # system.time( woebin2_tree_1bst(dtm, initial_binning, min_perc_total) )
-# system.time(woebin2_tree(dtm, initial_binning, min_perc_total))
+# system.time( woebin2_tree(dtm, initial_binning, min_perc_total) )
 
 # required in woebin2 # # format binning output
 binning_format = function(binning) {
