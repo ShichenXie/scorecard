@@ -89,7 +89,7 @@ x_variable = function(dt, y, x) {
 
   if (is.null(x)) x = x_all
 
-  if ( length(x) > length(x_all) ) {
+  if ( length(setdiff(x,x_all)) > 0 ) {
     warning(paste0("Incorrect inputs; the variables \n\"", paste0(setdiff(x,x_all), collapse = ","), "\"\n are not exist in input data, which are removed."))
     x = intersect(x, x_all)
   }
