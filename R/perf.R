@@ -39,7 +39,7 @@ eva_pks = function(dfkslift) {
   # global variables
   ks=group=.=cumgood=cumbad=value=variable=NULL
 
-  dfks = dfkslift[ks == max(ks)][order(group)]
+  dfks = dfkslift[ks == max(ks)][order(group)][1]
 
   pks = ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
     geom_line() + coord_fixed() +
