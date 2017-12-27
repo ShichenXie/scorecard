@@ -438,13 +438,13 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
     # print xs
     if ( is.character(dt[[x_i]]) || is.factor(dt[[x_i]]) || is.numeric(dt[[x_i]]) || is.logical(dt[[x_i]]) ) {
       if (length(unique(dt[[x_i]])) > 1) {
-        if (x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i,"\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i,"\n")
       } else {
-        if (x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
+        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
         next
       }
     } else {
-      if (x_num %% print_step == 0) cat("#",paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
+      if (print_step>0 & x_num %% print_step == 0) cat("#",paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
       next
     }
     x_num = x_num+1
