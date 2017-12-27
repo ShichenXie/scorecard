@@ -25,7 +25,7 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
   # points0 - PDO = a - b*log(2*odds0)
 
   b = pdo/log(2)
-  a = points0 + b*log(odds0/(1+odds0))
+  a = points0 + b*log(odds0) #log(odds0/(1+odds0))
 
   return(list(a=a, b=b))
 }
