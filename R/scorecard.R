@@ -38,6 +38,7 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
+#' @param basepoints_eq0 Logical, default FALSE. If it is TRUE, the basepoints equals 0 and will equally add to variables' points.
 #' @return scorecard
 #'
 #' @seealso \code{\link{scorecard_ply}}
@@ -92,10 +93,11 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @import data.table
 #' @export
 #'
-scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50) {
+scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE) {
   # global variables or functions
   variable = var_woe = Estimate = points = woe = NULL
 
+  # coefficients
   aabb = ab(points0, odds0, pdo)
   a = aabb$a; b = aabb$b;
   # odds = pred/(1-pred); score = a - b*log(odds)
@@ -119,10 +121,19 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50) {
   scorecard = list()
   scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
 
-
   for (i in coef[-1,variable]) {
     scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
-    # [ ,.( variable, bin, numdistr, woe, points = round(-b*coef[variable==i, Estimate]*woe) )]
+  }
+
+  # basepoints equals 0
+  len_x = coef[-1,.N]
+  if (basepoints_eq0) {
+    points_adj = round(scorecard$basepoints$points/len_x)
+    scorecard$basepoints$points = 0
+
+    for (i in 1:len_x+1) {
+      setDT(scorecard[[i]])[, points := points+points_adj]
+    }
   }
 
   return(scorecard)

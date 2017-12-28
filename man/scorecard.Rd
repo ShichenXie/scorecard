@@ -4,7 +4,8 @@
 \alias{scorecard}
 \title{Creating a Scorecard}
 \usage{
-scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50)
+scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50,
+  basepoints_eq0 = FALSE)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}
@@ -16,6 +17,8 @@ scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50)
 \item{odds0}{Target odds, default 1/19. Odds = p/(1-p).}
 
 \item{pdo}{Points to Double the Odds, default 50.}
+
+\item{basepoints_eq0}{Logical, default FALSE. If it is TRUE, the basepoints equals 0 and will equally add to variables' points.}
 }
 \value{
 scorecard
