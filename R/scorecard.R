@@ -118,21 +118,21 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 
 
   # scorecard
-  scorecard = list()
-  scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(a - b*coef[1,Estimate]) )
-
-  for (i in coef[-1,variable]) {
-    scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
-  }
-
-  # basepoints equals 0
   len_x = coef[-1,.N]
-  if (basepoints_eq0) {
-    points_adj = round(scorecard$basepoints$points/len_x)
-    scorecard$basepoints$points = 0
+  basepoints = a - b*coef[1,Estimate]
+  scorecard = list()
 
-    for (i in 1:len_x+1) {
-      setDT(scorecard[[i]])[, points := points+points_adj]
+  if (basepoints_eq0) {
+    scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = 0 )
+
+    for (i in coef[-1,variable]) {
+      scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe + basepoints/len_x)]
+    }
+  } else {
+    scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints) )
+
+    for (i in coef[-1,variable]) {
+      scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
     }
   }
 

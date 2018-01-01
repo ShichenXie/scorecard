@@ -1,3 +1,8 @@
+# scorecard 0.1.5
+
+* Fixed a bug in calculating the coefficients in scorecard function.
+
+
 # scorecard 0.1.4
 
 * perf_eva supports both predicted probability and score.
