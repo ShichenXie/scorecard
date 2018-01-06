@@ -305,7 +305,7 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 
 #' WOE Binning
 #'
-#' \code{woebin} generates optimal binning for both numerical and categorical variables using tree-like segmentation. For the categorical variables, the binning segmentation will ordered by the levels for factor and by the bad probability for character. \code{woebin} can also customizing breakpoints for both numerical and categorical variables.
+#' \code{woebin} generates optimal binning using tree-like segmentation for numerical, factor and categorical variables. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
 #'
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.

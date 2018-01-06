@@ -29,37 +29,39 @@ This is a basic example which shows you how to develop a common credit risk scor
 library(data.table)
 library(scorecard)
 
+# data prepare ------
 # load germancredit data
 data("germancredit")
 
-# rename creditability as y
-dt = setDT(germancredit)[, `:=`(
-  y = ifelse(creditability == "bad", 1, 0),
-  creditability = NULL
-)]
+# set creditability as 1 or 0
+dt = setDT(germancredit)[,creditability := ifelse(creditability=="bad", 1, 0)]
 
 # filter variable via missing rate, iv, identical value rate
-dt_s = var_filter(dt, "y")
+dt_s = var_filter(dt, y="creditability")
 
-# breaking dt into train and test ------
-dt_list = split_df(dt_s, y="y", ratio = 0.6, seed = 30)
+# breaking dt into train and test
+dt_list = split_df(dt_s, y="creditability", ratio = 0.6, seed = 30)
 train = dt_list$train; test = dt_list$test;
 
 # woe binning ------
-bins = woebin(dt_s, "y", print_step = 5)
+bins = woebin(dt_s, y="creditability", print_step = 1)
 # woebin_plot(bins)
 
 # binning adjustment
-# breaks_adj = woebin_adj(bins, dt_s, "y") # adjust breaks interactively
-breaks_adj = list(age.in.years=c(26, 35, 40)) # or specify breaks manually
-bins_adj = woebin(dt_s,"y", breaks_list=breaks_adj, print_step = 5)
+## adjust breaks interactively
+# breaks_adj = woebin_adj(bins, dt_s, "creditability") 
+## or specify breaks manually
+breaks_adj = list(
+  age.in.years=c(26, 35, 40),
+  other.debtors.or.guarantors=c("none", "co-applicant%,%guarantor"))
+bins_adj = woebin(dt_s, y="creditability", breaks_list=breaks_adj, print_step=0)
 
 # converting train and test into woe values
-train_woe = woebin_ply(train, bins_adj, print_step = 5)
-test_woe = woebin_ply(test, bins_adj, print_step = 5)
+train_woe = woebin_ply(train, bins_adj, print_step=0)
+test_woe = woebin_ply(test, bins_adj, print_step=0)
 
 # glm ------
-m1 = glm( y ~ ., family = "binomial", data = train_woe)
+m1 = glm( creditability ~ ., family = "binomial", data = train_woe)
 # summary(m1)
 
 # Select a formula-based model by AIC
@@ -67,30 +69,27 @@ m_step = step(m1, direction="both", trace = FALSE)
 m2 = eval(m_step$call)
 # summary(m2)
 
-# performance ------
+# performance ks & roc ------
 # predicted proability
 train_pred = predict(m2, train_woe, type='response')
 test_pred = predict(m2, test_woe, type='response')
+# performance
+train_perf = perf_eva(train$creditability, train_pred, title = "train")
+test_perf = perf_eva(test$creditability, test_pred, title = "test")
 
-# ks & roc plot
-train_perf = perf_eva(train$y, train_pred, title = "train")
-test_perf = perf_eva(test$y, test_pred, title = "test")
-
-# score
+# score ------
 card = scorecard(bins_adj, m2)
-
-# credit score, only_total_score = TRUE
-train_score = scorecard_ply(train, card, print_step = 0)
-test_score = scorecard_ply(test, card, print_step = 0)
+# credit score
+train_score = scorecard_ply(train, card, print_step=0)
+test_score = scorecard_ply(test, card, print_step=0)
 
 # psi
 perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train$y, test = test$y),
+  label = list(train = train$creditability, test = test$creditability),
   x_limits = c(250, 700),
   x_tick_break = 50
-  )
-
+)
 
 # Session info ------
 #  setting  value                       

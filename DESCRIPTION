@@ -4,7 +4,7 @@ Title: Credit Risk Scorecard
 Description: Makes the development of credit risk scorecard easily and efficiently by providing functions such as information value, variable filter, optimal woe binning, scorecard scaling and performance evaluation etc. The references including: 
   1. Refaat, M. (2011, ISBN: 9781447511199). Credit Risk Scorecard: Development and Implementation Using SAS. 
   2. Siddiqi, N. (2006, ISBN: 9780471754510). Credit risk scorecards. Developing and Implementing Intelligent Credit Scoring.
-Version: 0.1.4
+Version: 0.1.5
 Author: Shichen Xie
 Maintainer: Shichen Xie <xie@shichen.name>
 Depends: R (>= 3.1.0)
@@ -15,3 +15,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
