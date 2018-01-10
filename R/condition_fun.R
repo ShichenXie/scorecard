@@ -4,7 +4,7 @@
 rm_datetime_col = function(dt) {
   dt = setDT(dt)
 
-  isdatetime = function(x) (class(x)[1] %in% c("date","POSIXlt","POSIXct","POSIXt")) == TRUE
+  isdatetime = function(x) (class(x)[1] %in% c("Date","POSIXlt","POSIXct","POSIXt")) == TRUE
   datetime_col = names(which(dt[,sapply(.SD, isdatetime)]))
 
   if (length(datetime_col) > 0) {

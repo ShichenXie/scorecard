@@ -4,7 +4,7 @@
 \alias{perf_eva}
 \title{KS, ROC, Lift, PR}
 \usage{
-perf_eva(label, pred, title = "train", groupnum = 20, type = c("ks",
+perf_eva(label, pred, title = "performance", groupnum = 20, type = c("ks",
   "roc"), show_plot = TRUE, positive = "bad|1", seed = 186)
 }
 \arguments{
@@ -12,7 +12,7 @@ perf_eva(label, pred, title = "train", groupnum = 20, type = c("ks",
 
 \item{pred}{Predicted probability or score.}
 
-\item{title}{Title of plot, default "train".}
+\item{title}{Title of plot, default "performance".}
 
 \item{groupnum}{The group numbers when calculating bad probability, default 20.}
 

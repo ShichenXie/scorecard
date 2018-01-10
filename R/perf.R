@@ -27,11 +27,13 @@ eva_dfkslift = function(df, groupnum = 20) {
   ][, .(good = sum(label==0), bad = sum(label==1)), by=group
   ][, `:=`(
     group = .I/.N,
-    good=good/sum(good), bad=bad/sum(bad),
+    good_distri=good/sum(good), bad_distri=bad/sum(bad),
+    badrate=bad/(good+bad), cumbadrate = (cumsum(bad)/cumsum(good+bad)),
+    lift = (cumsum(bad)/cumsum(good+bad))/(sum(bad)/sum(good+bad)),
     cumgood=cumsum(good)/sum(good), cumbad=cumsum(bad)/sum(bad))
   ][, ks := abs(cumbad - cumgood)]
 
-  df_kslift = rbind(data.table(group=0, good=0, bad=0, cumgood=0, cumbad=0, ks=0), df_kslift)
+  df_kslift = rbind(data.table(group=0, good=0, bad=0, good_distri=0, bad_distri=0, badrate=0, cumbadrate=0, lift=0, cumgood=0, cumbad=0, ks=0), df_kslift)
 
   return(df_kslift)
 }
@@ -58,18 +60,24 @@ eva_pks = function(dfkslift) {
 }
 eva_plift = function(dfkslift) {
   # global variables
-  .=group=bad=model=groupnum=NULL
+  .=group=bad=model=badrate=cumbadrate=good=NULL
+  badrate_avg = dfkslift[,sum(bad)/sum(good+bad)]
 
-  plift = ggplot(dfkslift[-1][,.(group, model = bad)], aes(x=group, y=model)) +
-    geom_bar(stat = "identity", fill=NA, colour = "black") + coord_fixed() +
-    geom_segment(aes(x = 0, y = 1/groupnum, xend = 1, yend = 1/groupnum), colour = "red", linetype = "dashed") +
-    labs(x="% of population", y="%of total Bad") +
-    annotate("text", x = 0.50, y=Inf, label="Lift", vjust=1.5, size=6)+
+  plift = ggplot( dfkslift[-1][,.(group, cumbadrate, badrate)], aes(x=group) ) +
+    geom_bar(aes(y=badrate), stat = "identity", fill=NA, colour = "black") +
+    geom_line(aes(y=cumbadrate)) + geom_point(aes(y=cumbadrate), shape=21, fill="white") +
+    coord_fixed() +
+    geom_segment(aes(x = 0, y = badrate_avg, xend = 1, yend = badrate_avg), colour = "red", linetype = "dashed") +
+    labs(x="% of population", y="% of Bad") +
+    annotate("text", x=0.50,y=Inf, label="Lift", vjust=1.5, size=6)+
+    annotate("text", x=0.75,y=mean(dfkslift$cumbadrate), label="cumulate", vjust=1)+
+    annotate("text", x=0.75,y=badrate_avg, label="sample", vjust=1, colour="red")+
     guides(fill=guide_legend(title=NULL)) +
     scale_fill_manual(values=c("white", "grey")) +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    theme_bw() + theme(legend.position=c(0.5, 0.9), legend.direction="horizontal")
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + theme_bw() +
+    theme(legend.position=c(0.5, 0.9),legend.direction="horizontal")
+
 
   return(plift)
 }
@@ -125,7 +133,7 @@ eva_ppr = function(dfrocpr) {
 #' @name perf_eva
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability or score.
-#' @param title Title of plot, default "train".
+#' @param title Title of plot, default "performance".
 #' @param groupnum The group numbers when calculating bad probability, default 20.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
@@ -178,7 +186,7 @@ eva_ppr = function(dfrocpr) {
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
+perf_eva = function(label, pred, title="performance", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   # global variables
   FPR = TPR = cumbad = group = ks = NULL
 
