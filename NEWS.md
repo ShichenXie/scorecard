@@ -1,8 +1,8 @@
 # scorecard 0.1.5
 
-* Fixed a bug in calculating the coefficients in scorecard function.
+* Fixed a bug in scorecard function when calculating the coefficients.
 * Fixed a bug in perf_eva when type="lift". 
-* Remove Date columns in woebin and var_filter. 
+* Fixed a bug in functions of woebin and var_filter when removing Date columns. 
 
 # scorecard 0.1.4
 
