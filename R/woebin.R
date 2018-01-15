@@ -745,7 +745,7 @@ woebin_plot = function(bins, x=NULL, title=NULL) {
 #'
 woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
   # global variables or functions
-  variable = p = bin_adj = V1 = badprob = badprob2 = count_distr = NULL
+  . = V1 = badprob = badprob2 = bin2 = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
   dt = setDT(dt)
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -758,9 +758,11 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
   }
 
   # function woebin adj plotting
-  show_binadj_plot = function(dt, y, x, breaks) {
-    eval(parse(text = paste0(
-      "bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F],\"",y,"\",breaks_list = list(",x,"=c(",breaks,")),print_step=0L)")))
+  show_binadj_plot = function(dt, y, x, breaks, stop_limit) {
+    text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x,"=c(",breaks,")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L)")
+
+    eval(parse(text = text_woebin))
+
 
     ## print adjust breaks
     breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
@@ -774,10 +776,20 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
     print(woebin_plot(bin_adj)[[1]])
 
     # # breaks
-    if (breaks == "") breaks = breaks_bin
+    if (breaks == "" || is.null(breaks)) breaks = breaks_bin
 
     return(breaks)
   }
+
+  # class of variables
+  vars_class = dt[,sapply(.SD, class), .SDcols = bins[,unique(variable)]]
+  vars_class = data.table(variable = names(vars_class), x_class = vars_class)
+  # breakslist of bins
+  bins_breakslist = bins[
+    , bin2 := sub("^\\[(.*),.+", "\\1", bin)
+    ][!(bin2 %in% c("-Inf","Inf","missing"))
+    ][vars_class, on="variable"
+    ][, .(x_breaks = paste(ifelse(x_class == "numeric", bin2, paste0("\"", bin2, "\"")), collapse = ", ")), by=variable]
 
   # x variables
   if (all_var == FALSE) {
@@ -789,15 +801,14 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
     xs = bins[,unique(variable)]
   }
 
-
   xs_len = length(xs)
-  break_list = NULL
+  breaks_list = NULL
   for (i in 1:xs_len) {
     # x variable
     x = xs[i]
-    cat("--------", paste0(i,"/",xs_len), x, "--------\n")
+    cat("--------", paste0(i, "/", xs_len), x, "--------\n")
     bin = bins[variable==x]
-    breaks = NULL
+    breaks = stop_limit = NULL
 
     # basic information of x variable ------
     ## class
@@ -818,11 +829,8 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
       }
     }
     ## current breaks
-    breaks_bin = setdiff(sub("^\\[(.*),.+", "\\1", bin$bin), c("-Inf","Inf","missing"))
-    breaks_bin = ifelse(
-      is.numeric(dt[[x]]),
-      paste0(breaks_bin, collapse=", "),
-      paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+    breaks_bin = bins_breakslist[variable == x, x_breaks]
+
     cat("> Current breaks: ","\n", breaks_bin,"\n","\n")
     ## woebin plotting
     plist = woebin_plot(bin)
@@ -832,20 +840,25 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
     while (menu(c("No", "Yes"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x, "?")) == 2) {
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
+      if (breaks == "N") {
+        stop_limit = "N"
+        breaks = NULL
+      } else {
+        stop_limit = NULL
+      }
 
-      tryCatch(show_binadj_plot(dt, y, x, breaks), finally=next)
+      tryCatch(breaks <- show_binadj_plot(dt, y, x, breaks, stop_limit), finally=next)
     }
 
 
-    if (is.null(breaks) || breaks == "") breaks = breaks_bin
-    # break_list
-    if (length(breaks)>0) {
-      break_list = c(break_list, paste0(x,"=c(",breaks,")"))
-      break_list = paste0(break_list, collapse=", \n")
-    }
+    if (!(is.null(breaks) || breaks == "")) bins_breakslist[variable == x][["x_breaks"]]  <- breaks
   }
 
-  break_list = paste0(c("list(",break_list,")"),collapse = "\n")
-  cat(break_list,"\n")
-  return(break_list)
+
+  breaks_list = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
+  breaks_list = paste0(c("list(", breaks_list, ")"), collapse = "\n ")
+
+
+  cat(breaks_list,"\n")
+  return(breaks_list)
 }
