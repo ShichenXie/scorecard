@@ -10,7 +10,7 @@ rm_datetime_col = function(dt) {
   if (length(datetime_col) > 0) {
     warning(paste0("The date/times columns (",paste0(datetime_col,collapse = ","),") are removed from input dataset."))
 
-    dt = dt[,(datetime_col) := NULL]
+    dt = copy(dt)[,(datetime_col) := NULL]
   }
 
   return(dt)

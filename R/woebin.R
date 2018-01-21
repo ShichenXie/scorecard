@@ -802,8 +802,11 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
   }
 
   xs_len = length(xs)
+  i = 1
   breaks_list = NULL
-  for (i in 1:xs_len) {
+  while (i <= xs_len) {
+    # gn = readline(paste0("> Go to nth Var (e.g.: g4,Go 4th): "))
+
     # x variable
     x = xs[i]
     cat("--------", paste0(i, "/", xs_len), x, "--------\n")
@@ -852,6 +855,7 @@ woebin_adj = function(bins, dt, y, all_var = FALSE, count_distr_limit = 0.05) {
 
 
     if (!(is.null(breaks) || breaks == "")) bins_breakslist[variable == x][["x_breaks"]]  <- breaks
+    i = i + 1
   }
 
 
