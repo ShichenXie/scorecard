@@ -265,7 +265,7 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5) {
+woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5) {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
 
@@ -279,7 +279,8 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
   # y="y"; x="status.of.existing.checking.account"
 
   # melt data.table
-  dtm = data.table(y=dt[[y]], variable=x, value=dt[[x]])
+  # dtm = data.table(y=dt[[y]], variable=x, value=dt[[x]])
+  dtm = data.table(y=y, variable=x_name, value=x)
 
 
   # binning
@@ -316,7 +317,8 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
 #' @param max_bin_num Integer. The maximum binning number.
 #' @param positive Value of positive class, default "bad|1".
-#' @param print_step A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
+#' @param print_step The parallel computation via foreach package doesnot support printing progress message.
+# A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
 #' @return Optimal or customized binning information
 #'
 #' @seealso \code{\link{woebin_ply}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
@@ -337,12 +339,6 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #' # bins_germ_df = data.table::rbindlist(bins_germ)
 #'
 #' # Example III
-#' # customizing stop_limit (info-value grain ratio) for each variable
-#' bins_cus_sl = woebin(germancredit, y="creditability",
-#'   x=c("age.in.years", "credit.amount", "housing", "purpose"),
-#'   stop_limit=c(0.05,0.1,0.01,0.1))
-#'
-#' # Example IV
 #' # customizing the breakpoints of binning
 #' breaks_list = list(
 #'   age.in.years = c(25, 35, 40, 60),
@@ -356,13 +352,15 @@ woebin2 = function(dt, y, x, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, m
 #'   breaks_list=breaks_list)
 #' }
 #'
-#' @import data.table
-#' @importFrom stats IQR quantile
+#' @import data.table foreach
+#' @importFrom stats IQR quantile setNames
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
+#' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", print_step=1L) {
-  # global variables
-  # detectCores = makeCluster = parLapply = NULL
+woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=5, positive="bad|1", print_step=0L) {
+  # global variable
+  bins = i = NULL
 
   # set dt as data.table
   dt = setDT(dt)
@@ -374,6 +372,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
   dt = check_y(dt, y, positive)
   # x variable names
   xs = x_variable(dt,y,x)
+  xs_len = length(xs)
   # print_step
   print_step = check_print_step(print_step)
 
@@ -402,16 +401,16 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
     }
   }
 
-  # stop_limit vector
-  if (length(stop_limit) == 1) {
-    stop_limit = rep(stop_limit, length(xs))
-  } else if (length(stop_limit) != length(xs)) {
-    stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
-  }
+  # # stop_limit vector
+  # if (length(stop_limit) == 1) {
+  #   stop_limit = rep(stop_limit, length(xs))
+  # } else if (length(stop_limit) != length(xs)) {
+  #   stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
+  # }
   # stop_limit range
   if ( stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit) ) {
     warning("Incorrect parameter specification; accepted stop_limit parameter range is 0-0.5. Parameter was set to default (0.1).")
-    sapply(stop_limit, function(x) if ( x < 0 || x > 0.5 || !is.numeric(x) ) x = 0.1 else x, simplify = TRUE)
+    stop_limit = 0.1
   }
 
   # min_perc_total range
@@ -426,55 +425,80 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
   }
 
 
-
   # binning for each x variable ------
-  x_num = 1
-  xs_len = length(xs)
-  # export the bins of all columns
-  bins = list()
-  for (i in 1:length(xs)) {
+  # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
+  # print xs
+  # if (print_step>0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
+
+  no_cores = max(1, detectCores())#-1)
+  registerDoParallel(no_cores)
+  # run
+  bins <-
+    foreach(
+    i = 1:xs_len,
+    .combine = list,
+    .multicombine = TRUE,
+    .maxcombine = xs_len+1,
+    .inorder = FALSE,
+    .errorhandling = "pass",
+    .final = function(bs) {
+      if (xs_len==1) bs = list(bs)
+      setNames(bs, xs)
+    },
+    .export = c("dt", "xs", "y", "breaks_list", "min_perc_total", "stop_limit", "max_bin_num")
+  ) %dopar% {
     x_i = xs[i]
-    stop_limit_i = stop_limit[i]
-
-    # print xs
-    if ( is.character(dt[[x_i]]) || is.factor(dt[[x_i]]) || is.numeric(dt[[x_i]]) || is.logical(dt[[x_i]]) ) {
-      if (length(unique(dt[[x_i]])) > 1) {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i,"\n")
-      } else {
-        if (print_step>0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
-        next
-      }
-    } else {
-      if (print_step>0 & x_num %% print_step == 0) cat("#",paste0(format(c(x_num,xs_len)),collapse = "/"), x_i, "------skiped","\n")
-      next
-    }
-    x_num = x_num+1
-
 
     # woebining on one variable
     tryCatch(
-      bins[[x_i]] <- woebin2(
-        dt[, c(x_i, y), with=FALSE], y, x_i,
-        breaks = breaks_list[[x_i]], min_perc_total=min_perc_total,
-        stop_limit=stop_limit_i, max_bin_num = max_bin_num
+      woebin2(
+        y=dt[[y]], x=dt[[x_i]], x_name=x_i,
+        breaks=breaks_list[[x_i]],
+        min_perc_total=min_perc_total,
+        stop_limit=stop_limit, max_bin_num=max_bin_num
       ),
-      finally = next
+      error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
     )
   }
-
-
-  # bins = germancredit[, sapply(.SD, woebin2, y, breaks_list, min_perc_total, stop_limit, max_bin_num), .SDcols = xs]
+  # finish
+  stopImplicitCluster()
 
   return(bins)
 }
 
+
+
+
+#' @import data.table
+woebin_ply1 = function(dtx, binx, x_i) {
+  . = V1 = bin = woe = NULL
+
+  binx = binx[,bin:=as.character(bin)]
+  binx = merge(
+    binx[, strsplit(bin, "%,%", fixed=TRUE), by=bin],
+    binx[, .(bin, woe)],
+    by = "bin", all=TRUE
+  )[,.(bin=V1, woe)]
+
+  if ( is.numeric(dtx[[x_i]]) ) {
+    dtx[[x_i]] = cut(dtx[[x_i]], unique(c(-Inf, binx[bin != "missing", as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
+  }
+  dtx[[x_i]] = as.character(dtx[[x_i]])
+  dtx[[x_i]] = ifelse(is.na(dtx[[x_i]]), "missing", dtx[[x_i]])
+
+  setnames(binx, c(x_i, paste0(x_i, "_woe")))
+  dtx_woe = binx[dtx[[x_i]], on = x_i][, (x_i) := NULL]
+
+  return(dtx_woe)
+}
 #' Application of Binning
 #'
 #' \code{woebin_ply} converts original input data into woe values based on the binning information generated by \code{woebin}.
 #'
 #' @param dt A data frame.
 #' @param bins Binning information generated by \code{woebin}.
-#' @param print_step A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
+#' @param print_step The parallel computation via foreach package doesnot support printing progress message.
+# A non-negative integer. Default is 0L. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
 #' @return Binning information
 #'
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
@@ -509,18 +533,18 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, print_step=1L) {
+woebin_ply = function(dt, bins, print_step=0L) {
   # global variables or functions
-  . = V1 = bin = variable = woe = NULL
+  . = V1 = bin = variable = woe = i = NULL
 
   # set dt as data.table
-  kdt = copy(setDT(dt))
+  dt = setDT(dt)
   # remove date/time col
-  kdt = rm_datetime_col(kdt)
+  dt = rm_datetime_col(dt)
   # replace "" by NA
-  kdt = rep_blank_na(kdt)
+  dt = rep_blank_na(dt)
   # ncol of dt
-  if (ncol(kdt) <=1 & !is.null(ncol(kdt))) stop("Incorrect inputs; dt should have at least two columns.")
+  if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
   # print_step
   print_step = check_print_step(print_step)
 
@@ -538,51 +562,39 @@ woebin_ply = function(dt, bins, print_step=1L) {
   xs_bin = bins[,unique(variable)]
   xs_dt = names(dt)
   xs = intersect(xs_bin, xs_dt)
-
   # loop on x variables
-  x_num = 1
   xs_len = length(xs)
-  for (a in xs) {
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), a,"\n")
-    x_num = x_num+1
 
-    binsx = bins[variable==a] #bins[[a]]
-    na_woe = binsx[bin == "missing", woe]
-    binsx_narm = binsx[bin != "missing"]
+  dt_init = copy(dt)[,(xs):=NULL]
 
-    # factor or character variable
-    if (is.factor(kdt[[a]]) | is.character(kdt[[a]])) {
-      # # separate_rows
-      # # https://stackoverflow.com/questions/13773770/split-comma-separated-column-into-separate-rows
-      # binsx[, lapply(.SD, function(x) unlist(tstrsplit(x, "%,%", fixed=TRUE))), by = bstbin, .SDcols = "bin" ][copy(binsx)[,bin:=NULL], on="bstbin"]#[!is.na(bin)]
+  # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
+  # print x
+  # if (print_step > 0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
 
-      # return
-      kdt = setnames(
-        binsx[, strsplit(as.character(bin), "%,%", fixed=TRUE), by = .(bin) ][binsx[, .(bin, woe)], on="bin"][,.(V1, woe)],
-        c(a, paste0(a, "_woe"))
-      )[kdt, on=a
-      ][, (a) := NULL] #[!is.na(bin)]
+  no_cores = max(1, detectCores())#-1)
+  registerDoParallel(no_cores)
+  # run
+  dat <-
+  foreach(
+    i = 1:xs_len,
+    .combine=cbind,
+    .init = dt_init,
+    .inorder = FALSE,
+    .errorhandling = "pass",
+    .export = c("dt", "xs")
+  ) %dopar% {
+    x_i = xs[i]
 
-    # logical or numeric variables
-    } else if (is.logical(kdt[[a]]) | is.numeric(kdt[[a]])) {
-      if (is.logical(kdt[[a]])) kdt[[a]] = as.numeric(kdt[[a]]) # convert logical variable to numeric
+    binx = bins[variable==x_i]
+    dtx = dt[, x_i, with=FALSE]
 
-      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, binsx_narm[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
-
-      # return
-      kdt = setnames(
-        binsx[,.(bin, woe)], c(a, paste0(a, "_woe"))
-      )[kdt, on = a
-      ][, (a) := NULL]
-
-    }
-
-    # if is.na(kdt) == na_woe
-    kdt[[paste0(a, "_woe")]] = ifelse(is.na(kdt[[paste0(a, "_woe")]]), na_woe,  kdt[[paste0(a, "_woe")]])
-
+    woebin_ply1(dtx, binx, x_i)
   }
+  # finish
+  stopImplicitCluster()
 
-  return(kdt)
+
+  return(dat)
 }
 
 

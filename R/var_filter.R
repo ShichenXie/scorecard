@@ -6,8 +6,8 @@
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.
 #' @param iv_limit The minimum IV of each kept variable, default 0.02.
-#' @param na_perc_limit The maximum rate of NAs in each kept variable, default 0.95.
-#' @param ele_perc_limit The maximum rate of identical value (excluding NAs) in each kept variable, default 0.95.
+#' @param missing_limit The maximum missing rate in each kept variable, default 0.95.
+#' @param identical_limit The maximum identical value rate (excluding NAs) in each kept variable, default 0.95.
 #' @param var_rm Name vector of force removed variables, default NULL.
 #' @param var_kp Name vector of force kept variables, default NULL.
 #' @param return_rm_reason Logical, default FALSE.
@@ -47,7 +47,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, el
   # -na percentage
   na_perc = dt[, sapply(.SD, function(a) sum(is.na(a))/length(a)), .SDcols = x]
   # -element percentage
-  ele_perc = dt[, sapply(.SD, function(a) max(table(a)/sum(!is.na(a)))), .SDcols = x]
+  ele_perc = dt[, sapply(.SD, function(a) max(table(a))/sum(!is.na(a)) ), .SDcols = x]
 
   # datatable  iv na ele
   dt_var_selector =

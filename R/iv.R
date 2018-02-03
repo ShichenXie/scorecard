@@ -21,8 +21,8 @@
 #' @import data.table
 #' @export
 #'
-iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
-  good = bad = DistrBad = DistrGood = miv = info_value = . = NULL # no visible binding for global variable
+iv = function(dt, y, x=NULL, positive="bad|1", order=TRUE) {
+  info_value = label = NULL # no visible binding for global variable
 
   # set dt as data.table
   dt = setDT(dt)
@@ -33,33 +33,32 @@ iv = function(dt, y, x=NULL, positive="bad|1", order="TRUE") {
   # check y
   dt = check_y(dt, y, positive)
   # x variable names
-  x = x_variable(dt,y,x)
+  x = x_variable(dt, y, x)
 
   # data prep
   dt = dt[
     , x, with = FALSE
-    ][, `:=`(
-      rowid = .I,
-      y = ifelse(grepl(positive, dt[[y]]), 1, 0)
-    )]
+  ][, `:=`(
+    rowid = .I, label = dt[[y]]
+  )]
 
   # info_value
-  ivlist = melt(
-    setDT(dt)[, (x) := lapply(.SD, as.character), .SDcols = x],
-    id = c("rowid", "y")
-  )[
-    , .(good = sum(y==0), bad = sum(y==1), count=.N), keyby=c("variable", "value")
+  ivlist = dt[, sapply(.SD, iv_xy, label), .SDcols = x]
+
+  ivlist = data.table(variable=names(ivlist), info_value=ivlist)
+  if (order) ivlist = ivlist[order(-info_value)]
+
+  return(ivlist)
+}
+#' @import data.table
+iv_xy = function(x, y) {
+  . = DistrBad = DistrGood = bad = good = NULL
+
+  data.table(x=x, y=y)[
+    , .(good = sum(y==0), bad = sum(y==1)), keyby="x"
     ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0 by 0.99 in good/bad columns
-    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) ), by="variable"
-    ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
-    ][, .(info_value = sum(miv)), by="variable"]
-
-
-  if (order==TRUE) {
-    return( ivlist[order(-info_value)] )
-  } else {
-    return( ivlist )
-  }
+    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
+    ][, sum((DistrBad-DistrGood)*log(DistrBad/DistrGood))]
 
 }
 

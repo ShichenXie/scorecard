@@ -6,7 +6,7 @@
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
   stop_limit = 0.1, max_bin_num = 5, positive = "bad|1",
-  print_step = 1L)
+  print_step = 0L)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -25,7 +25,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
+\item{print_step}{The parallel computation via foreach package doesnot support printing progress message.}
 }
 \value{
 Optimal or customized binning information
@@ -49,12 +49,6 @@ bins_germ = woebin(germancredit, y = "creditability")
 # bins_germ_df = data.table::rbindlist(bins_germ)
 
 # Example III
-# customizing stop_limit (info-value grain ratio) for each variable
-bins_cus_sl = woebin(germancredit, y="creditability",
-  x=c("age.in.years", "credit.amount", "housing", "purpose"),
-  stop_limit=c(0.05,0.1,0.01,0.1))
-
-# Example IV
 # customizing the breakpoints of binning
 breaks_list = list(
   age.in.years = c(25, 35, 40, 60),

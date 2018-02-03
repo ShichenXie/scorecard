@@ -4,7 +4,7 @@
 \alias{iv}
 \title{Information Value}
 \usage{
-iv(dt, y, x = NULL, positive = "bad|1", order = "TRUE")
+iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}

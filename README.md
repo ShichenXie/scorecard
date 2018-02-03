@@ -44,7 +44,7 @@ dt_list = split_df(dt_s, y="creditability", ratio = 0.6, seed = 30)
 train = dt_list$train; test = dt_list$test;
 
 # woe binning ------
-bins = woebin(dt_s, y="creditability", print_step = 1)
+bins = woebin(dt_s, y="creditability")
 # woebin_plot(bins)
 
 # binning adjustment
@@ -54,11 +54,11 @@ bins = woebin(dt_s, y="creditability", print_step = 1)
 breaks_adj = list(
   age.in.years=c(26, 35, 40),
   other.debtors.or.guarantors=c("none", "co-applicant%,%guarantor"))
-bins_adj = woebin(dt_s, y="creditability", breaks_list=breaks_adj, print_step=0)
+bins_adj = woebin(dt_s, y="creditability", breaks_list=breaks_adj)
 
 # converting train and test into woe values
-train_woe = woebin_ply(train, bins_adj, print_step=0)
-test_woe = woebin_ply(test, bins_adj, print_step=0)
+train_woe = woebin_ply(train, bins_adj)
+test_woe = woebin_ply(test, bins_adj)
 
 # glm ------
 m1 = glm( creditability ~ ., family = "binomial", data = train_woe)
