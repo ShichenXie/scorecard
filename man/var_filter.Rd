@@ -4,8 +4,8 @@
 \alias{var_filter}
 \title{Variable Filter}
 \usage{
-var_filter(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95,
-  ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL,
+var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
+  identical_limit = 0.95, var_rm = NULL, var_kp = NULL,
   return_rm_reason = FALSE, positive = "bad|1")
 }
 \arguments{
@@ -17,9 +17,9 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95,
 
 \item{iv_limit}{The minimum IV of each kept variable, default 0.02.}
 
-\item{na_perc_limit}{The maximum rate of NAs in each kept variable, default 0.95.}
+\item{missing_limit}{The maximum missing rate in each kept variable, default 0.95.}
 
-\item{ele_perc_limit}{The maximum rate of identical value (excluding NAs) in each kept variable, default 0.95.}
+\item{identical_limit}{The maximum identical value rate (excluding NAs) in each kept variable, default 0.95.}
 
 \item{var_rm}{Name vector of force removed variables, default NULL.}
 

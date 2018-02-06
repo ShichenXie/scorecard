@@ -6,7 +6,7 @@
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
   stop_limit = 0.1, max_bin_num = 5, positive = "bad|1",
-  print_step = 0L)
+  no_cores = NULL, print_step = 0L)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -25,7 +25,9 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{print_step}{The parallel computation via foreach package doesnot support printing progress message.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults NULL. If no_cores equals NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if length of x variables large and equal than 20.}
+
+\item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
 }
 \value{
 Optimal or customized binning information

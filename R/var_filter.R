@@ -25,7 +25,7 @@
 #' @import data.table
 #' @export
 #'
-var_filter = function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, ele_perc_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad|1") {
+var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad|1") {
   . = info_value = variable = rt = rm_reason = NULL # no visible binding for global variable
 
   # set dt as data.table
@@ -56,7 +56,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, el
 
   # remove na_perc>95 | ele_perc>0.95 | iv<0.02
   # variable datatable selected
-  dt_var_sel = dt_var_selector[info_value >= iv_limit & na_perc <= na_perc_limit & ele_perc <= ele_perc_limit]
+  dt_var_sel = dt_var_selector[info_value >= iv_limit & na_perc <= missing_limit & ele_perc <= identical_limit]
 
   # add kept variable
   x_selected = dt_var_sel[, as.character(variable)]
@@ -66,11 +66,11 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, na_perc_limit = 0.95, el
   if (return_rm_reason) {
     # variable datatable deleted
     dt_var_rm = dt_var_selector[
-      info_value < iv_limit | na_perc > na_perc_limit | ele_perc > ele_perc_limit
+      info_value < iv_limit | na_perc > missing_limit | ele_perc > identical_limit
     ][, `:=`(
       info_value = ifelse(info_value < iv_limit, paste0("iv < ", iv_limit), ""),
-      na_perc = ifelse(na_perc > na_perc_limit, paste0("miss rate > ",na_perc_limit), ""),
-      ele_perc = ifelse(ele_perc > ele_perc_limit, paste0("identical rate > ", ele_perc_limit), "")
+      na_perc = ifelse(na_perc > missing_limit, paste0("miss rate > ",missing_limit), ""),
+      ele_perc = ifelse(ele_perc > identical_limit, paste0("identical rate > ", identical_limit), "")
     )][]
 
     dt_rm_reason = melt(
