@@ -5,21 +5,20 @@
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability values.
 #' @param title Title of plot, default "train".
-#' @param groupnum The group numbers when calculating bad probability, default 20.
+#' @param groupnum The group number when calculating bad probability, default NULL.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
 #' @param seed An integer. The specify seed is used for random sorting data, default: 186.
 #'
-#' @export
-perf_plot = function(label, pred, title="train", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
+perf_plot = function(label, pred, title="train", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
 
 
 
-eva_dfkslift = function(df, groupnum = 20) {
+eva_dfkslift = function(df, groupnum = NULL) {
   # global variables
   pred=group=.=label=good=bad=ks=cumbad=cumgood=NULL
 
-  if (groupnum == "N") groupnum = nrow(df)
+  if (is.null(groupnum)) groupnum = nrow(df)
 
   df_kslift = df[
     order(-pred)
@@ -64,14 +63,15 @@ eva_plift = function(dfkslift) {
   badrate_avg = dfkslift[,sum(bad)/sum(good+bad)]
 
   plift = ggplot( dfkslift[-1][,.(group, cumbadrate, badrate)], aes(x=group) ) +
-    geom_bar(aes(y=badrate), stat = "identity", fill=NA, colour = "black") +
-    geom_line(aes(y=cumbadrate)) + geom_point(aes(y=cumbadrate), shape=21, fill="white") +
+    # geom_line(aes(y=badrate), stat = "identity", fill=NA, colour = "black") +
+    geom_line(aes(y=cumbadrate)) +
+    # geom_point(aes(y=cumbadrate), shape=21, fill="white") +
     coord_fixed() +
     geom_segment(aes(x = 0, y = badrate_avg, xend = 1, yend = badrate_avg), colour = "red", linetype = "dashed") +
     labs(x="% of population", y="% of Bad") +
     annotate("text", x=0.50,y=Inf, label="Lift", vjust=1.5, size=6)+
-    annotate("text", x=0.75,y=mean(dfkslift$cumbadrate), label="cumulate", vjust=1)+
-    annotate("text", x=0.75,y=badrate_avg, label="sample", vjust=1, colour="red")+
+    annotate("text", x=0.75,y=mean(dfkslift$cumbadrate), label="cumulate badrate", vjust=1)+
+    annotate("text", x=0.75,y=badrate_avg, label="average badrate", vjust=1, colour="red")+
     guides(fill=guide_legend(title=NULL)) +
     scale_fill_manual(values=c("white", "grey")) +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
@@ -134,7 +134,7 @@ eva_ppr = function(dfrocpr) {
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability or score.
 #' @param title Title of plot, default "performance".
-#' @param groupnum The group numbers when calculating bad probability, default 20.
+#' @param groupnum The group number when calculating KS.  Default NULL, which means the number of sample size.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default TRUE. It means whether to show plot.
 #' @param positive Value of positive class, default "bad|1".
@@ -186,7 +186,7 @@ eva_ppr = function(dfrocpr) {
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva = function(label, pred, title="performance", groupnum=20, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
+perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   # global variables
   FPR = TPR = cumbad = group = ks = NULL
 

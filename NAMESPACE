@@ -2,7 +2,6 @@
 
 export(iv)
 export(perf_eva)
-export(perf_plot)
 export(perf_psi)
 export(scorecard)
 export(scorecard_ply)

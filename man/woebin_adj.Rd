@@ -13,9 +13,9 @@ woebin_adj(bins, dt, y, all_var = TRUE, count_distr_limit = 0.05)
 
 \item{y}{Name of y variable.}
 
-\item{all_var}{Logical, default TRUE. It means whether to adjust all variables' binning breaks.}
+\item{all_var}{Logical, default TRUE. If it is TRUE, the variables that need to adjust breaks including all variables, otherwise, including the variables that has count distribution rate less then count_distr_limit or has more then one inflection point.}
 
-\item{count_distr_limit}{The count_distr limit to adjust binning breaks, default 0.05.}
+\item{count_distr_limit}{The count_distr limit to adjust binning breaks. Default 0.05.}
 }
 \description{
 \code{woebin_adj} interactively adjust the binning breaks.

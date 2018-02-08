@@ -4,8 +4,9 @@
 \alias{perf_eva}
 \title{KS, ROC, Lift, PR}
 \usage{
-perf_eva(label, pred, title = "performance", groupnum = 20, type = c("ks",
-  "roc"), show_plot = TRUE, positive = "bad|1", seed = 186)
+perf_eva(label, pred, title = "performance", groupnum = NULL,
+  type = c("ks", "roc"), show_plot = TRUE, positive = "bad|1",
+  seed = 186)
 }
 \arguments{
 \item{label}{Label values, such as 0s and 1s, 0 represent for good and 1 for bad.}
@@ -14,7 +15,7 @@ perf_eva(label, pred, title = "performance", groupnum = 20, type = c("ks",
 
 \item{title}{Title of plot, default "performance".}
 
-\item{groupnum}{The group numbers when calculating bad probability, default 20.}
+\item{groupnum}{The group number when calculating KS.  Default NULL, which means the number of sample size.}
 
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 

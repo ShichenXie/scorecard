@@ -4,7 +4,7 @@
 \alias{perf_plot}
 \title{renamed as perf_eva}
 \usage{
-perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
+perf_plot(label, pred, title = "train", groupnum = NULL, type = c("ks",
   "roc"), show_plot = TRUE, seed = 186)
 }
 \arguments{
@@ -14,7 +14,7 @@ perf_plot(label, pred, title = "train", groupnum = 20, type = c("ks",
 
 \item{title}{Title of plot, default "train".}
 
-\item{groupnum}{The group numbers when calculating bad probability, default 20.}
+\item{groupnum}{The group number when calculating bad probability, default NULL.}
 
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 
