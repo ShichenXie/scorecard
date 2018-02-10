@@ -1,3 +1,7 @@
+# Adjusting the Intercept
+# support.sas.com/kb/22/601.html
+
+
 # coefficients in scorecard
 ab = function(points0=600, odds0=1/60, pdo=50) {
   # ab(600, 1/30, 60)

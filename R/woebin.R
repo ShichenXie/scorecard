@@ -730,26 +730,26 @@ plot_bin = function(bin, title) {
 woebin_plot = function(bins, x=NULL, title=NULL) {
   # global variables or functions
   variable = NULL
+  xs = x
+
 
   # converting data.frame into list
-  bins_list = list()
-  if (is.data.frame(bins)) {
-    bins_dt = setDT(bins)
-    x = bins_dt[1, unique(variable)]
-
-    bins = list()
-    for (i in x) {
-      bins[[i]] = bins_dt[variable == i]
+  # bins # if (is.list(bins)) rbindlist(bins)
+  if (!is.data.table(bins)) {
+    if (is.data.frame(bins)) {
+      bins = setDT(bins)
+    } else {
+      bins = rbindlist(bins)
     }
-
-    # bins = eval(parse(text = paste0("list(", setDT(bins)[1, variable], " = bins)")))
   }
+
   # x variable names
-  if (is.null(x) || anyNA(x)) x = names(bins)
+  if (is.null(xs)) xs = bins[,unique(variable)]
+
 
   # plot export
   plotlist = list()
-  for (i in x) plotlist[[i]] = plot_bin(bins[[i]], title)
+  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title)
 
 
   return(plotlist)
