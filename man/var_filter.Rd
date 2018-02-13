@@ -15,15 +15,15 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 
 \item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
 
-\item{iv_limit}{The minimum IV of each kept variable, default 0.02.}
+\item{iv_limit}{The information value of kept variables should >= iv_limit, default 0.02.}
 
-\item{missing_limit}{The maximum missing rate in each kept variable, default 0.95.}
+\item{missing_limit}{The missing rate of kept variables should <= missing_limit, default 0.95.}
 
-\item{identical_limit}{The maximum identical value rate (excluding NAs) in each kept variable, default 0.95.}
+\item{identical_limit}{The identical value rate (excluding NAs) of kept variables should <= identical_limit, default 0.95.}
 
-\item{var_rm}{Name vector of force removed variables, default NULL.}
+\item{var_rm}{Name of force removed variables, default NULL.}
 
-\item{var_kp}{Name vector of force kept variables, default NULL.}
+\item{var_kp}{Name of force kept variables, default NULL.}
 
 \item{return_rm_reason}{Logical, default FALSE.}
 
@@ -33,7 +33,7 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 A data.table with y and selected x variables and a data.table with the reason of removed x variable if return_rm_reason == TRUE.
 }
 \description{
-This function filter variables base on the specified conditions, including minimum iv, maximum na percentage and maximum element percentage.
+This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.
 }
 \examples{
 # Load German credit data

@@ -1,16 +1,17 @@
-#' renamed as perf_eva
-#'
-#' The function perf_plot has renamed as perf_eva.
-#'
-#' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
-#' @param pred Predicted probability values.
-#' @param title Title of plot, default "train".
-#' @param groupnum The group number when calculating bad probability, default NULL.
-#' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
-#' @param show_plot Logical value, default TRUE. It means whether to show plot.
-#' @param seed An integer. The specify seed is used for random sorting data, default: 186.
-#'
-perf_plot = function(label, pred, title="train", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {stop("This function has renamed as perf_eva.")}
+# renamed as perf_eva
+#
+# The function perf_plot has renamed as perf_eva.
+#
+# @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
+# @param pred Predicted probability values.
+# @param title Title of plot, default "train".
+# @param groupnum The group number when calculating bad probability, default NULL.
+# @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
+# @param show_plot Logical value, default TRUE. It means whether to show plot.
+# @param seed An integer. The specify seed is used for random sorting data, default: 186.
+perf_plot = function(label, pred, title="train", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
+  stop("This function has renamed as perf_eva.")
+}
 
 
 
