@@ -143,6 +143,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
   return(scorecard)
 }
 
+
 #' Application of Scorecard
 #'
 #' \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
@@ -207,12 +208,14 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
   # global variables or functions
-  x_num = variable = bin = points = . = V1 = score = NULL
+  variable = bin = points = . = V1 = score = NULL
 
   # set dt as data.table
-  kdt = copy(setDT(dt))
+  dt = copy(setDT(dt))
+  # remove date/time col
+  dt = rm_datetime_col(dt)
   # replace "" by NA
-  kdt = rep_blank_na(kdt)
+  dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
 
@@ -221,75 +224,43 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
     if (is.data.frame(card)) {
       card = setDT(card)
     } else {
-      card = rbindlist(card, fill = TRUE)
+      card = rbindlist(card, fill=TRUE)
     }
   }
 
   # x variables
   xs = card[variable != "basepoints", unique(variable)]
-
-  # parameter for print
-  x_num = 1
+  # length of x variables
   xs_len = length(xs)
+  # initial datasets
+  dat = copy(dt)[,(xs):=NULL]
+
   # loop on x variables
-  for (a in xs) {
-    # print variables
-    if (print_step > 0 & x_num %% print_step == 0) cat(paste0(format(c(x_num,xs_len)),collapse = "/"), a,"\n")
-    x_num = x_num+1
+  for (i in 1:xs_len) {
+    x_i = xs[i]
+    # print x
+    if (print_step > 0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
 
-    cardx = card[variable==a] #card[[a]]
-    na_points = cardx[bin == "missing", points]
-    cardx_narm = cardx[bin != "missing"]
+    cardx = card[variable==x_i]
+    dtx = dt[, x_i, with=FALSE]
 
-
-    if (is.factor(kdt[[a]]) | is.character(kdt[[a]])) {
-      # # separate_rows
-      # # https://stackoverflow.com/questions/13773770/split-comma-separated-column-into-separate-rows
-      # binsx[, lapply(.SD, function(x) unlist(tstrsplit(x, "%,%", fixed=TRUE))), by = bstbin, .SDcols = "bin" ][copy(binsx)[,bin:=NULL], on="bstbin"]#[!is.na(bin)]
-
-      # return
-      kdt = setnames(
-        cardx[, strsplit(as.character(bin), "%,%", fixed=TRUE), by = .(bin) ][cardx[, .(bin, points)], on="bin"][,.(V1, points)],
-        c(a, paste0(a, "_points"))
-      )[kdt, on=a
-        ][, (a) := NULL][] #[!is.na(bin)]
-
-    } else if (is.logical(kdt[[a]]) | is.numeric(kdt[[a]])) {
-      if (is.logical(kdt[[a]])) kdt[[a]] = as.numeric(kdt[[a]]) # convert logical variable to numeric
-
-      kdt[[a]] = cut(kdt[[a]], unique(c(-Inf, cardx_narm[, as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
-
-      # return
-      kdt = setnames(
-        cardx[,.(bin, points)], c(a, paste0(a, "_points"))
-      )[kdt, on = a
-      ][, (a) := NULL]
-
-    }
-
-    # if is.na(kdt) == na_points
-    kdt[[paste0(a, "_points")]] = ifelse(is.na(kdt[[paste0(a, "_points")]]), na_points,  kdt[[paste0(a, "_points")]])
-
+    dat = cbind(dat, woebin_ply1(dtx, cardx, x_i, var_suffix="points"))
   }
 
-  # dt_score[,(paste0(i,"_points")) := round(-b*coef[variable==i, Estimate]*dt_woe[[paste0(i, "_woe")]])]
 
+  # set basepoints
+  card_basepoints = ifelse(
+    card[variable == "basepoints",.N] == 1,
+    card[variable == "basepoints", points], 0)
 
 
   # total score
-  # dt_score[["score"]]
-  dt_score = kdt[, paste0(xs, "_points"), with=FALSE]
-  dt_score[, score := card[variable == "basepoints", points] + rowSums(kdt[, paste0(xs, "_points"), with=FALSE], na.rm = TRUE)]
+  dat_score = dat[, paste0(xs, "_points"), with=FALSE]
+  dat_score[, score := card_basepoints + rowSums(dat_score)]
 
-  # total_score = card[variable == "basepoints", points] + rowSums(kdt[, paste0(x, "_points"), with=FALSE], na.rm = TRUE)
-  # dt_score = dt_woe[,c(paste0(coef[-1,variable], "_points"), y, "score"), with=FALSE]
 
-  if (only_total_score) {
-    return( dt_score[, .(score)] )
-  } else {
-    return( dt_score )
-  }
-
+  if (only_total_score) dat_score = dat_score[, .(score)]
+  return(dat_score)
 }
 
 

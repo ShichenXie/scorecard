@@ -492,26 +492,31 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
 
 
 #' @import data.table
-woebin_ply1 = function(dtx, binx, x_i) {
+woebin_ply1 = function(dtx, binx, x_i, var_suffix) {
+  # var_suffix: "woe" "points"
   . = V1 = bin = woe = NULL
 
+  # binx
   binx = binx[,bin:=as.character(bin)]
   binx = merge(
     binx[, strsplit(bin, "%,%", fixed=TRUE), by=bin],
-    binx[, .(bin, woe)],
+    binx[, c("bin", var_suffix), with=FALSE],
     by = "bin", all=TRUE
-  )[,.(bin=V1, woe)]
+  )[,c("V1", var_suffix), with=FALSE]
+  setnames(binx, c("bin", var_suffix))
 
+  # dtx
   if ( is.numeric(dtx[[x_i]]) ) {
     dtx[[x_i]] = cut(dtx[[x_i]], unique(c(-Inf, binx[bin != "missing", as.numeric(sub("^\\[(.*),.+", "\\1", bin))], Inf)), right = FALSE, dig.lab = 10, ordered_result = FALSE)
   }
   dtx[[x_i]] = as.character(dtx[[x_i]])
   dtx[[x_i]] = ifelse(is.na(dtx[[x_i]]), "missing", dtx[[x_i]])
 
-  setnames(binx, c(x_i, paste0(x_i, "_woe")))
-  dtx_woe = binx[dtx[[x_i]], on = x_i][, (x_i) := NULL]
+  # merge
+  setnames(binx, c(x_i, paste(x_i, var_suffix, sep="_")))
+  dtx_suffix = binx[dtx[[x_i]], on = x_i][, (x_i) := NULL]
 
-  return(dtx_woe)
+  return(dtx_suffix)
 }
 #' Application of Binning
 #'
@@ -605,7 +610,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
       binx = bins[variable==x_i]
       dtx = dt[, x_i, with=FALSE]
 
-      dat = cbind(dat, woebin_ply1(dtx, binx, x_i))
+      dat = cbind(dat, woebin_ply1(dtx, binx, x_i, var_suffix="woe"))
     }
   } else {
     registerDoParallel(no_cores)
@@ -624,7 +629,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
         binx = bins[variable==x_i]
         dtx = dt[, x_i, with=FALSE]
 
-        woebin_ply1(dtx, binx, x_i)
+        woebin_ply1(dtx, binx, x_i, var_suffix="woe")
       }
     # finish
     stopImplicitCluster()
