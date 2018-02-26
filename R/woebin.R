@@ -511,7 +511,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 
   # merge
   setnames(binx, c("bin", x_i, paste(x_i, woe_points, sep="_")))
-  dtx_suffix = merge(setDT(setDF(dtx)), setDT(setDF(binx)), by=x_i, all.x = TRUE, sort=FALSE)
+  dtx_suffix = merge(setDF(dtx), setDF(binx), by=x_i, all.x = TRUE, sort=FALSE)
 
   dtx_suffix = setDT(dtx_suffix)[, (c("bin",x_i)) := NULL]
   return(dtx_suffix)
