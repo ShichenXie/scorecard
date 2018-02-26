@@ -2,6 +2,7 @@
 
 * Fixed a bug in woebin_adj function when all_var == FALSE and the breaks of all variables are perfect. 
 * Provide parallel computation (foreach with parallel backend) in the functions of woebin and woebin_ply.
+* Modified scorecard_ply function.
 
 # scorecard 0.1.5
 

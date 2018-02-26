@@ -4,16 +4,12 @@
 
 # coefficients in scorecard
 ab = function(points0=600, odds0=1/60, pdo=50) {
-  # ab(600, 1/30, 60)
-
-
-  # library(ggplot2)
   # sigmoid function
+  # library(ggplot2)
   # ggplot(data.frame(x = c(-5, 5)), aes(x)) + stat_function(fun = function(x) 1/(1+exp(-x)))
 
   # log_odds function
   # ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = function(x) log(x/(1-x)))
-
 
   # logistic function
   # p(y=1) = 1/(1+exp(-z)),
@@ -150,7 +146,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
-#' @param only_total_score  A logical value. Default is TRUE, which means only total credit score is return. Otherwise, if it is FALSE, which means both total credit score and score points of each variables are return.
+#' @param only_total_score  A logical value. Default is FALSE. If it is TRUE, which means only total credit score is return; Otherwise, if it is FALSE, which means both total credit score and score points of each variables are return.
 #' @param print_step A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
 #' @return Credit score
 #'
@@ -206,7 +202,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
+scorecard_ply = function(dt, card, only_total_score=FALSE, print_step=1L) {
   # global variables or functions
   variable = bin = points = . = V1 = score = NULL
 
@@ -244,13 +240,13 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
     cardx = card[variable==x_i]
     dtx = dt[, x_i, with=FALSE]
 
-    dat = cbind(dat, woebin_ply1(dtx, cardx, x_i, var_suffix="points"))
+    dat = cbind(dat, woepoints_ply1(dtx, cardx, x_i, woe_points="points"))
   }
 
 
   # set basepoints
   card_basepoints = ifelse(
-    card[variable == "basepoints",.N] == 1,
+    card[variable == "basepoints", .N] == 1,
     card[variable == "basepoints", points], 0)
 
 

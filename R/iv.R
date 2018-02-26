@@ -57,8 +57,9 @@ iv_xy = function(x, y) {
   data.table(x=x, y=y)[
     , .(good = sum(y==0), bad = sum(y==1)), keyby="x"
     ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0 by 0.99 in good/bad columns
-    ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-    ][, sum((DistrBad-DistrGood)*log(DistrBad/DistrGood))]
+    ][, `:=`(
+      DistrGood = good/sum(good), DistrBad = bad/sum(bad)
+   )][, sum((DistrBad-DistrGood)*log(DistrBad/DistrGood)) ]
 
 }
 
