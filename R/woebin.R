@@ -508,12 +508,13 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
   ## to charcarter, na to missing
   dtx[[x_i]] = as.character(dtx[[x_i]])
   dtx[[x_i]] = ifelse(is.na(dtx[[x_i]]), "missing", dtx[[x_i]])
+  dtx = setDT(dtx)[, rowid := .I]
 
   # merge
   setnames(binx, c("bin", x_i, paste(x_i, woe_points, sep="_")))
   dtx_suffix = merge(setDF(dtx), setDF(binx), by=x_i, all.x = TRUE)
 
-  dtx_suffix = setDT(dtx_suffix)[, (c("bin",x_i)) := NULL]
+  dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (c("rowid", "bin", x_i)) := NULL]
   return(dtx_suffix)
 }
 #' Application of Binning
