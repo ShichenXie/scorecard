@@ -9,7 +9,7 @@
 # @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 # @param show_plot Logical value, default TRUE. It means whether to show plot.
 # @param seed An integer. The specify seed is used for random sorting data, default: 186.
-perf_plot = function(label, pred, title="train", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
+perf_plot = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
   stop("This function has renamed as perf_eva.")
 }
 
@@ -134,11 +134,11 @@ eva_ppr = function(dfrocpr) {
 #' @name perf_eva
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability or score.
-#' @param title Title of plot, default "performance".
+#' @param title Title of plot, default is "performance".
 #' @param groupnum The group number when calculating KS.  Default NULL, which means the number of sample size.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
-#' @param show_plot Logical value, default TRUE. It means whether to show plot.
-#' @param positive Value of positive class, default "bad|1".
+#' @param show_plot Logical value, default is TRUE. It means whether to show plot.
+#' @param positive Value of positive class, default is "bad|1".
 #' @param seed Integer, default is 186. The specify seed is used for random sorting data.
 #' @return ks, roc, lift, pr
 #' @seealso \code{\link{perf_psi}}
@@ -554,7 +554,7 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=c(100,800), x_tick_b
         theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
 
 
-      if (title != "" & !is.na(title)) {
+      if (!is.null(title)) {
         p_score_distr = p_score_distr + ggtitle(paste0(title, " PSI: ", round(psi(dat), 4)))
       } else {
         p_score_distr = p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))

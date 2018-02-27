@@ -13,15 +13,15 @@ perf_eva(label, pred, title = "performance", groupnum = NULL,
 
 \item{pred}{Predicted probability or score.}
 
-\item{title}{Title of plot, default "performance".}
+\item{title}{Title of plot, default is "performance".}
 
 \item{groupnum}{The group number when calculating KS.  Default NULL, which means the number of sample size.}
 
 \item{type}{Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").}
 
-\item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
+\item{show_plot}{Logical value, default is TRUE. It means whether to show plot.}
 
-\item{positive}{Value of positive class, default "bad|1".}
+\item{positive}{Value of positive class, default is "bad|1".}
 
 \item{seed}{Integer, default is 186. The specify seed is used for random sorting data.}
 }
