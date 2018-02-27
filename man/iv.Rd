@@ -11,11 +11,11 @@ iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
 
-\item{positive}{Value of positive class, default "bad|1".}
+\item{positive}{Value of positive class, default is "bad|1".}
 
-\item{order}{Logical. If it is TRUE, return descending sorted iv values.}
+\item{order}{Logical, default is TRUE. If it is TRUE, the output will descending order via iv.}
 }
 \value{
 Information Value

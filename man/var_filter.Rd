@@ -13,21 +13,21 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
 
-\item{iv_limit}{The information value of kept variables should >= iv_limit, default 0.02.}
+\item{iv_limit}{The information value of kept variables should >= iv_limit. The default is 0.02.}
 
-\item{missing_limit}{The missing rate of kept variables should <= missing_limit, default 0.95.}
+\item{missing_limit}{The missing rate of kept variables should <= missing_limit. The default is 0.95.}
 
-\item{identical_limit}{The identical value rate (excluding NAs) of kept variables should <= identical_limit, default 0.95.}
+\item{identical_limit}{The identical value rate (excluding NAs) of kept variables should <= identical_limit. The default is 0.95.}
 
-\item{var_rm}{Name of force removed variables, default NULL.}
+\item{var_rm}{Name of force removed variables, default is NULL.}
 
-\item{var_kp}{Name of force kept variables, default NULL.}
+\item{var_kp}{Name of force kept variables, default is NULL.}
 
-\item{return_rm_reason}{Logical, default FALSE.}
+\item{return_rm_reason}{Logical, default is FALSE.}
 
-\item{positive}{Value of positive class, default "bad|1".}
+\item{positive}{Value of positive class, default is "bad|1".}
 }
 \value{
 A data.table with y and selected x variables and a data.table with the reason of removed x variable if return_rm_reason == TRUE.

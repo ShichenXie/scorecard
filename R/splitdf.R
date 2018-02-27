@@ -1,9 +1,9 @@
 #' Split a dataset
 #'
 #' @param dt A data frame.
-#' @param y Name of y variable, defaults NULL. The dataset dt will split based on the predictor y, if it is specified.
-#' @param ratio A numeric value, defaults 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
-#' @param seed A random seed, defaults 186. The specify seed is used for random sorting data.
+#' @param y Name of y variable, default is NULL. The input data will split based on the predictor y, if it is provide.
+#' @param ratio A numeric value, default is 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
+#' @param seed A random seed, default is 186.
 #'
 #' @examples
 #' library(scorecard)

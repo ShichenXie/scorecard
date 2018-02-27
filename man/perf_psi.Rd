@@ -4,32 +4,32 @@
 \alias{perf_psi}
 \title{PSI}
 \usage{
-perf_psi(score, label = NULL, title = "", x_limits = c(100, 800),
+perf_psi(score, label = NULL, title = NULL, x_limits = c(100, 800),
   x_tick_break = 50, show_plot = TRUE, seed = 186,
   return_distr_dat = FALSE)
 }
 \arguments{
-\item{score}{A list of credit score for actual and expected data samples. For example, score = list(train = score_A, test = score_E), both score_A and score_E are dataframes with the same column names.}
+\item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = score_A, expect = score_E), both score_A and score_E are dataframes with the same column names.}
 
-\item{label}{A list of label values for actual and expected data samples. For example, label = list(train = label_A, test = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
+\item{label}{A list of label value for actual and expected data samples. The default is NULL. For example, label = list(actual = label_A, expect = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.}
 
-\item{title}{Title of plot, default "".}
+\item{title}{Title of plot, default is NULL.}
 
-\item{x_limits}{x-axis limits, default c(0, 800).}
+\item{x_limits}{x-axis limits, default is c(100, 800).}
 
-\item{x_tick_break}{x-axis ticker break, default 100.}
+\item{x_tick_break}{x-axis ticker break, default is 50.}
 
-\item{show_plot}{Logical value, default TRUE. It means whether to show plot.}
+\item{show_plot}{Logical, default is TRUE. It means whether to show plot.}
 
-\item{seed}{An integer. The specify seed is used for random sorting data, default 186.}
+\item{seed}{Integer, default is 186. The specify seed is used for random sorting data.}
 
-\item{return_distr_dat}{Logical, default FALSE.}
+\item{return_distr_dat}{Logical, default is FALSE.}
 }
 \value{
 a dataframe of psi & plots of credit score distribution
 }
 \description{
-\code{perf_psi} calculates population stability index (PSI) based on provided credit score and provides plot of credit score distribution.
+\code{perf_psi} calculates population stability index (PSI) and provides credit score distribution based on credit score datasets.
 }
 \details{
 The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.

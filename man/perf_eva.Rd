@@ -23,7 +23,7 @@ perf_eva(label, pred, title = "performance", groupnum = NULL,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{seed}{An integer. The specify seed is used for random sorting data, default: 186.}
+\item{seed}{Integer, default is 186. The specify seed is used for random sorting data.}
 }
 \value{
 ks, roc, lift, pr

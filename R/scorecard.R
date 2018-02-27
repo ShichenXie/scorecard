@@ -38,7 +38,7 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
-#' @param basepoints_eq0 Logical, default FALSE. If it is TRUE, the basepoints equals 0 and will equally add to variables' points.
+#' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable points.
 #' @return scorecard
 #'
 #' @seealso \code{\link{scorecard_ply}}
@@ -142,12 +142,12 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 
 #' Application of Scorecard
 #'
-#' \code{scorecard_ply} calculates credit score using the results of \code{scorecard}.
+#' \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 #'
 #' @param dt Original data
 #' @param card Scorecard generated from \code{scorecard}.
-#' @param only_total_score  A logical value. Default is FALSE. If it is TRUE, which means only total credit score is return; Otherwise, if it is FALSE, which means both total credit score and score points of each variables are return.
-#' @param print_step A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.
+#' @param only_total_score  Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
+#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
 #' @return Credit score
 #'
 #' @seealso \code{\link{scorecard}}
@@ -202,7 +202,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score=FALSE, print_step=1L) {
+scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
   # global variables or functions
   variable = bin = points = . = V1 = score = NULL
 

@@ -5,7 +5,7 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, max_bin_num = 5, positive = "bad|1",
+  stop_limit = 0.1, max_bin_num = 6, positive = "bad|1",
   no_cores = NULL, print_step = 0L)
 }
 \arguments{
@@ -13,7 +13,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default NULL If x is NULL, all variables exclude y will counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
 
 \item{breaks_list}{List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.}
 
@@ -25,9 +25,9 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Defaults NULL. If no_cores equal to NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if length of x variables greater than or equal to 20.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.}
 
-\item{print_step}{A non-negative integer. Default is 1. Print variable names by print_step when print_step>0. If print_step=0, no message is printed.}
+\item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.}
 }
 \value{
 Optimal or customized binning information
