@@ -458,7 +458,7 @@ perf_psi = function(score, label = NULL, title="", x_limits=c(100,800), x_tick_b
   # score dataframe column names
   score_names = names(score[[1]])
 
-  # merge score label into one dataframe
+  # dataframe with score & label
   for (i in names(score)) {
     if (!is.null(label)) {
       score[[i]]$y = label[[i]]

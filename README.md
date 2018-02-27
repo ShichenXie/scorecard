@@ -49,7 +49,7 @@ bins = woebin(dt_s, y="creditability")
 
 # binning adjustment
 ## adjust breaks interactively
-# breaks_adj = woebin_adj(bins, dt_s, "creditability") 
+# breaks_adj = woebin_adj(dt_s, "creditability", bins) 
 ## or specify breaks manually
 breaks_adj = list(
   age.in.years=c(26, 35, 40),
