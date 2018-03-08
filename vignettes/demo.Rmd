@@ -40,9 +40,9 @@ bins = woebin(dt_s, y="creditability")
 # woebin_plot(bins)
 
 # binning adjustment
-## adjust breaks interactively
+# # adjust breaks interactively
 # breaks_adj = woebin_adj(dt_s, "creditability", bins) 
-## or specify breaks manually
+# # or specify breaks manually
 breaks_adj = list(
   age.in.years=c(26, 35, 40),
   other.debtors.or.guarantors=c("none", "co-applicant%,%guarantor"))
@@ -56,7 +56,15 @@ test_woe = woebin_ply(test, bins_adj)
 m1 = glm( creditability ~ ., family = "binomial", data = train_woe)
 # summary(m1)
 
-# Select a formula-based model by AIC
+# # Adjusting for oversampling (support.sas.com/kb/22/601.html)
+# p1=0.03; r1=0.3
+# dt_woe = dt_woe[, weight := ifelse(y==1, p1/r1, (1-p1)/(1-r1) )]
+# 
+# fmla = as.formula(paste("y ~", paste(names(dt_woe)[2:21], collapse="+")))
+# m1 = glm(fmla, family = "binomial", data = dt_woe, weights = weight)
+
+
+# Select a formula-based model by AIC (or by LASSO)
 m_step = step(m1, direction="both", trace = FALSE)
 m2 = eval(m_step$call)
 # summary(m2)

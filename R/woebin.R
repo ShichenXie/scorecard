@@ -883,7 +883,7 @@ woebin_adj = function(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05) {
   xs_all = bins[,unique(variable)]
   if (all_var == FALSE) {
     xs_adj = union(
-      bins[count_distr < count_distr_limit, unique(variable)],
+      bins[bin != "missing"][count_distr < count_distr_limit, unique(variable)],
       bins[bin != "missing"][, badprob2 := badprob >= shift(badprob, type = "lag"), by="variable"][!is.na(badprob2), length(unique(badprob2)), by="variable"][V1 > 1, variable]
     )
   } else {

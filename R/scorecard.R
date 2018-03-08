@@ -1,5 +1,8 @@
-# Adjusting the Intercept
+# Adjusting the Oversampling/Undersampling in Logistic Regression
 # support.sas.com/kb/22/601.html
+# weight:  p1/r1 for event observations, and (1-p1)/(1-r1) for nonevent observations
+# offset: log( ((1-p1)/(1-r1)) / (p1/r1))
+# https://www.analyticbridge.datasciencecentral.com/forum/topics/oversamplingundersampling-in
 
 
 # coefficients in scorecard
