@@ -2,7 +2,7 @@
 % Please edit documentation in R/info_ent_indx_gini.R
 \name{ig}
 \alias{ig}
-\title{Index Gini}
+\title{Impurity Gini}
 \usage{
 ig(dt, y, x = NULL, order = TRUE)
 }
@@ -16,16 +16,16 @@ ig(dt, y, x = NULL, order = TRUE)
 \item{order}{Logical, default is TRUE. If it is TRUE, the output will descending order via gini}
 }
 \value{
-gini index
+gini impurity
 }
 \description{
-This function calculates gini index (in CART) for multiple x variables.
+This function calculates gini impurity (used by the CART Decision Tree) for multiple x variables.
 }
 \examples{
 # Load German credit data
 data(germancredit)
 
-# Information Entropy
+# gini impurity
 dt_gini = ig(germancredit, y = "creditability")
 
 }

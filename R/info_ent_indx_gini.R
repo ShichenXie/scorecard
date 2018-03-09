@@ -124,33 +124,33 @@ ie_01 = function(good, bad) {
 
 
 
-# gini index (CART)
+# gini impurity (CART)
 # gini(D) = 1-\sum_k(p_k^2)
-# gini_index(D) = \sum_v(abs(\frac{D^v}{D})*gini(D^v))
-#' Index Gini
+# gini_impurity(D) = \sum_v(abs(\frac{D^v}{D})*gini(D^v))
+#' Impurity Gini
 #'
-#' This function calculates gini index (in CART) for multiple x variables.
+#' This function calculates gini impurity (used by the CART Decision Tree) for multiple x variables.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
 #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via gini
 #'
-#' @return gini index
+#' @return gini impurity
 # #' @details
 #'
 #' @examples
 #' # Load German credit data
 #' data(germancredit)
 #'
-#' # Information Entropy
+#' # gini impurity
 #' dt_gini = ig(germancredit, y = "creditability")
 #'
 #' @import data.table
 #' @export
 #'
 ig = function(dt, y, x=NULL, order=TRUE) {
-  gini_index = label = NULL
+  gini_impurity = label = NULL
 
   # set dt as data.table
   dt = setDT(dt)
@@ -173,8 +173,8 @@ ig = function(dt, y, x=NULL, order=TRUE) {
   # index gini
   gini_vec = dt[, sapply(.SD, ig_xy, label), .SDcols = x]
 
-  gini_df = data.table(variable=names(gini_vec), gini_index=gini_vec)
-  if (order) gini_df = gini_df[order(-gini_index)]
+  gini_df = data.table(variable=names(gini_vec), gini_impurity=gini_vec)
+  if (order) gini_df = gini_df[order(-gini_impurity)]
 
   return(gini_df)
 }
