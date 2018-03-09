@@ -1,4 +1,4 @@
-# information entropy
+# information entropy ------
 # ent(D) = -\sum_k(p_k*log_2(p_k)), if p_k=0 then p_k*log_2(p_k)=0
 
 # information gain (ID3)
@@ -9,28 +9,27 @@
 # instrinsic value: IV(a) = -\sum_v( abs(\frac{D^v}{D})*log_2(abs(\frac{D^v}{D})) )
 
 
-#' Information Entropy
-#'
-#' This function calculates information entropy (ie) for multiple x variables.
-#'
-#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
-#' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-#' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via ie.
-#'
-#' @return Information Entropy
-# #' @details
-#'
-#' @examples
-#' # Load German credit data
-#' data(germancredit)
-#'
-#' # Information Entropy
-#' dt_info_ent = ie(germancredit, y = "creditability")
-#'
-#' @import data.table
-#' @export
-#'
+# #' Information Entropy
+# #'
+# #' This function calculates information entropy (ie) for # multiple x variables.
+# #'
+# #' @param dt A data frame with both x (predictor/feature) and y # (response/label) variables.
+# #' @param y Name of y variable.
+# #' @param x Name of x variables. Default is NULL. If x is NULL, # then all variables except y are counted as x variables.
+# #' @param order Logical, default is TRUE. If it is TRUE, the # output will descending order via ie.
+# #'
+# #' @return Information Entropy
+# # #' @details
+# #'
+# #' @examples
+# #' # Load German credit data
+# #' data(germancredit)
+# #'
+# #' # Information Entropy
+# #' dt_info_ent = ie(germancredit, y = "creditability")
+# #'
+# #' @import data.table
+# #' @export
 ie = function(dt, y, x=NULL, order=TRUE) {
   info_ent = label = NULL # no visible binding for global variable
 
@@ -61,7 +60,7 @@ ie = function(dt, y, x=NULL, order=TRUE) {
   return(ielist)
 }
 
-#' @import data.table
+# #' @import data.table
 ie_xy = function(x=NULL, y) {
   # . = p1 = p0 = count = count_distr = bin_ie = NULL
   . =x_count =xy_N =x_count_distr =p =ent = bin_ie =NULL
@@ -124,31 +123,32 @@ ie_01 = function(good, bad) {
 
 
 
-# gini impurity (CART)
+# gini impurity (CART) ------
 # gini(D) = 1-\sum_k(p_k^2)
 # gini_impurity(D) = \sum_v(abs(\frac{D^v}{D})*gini(D^v))
-#' Impurity Gini
-#'
-#' This function calculates gini impurity (used by the CART Decision Tree) for multiple x variables.
-#'
-#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
-#' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-#' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via gini
-#'
-#' @return gini impurity
-# #' @details
-#'
-#' @examples
-#' # Load German credit data
-#' data(germancredit)
-#'
-#' # gini impurity
-#' dt_gini = ig(germancredit, y = "creditability")
-#'
-#' @import data.table
-#' @export
-#'
+
+# #' Impurity Gini
+# #'
+# #' This function calculates gini impurity (used by the CART # Decision Tree) for multiple x variables.
+# #'
+# #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
+# #' @param y Name of y variable.
+# #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
+# #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via gini
+# #'
+# #' @return gini impurity
+# # #' @details
+# #'
+# #' @examples
+# #' # Load German credit data
+# #' data(germancredit)
+# #'
+# #' # gini impurity
+# #' dt_gini = ig(germancredit, y = "creditability")
+# #'
+# #' @import data.table
+# #' @export
+# #'
 ig = function(dt, y, x=NULL, order=TRUE) {
   gini_impurity = label = NULL
 

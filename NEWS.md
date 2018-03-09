@@ -4,7 +4,6 @@
 * Provide parallel computation (foreach with parallel backend) in the functions of woebin and woebin_ply.
 * Modified scorecard_ply function.
 * Fixed a bug in woebin when there are empty bins based on provided break points. 
-* Added functions ie and ig to calculate information entropy and gini index.
 
 # scorecard 0.1.5
 
