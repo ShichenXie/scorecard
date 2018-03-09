@@ -1,3 +1,7 @@
+# [tree-like]
+# [chimerge](http://blog.csdn.net/qunxingvip/article/details/50449376)
+
+
 # required in woebin2 # return binning if provide breaks
 #' @import data.table
 woebin2_breaks = function(dtm, breaks) {
@@ -10,8 +14,30 @@ woebin2_breaks = function(dtm, breaks) {
     bstbrks = c(-Inf, setdiff(unique(breaks), c(NA, Inf, -Inf)), Inf)
 
     binning = dtm[
-      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)
-      ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
+      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
+
+    # break points from bin
+    breaks_list = lapply(
+      list(left="\\1", right="\\2"),
+      function(x) setdiff(sub("^\\[(.*),(.*)\\)", x, unique(binning$bin)), c(" Inf", "Inf", " -Inf", "-Inf")) )
+
+    # if there are empty bins
+    if (!setequal(breaks_list$left, breaks_list$right)) {
+      breaks_emptybin = sort(setdiff(
+        union(breaks_list$left, breaks_list$right),
+        intersect(breaks_list$left, breaks_list$right)
+      ))
+
+
+      bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
+      binning = dtm[
+        , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
+
+      warning( paste0("The break points are modified into \'", paste0(breaks_list$right, collapse = ", "), "\'. There are empty bins based on the provided break points." ) )
+    }
+
+
+    binning = binning[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , keyby = bin
       ][order(bin)]
 
   } else if (is.factor(dtm[,value]) || is.character(dtm[,value])) {
@@ -318,7 +344,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' @param max_bin_num Integer. The maximum binning number.
 #' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.
-#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
+#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @return Optimal or customized binning information
 #'
 #' @seealso \code{\link{woebin_ply}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
@@ -425,7 +451,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
   }
 
 
-  # binning for each x variable ------
+  # binning for each x variable
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   if (is.null(no_cores)) {
     no_cores = ifelse(xs_len < 20, 1, detectCores())
@@ -528,7 +554,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.
-#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
+#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @return Binning information
 #'
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
