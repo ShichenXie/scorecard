@@ -23,12 +23,6 @@ woebin2_breaks = function(dtm, breaks) {
 
     # if there are empty bins
     if (!setequal(breaks_list$left, breaks_list$right)) {
-      breaks_emptybin = sort(setdiff(
-        union(breaks_list$left, breaks_list$right),
-        intersect(breaks_list$left, breaks_list$right)
-      ))
-
-
       bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
       binning = dtm[
         , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
@@ -124,7 +118,7 @@ woebin2_init_bin = function(dtm, min_perc_total) {
 
   }
 
-  # remove brkp that good == 0 | bad == 0 ------
+  # remove brkp that good == 0 or bad == 0 ------
   while (init_bin[!is.na(brkp)][good==0 | bad==0,.N] > 0) {
     # brkp needs to be removed if good==0 or bad==0
     rm_brkp = init_bin[!is.na(brkp)][
@@ -193,8 +187,8 @@ woebin2_tree_1bst = function(dtm, initial_binning, min_perc_total, bestbreaks=NU
   }
   total_iv_all_brks = total_iv_all_breaks(initial_binning, bestbreaks)
 
-  # bestbreaks: total_iv==max(total_iv) & min(count_distr)>=0.2
-  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_total][total_iv==max(total_iv), bstbin]
+  # bestbreaks: total_iv==max(total_iv) & min(count_distr)>=min_perc_total*2.5(0.05)
+  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_total*2][total_iv==max(total_iv), bstbin]
   # add 1best break to bestbreaks
   bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
 
@@ -236,7 +230,7 @@ woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.
 
   # initialize parameters
   len_brks = initial_binning[!is.na(brkp), .N] ## length all breaks
-  bestbreaks=NULL ## best breaks
+  bestbreaks = NULL ## best breaks
   IVt1 = IVt2 = 1e-10
   IVchg = 1 ## IV gain ratio
   step_num = 1
@@ -297,11 +291,10 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 
   # data(germancredit)
   # numerical data
-  # dt = setDT(germancredit)[, .(y=creditability, age.in.years)][,y:=ifelse(y=="good",1,0)];
-  # y="y"; x="age.in.years"
+  # dt = setDT(germancredit)[,`:=`(y=ifelse(creditability=="good",1,0), creditability=NULL)];
+  # y="y"; x="foreign.worker"age.in.years"
 
   # categorical data
-  # dt = setDT(germancredit)[, .(y=creditability, status.of.existing.checking.account)][,y:=ifelse(y=="good",1,0)];
   # y="y"; x="status.of.existing.checking.account"
 
   # melt data.table
@@ -354,12 +347,12 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' data(germancredit)
 #'
 #' # Example I
-#' # binning for two variables in germancredit dataset
+#' # binning of two variables in germancredit dataset
 #' bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
 #'
 #' \dontrun{
 #' # Example II
-#' # binning for germancredit dataset
+#' # binning of the germancredit dataset
 #' bins_germ = woebin(germancredit, y = "creditability")
 #' # converting bins_germ into a dataframe
 #' # bins_germ_df = data.table::rbindlist(bins_germ)
@@ -367,7 +360,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' # Example III
 #' # customizing the breakpoints of binning
 #' breaks_list = list(
-#'   age.in.years = c(25, 35, 40, 60),
+#'   age.in.years = c(26, 35, 37),
 #'   credit.amount = NULL,
 #'   housing = c("own", "for free%,%rent"),
 #'   purpose = NULL
@@ -384,7 +377,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", no_cores=NULL, print_step=0L) {
+woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=8, positive="bad|1", no_cores=NULL, print_step=0L) {
   # global variable
   bins = i = NULL
 
@@ -547,7 +540,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 
   return(dtx_suffix)
 }
-#' Application of Binning
+#' Woe Transformation
 #'
 #' \code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.
 #'
@@ -577,7 +570,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' # binning for germancredit dataset
 #' bins_germancredit = woebin(germancredit, y="creditability")
 #'
-#' # converting the values of germancredit into woe
+#' # converting the values in germancredit to woe
 #' # bins is a list which generated from woebin()
 #' germancredit_woe = woebin_ply(germancredit, bins_germancredit)
 #'

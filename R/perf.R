@@ -364,7 +364,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #'
 #' # # ks & roc plot
 #' # perf_eva(train$y, train_pred, title = "train")
-#' # perf_eva(train$y, train_pred, title = "test")
+#' # perf_eva(test$y, test_pred, title = "test")
 #'
 #' #' # scorecard
 #' card = scorecard(bins, m2)

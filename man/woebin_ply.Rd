@@ -2,7 +2,7 @@
 % Please edit documentation in R/woebin.R
 \name{woebin_ply}
 \alias{woebin_ply}
-\title{Application of Binning}
+\title{Woe Transformation}
 \usage{
 woebin_ply(dt, bins, no_cores = NULL, print_step = 0L)
 }
@@ -39,7 +39,7 @@ dt_woe = woebin_ply(dt, bins=bins)
 # binning for germancredit dataset
 bins_germancredit = woebin(germancredit, y="creditability")
 
-# converting the values of germancredit into woe
+# converting the values in germancredit to woe
 # bins is a list which generated from woebin()
 germancredit_woe = woebin_ply(germancredit, bins_germancredit)
 

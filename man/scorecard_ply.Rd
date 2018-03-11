@@ -2,7 +2,7 @@
 % Please edit documentation in R/scorecard.R
 \name{scorecard_ply}
 \alias{scorecard_ply}
-\title{Application of Scorecard}
+\title{Score Transformation}
 \usage{
 scorecard_ply(dt, card, only_total_score = TRUE, print_step = 1L)
 }

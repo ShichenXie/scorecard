@@ -74,7 +74,7 @@ test_pred = predict(m2, type='response', test)
 
 # # ks & roc plot
 # perf_eva(train$y, train_pred, title = "train")
-# perf_eva(train$y, train_pred, title = "test")
+# perf_eva(test$y, test_pred, title = "test")
 
 #' # scorecard
 card = scorecard(bins, m2)

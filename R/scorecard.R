@@ -1,10 +1,3 @@
-# Adjusting the Oversampling/Undersampling in Logistic Regression
-# support.sas.com/kb/22/601.html
-# weight:  p1/r1 for event observations, and (1-p1)/(1-r1) for nonevent observations
-# offset: log( ((1-p1)/(1-r1)) / (p1/r1))
-# https://www.analyticbridge.datasciencecentral.com/forum/topics/oversamplingundersampling-in
-
-
 # coefficients in scorecard
 ab = function(points0=600, odds0=1/60, pdo=50) {
   # sigmoid function
@@ -143,7 +136,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 }
 
 
-#' Application of Scorecard
+#' Score Transformation
 #'
 #' \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 #'
@@ -263,7 +256,3 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
 }
 
 
-# reference
-# Population Stability Index (PSI) – Banking Case (Part 6)#: http://ucanalytics.com/blogs/population-stability-index-psi-banking-case-study/
-# Weight of Evidence (WoE) Introductory Overview #: http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview
-# Case Study for a Credit Scorecard Analysis #: https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com#zmw57dd0e33220

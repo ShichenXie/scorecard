@@ -5,7 +5,7 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, max_bin_num = 6, positive = "bad|1",
+  stop_limit = 0.1, max_bin_num = 8, positive = "bad|1",
   no_cores = NULL, print_step = 0L)
 }
 \arguments{
@@ -40,12 +40,12 @@ Optimal or customized binning information
 data(germancredit)
 
 # Example I
-# binning for two variables in germancredit dataset
+# binning of two variables in germancredit dataset
 bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
 
 \dontrun{
 # Example II
-# binning for germancredit dataset
+# binning of the germancredit dataset
 bins_germ = woebin(germancredit, y = "creditability")
 # converting bins_germ into a dataframe
 # bins_germ_df = data.table::rbindlist(bins_germ)
@@ -53,7 +53,7 @@ bins_germ = woebin(germancredit, y = "creditability")
 # Example III
 # customizing the breakpoints of binning
 breaks_list = list(
-  age.in.years = c(25, 35, 40, 60),
+  age.in.years = c(26, 35, 37),
   credit.amount = NULL,
   housing = c("own", "for free\%,\%rent"),
   purpose = NULL
