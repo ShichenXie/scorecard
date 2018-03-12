@@ -6,12 +6,12 @@
 #' @param seed A random seed, default is 186.
 #'
 #' @examples
-#' library(scorecard)
+#' # Load German credit data
 #' data(germancredit)
 #'
-#' dts = split_df(germancredit, y="creditability")
-#' train = dts$train
-#' test = dts$test
+#' dt_list = split_df(germancredit, y="creditability")
+#' train = dt_list$train
+#' test = dt_list$test
 #'
 #' @import data.table
 #' @export

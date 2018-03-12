@@ -1,6 +1,6 @@
 ---
-title: "Scorecard-Example"
-author: "Shichen Xie"
+title: "demo"
+author: "shichen xie"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -18,18 +18,14 @@ knitr::opts_chunk$set(
 
 ```r
 # Traditional Credit Scoring Using Logistic Regression
-library(data.table)
 library(scorecard)
 
 # data prepare ------
 # load germancredit data
 data("germancredit")
 
-# set creditability as 1 or 0
-dt = setDT(germancredit)[,creditability := ifelse(creditability=="bad", 1, 0)]
-
 # filter variable via missing rate, iv, identical value rate
-dt_s = var_filter(dt, y="creditability")
+dt_s = var_filter(germancredit, y="creditability")
 
 # breaking dt into train and test
 dt_list = split_df(dt_s, y="creditability", ratio = 0.6, seed = 30)

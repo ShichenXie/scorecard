@@ -19,11 +19,11 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 186)
 Split a dataset
 }
 \examples{
-library(scorecard)
+# Load German credit data
 data(germancredit)
 
-dts = split_df(germancredit, y="creditability")
-train = dts$train
-test = dts$test
+dt_list = split_df(germancredit, y="creditability")
+train = dt_list$train
+test = dt_list$test
 
 }

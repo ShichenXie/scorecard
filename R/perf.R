@@ -145,25 +145,18 @@ eva_ppr = function(dfrocpr) {
 #'
 #' @examples
 #' \dontrun{
-#' library(data.table)
-#' library(scorecard)
-#'
-#' # Traditional Credit Scoring Using Logistic Regression
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # rename creditability as y
-#' dt = data.table(germancredit)[, `:=`(
-#'   y = ifelse(creditability == "bad", 1, 0),
-#'   creditability = NULL
-#' )]
+#' # filter variable via missing rate, iv, identical value rate
+#' dt_sel = var_filter(germancredit, "creditability")
 #'
 #' # woe binning ------
-#' bins = woebin(dt, "y")
-#' dt_woe = woebin_ply(dt, bins)
+#' bins = woebin(dt_sel, "creditability")
+#' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m1 = glm( y ~ ., family = "binomial", data = dt_woe)
+#' m1 = glm( creditability ~ ., family = "binomial", data = dt_woe)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
@@ -176,13 +169,13 @@ eva_ppr = function(dfrocpr) {
 #'
 #' # performance ------
 #' # Example I # only ks & auc values
-#' perf_eva(dt_woe$y, dt_pred, show_plot=FALSE)
+#' perf_eva(dt_woe$creditability, dt_pred, show_plot=FALSE)
 #'
 #' # Example II # ks & roc plot
-#' perf_eva(dt_woe$y, dt_pred)
+#' perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # Example III # ks, lift, roc & pr plot
-#' perf_eva(dt_woe$y, dt_pred, type = c("ks","lift","roc","pr"))
+#' perf_eva(dt_woe$creditability, dt_pred, type = c("ks","lift","roc","pr"))
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
@@ -326,31 +319,25 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #'
 #' @examples
 #' \dontrun{
-#' library(data.table)
-#' library(scorecard)
-#'
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # rename creditability as y
-#' dt = data.table(germancredit)[, `:=`(
-#'   y = ifelse(creditability == "bad", 1, 0),
-#'   creditability = NULL
-#' )]
+#' # filter variable via missing rate, iv, identical value rate
+#' dt_sel = var_filter(germancredit, "creditability")
 #'
 #' # breaking dt into train and test ------
-#' dt_list = split_df(dt, "y", ratio = 0.6, seed=21)
+#' dt_list = split_df(dt_sel, "creditability", ratio = 0.6, seed=21)
 #' dt_train = dt_list$train; dt_test = dt_list$test
 #'
 #' # woe binning ------
-#' bins = woebin(dt_train, "y")
+#' bins = woebin(dt_train, "creditability")
 #'
 #' # converting train and test into woe values
 #' train = woebin_ply(dt_train, bins)
 #' test = woebin_ply(dt_test, bins)
 #'
 #' # glm ------
-#' m1 = glm( y ~ ., family = "binomial", data = train)
+#' m1 = glm(creditability ~ ., family = "binomial", data = train)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
@@ -363,8 +350,8 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #' test_pred = predict(m2, type='response', test)
 #'
 #' # # ks & roc plot
-#' # perf_eva(train$y, train_pred, title = "train")
-#' # perf_eva(test$y, test_pred, title = "test")
+#' # perf_eva(train$creditability, train_pred, title = "train")
+#' # perf_eva(test$creditability, test_pred, title = "test")
 #'
 #' #' # scorecard
 #' card = scorecard(bins, m2)
@@ -376,7 +363,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #' # Example I # psi
 #' psi = perf_psi(
 #'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train$y, test = test$y)
+#'   label = list(train = train$creditability, test = test$creditability)
 #' )
 #' # psi$psi  # psi dataframe
 #' # psi$pic  # pic of score distribution
@@ -384,7 +371,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #' # Example II # specifying score range
 #' psi_s = perf_psi(
 #'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train$y, test = test$y),
+#'   label = list(train = train$creditability, test = test$creditability),
 #'   x_limits = c(200, 750),
 #'   x_tick_break = 50
 #'   )
@@ -396,7 +383,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #' # psi
 #' psi2 = perf_psi(
 #'   score = list(train = train_score2, test = test_score2),
-#'   label = list(train = train$y, test = test$y)
+#'   label = list(train = train$creditability, test = test$creditability)
 #' )
 #' # psi2$psi  # psi dataframe
 #' # psi2$pic  # pic of score distribution

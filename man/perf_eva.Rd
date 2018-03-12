@@ -33,25 +33,18 @@ ks, roc, lift, pr
 }
 \examples{
 \dontrun{
-library(data.table)
-library(scorecard)
-
-# Traditional Credit Scoring Using Logistic Regression
 # load germancredit data
 data("germancredit")
 
-# rename creditability as y
-dt = data.table(germancredit)[, `:=`(
-  y = ifelse(creditability == "bad", 1, 0),
-  creditability = NULL
-)]
+# filter variable via missing rate, iv, identical value rate
+dt_sel = var_filter(germancredit, "creditability")
 
 # woe binning ------
-bins = woebin(dt, "y")
-dt_woe = woebin_ply(dt, bins)
+bins = woebin(dt_sel, "creditability")
+dt_woe = woebin_ply(dt_sel, bins)
 
 # glm ------
-m1 = glm( y ~ ., family = "binomial", data = dt_woe)
+m1 = glm( creditability ~ ., family = "binomial", data = dt_woe)
 # summary(m1)
 
 # Select a formula-based model by AIC
@@ -64,13 +57,13 @@ dt_pred = predict(m2, type='response', dt_woe)
 
 # performance ------
 # Example I # only ks & auc values
-perf_eva(dt_woe$y, dt_pred, show_plot=FALSE)
+perf_eva(dt_woe$creditability, dt_pred, show_plot=FALSE)
 
 # Example II # ks & roc plot
-perf_eva(dt_woe$y, dt_pred)
+perf_eva(dt_woe$creditability, dt_pred)
 
 # Example III # ks, lift, roc & pr plot
-perf_eva(dt_woe$y, dt_pred, type = c("ks","lift","roc","pr"))
+perf_eva(dt_woe$creditability, dt_pred, type = c("ks","lift","roc","pr"))
 }
 }
 \seealso{

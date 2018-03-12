@@ -40,45 +40,37 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @seealso \code{\link{scorecard_ply}}
 #'
 #' @examples
-#' library(data.table)
-#' library(scorecard)
-#'
+#' \dontrun{
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # select only 5 x variables and rename creditability as y
-#' dt = setDT(germancredit)[, c(1:5, 21)][, `:=`(
-#'   y = ifelse(creditability == "bad", 1, 0),
-#'   creditability = NULL
-#' )]
+#' # filter variable via missing rate, iv, identical value rate
+#' dt_sel = var_filter(germancredit, "creditability")
 #'
 #' # woe binning ------
-#' bins = woebin(dt, "y")
-#' dt_woe = woebin_ply(dt, bins)
+#' bins = woebin(dt_sel, "creditability")
+#' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m = glm( y ~ ., family = "binomial", data = dt_woe)
+#' m = glm(creditability ~ ., family = "binomial", data = dt_woe)
 #' # summary(m)
 #'
-#' \dontrun{
 #' # Select a formula-based model by AIC
 #' m_step = step(m, direction="both", trace=FALSE)
 #' m = eval(m_step$call)
 #' # summary(m)
 #'
 #' # predicted proability
-#' # dt_woe$pred = predict(m, type='response', dt_woe)
+#' # dt_pred = predict(m, type='response', dt_woe)
 #'
 #' # performace
 #' # ks & roc plot
-#' # perf_eva(dt_woe$y, dt_woe$pred)
-#' }
+#' # perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # scorecard
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
 #'
-#' \dontrun{
 #' # credit score
 #' # Example I # only total score
 #' score1 = scorecard_ply(dt, card)
@@ -116,23 +108,23 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
   # scorecard
   len_x = coef[-1,.N]
   basepoints = a - b*coef[1,Estimate]
-  scorecard = list()
+  card = list()
 
   if (basepoints_eq0) {
-    scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = 0 )
+    card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = 0 )
 
     for (i in coef[-1,variable]) {
-      scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe + basepoints/len_x)]
+      card[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe + basepoints/len_x)]
     }
   } else {
-    scorecard[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints) )
+    card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints) )
 
     for (i in coef[-1,variable]) {
-      scorecard[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
+      card[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
     }
   }
 
-  return(scorecard)
+  return(card)
 }
 
 
@@ -149,39 +141,32 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @seealso \code{\link{scorecard}}
 #'
 #' @examples
-#' library(data.table)
-#' library(scorecard)
-#'
+#' \dontrun{
 #' # load germancredit data
 #' data("germancredit")
 #'
-#' # select only 5 x variables and rename creditability as y
-#' dt = setDT(germancredit)[, c(1:5, 21)][, `:=`(
-#'   y = ifelse(creditability == "bad", 1, 0),
-#'   creditability = NULL
-#' )]
+#' # filter variable via missing rate, iv, identical value rate
+#' dt_sel = var_filter(germancredit, "creditability")
 #'
 #' # woe binning ------
-#' bins = woebin(dt, "y")
-#' dt_woe = woebin_ply(dt, bins)
+#' bins = woebin(dt_sel, "creditability")
+#' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m = glm( y ~ ., family = "binomial", data = dt_woe)
+#' m = glm(creditability ~ ., family = "binomial", data = dt_woe)
 #' # summary(m)
 #'
-#' \dontrun{
 #' # Select a formula-based model by AIC
 #' m_step = step(m, direction="both", trace=FALSE)
 #' m = eval(m_step$call)
 #' # summary(m)
 #'
 #' # predicted proability
-#' # dt_woe$pred = predict(m, type='response', dt_woe)
+#' # dt_pred = predict(m, type='response', dt_woe)
 #'
 #' # performace
 #' # ks & roc plot
-#' # perf_eva(dt_woe$y, dt_woe$pred)
-#' }
+#' # perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # scorecard
 #' # Example I # creat a scorecard
@@ -191,7 +176,6 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' # Example I # only total score
 #' score1 = scorecard_ply(dt, card)
 #'
-#' \dontrun{
 #' # Example II # credit score for both total and each variable
 #' score2 = scorecard_ply(dt, card, only_total_score = F)
 #' }

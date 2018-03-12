@@ -379,7 +379,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #'
 woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=8, positive="bad|1", no_cores=NULL, print_step=0L) {
   # global variable
-  bins = i = NULL
+  i = NULL
 
   # set dt as data.table
   dt = setDT(dt)
@@ -451,6 +451,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
   }
 
 
+  bins = list()
   if (no_cores == 1) {
     for (i in 1:xs_len) {
       x_i = xs[i]

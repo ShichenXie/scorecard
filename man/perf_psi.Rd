@@ -36,31 +36,25 @@ The population stability index (PSI) formula is displayed below: \deqn{PSI = \su
 }
 \examples{
 \dontrun{
-library(data.table)
-library(scorecard)
-
 # load germancredit data
 data("germancredit")
 
-# rename creditability as y
-dt = data.table(germancredit)[, `:=`(
-  y = ifelse(creditability == "bad", 1, 0),
-  creditability = NULL
-)]
+# filter variable via missing rate, iv, identical value rate
+dt_sel = var_filter(germancredit, "creditability")
 
 # breaking dt into train and test ------
-dt_list = split_df(dt, "y", ratio = 0.6, seed=21)
+dt_list = split_df(dt_sel, "creditability", ratio = 0.6, seed=21)
 dt_train = dt_list$train; dt_test = dt_list$test
 
 # woe binning ------
-bins = woebin(dt_train, "y")
+bins = woebin(dt_train, "creditability")
 
 # converting train and test into woe values
 train = woebin_ply(dt_train, bins)
 test = woebin_ply(dt_test, bins)
 
 # glm ------
-m1 = glm( y ~ ., family = "binomial", data = train)
+m1 = glm(creditability ~ ., family = "binomial", data = train)
 # summary(m1)
 
 # Select a formula-based model by AIC
@@ -73,8 +67,8 @@ train_pred = predict(m2, type='response', train)
 test_pred = predict(m2, type='response', test)
 
 # # ks & roc plot
-# perf_eva(train$y, train_pred, title = "train")
-# perf_eva(test$y, test_pred, title = "test")
+# perf_eva(train$creditability, train_pred, title = "train")
+# perf_eva(test$creditability, test_pred, title = "test")
 
 #' # scorecard
 card = scorecard(bins, m2)
@@ -86,7 +80,7 @@ test_score = scorecard_ply(dt_test, card)
 # Example I # psi
 psi = perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train$y, test = test$y)
+  label = list(train = train$creditability, test = test$creditability)
 )
 # psi$psi  # psi dataframe
 # psi$pic  # pic of score distribution
@@ -94,7 +88,7 @@ psi = perf_psi(
 # Example II # specifying score range
 psi_s = perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train$y, test = test$y),
+  label = list(train = train$creditability, test = test$creditability),
   x_limits = c(200, 750),
   x_tick_break = 50
   )
@@ -106,7 +100,7 @@ test_score2 = scorecard_ply(dt_test, card, only_total_score=FALSE)
 # psi
 psi2 = perf_psi(
   score = list(train = train_score2, test = test_score2),
-  label = list(train = train$y, test = test$y)
+  label = list(train = train$creditability, test = test$creditability)
 )
 # psi2$psi  # psi dataframe
 # psi2$pic  # pic of score distribution
