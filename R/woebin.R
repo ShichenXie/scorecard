@@ -541,7 +541,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 
   return(dtx_suffix)
 }
-#' Woe Transformation
+#' WOE Transformation
 #'
 #' \code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.
 #'
@@ -911,11 +911,6 @@ woebin_adj = function(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05) {
   }
   # length of adjusting variables
   xs_len = length(xs_adj)
-  if (xs_len == 0) {
-    cat("The binning breaks of all variables are perfect according to default settings. \n")
-    break
-  }
-
 
   # class of variables
   vars_class = data.table(
@@ -933,6 +928,16 @@ woebin_adj = function(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05) {
 
 
   # loop on adjusting variables
+  if (xs_len == 0) {
+    warning("The binning breaks of all variables are perfect according to default settings.")
+
+    breaks_list = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
+    breaks_list = paste0(c("list(", breaks_list, ")"), collapse = "\n ")
+
+    return(breaks_list)
+  }
+
+
   i = 1
   breaks_list = NULL
   while (i <= xs_len) {

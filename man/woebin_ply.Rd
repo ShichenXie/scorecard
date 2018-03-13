@@ -2,7 +2,7 @@
 % Please edit documentation in R/woebin.R
 \name{woebin_ply}
 \alias{woebin_ply}
-\title{Woe Transformation}
+\title{WOE Transformation}
 \usage{
 woebin_ply(dt, bins, no_cores = NULL, print_step = 0L)
 }
