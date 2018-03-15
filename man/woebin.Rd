@@ -4,9 +4,9 @@
 \alias{woebin}
 \title{WOE Binning}
 \usage{
-woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
-  stop_limit = 0.1, max_bin_num = 6, positive = "bad|1",
-  no_cores = NULL, print_step = 0L)
+woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_fine_bin = 0.02,
+  min_perc_coarse_bin = 0.05, stop_limit = 0.1, max_num_bin = 8,
+  positive = "bad|1", no_cores = NULL, print_step = 0L)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -17,11 +17,13 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_total = 0.02,
 
 \item{breaks_list}{List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.}
 
-\item{min_perc_total}{The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.}
+\item{min_perc_fine_bin}{The minmum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means inital binning into 50 fine bins for all continuous variables.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.}
+\item{min_perc_coarse_bin}{The minmum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
 
-\item{max_bin_num}{Integer. The maximum binning number.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.}
+
+\item{max_num_bin}{Integer. The maximum number of binning.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 

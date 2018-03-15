@@ -49,7 +49,7 @@ woebin2_breaks = function(dtm, breaks) {
 }
 
 # required in woebin2 # return initial binning
-woebin2_init_bin = function(dtm, min_perc_total) {
+woebin2_init_bin = function(dtm, min_perc_fine_bin) {
   # global variables or functions
   value = bin = . = y = variable = bad = good = brkp = badprob = count = merge_tolead = brkp2 = NULL
 
@@ -68,7 +68,7 @@ woebin2_init_bin = function(dtm, min_perc_total) {
     }
 
     # number of initial binning
-    n = trunc(1/min_perc_total)
+    n = trunc(1/min_perc_fine_bin)
     len_uniq_x = length(setdiff(unique(xvalue_rm_outlier), c(NA,Inf,-Inf)))
     if (len_uniq_x < n) n = len_uniq_x
 
@@ -153,7 +153,7 @@ woebin2_init_bin = function(dtm, min_perc_total) {
 }
 
 # required in woebin2_tree # add 1 best break for tree-like binning
-woebin2_tree_1bst = function(dtm, initial_binning, min_perc_total, bestbreaks=NULL) {
+woebin2_tree_1bst = function(dtm, initial_binning, min_perc_coarse_bin, bestbreaks=NULL) {
   # global variables or functions
   brkp = patterns = . = good = bad = variable = count_distr = value = min_count_distr = bstbin = min_count_distr = total_iv = bstbin = brkp = bin = NULL
 
@@ -187,8 +187,8 @@ woebin2_tree_1bst = function(dtm, initial_binning, min_perc_total, bestbreaks=NU
   }
   total_iv_all_brks = total_iv_all_breaks(initial_binning, bestbreaks)
 
-  # bestbreaks: total_iv==max(total_iv) & min(count_distr)>=min_perc_total*2.5(0.05)
-  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_total*2][total_iv==max(total_iv), bstbin]
+  # bestbreaks: total_iv == max(total_iv) & min(count_distr) >= min_perc_coarse_bin
+  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_coarse_bin][total_iv==max(total_iv), bstbin]
   # add 1best break to bestbreaks
   bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
 
@@ -224,7 +224,7 @@ woebin2_tree_1bst = function(dtm, initial_binning, min_perc_total, bestbreaks=NU
   return(bin_add_1bst)
 }
 # required in woebin2 # return tree-like binning
-woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6) {
+woebin2_tree = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8) {
   # global variables or functions
   brkp = bstbrkp = total_iv = binning_tree = NULL
 
@@ -236,8 +236,8 @@ woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.
   step_num = 1
 
   # best breaks from three to n+1 bins
-  while ( IVchg >= stop_limit & step_num+1 <= min(max_bin_num, len_brks) ) {
-    binning_tree = woebin2_tree_1bst(dtm, initial_binning, min_perc_total, bestbreaks)
+  while ( IVchg >= stop_limit & step_num+1 <= min(max_num_bin, len_brks) ) {
+    binning_tree = woebin2_tree_1bst(dtm, initial_binning, min_perc_coarse_bin, bestbreaks)
     # print(binning_tree)
 
     # best breaks
@@ -258,9 +258,9 @@ woebin2_tree = function(dtm, initial_binning, min_perc_total=0.02, stop_limit=0.
   return(binning_tree)
 }
 # examples
-# system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_total) )
-# system.time( woebin2_tree_1bst(dtm, initial_binning, min_perc_total) )
-# system.time( woebin2_tree(dtm, initial_binning, min_perc_total) )
+# system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_fine_bin) )
+# system.time( woebin2_tree_1bst(dtm, initial_binning, min_perc_coarse_bin) )
+# system.time( woebin2_tree(dtm, initial_binning, min_perc_coarse_bin) )
 
 # required in woebin2 # # format binning output
 binning_format = function(binning) {
@@ -285,7 +285,7 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6) {
+woebin2 = function(y, x, x_name, breaks=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8) {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
 
@@ -295,7 +295,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
   # y="y"; x="foreign.worker"age.in.years"
 
   # categorical data
-  # y="y"; x="status.of.existing.checking.account"
+  # y="y"; x="credit.amount"; #"status.of.existing.checking.account"
 
   # melt data.table
   # dtm = data.table(y=dt[[y]], variable=x, value=dt[[x]])
@@ -311,11 +311,11 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
   } else {
 
     # 2.tree-like best breaks
-    initial_binning = woebin2_init_bin(dtm, min_perc_total)
+    initial_binning = woebin2_init_bin(dtm, min_perc_fine_bin)
     if (stop_limit == "N") {
       binning = initial_binning
     } else {
-      binning = woebin2_tree(dtm, initial_binning, min_perc_total, stop_limit, max_bin_num)
+      binning = woebin2_tree(dtm, initial_binning, min_perc_coarse_bin, stop_limit, max_num_bin)
     }
 
   }
@@ -332,9 +332,10 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
 #' @param breaks_list List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.
-#' @param min_perc_total The share of initial binning class number over total. Accepted range: 0.01-0.2; default 0.02.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default 0.1.
-#' @param max_bin_num Integer. The maximum binning number.
+#' @param min_perc_fine_bin The minmum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means inital binning into 50 fine bins for all continuous variables.
+#' @param min_perc_coarse_bin The minmum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.
+#' @param max_num_bin Integer. The maximum number of binning.
 #' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
@@ -377,7 +378,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, min_perc_total=0.02, stop_limit=0.
 #' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_limit=0.1, max_bin_num=6, positive="bad|1", no_cores=NULL, print_step=0L) {
+woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L) {
   # global variable
   i = NULL
 
@@ -432,15 +433,20 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
     stop_limit = 0.1
   }
 
-  # min_perc_total range
-  if ( min_perc_total<0.01 || min_perc_total>0.2 || !is.numeric(min_perc_total) ) {
-    warning("Incorrect parameter specification; accepted min_perc_total parameter range is 0.01-0.2. Parameter was set to default (0.02).")
-    min_perc_total = 0.02
+  # min_perc_fine_bin range
+  if ( min_perc_fine_bin<0.01 || min_perc_fine_bin>0.2 || !is.numeric(min_perc_fine_bin) ) {
+    warning("Incorrect parameter specification; accepted min_perc_fine_bin parameter range is 0.01-0.2. Parameter was set to default (0.02).")
+    min_perc_fine_bin = 0.02
+  }
+  # min_perc_coarse_bin
+  if ( min_perc_coarse_bin<0.01 || min_perc_coarse_bin>0.2 || !is.numeric(min_perc_coarse_bin) ) {
+    warning("Incorrect parameter specification; accepted min_perc_coarse_bin parameter range is 0.01-0.2. Parameter was set to default (0.05).")
+    min_perc_coarse_bin = 0.05
   }
 
-  # max_bin_num
-  if (!is.numeric(max_bin_num)) {
-    stop("Incorrect inputs; max_bin_num should be numeric variable.")
+  # max_num_bin
+  if (!is.numeric(max_num_bin)) {
+    stop("Incorrect inputs; max_num_bin should be numeric variable.")
   }
 
 
@@ -464,8 +470,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
         woebin2(
           y=dt[[y]], x=dt[[x_i]], x_name=x_i,
           breaks=breaks_list[[x_i]],
-          min_perc_total=min_perc_total,
-          stop_limit=stop_limit, max_bin_num=max_bin_num
+          min_perc_fine_bin=min_perc_fine_bin,
+          stop_limit=stop_limit, max_num_bin=max_num_bin
         ),
         error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
       )
@@ -486,7 +492,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
           if (xs_len==1) bs = list(bs)
           setNames(bs, xs)
         },
-        .export = c("dt", "xs", "y", "breaks_list", "min_perc_total", "stop_limit", "max_bin_num")
+        .export = c("dt", "xs", "y", "breaks_list", "min_perc_fine_bin", "stop_limit", "max_num_bin")
       ) %dopar% {
         x_i = xs[i]
 
@@ -494,8 +500,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, min_perc_total=0.02, stop_lim
         tryCatch(
           woebin2(
             y=dt[[y]], x=dt[[x_i]], x_name=x_i,
-            breaks=breaks_list[[x_i]], min_perc_total=min_perc_total,
-            stop_limit=stop_limit, max_bin_num=max_bin_num
+            breaks=breaks_list[[x_i]], min_perc_fine_bin=min_perc_fine_bin,
+            stop_limit=stop_limit, max_num_bin=max_num_bin
           ),
           error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
         )
@@ -856,8 +862,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit) {
 #' @param dt A data frame.
 #' @param y Name of y variable.
 #' @param bins A list or data frame. Binning information generated from \code{woebin}.
-#' @param all_var Logical, default is TRUE. If it is TRUE, the variables that need to adjust breaks include all variables, otherwise, include the variables that number distribution rate less then count_distr_limit or more then one inflection point.
-#' @param count_distr_limit The count_distr limit to adjust binning breaks. Default 0.05.
+#' @param all_var Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.
 #'
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'
@@ -885,7 +890,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit) {
 #' @importFrom graphics hist plot
 #' @export
 #'
-woebin_adj = function(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05) {
+woebin_adj = function(dt, y, bins, all_var = TRUE) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
@@ -903,7 +908,7 @@ woebin_adj = function(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05) {
   xs_all = bins[,unique(variable)]
   if (all_var == FALSE) {
     xs_adj = union(
-      bins[bin != "missing"][count_distr < count_distr_limit, unique(variable)],
+      bins[bin != "missing"][, unique(variable)],
       bins[bin != "missing"][, badprob2 := badprob >= shift(badprob, type = "lag"), by="variable"][!is.na(badprob2), length(unique(badprob2)), by="variable"][V1 > 1, variable]
     )
   } else {

@@ -4,7 +4,7 @@
 \alias{woebin_adj}
 \title{WOE Binning Adjustment}
 \usage{
-woebin_adj(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05)
+woebin_adj(dt, y, bins, all_var = TRUE)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -13,9 +13,7 @@ woebin_adj(dt, y, bins, all_var = TRUE, count_distr_limit = 0.05)
 
 \item{bins}{A list or data frame. Binning information generated from \code{woebin}.}
 
-\item{all_var}{Logical, default is TRUE. If it is TRUE, the variables that need to adjust breaks include all variables, otherwise, include the variables that number distribution rate less then count_distr_limit or more then one inflection point.}
-
-\item{count_distr_limit}{The count_distr limit to adjust binning breaks. Default 0.05.}
+\item{all_var}{Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.}
 }
 \description{
 \code{woebin_adj} interactively adjust the binning breaks.
