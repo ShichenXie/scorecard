@@ -96,3 +96,70 @@ x_variable = function(dt, y, x) {
 
   return(x)
 }
+
+
+# check break_list
+check_breaks_list = function(breaks_list, xs) {
+  if (!is.null(breaks_list)) {
+    if (is.character(breaks_list)) {
+      breaks_list = eval(parse(text = breaks_list))
+    }
+    if (!is.list(breaks_list)) {
+      stop("Incorrect inputs; breaks_list should be a list.")
+
+    } else {
+      xs_breakslist = names(breaks_list)
+      if (!identical(xs_breakslist, xs)) {
+
+        names_bl_x = setdiff(xs_breakslist, xs)
+        if (length(names_bl_x) > 0) {
+          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in breaks_list donot exist in x."))
+        }
+
+        names_x_bl = setdiff(xs, xs_breakslist)
+        if (length(names_x_bl) >0) {
+          warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list were set as NULL, which means optimal binning.")
+        }
+      }
+    }
+  }
+  return(breaks_list)
+}
+
+
+# check special_values
+check_special_values = function(special_values, xs) {
+  if (!is.null(special_values)) {
+    if (is.vector(special_values) & !is.list(special_values)) {
+      # transfer vector to list
+      special_values_list = list()
+      for (i in xs) {
+        special_values_list[[i]] = special_values
+      }
+      special_values=special_values_list
+
+    } else if (is.list(special_values)) {
+      # x variables of special_values
+      xs_sv = names(special_values)
+      # if xs_sv != xs
+      if (!identical(xs_sv, xs)) {
+
+        names_bl_x = setdiff(xs_sv, xs)
+        if (length(names_bl_x) > 0) {
+          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in special_values donot exist in x."))
+        }
+
+        names_x_bl = setdiff(xs, xs_sv)
+        if (length(names_x_bl) >0) {
+          warning("There are ",length(names_x_bl)," x variables that donot specified in special_values were set as NULL, which means no special values.")
+        }
+      }
+
+    } else {
+      stop("Incorrect inputs; special_values should be a vector or list.")
+    }
+
+  }
+  return(special_values)
+}
+

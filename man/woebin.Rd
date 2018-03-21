@@ -4,9 +4,9 @@
 \alias{woebin}
 \title{WOE Binning}
 \usage{
-woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_fine_bin = 0.02,
-  min_perc_coarse_bin = 0.05, stop_limit = 0.1, max_num_bin = 8,
-  positive = "bad|1", no_cores = NULL, print_step = 0L)
+woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
+  min_perc_fine_bin = 0.02, min_perc_coarse_bin = 0.05, stop_limit = 0.1,
+  max_num_bin = 8, positive = "bad|1", no_cores = NULL, print_step = 0L)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -15,7 +15,9 @@ woebin(dt, y, x = NULL, breaks_list = NULL, min_perc_fine_bin = 0.02,
 
 \item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
 
-\item{breaks_list}{List of break points, defaults NULL If it is not NULL, variable binning will based on the provided breaks.}
+\item{breaks_list}{List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.}
+
+\item{special_values}{the values specified in special_values will be seprate bins. Default is NULL.}
 
 \item{min_perc_fine_bin}{The minmum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means inital binning into 50 fine bins for all continuous variables.}
 
@@ -54,16 +56,26 @@ bins_germ = woebin(germancredit, y = "creditability")
 
 # Example III
 # customizing the breakpoints of binning
+library(data.table)
+dat = rbind(
+  germancredit,
+  data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
+  fill=TRUE)
+
 breaks_list = list(
-  age.in.years = c(26, 35, 37),
-  credit.amount = NULL,
-  housing = c("own", "for free\%,\%rent"),
-  purpose = NULL
+  age.in.years = c(26, 35, 37, "Inf\%,\%missing"),
+  housing = c("own", "for free\%,\%rent")
 )
 
-bins_cus_brk = woebin(germancredit, y="creditability",
-  x=c("age.in.years", "credit.amount", "housing", "purpose"),
-  breaks_list=breaks_list)
+special_values = list(
+  credit.amount = c(2600, 9960, "6850\%,\%missing"),
+  purpose = c("education", "others\%,\%missing")
+)
+
+bins_cus_brk = woebin(dat, y="creditability",
+  x=c("age.in.years","credit.amount","housing","purpose"),
+  breaks_list=breaks_list, special_values=special_values)
+
 }
 
 }
