@@ -19,9 +19,9 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{special_values}{the values specified in special_values will be seprate bins. Default is NULL.}
 
-\item{min_perc_fine_bin}{The minmum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means inital binning into 50 fine bins for all continuous variables.}
+\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for all continuous variables.}
 
-\item{min_perc_coarse_bin}{The minmum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
+\item{min_perc_coarse_bin}{The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
 
 \item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.}
 

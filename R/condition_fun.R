@@ -118,7 +118,7 @@ check_breaks_list = function(breaks_list, xs) {
 
         names_x_bl = setdiff(xs, xs_breakslist)
         if (length(names_x_bl) >0) {
-          warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list were set as NULL, which means optimal binning.")
+          warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list are using optimal binning.")
         }
       }
     }
@@ -151,7 +151,7 @@ check_special_values = function(special_values, xs) {
 
         names_x_bl = setdiff(xs, xs_sv)
         if (length(names_x_bl) >0) {
-          warning("There are ",length(names_x_bl)," x variables that donot specified in special_values were set as NULL, which means no special values.")
+          warning("There are ",length(names_x_bl)," x variables that donot specified in special_values donot have special values.")
         }
       }
 

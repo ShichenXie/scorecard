@@ -15,7 +15,7 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL)
 
 \item{adj_all_var}{Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.}
 
-\item{special_values}{the values specified in special_values will be seprate bins. Default is NULL.}
+\item{special_values}{the values specified in special_values will in separate bins. Default is NULL.}
 }
 \description{
 \code{woebin_adj} interactively adjust the binning breaks.

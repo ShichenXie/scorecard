@@ -395,8 +395,8 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be seprate bins. Default is NULL.
-#' @param min_perc_fine_bin The minmum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means inital binning into 50 fine bins for all continuous variables.
-#' @param min_perc_coarse_bin The minmum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
+#' @param min_perc_fine_bin The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for all continuous variables.
+#' @param min_perc_coarse_bin The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.
 #' @param max_num_bin Integer. The maximum number of binning.
 #' @param positive Value of positive class, default "bad|1".
@@ -930,7 +930,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values)
 #' @param y Name of y variable.
 #' @param bins A list or data frame. Binning information generated from \code{woebin}.
 #' @param adj_all_var Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.
-#' @param special_values the values specified in special_values will be seprate bins. Default is NULL.
+#' @param special_values the values specified in special_values will in separate bins. Default is NULL.
 #'
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'

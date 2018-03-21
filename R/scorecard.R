@@ -34,7 +34,7 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
-#' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable points.
+#' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
 #' @return scorecard
 #'
 #' @seealso \code{\link{scorecard_ply}}
