@@ -368,7 +368,7 @@ woebin2_chimerge = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop
     binning_chisq[,.N] > max_num_bin ||
     binning_chisq[!is.na(brkp), min((good+bad)/sum(good+bad))] < min_perc_coarse_bin) {
     # brkp needs to be removed
-    if (binning_chisq[, min(chisq, na.rm = TRUE) < chisq_limit] || binning_chisq[,.N] > max_num_bin) {
+    if (binning_chisq[, min(chisq, na.rm = TRUE) < chisq_limit]) {
       rm_brkp = binning_chisq[!is.na(brkp)][
         chisq == min(chisq, na.rm = TRUE)
         ][, `:=`(
@@ -380,6 +380,12 @@ woebin2_chimerge = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop
         merge_tolead = ifelse(chisq > shift(chisq, type = "lead", fill = Inf), "lead", "lag")
       )][!is.na(brkp)
        ][count_distr == min(count_distr, na.rm = TRUE)]
+    } else if (binning_chisq[,.N] > max_num_bin) {
+      rm_brkp = binning_chisq[!is.na(brkp)][
+        chisq == min(chisq, na.rm = TRUE)
+        ][, `:=`(
+          count = good + bad, merge_tolead = "lag"
+        )][count == min(count)]
     }
 
 
