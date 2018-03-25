@@ -52,7 +52,7 @@ ab = function(points0=600, odds0=1/60, pdo=50) {
 #' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m = glm(creditability ~ ., family = "binomial", data = dt_woe)
+#' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
 #' # summary(m)
 #'
 #' # Select a formula-based model by AIC
@@ -153,7 +153,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m = glm(creditability ~ ., family = "binomial", data = dt_woe)
+#' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
 #' # summary(m)
 #'
 #' # Select a formula-based model by AIC

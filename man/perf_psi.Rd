@@ -54,7 +54,7 @@ train = woebin_ply(dt_train, bins)
 test = woebin_ply(dt_test, bins)
 
 # glm ------
-m1 = glm(creditability ~ ., family = "binomial", data = train)
+m1 = glm(creditability ~ ., family = binomial(), data = train)
 # summary(m1)
 
 # Select a formula-based model by AIC

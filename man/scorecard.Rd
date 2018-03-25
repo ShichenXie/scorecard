@@ -39,7 +39,7 @@ bins = woebin(dt_sel, "creditability")
 dt_woe = woebin_ply(dt_sel, bins)
 
 # glm ------
-m = glm(creditability ~ ., family = "binomial", data = dt_woe)
+m = glm(creditability ~ ., family = binomial(), data = dt_woe)
 # summary(m)
 
 # Select a formula-based model by AIC

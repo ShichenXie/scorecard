@@ -141,6 +141,29 @@ eva_ppr = function(dfrocpr) {
 #' @param positive Value of positive class, default is "bad|1".
 #' @param seed Integer, default is 186. The specify seed is used for random sorting data.
 #' @return ks, roc, lift, pr
+#'
+#' @details
+#' Accuracy = true positive and true negative/total cases
+#'
+#' Error rate = false positive and false negative/total cases
+#'
+#' TPR, True Positive Rate(Recall or Sensitivity) = true positive/total actual positive
+#'
+#' PPV, Positive Predicted Value(Precision) = true positive/total predicted positive
+#'
+#' TNR, True Negative Rate(Specificity) = true negative/total actual negative
+#'
+#' NPV, Negative Predicted Value = true negative/total predicted negative
+#'
+#'
+#'
+#'
+#'
+# https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values
+# ROC curve: Sensitivity ~ 1-Specificity with different threshold
+# Lift chart: Lift(PV+/p1) ~ Depth with different threshold
+# Gains chart: PV + ~ Depth with different threshold
+#'
 #' @seealso \code{\link{perf_psi}}
 #'
 #' @examples
@@ -156,7 +179,7 @@ eva_ppr = function(dfrocpr) {
 #' dt_woe = woebin_ply(dt_sel, bins)
 #'
 #' # glm ------
-#' m1 = glm( creditability ~ ., family = "binomial", data = dt_woe)
+#' m1 = glm( creditability ~ ., family = binomial(), data = dt_woe)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC
@@ -337,7 +360,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 #' test = woebin_ply(dt_test, bins)
 #'
 #' # glm ------
-#' m1 = glm(creditability ~ ., family = "binomial", data = train)
+#' m1 = glm(creditability ~ ., family = binomial(), data = train)
 #' # summary(m1)
 #'
 #' # Select a formula-based model by AIC

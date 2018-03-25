@@ -1,5 +1,4 @@
-# [tree-like]
-# [chimerge](http://blog.csdn.net/qunxingvip/article/details/50449376)
+# woebin woebin_plot woebin_ply woebin_adj
 
 # converting vector (breaks & special_values) to dataframe
 bksv_vec_to_df = function(vec) {
@@ -30,7 +29,7 @@ dtm_binning_sv = function(dtm, spl_val) {
   return(list(dtm=dtm, binning_sv=binning_sv))
 }
 
-# required in woebin2 # return binning if provide breaks
+# required in woebin2 # return binning if breaks provided
 #' @import data.table
 woebin2_breaks = function(dtm, breaks, spl_val) {
   # global variables or functions
@@ -52,11 +51,12 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
     binning = dtm[
       , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
 
-    # break points from bin
+    # check empty bins
+    ## break points from bin
     breaks_list = lapply(
       list(left="\\1", right="\\2"),
       function(x) setdiff(sub("^\\[(.*), *(.*)\\)", x, unique(binning$bin)), c("Inf","-Inf")) )
-    # if there are empty bins
+    ## if there are empty bins
     if (!setequal(breaks_list$left, breaks_list$right)) {
       bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
       binning = dtm[
@@ -199,10 +199,11 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, spl_val) {
 
     # groupby brkp
     init_bin = init_bin[
-      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), brkp=unique(brkp), good=sum(good), bad=sum(bad)), by=brkp
+      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), good=sum(good), bad=sum(bad)), by=brkp
     ][, badprob:=bad/(good+bad)]
   }
 
+  # format bin
   if (is.numeric(dtm[,value])) {
     init_bin = init_bin[grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)]
   }
@@ -211,7 +212,7 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, spl_val) {
 }
 
 # required in woebin2_tree # add 1 best break for tree-like binning
-woebin2_tree_1bst = function(dtm, initial_binning, min_perc_coarse_bin, bestbreaks=NULL) {
+woebin2_tree_add_1brkp = function(dtm, initial_binning, min_perc_coarse_bin, bestbreaks=NULL) {
   # global variables or functions
   brkp = patterns = . = good = bad = variable = count_distr = value = min_count_distr = bstbin = min_count_distr = total_iv = bstbin = brkp = bin = NULL
 
@@ -295,7 +296,7 @@ woebin2_tree = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop_lim
 
   # best breaks from three to n+1 bins
   while ( IVchg >= stop_limit & step_num+1 <= min(max_num_bin, len_brks) ) {
-    binning_tree = woebin2_tree_1bst(dtm, initial_binning, min_perc_coarse_bin, bestbreaks)
+    binning_tree = woebin2_tree_add_1brkp(dtm, initial_binning, min_perc_coarse_bin, bestbreaks)
     # print(binning_tree)
 
     # best breaks
@@ -316,14 +317,94 @@ woebin2_tree = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop_lim
   return(binning_tree)
 }
 # examples
-# system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_fine_bin) )
-# system.time( woebin2_tree_1bst(dtm, initial_binning, min_perc_coarse_bin) )
+# system.time( initial_binning <- woebin2_init_bin(dtm, min_perc_fine_bin=0.02, spl_val=NULL) )
+# system.time( woebin2_tree_add_1brkp(dtm, initial_binning, min_perc_coarse_bin) )
 # system.time( woebin2_tree(dtm, initial_binning, min_perc_coarse_bin) )
+
+# required in woebin2 # return chimerge binning
+#' @importFrom stats qchisq
+woebin2_chimerge = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8) {
+  .= a= a_colsum= a_lag= a_lag_rowsum= a_rowsum= a_sum= bad= bin= brkp= chisq= count= count_distr= e= e_lag= good= goodbad= merge_tolead =value= variable= NULL
+
+  # [chimerge](http://blog.csdn.net/qunxingvip/article/details/50449376)
+  # [ChiMerge:Discretization of numeric attributs](http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf)
+
+  # chisq = function(a11, a12, a21, a22) {
+  #   A = list(a1 = c(a11, a12), a2 = c(a21, a22))
+  #   Adf = do.call(rbind, A)
+  #
+  #   Edf =
+  #     matrix(rowSums(Adf), ncol = 1) %*%
+  #     matrix(colSums(Adf), nrow = 1) /
+  #     sum(Adf)
+  #
+  #   sum((Adf-Edf)^2/Edf)
+  # }
+  add_chisq = function(initial_binning) {
+  chisq_df = melt(initial_binning[!is.na(brkp)], id.vars = c("brkp", "variable", "bin"), measure.vars = c("good", "bad"), variable.name = "goodbad", value.name = "a"
+  )[order(brkp)
+  ][, a_lag := shift(a, type="lag"), by=.(goodbad)
+  ][, `:=`(
+    a_rowsum = sum(a),
+    a_lag_rowsum = sum(a_lag),
+    a_colsum = a+a_lag,
+    a_sum = sum(a+a_lag)), by=brkp
+  ][, `:=`(
+    e = a_rowsum*a_colsum/a_sum,
+    e_lag = a_lag_rowsum*a_colsum/a_sum
+  )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by=brkp]
+
+  return(merge(initial_binning, chisq_df, all.x = TRUE))
+  }
+
+
+  # chisq limit
+  chisq_limit = qchisq(1-stop_limit,1)
+  # binning with chisq column
+  binning_chisq = add_chisq(initial_binning)
+  # remove brkp if chisq < chisq_limit
+  while (
+    binning_chisq[, min(chisq, na.rm = TRUE) < chisq_limit] ||
+    binning_chisq[,.N] > max_num_bin ||
+    binning_chisq[!is.na(brkp), min((good+bad)/sum(good+bad))] < min_perc_coarse_bin) {
+    # brkp needs to be removed
+    if (binning_chisq[, min(chisq, na.rm = TRUE) < chisq_limit] || binning_chisq[,.N] > max_num_bin) {
+      rm_brkp = binning_chisq[!is.na(brkp)][
+        chisq == min(chisq, na.rm = TRUE)
+        ][, `:=`(
+          count = good + bad, merge_tolead = "lag"
+        )][count == min(count)]
+    } else if (binning_chisq[!is.na(brkp), min((good+bad)/sum(good+bad))] < min_perc_coarse_bin) {
+      rm_brkp = binning_chisq[,`:=`(
+        count_distr = (good+bad)/sum(good+bad),
+        merge_tolead = ifelse(chisq > shift(chisq, type = "lead", fill = Inf), "lead", "lag")
+      )][!is.na(brkp)
+       ][count_distr == min(count_distr, na.rm = TRUE)]
+    }
+
+
+    # groupby brkp
+    binning_chisq = binning_chisq[
+      , brkp := ifelse(brkp == rm_brkp[1, brkp], shift(brkp, type=rm_brkp[1, merge_tolead]), brkp)
+    ][,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), good=sum(good), bad=sum(bad)), by=brkp
+    ]#[, badprob:=bad/(good+bad)]
+
+    # add chisq to new binning dataframe
+    binning_chisq = add_chisq(binning_chisq)
+  }
+
+  # format bin
+  if (is.numeric(dtm[,value])) {
+    binning_chisq = binning_chisq[grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)]
+  }
+
+  return(binning_chisq)
+}
 
 # required in woebin2 # # format binning output
 binning_format = function(binning) {
   # global variables or functions
-  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
+  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
   # required columns in input binning: variable, bin, good, bad
   binning = binning[
     , badprob:=bad/(good+bad)
@@ -331,7 +412,7 @@ binning_format = function(binning) {
   ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
   ][, total_iv := sum(bin_iv)
   ][, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # replace NA by missing
-  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv)]
+  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv,  breaks = sub("^(\\[.+?,).+,(.+?\\))$", "\\2", bin), is_sv)]
 
   # move missing from last row to first
   if ( "missing" %in% binning$bin ) {
@@ -343,17 +424,17 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8) {
+woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
   # global variables or functions
-  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = NULL
+  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
 
   # data(germancredit)
   # numerical data
   # dt = setDT(germancredit)[,`:=`(y=ifelse(creditability=="good",1,0), creditability=NULL)];
-  # y="y"; x="age.in.years" # "foreign.worker
+  # y="y"; x="duration.in.month" # "foreign.worker
 
   # categorical data
-  # y="y"; x="credit.amount"; #"status.of.existing.checking.account"
+  # y="y"; x= "job" # "credit.amount"; #
 
   # melt data.table
   # dtm = data.table(y=dt[[y]], variable=x, value=dt[[x]])
@@ -366,7 +447,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
     binning = woebin2_breaks(dtm=dtm, breaks=breaks, spl_val=spl_val)
 
   } else {
-    # 2.tree-like best breaks
+    # binning of initial & specialvalues
     bin_list = woebin2_init_bin(dtm, min_perc_fine_bin=min_perc_fine_bin, spl_val=spl_val)
 
     initial_binning = bin_list$initial_binning
@@ -375,10 +456,18 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
     if (stop_limit == "N") {
       binning = initial_binning
     } else {
-      binning = woebin2_tree(dtm, initial_binning, min_perc_coarse_bin, stop_limit, max_num_bin)
+      if (method == "tree") {
+        # 2.tree-like optimal binning
+        binning = woebin2_tree(dtm, initial_binning, min_perc_coarse_bin, stop_limit, max_num_bin)
+      } else if (method == "chimerge") {
+        # 2.chimerge optimal binning
+        binning = woebin2_chimerge(dtm, initial_binning, min_perc_coarse_bin, stop_limit, max_num_bin)
+      }
     }
 
-    if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv, binning, fill=TRUE)
+    # binding binning_sv and binning
+    binning[,is_sv := FALSE]
+    if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv[,is_sv := TRUE], binning, fill=TRUE)
 
   }
 
@@ -387,22 +476,23 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
 
 #' WOE Binning
 #'
-#' \code{woebin} generates optimal binning using tree-like segmentation for numerical, factor and categorical variables. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+#' \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
 #'
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
-#' @param special_values the values specified in special_values will be seprate bins. Default is NULL.
-#' @param min_perc_fine_bin The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for all continuous variables.
+#' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
+#' @param min_perc_fine_bin The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for continuous variables.
 #' @param min_perc_coarse_bin The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)'. Accepted range: 0-0.5; default is 0.1.
 #' @param max_num_bin Integer. The maximum number of binning.
 #' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
-#' @return Optimal or customized binning information
+#' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
+#' @return Optimal or customized binning information.
 #'
 #' @seealso \code{\link{woebin_ply}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
 #'
@@ -451,7 +541,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
 #' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L) {
+woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree") {
   # global variable
   i = NULL
 
@@ -500,9 +590,15 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
 
   # max_num_bin
   if (!is.numeric(max_num_bin)) {
-    stop("Incorrect inputs; max_num_bin should be numeric variable.")
+    warning("Incorrect inputs; max_num_bin should be numeric variable. Parameter was set to default (8).")
+    max_num_bin = 8
   }
 
+  # method
+  if (!(method %in% c("tree", "chimerge"))) {
+    warning("Incorrect inputs; method should be tree or chimerge. Parameter was set to default (tree).")
+    method = "tree"
+  }
 
   # binning for each x variable
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
@@ -527,7 +623,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
           spl_val=special_values[[x_i]],
           min_perc_fine_bin=min_perc_fine_bin,
           min_perc_coarse_bin=min_perc_coarse_bin,
-          stop_limit=stop_limit, max_num_bin=max_num_bin
+          stop_limit=stop_limit, max_num_bin=max_num_bin,
+          method=method
         ),
         error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
       )
@@ -560,7 +657,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
             spl_val=special_values[[x_i]],
             min_perc_fine_bin=min_perc_fine_bin,
             min_perc_coarse_bin=min_perc_coarse_bin,
-            stop_limit=stop_limit, max_num_bin=max_num_bin
+            stop_limit=stop_limit, max_num_bin=max_num_bin,
+            method=method
           ),
           error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
         )
@@ -898,10 +996,10 @@ woebin_adj_print_basic_info = function(i, xs_len, x_i, bins, dt, bins_breakslist
 
 }
 # plot adjusted binning in woebin_adj
-woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values) {
+woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values, method) {
   bin_adj = NULL
 
-  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =", special_values, ", ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L)")
+  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =", special_values, ", ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, method=",method,")")
 
   eval(parse(text = text_woebin))
 
@@ -931,6 +1029,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values)
 #' @param bins A list or data frame. Binning information generated from \code{woebin}.
 #' @param adj_all_var Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.
 #' @param special_values the values specified in special_values will in separate bins. Default is NULL.
+#' @param method optimal binning method, it should be "tree" or "chimerge". Default is "tree".
 #'
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'
@@ -958,7 +1057,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values)
 #' @importFrom graphics hist plot
 #' @export
 #'
-woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL) {
+woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree") {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
@@ -1035,7 +1134,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL) {
         stop_limit = NULL
       }
 
-      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, special_values), error = function(e) e)
+      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, special_values, method), error = function(e) e)
 
       adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
     }

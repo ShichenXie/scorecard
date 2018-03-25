@@ -49,7 +49,7 @@ train_woe = woebin_ply(train, bins_adj)
 test_woe = woebin_ply(test, bins_adj)
 
 # glm ------
-m1 = glm( creditability ~ ., family = "binomial", data = train_woe)
+m1 = glm( creditability ~ ., family = binomial(), data = train_woe)
 # summary(m1)
 
 # # Adjusting for oversampling (support.sas.com/kb/22/601.html)
@@ -57,7 +57,7 @@ m1 = glm( creditability ~ ., family = "binomial", data = train_woe)
 # dt_woe = dt_woe[, weight := ifelse(y==1, p1/r1, (1-p1)/(1-r1) )]
 # 
 # fmla = as.formula(paste("y ~", paste(names(dt_woe)[2:21], collapse="+")))
-# m1 = glm(fmla, family = "binomial", data = dt_woe, weights = weight)
+# m1 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)
 
 
 # Select a formula-based model by AIC (or by LASSO)

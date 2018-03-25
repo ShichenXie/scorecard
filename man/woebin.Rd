@@ -6,7 +6,8 @@
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
   min_perc_fine_bin = 0.02, min_perc_coarse_bin = 0.05, stop_limit = 0.1,
-  max_num_bin = 8, positive = "bad|1", no_cores = NULL, print_step = 0L)
+  max_num_bin = 8, positive = "bad|1", no_cores = NULL, print_step = 0L,
+  method = "tree")
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -17,13 +18,13 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{breaks_list}{List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.}
 
-\item{special_values}{the values specified in special_values will be seprate bins. Default is NULL.}
+\item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for all continuous variables.}
+\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for continuous variables.}
 
 \item{min_perc_coarse_bin}{The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit. Accepted range: 0-0.5; default is 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)'. Accepted range: 0-0.5; default is 0.1.}
 
 \item{max_num_bin}{Integer. The maximum number of binning.}
 
@@ -32,12 +33,14 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 \item{no_cores}{Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 20, and will set as the number of all CPU cores if the length of x variables greater than or equal to 20.}
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
+
+\item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
 }
 \value{
-Optimal or customized binning information
+Optimal or customized binning information.
 }
 \description{
-\code{woebin} generates optimal binning using tree-like segmentation for numerical, factor and categorical variables. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
 }
 \examples{
 # load germancredit data

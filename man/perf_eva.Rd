@@ -31,6 +31,19 @@ ks, roc, lift, pr
 \description{
 \code{perf_eva} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
 }
+\details{
+Accuracy = true positive and true negative/total cases
+
+Error rate = false positive and false negative/total cases
+
+TPR, True Positive Rate(Recall or Sensitivity) = true positive/total actual positive
+
+PPV, Positive Predicted Value(Precision) = true positive/total predicted positive
+
+TNR, True Negative Rate(Specificity) = true negative/total actual negative
+
+NPV, Negative Predicted Value = true negative/total predicted negative
+}
 \examples{
 \dontrun{
 # load germancredit data
@@ -44,7 +57,7 @@ bins = woebin(dt_sel, "creditability")
 dt_woe = woebin_ply(dt_sel, bins)
 
 # glm ------
-m1 = glm( creditability ~ ., family = "binomial", data = dt_woe)
+m1 = glm( creditability ~ ., family = binomial(), data = dt_woe)
 # summary(m1)
 
 # Select a formula-based model by AIC
