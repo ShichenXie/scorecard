@@ -374,12 +374,15 @@ woebin2_chimerge = function(dtm, initial_binning, min_perc_coarse_bin=0.05, stop
         ][, `:=`(
           count = good + bad, merge_tolead = "lag"
         )][count == min(count)]
+
     } else if (binning_chisq[!is.na(brkp), min((good+bad)/sum(good+bad))] < min_perc_coarse_bin) {
       rm_brkp = binning_chisq[,`:=`(
         count_distr = (good+bad)/sum(good+bad),
         merge_tolead = ifelse(chisq > shift(chisq, type = "lead", fill = Inf), "lead", "lag")
       )][!is.na(brkp)
-       ][count_distr == min(count_distr, na.rm = TRUE)]
+       ][count_distr == min(count_distr, na.rm = TRUE)
+       ][is.na(merge_tolead), merge_tolead:="lead"]
+
     } else if (binning_chisq[,.N] > max_num_bin) {
       rm_brkp = binning_chisq[!is.na(brkp)][
         chisq == min(chisq, na.rm = TRUE)
@@ -418,7 +421,7 @@ binning_format = function(binning) {
   ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
   ][, total_iv := sum(bin_iv)
   ][, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # replace NA by missing
-  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv,  breaks = sub("^(\\[.+?,).+,(.+?\\))$", "\\2", bin), is_sv)]
+  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv,  breaks = sub("^\\[(.*), *(.*)\\)((%,%missing)*)", "\\2\\3", bin), is_sv)]
 
   # move missing from last row to first
   if ( "missing" %in% binning$bin ) {
@@ -437,7 +440,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
   # data(germancredit)
   # numerical data
   # dt = setDT(germancredit)[,`:=`(y=ifelse(creditability=="good",1,0), creditability=NULL)];
-  # y="y"; x="duration.in.month" # "foreign.worker
+  # y="y"; x="credit.amount" # "foreign.worker
 
   # categorical data
   # y="y"; x= "job" # "credit.amount"; #
@@ -1005,7 +1008,7 @@ woebin_adj_print_basic_info = function(i, xs_len, x_i, bins, dt, bins_breakslist
 woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values, method) {
   bin_adj = NULL
 
-  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =", special_values, ", ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, method=",method,")")
+  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =", special_values, ", ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, method=\"",method,"\")")
 
   eval(parse(text = text_woebin))
 
@@ -1140,7 +1143,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
         stop_limit = NULL
       }
 
-      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, special_values, method), error = function(e) e)
+      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, special_values, method=method), error = function(e) e)
 
       adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
     }
