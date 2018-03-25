@@ -421,7 +421,7 @@ binning_format = function(binning) {
   ][, bin_iv := lapply(.SD, miv_01, bad), .SDcols = "good"
   ][, total_iv := sum(bin_iv)
   ][, bin := ifelse(is.na(bin) | bin=="NA", "missing", as.character(bin)) # replace NA by missing
-  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv,  breaks = sub("^\\[(.*), *(.*)\\)((%,%missing)*)", "\\2\\3", bin), is_sv)]
+  ][, .(variable, bin, count=good+bad, count_distr=(good+bad)/sum(good+bad), good, bad, badprob, woe, bin_iv, total_iv,  breaks = sub("^\\[(.*), *(.*)\\)((%,%missing)*)", "\\2\\3", bin), is_special_values=is_sv)]
 
   # move missing from last row to first
   if ( "missing" %in% binning$bin ) {
