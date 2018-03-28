@@ -91,12 +91,12 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
   }
 
 
-  # remove rowid column in binning dataframe
-  binning = binning[,rowid:=NULL]
-  # bind binning_sv and binning
-  if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv, binning)
+  # # remove rowid column in binning dataframe
+  binning = binning[,rowid:=1][,rowid:=NULL]
+  # # bind binning_sv and binning
+  # if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv, binning)
 
-  return(binning)
+  return(list(binning=binning, binning_sv=binning_sv))
 }
 
 # required in woebin2 # return initial binning
@@ -453,7 +453,10 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
   # binning
   if (!anyNA(breaks) & !is.null(breaks)) {
     # 1.return binning if breaks provided
-    binning = woebin2_breaks(dtm=dtm, breaks=breaks, spl_val=spl_val)
+    binning_list = woebin2_breaks(dtm=dtm, breaks=breaks, spl_val=spl_val)
+
+    binning = bin_list$binning
+    binning_sv = bin_list$binning_sv
 
   } else {
     # binning of initial & specialvalues
@@ -473,12 +476,12 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
         binning = woebin2_chimerge(dtm, initial_binning, min_perc_coarse_bin, stop_limit, max_num_bin)
       }
     }
-
-    # binding binning_sv and binning
-    binning[,is_sv := FALSE]
-    if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv[,is_sv := TRUE], binning, fill=TRUE)
-
   }
+
+  # binding binning_sv and binning
+  binning[,is_sv := FALSE]
+  binning_sv[,is_sv := TRUE]
+  if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv, binning, fill=TRUE)
 
   return(binning_format(binning))
 }

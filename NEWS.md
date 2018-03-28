@@ -1,3 +1,7 @@
+# scorecard 0.1.7
+
+* added chimerge method for woe binning
+
 # scorecard 0.1.6
 
 * Fixed a bug in woebin_adj function when all_var == FALSE and the breaks of all variables are perfect. 
