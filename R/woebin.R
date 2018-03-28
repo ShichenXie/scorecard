@@ -453,7 +453,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
   # binning
   if (!anyNA(breaks) & !is.null(breaks)) {
     # 1.return binning if breaks provided
-    binning_list = woebin2_breaks(dtm=dtm, breaks=breaks, spl_val=spl_val)
+    bin_list = woebin2_breaks(dtm=dtm, breaks=breaks, spl_val=spl_val)
 
     binning = bin_list$binning
     binning_sv = bin_list$binning_sv
@@ -479,9 +479,8 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
   }
 
   # binding binning_sv and binning
-  binning[,is_sv := FALSE]
-  binning_sv[,is_sv := TRUE]
-  if (setDT(binning_sv)[,.N] > 0) binning = rbind(binning_sv, binning, fill=TRUE)
+  setDT(binning)[,is_sv := FALSE]
+  if (setDT(binning_sv)[,.N] > 0) binning = rbindlist(list(setDT(binning_sv)[,is_sv := TRUE], binning), fill=TRUE)
 
   return(binning_format(binning))
 }
