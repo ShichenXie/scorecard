@@ -1119,10 +1119,11 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   # x variables
   xs_all = bins[,unique(variable)]
   if (adj_all_var == FALSE) {
-    xs_adj = union(
-      bins[bin != "missing"][, unique(variable)],
-      bins[bin != "missing"][, badprob2 := badprob >= shift(badprob, type = "lag"), by=variable][!is.na(badprob2), length(unique(badprob2)), by=variable][V1 > 1, variable]
-    )
+    xs_adj = bins[
+      bin != "missing"
+    ][, badprob2 := badprob >= shift(badprob, type = "lag"), by=variable
+    ][!is.na(badprob2), length(unique(badprob2)), by=variable
+    ][V1 > 1, variable]
   } else {
     xs_adj = xs_all
   }
