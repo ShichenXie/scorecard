@@ -63,18 +63,17 @@ ie = function(dt, y, x=NULL, order=TRUE) {
 # #' @import data.table
 ie_xy = function(x=NULL, y) {
   # . = p1 = p0 = count = count_distr = bin_ie = NULL
-  . =x_count =xy_N =x_count_distr =p =ent = bin_ie =NULL
+  . =x_count =xy_N =x_count_distr =p =ent = bin_ie =xN_distr =x_N =NULL
 
   if (is.null(x)) x = 0
 
   data.table(x=x, y=y)[
-    , .(xy_N = .N), keyby=c("x","y")
-    ][, x_count := sum(xy_N), keyby="x"
-    ][, x_count_distr := x_count/sum(x_count), keyby="y"
-    ][, p := xy_N/x_count
-    ][, ent := ifelse(p==0, 0, p*log2(p))
-    ][, .(bin_ie = -sum(ent), x_count_distr = unique(x_count_distr)), keyby="x"
-    ][, sum(bin_ie*x_count_distr)]
+    , .(xy_N = .N), by=c("x","y")
+    ][, x_N := sum(xy_N), keyby=c("x")
+    ][, p := xy_N/x_N
+    ][, .(ent = -sum(ifelse(p==0, 0, p*log2(p))), x_N=sum(xy_N)), by='x'
+    ][, xN_distr := x_N/sum(x_N)
+    ][, sum(ent*xN_distr)]
 
   # data.table(x=x, y=y)[
   #   , .(p0=sum(y==0)/.N, p1=sum(y==1)/.N, count=.N), keyby="x"
@@ -181,15 +180,16 @@ ig = function(dt, y, x=NULL, order=TRUE) {
 
 #' @import data.table
 ig_xy = function(x, y) {
-  . =x_count =xy_N =x_count_distr =p =bin_ig =NULL
+  . =x_count =xy_N =x_count_distr =p =bin_ig =xN_distr =x_N =NULL
 
   data.table(x=x, y=y)[
-    , .(xy_N = .N), keyby=c("x","y")
-  ][, x_count := sum(xy_N), keyby="x"
-  ][, x_count_distr := x_count/sum(x_count), keyby="y"
-  ][, p := xy_N/x_count
-  ][, .(bin_ig = 1-sum(p^2), x_count_distr=unique(x_count_distr)), keyby="x"
-  ][, sum(bin_ig*x_count_distr)]
+    , .(xy_N = .N), by=c("x","y")
+  ][, x_N := sum(xy_N), keyby=c("x")
+  ][, p := xy_N/x_N
+  ][, .(bin_ig = 1-sum(p^2), x_N=sum(xy_N)), by='x'
+  ][, xN_distr := x_N/sum(x_N)
+  ][, sum(bin_ig*xN_distr)]
+
 
   # data.table(x=x, y=y)[
   #   , .(p0=sum(y==0)/.N, p1=sum(y==1)/.N, count=.N), keyby="x"

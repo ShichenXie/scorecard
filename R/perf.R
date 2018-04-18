@@ -85,14 +85,15 @@ eva_plift = function(dfkslift) {
 
 eva_dfrocpr = function(df) {
   # global variables
-  pred=.=label=countP=countN=FN=TN=TP=FP=NULL
+  pred=.=label=countP=countN=FN=TN=TP=FP=precision=recall=NULL
 
   dfrocpr = df[
     order(pred)
   ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
   ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
   ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
-  ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN)) ]
+  ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN))
+  ][, `:=`(F1 = 2*precision*recall/(precision+recall))]
 
   return(dfrocpr)
 }
@@ -126,6 +127,29 @@ eva_ppr = function(dfrocpr) {
     theme_bw()
 
   return(ppr)
+}
+eva_pf1 = function(dfrocpr) {
+  # global variables
+  pop=countpred=F1=pred=NULL
+
+  pf1 = ggplot(dfrocpr[, pop := cumsum(countpred)/sum(countpred)]) +
+    geom_line(aes(x=pop, y=F1)) + coord_fixed() +
+    geom_segment(aes(x = dfrocpr[F1==max(F1,na.rm = TRUE),pop], y = 0, xend = dfrocpr[F1==max(F1,na.rm = TRUE),pop], yend = dfrocpr[F1==max(F1,na.rm = TRUE),F1]), colour = "red", linetype="dashed") +
+    labs(x = "% of population", y = "F1") +
+    annotate("text", x = 0.5, y=Inf, label="F1", vjust=1.5, size=6) +
+    annotate('text', x=0, y=0, label='pred:', vjust=-1.3, hjust=0) +
+    annotate('text', x=0, y=0, label=dfrocpr[1,round(pred,4)], vjust=-0.2, hjust=0) +
+    annotate('text', x=1, y=0, label=dfrocpr[.N,round(pred,4)], vjust=-0.2, hjust=1) +
+    annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=dfrocpr[F1==max(F1,na.rm = TRUE),round(pred,4)], vjust=-0.2) +
+    annotate(
+      'text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop],
+      y=dfrocpr[F1==max(F1,na.rm = TRUE),F1],
+      label=paste0('F1 max: \n',dfrocpr[F1==max(F1,na.rm = TRUE),round(F1,4)]), vjust=-0.2, colour='blue') +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+    theme_bw()
+
+  return(pf1)
 }
 #' KS, ROC, Lift, PR
 #'
@@ -253,11 +277,6 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
     # return list
     rt$KS = dfkslift[ks == max(ks)][order(group)][1,round(ks, 4)]
 
-    # gini
-    gini = dfkslift[, sum(
-      (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag")) )]-1
-    rt$Gini = round(gini, 4)
-
     # plot ks
     if (show_plot == TRUE) pks = eva_pks(dfkslift)
   }
@@ -266,7 +285,7 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
   if ("lift" %in% type) plift = eva_plift(dfkslift)
 
   # data, dfrocpr ------
-  if (any(c("roc","pr") %in% type)) dfrocpr = eva_dfrocpr(df)
+  if (any(c("roc","pr",'f1') %in% type)) dfrocpr = eva_dfrocpr(df)
 
   # plot, ROC ------
   if ("roc" %in% type) {
@@ -275,6 +294,11 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
     )]
     # return list
     rt$AUC = round(AUC,4)
+
+    # gini
+    # gini = dfkslift[, sum(
+    #   (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag")) )]-1
+    rt$Gini = round(2*AUC-1, 4)
 
     # plot roc
     if (show_plot == TRUE) proc = eva_proc(dfrocpr, AUC)
@@ -292,6 +316,19 @@ perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks"
 
     # plot pr
     if (show_plot == TRUE) ppr = eva_ppr(dfrocpr)
+  }
+  # plot, P-R ------
+  if ("f1" %in% type) {
+    # # break-even point
+    # BEP = dfrocpr[precision == recall][,precision]
+
+    # F1
+    # 1/F1 = 1/2*(1/P+1/R)
+    # F_beta
+    # 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
+
+    # plot pr
+    if (show_plot == TRUE) pf1 = eva_pf1(dfrocpr)
   }
 
 

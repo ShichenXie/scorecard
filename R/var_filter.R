@@ -41,6 +41,15 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
 
   # force removed variables
   if (!is.null(var_rm))  x = setdiff(x, var_rm)
+  # check force kept variables
+  if (!is.null(var_kp)) {
+    var_kp2 = intersect(var_kp, x)
+    len_diff = length(var_kp) - length(var_kp2)
+    if (len_diff > 0) {
+      warning("Incorrect inputs; there are ", len_diff, " var_kp variables are not exist in input data, which are removed from var_kp. \n", setdiff(var_kp, var_kp2))
+    }
+    var_kp = var_kp2
+  }
 
   # -iv
   iv_list = iv(dt, y, x)
