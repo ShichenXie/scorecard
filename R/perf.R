@@ -37,7 +37,7 @@ eva_dfkslift = function(df, groupnum = NULL) {
 
   return(df_kslift)
 }
-eva_pks = function(dfkslift) {
+eva_pks = function(dfkslift, title) {
   # global variables
   ks=group=.=cumgood=cumbad=value=variable=NULL
 
@@ -47,7 +47,8 @@ eva_pks = function(dfkslift) {
     geom_line() + coord_fixed() +
     geom_segment(aes(x = dfks$group, y = 0, xend = dfks$group, yend = dfks$ks), colour = "red", linetype = "dashed", arrow=arrow(ends="both", length=unit(.2,"cm"))) +
     labs(x = "% of population", y = "% of total Good/Bad") +
-    annotate("text", x=0.50, y=Inf, label="K-S", vjust=1.5, size=6)+
+    # annotate("text", x=0.50, y=Inf, label="K-S", vjust=1.5, size=6)+
+    ggtitle(paste0(title, 'K-S')) +
     annotate("text", x=dfks$group, y=dfks$ks, vjust = -0.2, label=paste0("KS: ", round(dfks$ks,4) ), colour = "blue") +
     annotate("text", x=0.20, y=0.80, vjust = -0.2, label="Bad", colour = "black") +
     annotate("text", x=0.80, y=0.55, vjust = -0.2, label="Good", colour = "black") +
@@ -58,7 +59,7 @@ eva_pks = function(dfkslift) {
 
   return(pks)
 }
-eva_plift = function(dfkslift) {
+eva_plift = function(dfkslift, title) {
   # global variables
   .=group=bad=model=badrate=cumbadrate=good=NULL
   badrate_avg = dfkslift[,sum(bad)/sum(good+bad)]
@@ -70,7 +71,8 @@ eva_plift = function(dfkslift) {
     coord_fixed() +
     geom_segment(aes(x = 0, y = badrate_avg, xend = 1, yend = badrate_avg), colour = "red", linetype = "dashed") +
     labs(x="% of population", y="% of Bad") +
-    annotate("text", x=0.50,y=Inf, label="Lift", vjust=1.5, size=6)+
+    # annotate("text", x=0.50,y=Inf, label="Lift", vjust=1.5, size=6)+
+    ggtitle(paste0(title, 'Lift')) +
     annotate("text", x=0.75,y=mean(dfkslift$cumbadrate), label="cumulate badrate", vjust=1)+
     annotate("text", x=0.75,y=badrate_avg, label="average badrate", vjust=1, colour="red")+
     guides(fill=guide_legend(title=NULL)) +
@@ -97,15 +99,20 @@ eva_dfrocpr = function(df) {
 
   return(dfrocpr)
 }
-eva_proc = function(dfrocpr, auc) {
+eva_proc = function(dfrocpr, title) {
   # global variables
   FPR=TPR=NULL
+
+  auc = dfrocpr[order(FPR,TPR)][, sum(
+    (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
+  )]
 
   proc = ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
     geom_ribbon(aes(ymin=0, ymax=TPR), fill="blue", alpha=0.1) +
     geom_line() + coord_fixed() +
     geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
-    annotate("text", x = 0.5, y=Inf, label="ROC", vjust=1.5, size=6) +
+    # annotate("text", x = 0.5, y=Inf, label="ROC", vjust=1.5, size=6) +
+    ggtitle(paste0(title, 'ROC')) +
     annotate("text", x=0.55, y=0.45, label=paste0("AUC: ", round(auc,4)), colour = "blue") +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
@@ -113,7 +120,7 @@ eva_proc = function(dfrocpr, auc) {
 
   return(proc)
 }
-eva_ppr = function(dfrocpr) {
+eva_ppr = function(dfrocpr, title) {
   # global variables
   recall=precision=NULL
 
@@ -121,26 +128,46 @@ eva_ppr = function(dfrocpr) {
     geom_line() + coord_fixed() +
     geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
     labs(x = "Recall", y = "Precision") +
-    annotate("text", x = 0.5, y=Inf, label="P-R", vjust=1.5, size=6) +
+    # annotate("text", x = 0.5, y=Inf, label="P-R", vjust=1.5, size=6) +
+    ggtitle(paste0(title, 'P-R')) +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
     theme_bw()
 
   return(ppr)
 }
-eva_pf1 = function(dfrocpr) {
+eva_pf1 = function(dfrocpr, title) {
+  # # break-even point
+  # BEP = dfrocpr[precision == recall][,precision]
+  # F1： 1/F1 = 1/2*(1/P+1/R)
+  # F_beta: 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
+
   # global variables
   pop=countpred=F1=pred=NULL
+  dfrocpr = dfrocpr[, pop := cumsum(countpred)/sum(countpred)]
+  # xy of F1 max
+  F1max_pop = dfrocpr[F1==max(F1,na.rm = TRUE),pop]
+  F1max_F1 = dfrocpr[F1==max(F1,na.rm = TRUE),F1]
+  # pred
+  pred_0=dfrocpr[1,pred]
+  pred_1=dfrocpr[.N,pred]
+  pred_F1max=dfrocpr[F1==F1max_F1,pred]
+  if ( !(mean(dfrocpr$pred, na.rm=TRUE)<=1 & mean(dfrocpr$pred, na.rm=TRUE)>=0) ) {
+    pred_0 = -pred_0
+    pred_1 = -pred_1
+    pred_F1max = -pred_F1max
+  }
 
-  pf1 = ggplot(dfrocpr[, pop := cumsum(countpred)/sum(countpred)]) +
+
+  pf1 = ggplot(dfrocpr) +
     geom_line(aes(x=pop, y=F1)) + coord_fixed() +
-    geom_segment(aes(x = dfrocpr[F1==max(F1,na.rm = TRUE),pop], y = 0, xend = dfrocpr[F1==max(F1,na.rm = TRUE),pop], yend = dfrocpr[F1==max(F1,na.rm = TRUE),F1]), colour = "red", linetype="dashed") +
+    geom_segment(aes(x = F1max_pop, y = 0, xend = F1max_pop, yend = F1max_F1), colour = "red", linetype="dashed") +
     labs(x = "% of population", y = "F1") +
-    annotate("text", x = 0.5, y=Inf, label="F1", vjust=1.5, size=6) +
-    annotate('text', x=0, y=0, label='pred:', vjust=-1.3, hjust=0) +
-    annotate('text', x=0, y=0, label=dfrocpr[1,round(pred,4)], vjust=-0.2, hjust=0) +
-    annotate('text', x=1, y=0, label=dfrocpr[.N,round(pred,4)], vjust=-0.2, hjust=1) +
-    annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=dfrocpr[F1==max(F1,na.rm = TRUE),round(pred,4)], vjust=-0.2) +
+    # annotate("text", x = 0.5, y=Inf, label="F1", vjust=1.5, size=6) +
+    ggtitle(paste0(title, 'F1')) +
+    annotate('text', x=0, y=0, label=paste0('pred\n',round(pred_0,4)), vjust=-0.2, hjust=0) +
+    annotate('text', x=1, y=0, label=paste0('pred\n',round(pred_1,4)), vjust=-0.2, hjust=1) +
+    annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=paste0('pred\n',round(pred_F1max,4)), vjust=-0.2) +
     annotate(
       'text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop],
       y=dfrocpr[F1==max(F1,na.rm = TRUE),F1],
@@ -158,7 +185,7 @@ eva_pf1 = function(dfrocpr) {
 #' @name perf_eva
 #' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
 #' @param pred Predicted probability or score.
-#' @param title Title of plot, default is "performance".
+#' @param title Title of plot, default is NULL.
 #' @param groupnum The group number when calculating KS.  Default NULL, which means the number of sample size.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default is TRUE. It means whether to show plot.
@@ -227,132 +254,73 @@ eva_pf1 = function(dfrocpr) {
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva = function(label, pred, title="performance", groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
+perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   # global variables
   FPR = TPR = cumbad = group = ks = NULL
 
   # inputs checking
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
-
   # if pred is score
   if ( !(mean(pred, na.rm=TRUE)<=1 & mean(pred, na.rm=TRUE)>=0) ) {
     warning("Since the average of pred is not in [0,1], it is treated as predicted score but not probability.")
     pred = -pred
   }
-
   # random sort datatable
   set.seed(seed)
   df = data.table(label=label, pred=pred)[sample(.N)]
-
   # remove NAs
   if (anyNA(label) || anyNA(pred)) {
     warning("The NAs in \"label\" or \"pred\" were removed.")
     df = df[!is.na(label) & !is.na(pred)]
   }
-
   # check label
-  if (length(unique(df$label)) != 2) {
-    stop("Incorrect inputs; the length of unique values in label != 2.")
-  } else {
-    if (any((c(0,1) %in% unique(df$label)) == FALSE)) {
-      if (any(grepl(positive, df[[label]]) == TRUE)) {
-        warning(paste0("The positive value in \"label\" was replaced by 1 and negative value by 0."))
-        df[[label]] = ifelse(grepl(positive, df[[label]]), 1, 0)
-      } else {
-        stop(paste0("Incorrect inputs; the positive value in \"label\" is not specified"))
-      }
-    }
+  df = check_y(df, 'label', positive)
+  # title
+  if (!is.null(title)) title = paste0(title,': ')
+
+
+  ### data ###
+  # dfkslift ------
+  if (any(c("ks","lift") %in% type)) {
+    df_kslift = eva_dfkslift(df, groupnum)
+    df_string1 = paste0('df_',intersect(c("ks","lift"), type), '=df_kslift')
+    eval(parse(text=df_string1))
+  }
+  # dfrocpr ------
+  if (any(c("roc","pr",'f1') %in% type)) {
+    df_rocpr = eva_dfrocpr(df)
+    df_string2 = paste0('df_',intersect(c("roc","pr",'f1'), type), '=df_rocpr')
+    eval(parse(text=df_string2))
   }
 
 
-  # data, dfkslift ------
-  if (any(c("ks","lift") %in% type)) dfkslift = eva_dfkslift(df, groupnum)
-
-
-  # return list
+  ###  return list ###
   rt = list()
-
-  # plot, KS ------
-  if ("ks" %in% type) {
-    # return list
-    rt$KS = dfkslift[ks == max(ks)][order(group)][1,round(ks, 4)]
-
-    # plot ks
-    if (show_plot == TRUE) pks = eva_pks(dfkslift)
-  }
-
-  # plot, Lift ------
-  if ("lift" %in% type) plift = eva_plift(dfkslift)
-
-  # data, dfrocpr ------
-  if (any(c("roc","pr",'f1') %in% type)) dfrocpr = eva_dfrocpr(df)
-
-  # plot, ROC ------
+  # KS ------
+  if ("ks" %in% type) rt$KS = df_kslift[ks == max(ks)][order(group)][1,round(ks, 4)]
+  # ROC ------
   if ("roc" %in% type) {
-    AUC = dfrocpr[order(FPR,TPR)][, sum(
+    auc = df_rocpr[order(FPR,TPR)][, sum(
       (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
     )]
     # return list
-    rt$AUC = round(AUC,4)
+    rt$AUC = round(auc,4)
 
     # gini
     # gini = dfkslift[, sum(
     #   (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag")) )]-1
-    rt$Gini = round(2*AUC-1, 4)
-
-    # plot roc
-    if (show_plot == TRUE) proc = eva_proc(dfrocpr, AUC)
-  }
-
-  # plot, P-R ------
-  if ("pr" %in% type) {
-    # # break-even point
-    # BEP = dfrocpr[precision == recall][,precision]
-
-    # F1
-    # 1/F1 = 1/2*(1/P+1/R)
-    # F_beta
-    # 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
-
-    # plot pr
-    if (show_plot == TRUE) ppr = eva_ppr(dfrocpr)
-  }
-  # plot, P-R ------
-  if ("f1" %in% type) {
-    # # break-even point
-    # BEP = dfrocpr[precision == recall][,precision]
-
-    # F1
-    # 1/F1 = 1/2*(1/P+1/R)
-    # F_beta
-    # 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
-
-    # plot pr
-    if (show_plot == TRUE) pf1 = eva_pf1(dfrocpr)
+    rt$Gini = round(2*auc-1, 4)
   }
 
 
-  # export plot
+  ###  export plot
   if (show_plot == TRUE) {
-    plist = paste0("p", type)
-    # add title for first plot
-    eval(parse(text = paste0(plist[1], " = ", plist[1], " + ggtitle(title)")))
+    plist = paste0(paste0('p',type,"=eva_p", type, '(df_',type,',title)'), collapse = ',')
+    plist = eval(parse(text=paste0("list(",plist,")")))
+    p_nrows = floor(length(type)/2)
 
-    if (length(plist) == 1) {
-      p = eval(parse(text = plist))
-    } else if (length(plist) > 1) {
-      # add title for second plot
-      title=""
-      eval(parse(text = paste0(plist[2:length(plist)], " = ", plist[2:length(plist)], " + ggtitle(title)")))
-
-      # Arrange multiple plots
-      p = eval(parse(
-        text = paste0("grid.arrange(", paste0(plist, collapse = ", "), ", nrow=", length(plist) %/% 2,", padding = 0)")
-      ))
-    }
-
-    # return list
-    rt$pic = p
+    args.list <- c(plist, list(nrow=p_nrows, padding = 0))
+    rt$pic = do.call(grid.arrange, args.list)
   }
 
   return(rt)
@@ -526,9 +494,9 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=c(100,800), x_tick_b
     dt_bae = dcast(
       dat[,.(count=.N), keyby=c("ae", "bin")
         ],#[,distr := count/sum(count), by="ae"][],
-      bin ~ ae, value.var="count", fill = 0
+      bin ~ ae, value.var="count", fill = 0.9
     )
-    dt_bae[dt_bae == 0] = 0.9 # replace 0 by 0.9
+    # dt_bae[dt_bae == 0] = 0.9 # replace 0 by 0.9
 
     names_ae = setdiff(names(dt_bae), "bin")
     psi_dt = dt_bae[
@@ -567,7 +535,7 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=c(100,800), x_tick_b
 
     # psi ------
     # rt[[paste0(sn, "_psi")]] = round(psi(dat), 4)
-    rt_psi[[sn]] = data.frame(PSI = round(psi(dat), 4))
+    rt_psi[[sn]] = data.frame(PSI = psi(dat))#round(psi(dat), 4))
 
 
 

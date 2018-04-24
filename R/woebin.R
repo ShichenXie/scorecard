@@ -1008,7 +1008,9 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE) {
 
 
 # print basic information in woebin_adj
-woebin_adj_print_basic_info = function(i, xs_len, x_i, bins, dt, bins_breakslist) {
+woebin_adj_print_basic_info = function(i, xs_adj, bins, dt, bins_breakslist) {
+  x_i = xs_adj[i]
+  xs_len = length(xs_adj)
   variable = x_breaks = NULL
 
   bin = bins[variable==x_i]
@@ -1021,7 +1023,7 @@ woebin_adj_print_basic_info = function(i, xs_len, x_i, bins, dt, bins_breakslist
   print(summary(dt[[x_i]]))
   cat("\n")
   ## table
-  if (length(table(dt[[x_i]])) < 10) {
+  if (length(table(dt[[x_i]])) < 10 || !is.numeric(dt[[x_i]])) {
     cat(paste0("> table(",x_i,"): "))
     print(table(dt[[x_i]]))
     cat("\n")
@@ -1164,7 +1166,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     x_i = xs_adj[i]
 
     # basic information of x_i variable ------
-    woebin_adj_print_basic_info(i, xs_len, x_i, bins, dt, bins_breakslist)
+    woebin_adj_print_basic_info(i, xs_adj, bins, dt, bins_breakslist)
 
     # adjusting breaks ------
     adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
