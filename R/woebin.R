@@ -514,7 +514,7 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
   } else {
     binning = rbindlist(bin_list, use.names = TRUE, fill = TRUE, idcol = 'is_sv')
   }
-  binning = binning[, is_sv := 'binning_sv' %in% is_sv]
+  binning = binning[, is_sv := is_sv == 'binning_sv']
 
   return(binning_format(binning))
 }
