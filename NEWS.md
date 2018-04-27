@@ -1,6 +1,8 @@
 # scorecard 0.1.7
 
-* added chimerge method for woe binning
+* added chimerge method for woebin function
+* special_values option added in woebin function
+* f1 curve added in perf_eva
 
 # scorecard 0.1.6
 
