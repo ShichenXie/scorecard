@@ -90,9 +90,7 @@ test_score = scorecard_ply(test, card, print_step=0)
 # psi
 perf_psi(
   score = list(train = train_score, test = test_score),
-  label = list(train = train$creditability, test = test$creditability),
-  x_limits = c(250, 700),
-  x_tick_break = 50
+  label = list(train = train$creditability, test = test$creditability)
 )
 
 

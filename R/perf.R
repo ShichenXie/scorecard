@@ -333,7 +333,7 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = score_A, expect = score_E), both score_A and score_E are dataframes with the same column names.
 #' @param label A list of label value for actual and expected data samples. The default is NULL. For example, label = list(actual = label_A, expect = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
 #' @param title Title of plot, default is NULL.
-#' @param x_limits x-axis limits, default is c(100, 800).
+#' @param x_limits x-axis limits, default is NULL.
 #' @param x_tick_break x-axis ticker break, default is 50.
 #' @param show_plot Logical, default is TRUE. It means whether to show plot.
 #' @param return_distr_dat Logical, default is FALSE.
@@ -419,7 +419,7 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi = function(score, label=NULL, title=NULL, x_limits=c(100,800), x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
+perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
   # global variables
@@ -513,10 +513,14 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=c(100,800), x_tick_b
   for ( sn in score_names ) {
     # data manipulation to calculating psi and plot
     if (length(unique(dt_sl[[sn]])) > 10) {
+      if (is.null(x_limits)) {
+        x_limits = quantile(dt_sl[[sn]], probs=c(0.05,0.95))
+        x_limits = round(x_limits/x_tick_break)*x_tick_break
+      }
       # breakpoints
       brkp = unique(c(
         floor(min(dt_sl[[sn]])/x_tick_break)*x_tick_break,
-        seq(x_limits[1]+x_tick_break, x_limits[2]-x_tick_break, by=x_tick_break),
+        seq(x_limits[1], x_limits[2], by=x_tick_break),
         ceiling(max(dt_sl[[sn]])/x_tick_break)*x_tick_break
       ))
 

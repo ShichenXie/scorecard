@@ -1,3 +1,9 @@
+# scorecard 0.1.8
+
+* remove columns have only one unique values in input dataset
+* modify the default values of x_limits in perf_psi
+* display proc time in woebin
+
 # scorecard 0.1.7
 
 * added chimerge method for woebin function

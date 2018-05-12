@@ -4,7 +4,7 @@
 \alias{perf_psi}
 \title{PSI}
 \usage{
-perf_psi(score, label = NULL, title = NULL, x_limits = c(100, 800),
+perf_psi(score, label = NULL, title = NULL, x_limits = NULL,
   x_tick_break = 50, show_plot = TRUE, seed = 186,
   return_distr_dat = FALSE)
 }
@@ -15,7 +15,7 @@ perf_psi(score, label = NULL, title = NULL, x_limits = c(100, 800),
 
 \item{title}{Title of plot, default is NULL.}
 
-\item{x_limits}{x-axis limits, default is c(100, 800).}
+\item{x_limits}{x-axis limits, default is NULL.}
 
 \item{x_tick_break}{x-axis ticker break, default is 50.}
 
