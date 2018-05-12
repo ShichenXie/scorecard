@@ -317,6 +317,9 @@ woebin2_tree = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, s
   initial_binning = bin_list$initial_binning
   binning_sv = bin_list$binning_sv
 
+  if (nrow(initial_binning)==1) {
+    return(list(binning_sv=binning_sv, binning=initial_binning))
+  }
   # initialize parameters
   ## length all breaks
   len_brks = initial_binning[!is.na(brkp), .N]
@@ -587,13 +590,15 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0
 #' @export
 #'
 woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree") {
+  # start time
+  start_time = proc.time()
   # global variable
   i = NULL
 
   # set dt as data.table
   dt = setDT(dt)
   # remove date/time col
-  dt = rm_datetime_col(dt)
+  dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
   # check y
@@ -711,7 +716,13 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
     # finish
     stopImplicitCluster()
   }
-
+  # running time
+  rs = proc.time() - start_time
+  h = rs[3] %/% 3600
+  m = rs[3] %% 3600 %/% 60
+  s = floor(rs[3] %% 3600 %% 60)
+  # hms
+  if (rs[3] > 30) cat(sprintf("%02s:%02s:%02s",h,m,s))
 
   return(bins)
 }
@@ -806,7 +817,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
   # set dt as data.table
   dt = setDT(dt)
   # remove date/time col
-  dt = rm_datetime_col(dt)
+  dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
   # ncol of dt

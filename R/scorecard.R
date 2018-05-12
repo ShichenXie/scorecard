@@ -189,7 +189,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
   # set dt as data.table
   dt = copy(setDT(dt))
   # remove date/time col
-  dt = rm_datetime_col(dt)
+  dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
   # print_step

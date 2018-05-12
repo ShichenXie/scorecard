@@ -1,8 +1,17 @@
 # conditions # https://adv-r.hadley.nz/debugging
 
-# remove date time
-rm_datetime_col = function(dt) {
+# remove date time # rm_datetime_col
+# remove columns if len(x.unique()) == 1
+rmcol_datetime_unique1 = function(dt) {
   dt = setDT(dt)
+
+  unique1_cols = names(which(dt[,sapply(.SD, function(x) length(unique(x))==1)]))
+  if (length(unique1_cols > 0)) {
+    warning(paste0("There are ", length(unique1_cols), " columns have only one unique values, which are removed from input dataset. \n (ColumnNames: ", paste0(unique1_cols, collapse=', '), ")" ))
+
+    dt = copy(dt)[, (unique1_cols) := NULL]
+  }
+
 
   isdatetime = function(x) (class(x)[1] %in% c("Date","POSIXlt","POSIXct","POSIXt")) == TRUE
   datetime_col = names(which(dt[,sapply(.SD, isdatetime)]))

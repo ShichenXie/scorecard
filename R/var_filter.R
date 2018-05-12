@@ -31,7 +31,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   # set dt as data.table
   dt = setDT(dt)
   # remove date/time col
-  dt = rm_datetime_col(dt)
+  dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
   dt = rep_blank_na(dt)
   # check y
