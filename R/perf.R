@@ -259,6 +259,7 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
   FPR = TPR = cumbad = group = ks = NULL
 
   # inputs checking
+  if (is.factor(label)) label = as.character(label)
   if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
   # if pred is score
   if ( !(mean(pred, na.rm=TRUE)<=1 & mean(pred, na.rm=TRUE)>=0) ) {
@@ -514,7 +515,7 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=5
     # data manipulation to calculating psi and plot
     if (length(unique(dt_sl[[sn]])) > 10) {
       if (is.null(x_limits)) {
-        x_limits = quantile(dt_sl[[sn]], probs=c(0.05,0.95))
+        x_limits = quantile(dt_sl[[sn]], probs=c(0.02,0.98))
         x_limits = round(x_limits/x_tick_break)*x_tick_break
       }
       # breakpoints
