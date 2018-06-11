@@ -4,6 +4,7 @@
 * modify the default values of x_limits in perf_psi
 * fixed a bug in perf_psi when the label is factor
 * display proc time in woebin
+* fixed a bug in per_eva when estimating AUC
 
 # scorecard 0.1.7
 

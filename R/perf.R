@@ -103,6 +103,7 @@ eva_proc = function(dfrocpr, title) {
   # global variables
   FPR=TPR=NULL
 
+  dfrocpr = rbind(dfrocpr[,.(FPR,TPR)], data.frame(FPR=0:1,TPR=0:1))
   auc = dfrocpr[order(FPR,TPR)][, sum(
     (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
   )]
@@ -165,13 +166,13 @@ eva_pf1 = function(dfrocpr, title) {
     labs(x = "% of population", y = "F1") +
     # annotate("text", x = 0.5, y=Inf, label="F1", vjust=1.5, size=6) +
     ggtitle(paste0(title, 'F1')) +
-    annotate('text', x=0, y=0, label=paste0('pred\n',round(pred_0,4)), vjust=-0.2, hjust=0) +
-    annotate('text', x=1, y=0, label=paste0('pred\n',round(pred_1,4)), vjust=-0.2, hjust=1) +
-    annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=paste0('pred\n',round(pred_F1max,4)), vjust=-0.2) +
+    annotate('text', x=0, y=0, label=paste0('pred: \n',round(pred_0,4)), vjust=-0.2, hjust=0) +
+    annotate('text', x=1, y=0, label=paste0('pred: \n',round(pred_1,4)), vjust=-0.2, hjust=1) +
+    # annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=paste0('pred\n',round(pred_F1max,4)), vjust=-0.2) +
     annotate(
       'text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop],
       y=dfrocpr[F1==max(F1,na.rm = TRUE),F1],
-      label=paste0('F1 max: \n',dfrocpr[F1==max(F1,na.rm = TRUE),round(F1,4)]), vjust=-0.2, colour='blue') +
+      label=paste0('F1: ',dfrocpr[F1==max(F1,na.rm = TRUE),round(F1,4)], '\n@', round(pred_F1max,4)), vjust=-0.2, colour='blue') +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
     theme_bw()
@@ -202,7 +203,7 @@ eva_pf1 = function(dfrocpr, title) {
 #'
 #' PPV, Positive Predicted Value(Precision) = true positive/total predicted positive
 #'
-#' TNR, True Negative Rate(Specificity) = true negative/total actual negative
+#' TNR, True Negative Rate(Specificity) = true negative/total actual negative = 1-FPR
 #'
 #' NPV, Negative Predicted Value = true negative/total predicted negative
 #'
@@ -301,7 +302,7 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
   if ("ks" %in% type) rt$KS = df_kslift[ks == max(ks)][order(group)][1,round(ks, 4)]
   # ROC ------
   if ("roc" %in% type) {
-    auc = df_rocpr[order(FPR,TPR)][, sum(
+    auc = rbind(df_rocpr[,.(FPR,TPR)], data.frame(FPR=0:1,TPR=0:1))[order(FPR,TPR)][, sum(
       (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
     )]
     # return list

@@ -39,7 +39,7 @@ TPR, True Positive Rate(Recall or Sensitivity) = true positive/total actual posi
 
 PPV, Positive Predicted Value(Precision) = true positive/total predicted positive
 
-TNR, True Negative Rate(Specificity) = true negative/total actual negative
+TNR, True Negative Rate(Specificity) = true negative/total actual negative = 1-FPR
 
 NPV, Negative Predicted Value = true negative/total predicted negative
 }
