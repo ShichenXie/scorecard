@@ -36,6 +36,7 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
     dtm_sv = setDT(dtm)[value %in% sv_df$value]
     dtm = setDT(dtm)[!(value %in% sv_df$value)]
 
+    # if (nrow(dtm_sv) == 0) return(list(binning_sv=NULL, dtm=dtm))
     # binning_sv
     binning_sv = merge(
       dtm_sv[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = value][,value:=as.character(value)],

@@ -140,6 +140,7 @@ check_breaks_list = function(breaks_list, xs) {
 check_special_values = function(special_values, xs) {
   if (!is.null(special_values)) {
     if (is.vector(special_values) & !is.list(special_values)) {
+      warning("The special_values should be a list. Make sure special values are exactly the same in all variables if special_values is a vector.")
       # transfer vector to list
       special_values_list = list()
       for (i in xs) {
@@ -172,7 +173,7 @@ check_special_values = function(special_values, xs) {
   return(special_values)
 }
 
-#
+# second to hh:mm:ss
 sec_to_hms = function(sec) {
   h = sec %/% 3600
   m = sec %% 3600 %/% 60
