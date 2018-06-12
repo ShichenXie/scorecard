@@ -101,7 +101,7 @@ eva_dfrocpr = function(df) {
 }
 eva_proc = function(dfrocpr, title) {
   # global variables
-  FPR=TPR=NULL
+  .=FPR=TPR=NULL
 
   dfrocpr = rbind(dfrocpr[,.(FPR,TPR)], data.frame(FPR=0:1,TPR=0:1))
   auc = dfrocpr[order(FPR,TPR)][, sum(
@@ -257,7 +257,7 @@ eva_pf1 = function(dfrocpr, title) {
 #'
 perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
   # global variables
-  FPR = TPR = cumbad = group = ks = NULL
+  .=FPR = TPR = cumbad = group = ks = NULL
 
   # inputs checking
   if (is.factor(label)) label = as.character(label)
