@@ -26,7 +26,11 @@
 #' @export
 #'
 var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad|1") {
-  . = info_value = variable = rt = rm_reason = NULL # no visible binding for global variable
+  # start time
+  start_time = proc.time()
+
+  # no visible binding for global variable
+  . = info_value = variable = rt = rm_reason = NULL
 
   # set dt as data.table
   dt = setDT(dt)
@@ -103,6 +107,12 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   } else {
     rt = dt[, c(x_selected, y), with=FALSE ]
   }
+
+  # running time
+  rs = proc.time() - start_time
+  # hms
+  if (rs[3] > 10) cat(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt),ncol(dt),sec_to_hms(rs[3]), ncol(dt)-length(x_selected)-1),"\n")
+
   return(rt)
 }
 

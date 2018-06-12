@@ -5,6 +5,7 @@
 * fixed a bug in perf_psi when the label is factor
 * display proc time in woebin
 * fixed a bug in per_eva when estimating AUC
+* fixed a bug in woebin_adj when special_values is provided
 
 # scorecard 0.1.7
 

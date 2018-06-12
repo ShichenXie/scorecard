@@ -718,11 +718,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
   }
   # running time
   rs = proc.time() - start_time
-  h = rs[3] %/% 3600
-  m = rs[3] %% 3600 %/% 60
-  s = floor(rs[3] %% 3600 %% 60)
   # hms
-  if (rs[3] > 30) cat(sprintf("%02s:%02s:%02s",h,m,s))
+  if (rs[3] > 10) cat(sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),"\n")
 
   return(bins)
 }
@@ -811,6 +808,8 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @export
 #'
 woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
+  # start time
+  start_time = proc.time()
   # global variables or functions
   . = V1 = bin = variable = woe = i = NULL
 
@@ -885,6 +884,10 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
     stopImplicitCluster()
   }
 
+  # running time
+  rs = proc.time() - start_time
+  # hms
+  if (rs[3] > 10) cat(sprintf("Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),"\n")
 
   return(dat)
 }
@@ -1054,10 +1057,10 @@ woebin_adj_print_basic_info = function(i, xs_adj, bins, dt, bins_breakslist) {
 
 }
 # plot adjusted binning in woebin_adj
-woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, special_values, method) {
+woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
   bin_adj = NULL
 
-  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =", special_values, ", ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, method=\"",method,"\")")
+  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, method=\"",method,"\")")
 
   eval(parse(text = text_woebin))
 
@@ -1142,6 +1145,8 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   }
   # length of adjusting variables
   xs_len = length(xs_adj)
+  # special_values
+  special_values = check_special_values(special_values, xs_adj)
 
   # class of variables
   vars_class = data.table(
@@ -1175,6 +1180,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     # x variable
     breaks = stop_limit = NULL
     x_i = xs_adj[i]
+    sv_i = paste(paste0("\'",special_values[[x_i]],"\'"), collapse = ",")
 
     # basic information of x_i variable ------
     woebin_adj_print_basic_info(i, xs_adj, bins, dt, bins_breakslist)
@@ -1193,7 +1199,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
         stop_limit = NULL
       }
 
-      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, special_values, method=method), error = function(e) e)
+      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, sv_i, method=method), error = function(e) e)
 
       adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
     }

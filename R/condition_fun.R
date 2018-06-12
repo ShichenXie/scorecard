@@ -172,3 +172,11 @@ check_special_values = function(special_values, xs) {
   return(special_values)
 }
 
+#
+sec_to_hms = function(sec) {
+  h = sec %/% 3600
+  m = sec %% 3600 %/% 60
+  s = floor(sec %% 3600 %% 60)
+
+  return(sprintf("%02s:%02s:%02s",h,m,s))
+}
