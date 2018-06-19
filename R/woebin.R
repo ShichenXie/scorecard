@@ -394,8 +394,8 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
     a_colsum = a+a_lag,
     a_sum = sum(a+a_lag)), by=brkp
   ][, `:=`(
-    e = a_rowsum*a_colsum/a_sum,
-    e_lag = a_lag_rowsum*a_colsum/a_sum
+    e = a_rowsum/a_sum*a_colsum,
+    e_lag = a_lag_rowsum/a_sum*a_colsum
   )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by=brkp]
 
   return(merge(initial_binning[,count:=good+bad], chisq_df, all.x = TRUE))
@@ -413,6 +413,7 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
   bin_count_distr_min = binning_chisq[!is.na(brkp), min((good+bad)/dtm_rows)]
   bin_nrow = binning_chisq[,.N]
   # remove brkp if chisq < chisq_limit
+  i = 1
   while (
     bin_chisq_min < chisq_limit ||
     bin_count_distr_min < min_perc_coarse_bin ||
@@ -432,6 +433,9 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
     }
+    i = i + 1
+    print(i)
+    if (i == 18) break
 
 
     # groupby brkp
