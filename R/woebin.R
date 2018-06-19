@@ -413,7 +413,6 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
   bin_count_distr_min = binning_chisq[!is.na(brkp), min((good+bad)/dtm_rows)]
   bin_nrow = binning_chisq[,.N]
   # remove brkp if chisq < chisq_limit
-  i = 1
   while (
     bin_chisq_min < chisq_limit ||
     bin_count_distr_min < min_perc_coarse_bin ||
@@ -433,10 +432,6 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
     }
-    i = i + 1
-    print(i)
-    if (i == 18) break
-
 
     # groupby brkp
     shift_type = ifelse(rm_brkp[1,merge_tolead], 'lead', 'lag')
