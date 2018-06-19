@@ -516,7 +516,7 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=5
     # data manipulation to calculating psi and plot
     if (length(unique(dt_sl[[sn]])) > 10) {
       if (is.null(x_limits)) {
-        x_limits = quantile(dt_sl[[sn]], probs=c(0.02,0.98))
+        x_limits = quantile(dt_sl[[sn]], probs=c(0.02,0.98), na.rm = TRUE)
         x_limits = round(x_limits/x_tick_break)*x_tick_break
       }
       # breakpoints
