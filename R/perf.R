@@ -494,11 +494,9 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=5
 
     # dataframe of bin, actual, expected
     dt_bae = dcast(
-      dat[,.(count=.N), keyby=c("ae", "bin")
-        ],#[,distr := count/sum(count), by="ae"][],
+      dat[,.(count=as.numeric(.N)), keyby=c("ae", "bin")],
       bin ~ ae, value.var="count", fill = 0.9
     )
-    # dt_bae[dt_bae == 0] = 0.9 # replace 0 by 0.9
 
     names_ae = setdiff(names(dt_bae), "bin")
     psi_dt = dt_bae[
