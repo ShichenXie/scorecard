@@ -50,6 +50,26 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
   return(list(binning_sv=binning_sv, dtm=dtm))
 }
 
+# check empty bins for unmeric variable
+check_empty_bins = function(dtm, binning) {
+  # check empty bins
+  ## break points from bin
+  breaks_list = lapply(
+    list(left="\\1", right="\\2"),
+    function(x) setdiff(sub("^\\[(.*), *(.*)\\)", x, unique(binning$bin)), c("Inf","-Inf")) )
+  ## if there are empty bins
+  if (!setequal(breaks_list$left, breaks_list$right)) {
+    bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
+    binning = dtm[
+      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)
+    ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(bin)
+    ][order(bin)]
+
+    # warning( paste0("The break points are modified into \'", paste0(breaks_list$right, collapse = ", "), "\'. There are empty bins based on the provided break points." ) )
+  }
+  return(binning)
+}
+
 # required in woebin2 # return binning if breaks provided
 #' @import data.table
 woebin2_breaks = function(dtm, breaks, spl_val) {
@@ -71,25 +91,12 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
     bstbrks = c(-Inf, setdiff(unique(bk_df$value), c(NA, Inf, -Inf)), Inf)
 
     binning = dtm[
-      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
-
+      , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)
+    ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(bin)
+    ][order(bin)]
     # check empty bins
-    ## break points from bin
-    breaks_list = lapply(
-      list(left="\\1", right="\\2"),
-      function(x) setdiff(sub("^\\[(.*), *(.*)\\)", x, unique(binning$bin)), c("Inf","-Inf")) )
-    ## if there are empty bins
-    if (!setequal(breaks_list$left, breaks_list$right)) {
-      bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
-      binning = dtm[
-        , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)]
+    binning = check_empty_bins(dtm, binning)
 
-      warning( paste0("The break points are modified into \'", paste0(breaks_list$right, collapse = ", "), "\'. There are empty bins based on the provided break points." ) )
-    }
-
-
-    binning = binning[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(bin)
-      ][order(bin)]
 
     # merge binning with bk_df
     if (bk_df[is.na(value),.N] == 1) {
@@ -167,8 +174,12 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
     init_bin = dtm[
       , bin := cut(value, brk, right = FALSE, dig.lab = 10, ordered_result = FALSE)
     ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = bin
-    ][order(bin)
-    ][, `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad))
+    ][order(bin)]
+    # check empty bins
+    init_bin = check_empty_bins(dtm, init_bin)
+
+    init_bin = init_bin[
+      , `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad))
     ][, .(variable, bin, brkp, good, bad, badprob)]
 
   } else if ( is.logical(dtm[,value]) || is.factor(dtm[,value]) || is.character(dtm[,value]) ) {
@@ -482,7 +493,7 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL,  min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
+woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
 
