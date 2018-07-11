@@ -1,4 +1,4 @@
-# information entropy ------
+# information entropy # 信息熵 ------
 # ent(D) = -\sum_k(p_k*log_2(p_k)), if p_k=0 then p_k*log_2(p_k)=0
 
 # information gain (ID3)
@@ -122,7 +122,7 @@ ie_01 = function(good, bad) {
 
 
 
-# gini impurity (CART) ------
+# gini impurity (CART) # 基尼不纯度 ------
 # gini(D) = 1-\sum_k(p_k^2)
 # gini_impurity(D) = \sum_v(abs(\frac{D^v}{D})*gini(D^v))
 

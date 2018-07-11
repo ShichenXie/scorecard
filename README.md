@@ -61,6 +61,7 @@ m1 = glm( creditability ~ ., family = binomial(), data = train_woe)
 # summary(m1)
 
 # # Adjusting for oversampling (support.sas.com/kb/22/601.html)
+# library(data.table)
 # p1=0.03; r1=0.3
 # dt_woe = dt_woe[, weight := ifelse(y==1, p1/r1, (1-p1)/(1-r1) )]
 # 
