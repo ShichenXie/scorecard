@@ -1,5 +1,11 @@
 # scorecard
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/scorecard)](https://cran.r-project.org/package=scorecard)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/scorecard)](https://cran.r-project.org/package=scorecard)
+[![Travis-CI Build
+Status](https://travis-ci.org/shichenxie/scorecard.svg?branch=master)](https://travis-ci.org/shichenxie/scorecard)
+
+
 This R package makes the development of credit risk scorecard easily and efficiently by providing functions as follows: 
 - information value (iv), 
 - variable filter (var_filter), 
