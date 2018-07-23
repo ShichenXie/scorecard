@@ -19,11 +19,14 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 186)
 Split a dataset
 }
 \examples{
-# Load German credit data
+# load German credit data
 data(germancredit)
 
 dt_list = split_df(germancredit, y="creditability")
 train = dt_list$train
 test = dt_list$test
+
+# dimensions of train and test datasets
+lapply(dt_list, dim)
 
 }

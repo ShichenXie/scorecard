@@ -16,7 +16,9 @@
 #' data(germancredit)
 #'
 #' # information values
-#' dt_info_value = iv(germancredit, y = "creditability")
+#' info_value = iv(germancredit, y = "creditability")
+#'
+#' info_value
 #'
 #' @import data.table
 #' @export

@@ -1,0 +1,23 @@
+reference:
+  - title: "dataset prepareing"
+    contents:
+      - germancredit
+      - split_df
+  - title: "variale selection"
+    contents:
+      - iv
+      - var_filter
+  - title: "woe binning"
+    contents:
+      - woebin
+      - woebin_plot
+      - woebin_adj
+      - woebin_ply
+  - title: "model performance"
+    contents:
+      - perf_eva
+      - perf_psi
+  - title: "scorecard scaling"
+    contents:
+      - scorecard
+      - scorecard_ply

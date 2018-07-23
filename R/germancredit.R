@@ -12,11 +12,11 @@
 #' (numeric and factors) and 1000 observations.
 #' @source \url{https://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)}
 #' @examples
-#' # Load German credit data and create subset
+#' # load German credit data
 #' data(germancredit)
-#' df = germancredit[, c('creditability', 'credit.amount', 'duration.in.month',
-#'                   'savings.account.and.bonds', 'purpose')]
-#' # Display structure of the subset (data frame)
+#' df = germancredit
+#'
+#' # Display structure of germancredit
 #' str(df)
 NULL
 

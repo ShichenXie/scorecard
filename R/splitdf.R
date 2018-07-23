@@ -6,12 +6,15 @@
 #' @param seed A random seed, default is 186.
 #'
 #' @examples
-#' # Load German credit data
+#' # load German credit data
 #' data(germancredit)
 #'
 #' dt_list = split_df(germancredit, y="creditability")
 #' train = dt_list$train
 #' test = dt_list$test
+#'
+#' # dimensions of train and test datasets
+#' lapply(dt_list, dim)
 #'
 #' @import data.table
 #' @export

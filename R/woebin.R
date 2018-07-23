@@ -52,6 +52,7 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
 
 # check empty bins for unmeric variable
 check_empty_bins = function(dtm, binning) {
+  . = bin = value = variable = y = NULL
   # check empty bins
   ## break points from bin
   breaks_list = lapply(

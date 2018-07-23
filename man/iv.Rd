@@ -31,6 +31,8 @@ IV is a very useful concept for variable selection while developing credit score
 data(germancredit)
 
 # information values
-dt_info_value = iv(germancredit, y = "creditability")
+info_value = iv(germancredit, y = "creditability")
+
+info_value
 
 }

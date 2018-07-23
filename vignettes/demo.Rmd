@@ -1,10 +1,10 @@
 ---
-title: "demo"
+title: "Developing a Credit Scorcard"
 author: "shichen xie"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{demo}
+  %\VignetteIndexEntry{Developing a Credit Scorcard}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
