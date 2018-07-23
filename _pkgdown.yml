@@ -1,0 +1,56 @@
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right:
+    - github
+    - slides
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: Developing a Credit Scorcard
+        href: articles/demo.html
+    news:
+      text: Changelog
+      href: news/index.html
+    slides:
+      icon: fa-file-powerpoint-o fa-lg
+      href: http://shichen.name/slide/20171115scorecard/
+    github:
+      icon: fa-github fa-lg
+      href: https://github.com/ShichenXie/scorecard
+reference:
+  - title: "dataset prepareing"
+    contents:
+      - germancredit
+      - split_df
+  - title: "variable selection"
+    contents:
+      - iv
+      - var_filter
+  - title: "woe binning"
+    contents:
+      - woebin
+      - woebin_plot
+      - woebin_adj
+      - woebin_ply
+  - title: "model performance"
+    contents:
+      - perf_eva
+      - perf_psi
+  - title: "scorecard scaling"
+    contents:
+      - scorecard
+      - scorecard_ply

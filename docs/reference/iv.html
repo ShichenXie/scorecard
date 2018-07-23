@@ -84,7 +84,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/demo.html">UNKNOWN TITLE</a>
+      <a href="../articles/demo.html">Developing a Credit Scorcard</a>
     </li>
   </ul>
 </li>
@@ -97,6 +97,12 @@
         <li>
   <a href="https://github.com/ShichenXie/scorecard">
     <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://shichen.name/slide/20171115scorecard/">
+    <span class="fa fa-file-powerpoint-o fa-lg"></span>
      
   </a>
 </li>
@@ -164,7 +170,28 @@
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
 
 <span class='co'># information values</span>
-<span class='no'>dt_info_value</span> <span class='kw'>=</span> <span class='fu'>iv</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='no'>info_value</span> <span class='kw'>=</span> <span class='fu'>iv</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='no'>info_value</span></div><div class='output co'>#&gt;                                                     variable   info_value
+#&gt;  1:                      status.of.existing.checking.account 6.660115e-01
+#&gt;  2:                                        duration.in.month 3.345035e-01
+#&gt;  3:                                           credit.history 2.932335e-01
+#&gt;  4:                                             age.in.years 2.596514e-01
+#&gt;  5:                                savings.account.and.bonds 1.960096e-01
+#&gt;  6:                                                  purpose 1.691951e-01
+#&gt;  7:                                                 property 1.126383e-01
+#&gt;  8:                                 present.employment.since 8.643363e-02
+#&gt;  9:                                                  housing 8.329343e-02
+#&gt; 10:                                  other.installment.plans 5.761454e-02
+#&gt; 11:                                           foreign.worker 4.387741e-02
+#&gt; 12:                                  personal.status.and.sex 4.268938e-02
+#&gt; 13:                                            credit.amount 3.895727e-02
+#&gt; 14:                              other.debtors.or.guarantors 3.201932e-02
+#&gt; 15:      installment.rate.in.percentage.of.disposable.income 2.632209e-02
+#&gt; 16:                  number.of.existing.credits.at.this.bank 1.326652e-02
+#&gt; 17:                                                      job 8.762766e-03
+#&gt; 18:                                                telephone 6.377605e-03
+#&gt; 19:                                  present.residence.since 3.588773e-03
+#&gt; 20: number.of.people.being.liable.to.provide.maintenance.for 4.339223e-05</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
