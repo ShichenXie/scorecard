@@ -11,7 +11,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Credit Risk Scorecard">
 <meta property="og:description" content="`scorecard` makes the development of credit risk scorecard 
-  easily and efficiently by providing functions, such as information 
+  easier and efficient by providing functions, such as information 
   value, variable filter, optimal woe binning, scorecard scaling and 
   performance evaluation etc. 
     The references including: 
@@ -98,13 +98,13 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#scorecard" class="anchor"></a>scorecard</h1></div>
 
-<p>This R package makes the development of credit risk scorecard easily and efficiently by providing functions as follows:</p>
+<p>The goal of <code>scorecard</code> package is to make the development of traditional credit risk scorecard model easier and efficient by providing R functions for some common tasks.</p>
 <ul>
-<li>information value (iv),</li>
-<li>variable filter (var_filter),</li>
-<li>optimal woe binning (woebin, woebin_ply, woebin_plot, woebin_adj),</li>
-<li>scorecard scaling (scorecard, scorecard_ply)</li>
-<li>and performace evaluation (perf_eva, perf_psi).</li>
+<li>data partition (<code>split_df</code>)</li>
+<li>variable selection (<code>iv</code>, <code>var_filter</code>)</li>
+<li>weight of evidence (woe) binning (<code>woebin</code>, <code>woebin_plot</code>, <code>woebin_adj</code>, <code>woebin_ply</code>)</li>
+<li>scorecard scaling (<code>scorecard</code>, <code>scorecard_ply</code>)</li>
+<li>performance evaluation (<code>perf_eva</code>, <code>perf_psi</code>)</li>
 </ul>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -190,54 +190,7 @@
 <a class="sourceLine" id="cb3-65" data-line-number="65"><span class="kw"><a href="reference/perf_psi.html">perf_psi</a></span>(</a>
 <a class="sourceLine" id="cb3-66" data-line-number="66">  <span class="dt">score =</span> <span class="kw">list</span>(<span class="dt">train =</span> train_score, <span class="dt">test =</span> test_score),</a>
 <a class="sourceLine" id="cb3-67" data-line-number="67">  <span class="dt">label =</span> <span class="kw">list</span>(<span class="dt">train =</span> train<span class="op">$</span>creditability, <span class="dt">test =</span> test<span class="op">$</span>creditability)</a>
-<a class="sourceLine" id="cb3-68" data-line-number="68">)</a>
-<a class="sourceLine" id="cb3-69" data-line-number="69"></a>
-<a class="sourceLine" id="cb3-70" data-line-number="70"></a>
-<a class="sourceLine" id="cb3-71" data-line-number="71"><span class="co"># Session info ----------------------------------------------------------</span></a>
-<a class="sourceLine" id="cb3-72" data-line-number="72"><span class="co">#  setting  value                       </span></a>
-<a class="sourceLine" id="cb3-73" data-line-number="73"><span class="co">#  version  R version 3.4.3 (2017-11-30)</span></a>
-<a class="sourceLine" id="cb3-74" data-line-number="74"><span class="co">#  system   x86_64, darwin15.6.0        </span></a>
-<a class="sourceLine" id="cb3-75" data-line-number="75"><span class="co">#  ui       RStudio (1.1.414)           </span></a>
-<a class="sourceLine" id="cb3-76" data-line-number="76"><span class="co">#  language (EN)                        </span></a>
-<a class="sourceLine" id="cb3-77" data-line-number="77"><span class="co">#  collate  en_US.UTF-8                 </span></a>
-<a class="sourceLine" id="cb3-78" data-line-number="78"><span class="co">#  tz       Asia/Shanghai               </span></a>
-<a class="sourceLine" id="cb3-79" data-line-number="79"><span class="co">#  date     2018-02-10                  </span></a>
-<a class="sourceLine" id="cb3-80" data-line-number="80"><span class="co"># </span></a>
-<a class="sourceLine" id="cb3-81" data-line-number="81"><span class="co"># Packages --------------------------------------------------------------</span></a>
-<a class="sourceLine" id="cb3-82" data-line-number="82"><span class="co">#  package    * version    date       source                          </span></a>
-<a class="sourceLine" id="cb3-83" data-line-number="83"><span class="co">#  base       * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-84" data-line-number="84"><span class="co">#  codetools    0.2-15     2016-10-05 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-85" data-line-number="85"><span class="co">#  colorspace   1.3-2      2016-12-14 CRAN (R 3.3.2)                  </span></a>
-<a class="sourceLine" id="cb3-86" data-line-number="86"><span class="co">#  compiler     3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-87" data-line-number="87"><span class="co">#  data.table   1.10.4-3   2017-10-27 cran (@1.10.4-)                 </span></a>
-<a class="sourceLine" id="cb3-88" data-line-number="88"><span class="co">#  datasets   * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-89" data-line-number="89"><span class="co">#  devtools     1.13.4     2017-11-09 CRAN (R 3.4.2)                  </span></a>
-<a class="sourceLine" id="cb3-90" data-line-number="90"><span class="co">#  digest       0.6.14     2018-01-14 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-91" data-line-number="91"><span class="co">#  doParallel   1.0.11     2017-09-28 CRAN (R 3.4.2)                  </span></a>
-<a class="sourceLine" id="cb3-92" data-line-number="92"><span class="co">#  foreach      1.4.4      2017-12-12 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-93" data-line-number="93"><span class="co">#  ggplot2      2.2.1.9000 2018-01-06 Github (hadley/ggplot2@4ee6c94) </span></a>
-<a class="sourceLine" id="cb3-94" data-line-number="94"><span class="co">#  graphics   * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-95" data-line-number="95"><span class="co">#  grDevices  * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-96" data-line-number="96"><span class="co">#  grid         3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-97" data-line-number="97"><span class="co">#  gridExtra    2.3        2017-09-09 CRAN (R 3.4.1)                  </span></a>
-<a class="sourceLine" id="cb3-98" data-line-number="98"><span class="co">#  gtable       0.2.0      2016-02-26 CRAN (R 3.2.3)                  </span></a>
-<a class="sourceLine" id="cb3-99" data-line-number="99"><span class="co">#  iterators    1.0.9      2017-12-12 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-100" data-line-number="100"><span class="co">#  lazyeval     0.2.1      2017-10-29 cran (@0.2.1)                   </span></a>
-<a class="sourceLine" id="cb3-101" data-line-number="101"><span class="co">#  memoise      1.1.0      2017-04-21 CRAN (R 3.3.2)                  </span></a>
-<a class="sourceLine" id="cb3-102" data-line-number="102"><span class="co">#  methods    * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-103" data-line-number="103"><span class="co">#  munsell      0.4.3      2016-02-13 CRAN (R 3.2.3)                  </span></a>
-<a class="sourceLine" id="cb3-104" data-line-number="104"><span class="co">#  parallel     3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-105" data-line-number="105"><span class="co">#  plyr         1.8.4      2016-06-08 cran (@1.8.4)                   </span></a>
-<a class="sourceLine" id="cb3-106" data-line-number="106"><span class="co">#  Rcpp         0.12.15    2018-01-20 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-107" data-line-number="107"><span class="co">#  rlang        0.1.6      2017-12-21 CRAN (R 3.4.3)                  </span></a>
-<a class="sourceLine" id="cb3-108" data-line-number="108"><span class="co">#  scales       0.5.0.9000 2017-10-20 Github (hadley/scales@d767915)  </span></a>
-<a class="sourceLine" id="cb3-109" data-line-number="109"><span class="co">#  scorecard  * 0.1.6      2018-02-10 local                           </span></a>
-<a class="sourceLine" id="cb3-110" data-line-number="110"><span class="co">#  stats      * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-111" data-line-number="111"><span class="co">#  tibble       1.3.4      2017-08-22 CRAN (R 3.4.1)                  </span></a>
-<a class="sourceLine" id="cb3-112" data-line-number="112"><span class="co">#  tools        3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-113" data-line-number="113"><span class="co">#  utils      * 3.4.3      2017-12-07 local                           </span></a>
-<a class="sourceLine" id="cb3-114" data-line-number="114"><span class="co">#  withr        2.1.1.9000 2018-01-06 Github (jimhester/withr@df18523)</span></a>
-<a class="sourceLine" id="cb3-115" data-line-number="115"><span class="co">#  yaml         2.1.16     2017-12-12 cran (@2.1.16)  </span></a></code></pre></div>
+<a class="sourceLine" id="cb3-68" data-line-number="68">)</a></code></pre></div>
 </div>
 </div>
   </div>
