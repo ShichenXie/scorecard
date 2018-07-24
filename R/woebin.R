@@ -562,9 +562,15 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.
 #'
 #' # Example I
 #' # binning of two variables in germancredit dataset
-#' bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
+#' # using tree method
+#' bins2_tree = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="tree")
+#' bins2_tree
+#'
 #'
 #' \dontrun{
+#' # using chimerge method
+#' bins2_chi = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="chimerge")
+#'
 #' # Example II
 #' # binning of the germancredit dataset
 #' bins_germ = woebin(germancredit, y = "creditability")
@@ -801,6 +807,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #'
 #' # converting original value to woe
 #' dt_woe = woebin_ply(dt, bins=bins)
+#' str(dt_woe)
 #'
 #' \dontrun{
 #' # Example II
@@ -991,6 +998,7 @@ plot_bin = function(bin, title, show_iv) {
 #' # Example II
 #' bins = woebin(germancredit, y="creditability")
 #' plotlist = woebin_plot(bins)
+#' print(plotlist$credit.amount)
 #'
 #' # # save binning plot
 #' # for (i in 1:length(plotlist)) {

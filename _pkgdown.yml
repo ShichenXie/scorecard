@@ -3,7 +3,6 @@ url: http://shichen.name/scorecard
 template:
   params:
     bootswatch: flatly
-
 navbar:
   structure:
     left:
@@ -39,7 +38,6 @@ navbar:
       icon: fa-github fa-lg
       text: "github"
       href: https://github.com/ShichenXie/scorecard
-
 reference:
   - title: "dataset prepareing"
     contents:

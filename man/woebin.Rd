@@ -48,9 +48,15 @@ data(germancredit)
 
 # Example I
 # binning of two variables in germancredit dataset
-bins_2var = woebin(germancredit, y = "creditability", x = c("credit.amount", "purpose"))
+# using tree method
+bins2_tree = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="tree")
+bins2_tree
+
 
 \dontrun{
+# using chimerge method
+bins2_chi = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="chimerge")
+
 # Example II
 # binning of the germancredit dataset
 bins_germ = woebin(germancredit, y = "creditability")

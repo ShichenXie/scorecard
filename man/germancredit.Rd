@@ -20,9 +20,12 @@ See source link below for detailed information.
 \examples{
 # load German credit data
 data(germancredit)
-df = germancredit
 
-# Display structure of germancredit
-str(df)
+# structure of germancredit
+str(germancredit)
+
+# summary of germancredit
+lapply(germancredit, summary)
+
 }
 \keyword{data}

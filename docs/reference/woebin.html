@@ -208,8 +208,36 @@
 
 <span class='co'># Example I</span>
 <span class='co'># binning of two variables in germancredit dataset</span>
-<span class='no'>bins_2var</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"credit.amount"</span>, <span class='st'>"purpose"</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='co'># using tree method</span>
+<span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"credit.amount"</span>, <span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
+#&gt;         variable         bin count count_distr good bad   badprob         woe
+#&gt; 1: credit.amount [-Inf,1400)   267       0.267  185  82 0.3071161  0.03366128
+#&gt; 2: credit.amount [1400,1800)   105       0.105   87  18 0.1714286 -0.72823850
+#&gt; 3: credit.amount [1800,4000)   382       0.382  287  95 0.2486911 -0.25830746
+#&gt; 4: credit.amount [4000,9200)   196       0.196  120  76 0.3877551  0.39053946
+#&gt; 5: credit.amount [9200, Inf)    50       0.050   21  29 0.5800000  1.17007125
+#&gt;          bin_iv  total_iv breaks is_special_values
+#&gt; 1: 0.0003045545 0.1812204   1400             FALSE
+#&gt; 2: 0.0468153322 0.1812204   1800             FALSE
+#&gt; 3: 0.0241086966 0.1812204   4000             FALSE
+#&gt; 4: 0.0319870413 0.1812204   9200             FALSE
+#&gt; 5: 0.0780047502 0.1812204    Inf             FALSE
+#&gt; 
+#&gt; $housing
+#&gt;    variable      bin count count_distr good bad   badprob        woe     bin_iv
+#&gt; 1:  housing     rent   179       0.179  109  70 0.3910615  0.4044452 0.03139265
+#&gt; 2:  housing      own   713       0.713  527 186 0.2608696 -0.1941560 0.02579501
+#&gt; 3:  housing for free   108       0.108   64  44 0.4074074  0.4726044 0.02610577
+#&gt;      total_iv   breaks is_special_values
+#&gt; 1: 0.08329343     rent             FALSE
+#&gt; 2: 0.08329343      own             FALSE
+#&gt; 3: 0.08329343 for free             FALSE
+#&gt; </div><div class='input'>
+
 </div><span class='co'># NOT RUN {</span>
+<span class='co'># using chimerge method</span>
+<span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"credit.amount"</span>, <span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
+
 <span class='co'># Example II</span>
 <span class='co'># binning of the germancredit dataset</span>
 <span class='no'>bins_germ</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)

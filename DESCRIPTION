@@ -13,11 +13,12 @@ Description: `scorecard` makes the development of credit risk scorecard
   Developing and Implementing Intelligent Credit Scoring.
 Depends: R (>= 3.1.0)
 Imports: data.table (>= 1.10.0), ggplot2, gridExtra, foreach, doParallel, parallel
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, pkgdown
 URL: https://github.com/ShichenXie/scorecard
 BugReports: https://github.com/ShichenXie/scorecard/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

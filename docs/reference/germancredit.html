@@ -150,10 +150,9 @@ See source link below for detailed information.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
-<span class='no'>df</span> <span class='kw'>=</span> <span class='no'>germancredit</span>
 
-<span class='co'># Display structure of germancredit</span>
-<span class='fu'>str</span>(<span class='no'>df</span>)</div><div class='output co'>#&gt; 'data.frame':	1000 obs. of  21 variables:
+<span class='co'># structure of germancredit</span>
+<span class='fu'>str</span>(<span class='no'>germancredit</span>)</div><div class='output co'>#&gt; 'data.frame':	1000 obs. of  21 variables:
 #&gt;  $ status.of.existing.checking.account                     : Factor w/ 4 levels "... &lt; 0 DM","0 &lt;= ... &lt; 200 DM",..: 1 2 4 1 1 4 4 2 4 2 ...
 #&gt;  $ duration.in.month                                       : num  6 48 12 42 24 36 24 36 12 30 ...
 #&gt;  $ credit.history                                          : Factor w/ 5 levels "no credits taken/ all credits paid back duly",..: 5 3 5 3 4 3 3 3 3 5 ...
@@ -174,7 +173,131 @@ See source link below for detailed information.</p>
 #&gt;  $ number.of.people.being.liable.to.provide.maintenance.for: num  1 1 2 2 2 2 1 1 1 1 ...
 #&gt;  $ telephone                                               : Factor w/ 2 levels "none","yes, registered under the customers name": 2 1 1 1 1 2 1 2 1 1 ...
 #&gt;  $ foreign.worker                                          : Factor w/ 2 levels "yes","no": 1 1 1 1 1 1 1 1 1 1 ...
-#&gt;  $ creditability                                           : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</div></pre>
+#&gt;  $ creditability                                           : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</div><div class='input'>
+<span class='co'># summary of germancredit</span>
+<span class='fu'>lapply</span>(<span class='no'>germancredit</span>, <span class='no'>summary</span>)</div><div class='output co'>#&gt; $status.of.existing.checking.account
+#&gt;                                             ... &lt; 0 DM 
+#&gt;                                                    274 
+#&gt;                                      0 &lt;= ... &lt; 200 DM 
+#&gt;                                                    269 
+#&gt; ... &gt;= 200 DM / salary assignments for at least 1 year 
+#&gt;                                                     63 
+#&gt;                                    no checking account 
+#&gt;                                                    394 
+#&gt; 
+#&gt; $duration.in.month
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;     4.0    12.0    18.0    20.9    24.0    72.0 
+#&gt; 
+#&gt; $credit.history
+#&gt;                no credits taken/ all credits paid back duly 
+#&gt;                                                          40 
+#&gt;                     all credits at this bank paid back duly 
+#&gt;                                                          49 
+#&gt;                    existing credits paid back duly till now 
+#&gt;                                                         530 
+#&gt;                             delay in paying off in the past 
+#&gt;                                                          88 
+#&gt; critical account/ other credits existing (not at this bank) 
+#&gt;                                                         293 
+#&gt; 
+#&gt; $purpose
+#&gt;    Length     Class      Mode 
+#&gt;      1000 character character 
+#&gt; 
+#&gt; $credit.amount
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;     250    1366    2320    3271    3972   18424 
+#&gt; 
+#&gt; $savings.account.and.bonds
+#&gt;                ... &lt; 100 DM         100 &lt;= ... &lt; 500 DM 
+#&gt;                         603                         103 
+#&gt;        500 &lt;= ... &lt; 1000 DM              ... &gt;= 1000 DM 
+#&gt;                          63                          48 
+#&gt; unknown/ no savings account 
+#&gt;                         183 
+#&gt; 
+#&gt; $present.employment.since
+#&gt;         unemployed       ... &lt; 1 year 1 &lt;= ... &lt; 4 years 4 &lt;= ... &lt; 7 years 
+#&gt;                 62                172                339                174 
+#&gt;     ... &gt;= 7 years 
+#&gt;                253 
+#&gt; 
+#&gt; $installment.rate.in.percentage.of.disposable.income
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   1.000   2.000   3.000   2.973   4.000   4.000 
+#&gt; 
+#&gt; $personal.status.and.sex
+#&gt;           male : divorced/separated female : divorced/separated/married 
+#&gt;                                   0                                 360 
+#&gt;                       male : single              male : married/widowed 
+#&gt;                                 548                                  92 
+#&gt;                     female : single 
+#&gt;                                   0 
+#&gt; 
+#&gt; $other.debtors.or.guarantors
+#&gt;         none co-applicant    guarantor 
+#&gt;          907           41           52 
+#&gt; 
+#&gt; $present.residence.since
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   1.000   2.000   3.000   2.845   4.000   4.000 
+#&gt; 
+#&gt; $property
+#&gt;                                          real estate 
+#&gt;                                                  282 
+#&gt;   building society savings agreement/ life insurance 
+#&gt;                                                  232 
+#&gt; car or other, not in attribute Savings account/bonds 
+#&gt;                                                  332 
+#&gt;                                unknown / no property 
+#&gt;                                                  154 
+#&gt; 
+#&gt; $age.in.years
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   19.00   27.00   33.00   35.55   42.00   75.00 
+#&gt; 
+#&gt; $other.installment.plans
+#&gt;   bank stores   none 
+#&gt;    139     47    814 
+#&gt; 
+#&gt; $housing
+#&gt;     rent      own for free 
+#&gt;      179      713      108 
+#&gt; 
+#&gt; $number.of.existing.credits.at.this.bank
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   1.000   1.000   1.000   1.407   2.000   4.000 
+#&gt; 
+#&gt; $job
+#&gt;                          unemployed/ unskilled - non-resident 
+#&gt;                                                            22 
+#&gt;                                          unskilled - resident 
+#&gt;                                                           200 
+#&gt;                                   skilled employee / official 
+#&gt;                                                           630 
+#&gt; management/ self-employed/ highly qualified employee/ officer 
+#&gt;                                                           148 
+#&gt; 
+#&gt; $number.of.people.being.liable.to.provide.maintenance.for
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   1.000   1.000   1.000   1.155   1.000   2.000 
+#&gt; 
+#&gt; $telephone
+#&gt;                                     none 
+#&gt;                                      596 
+#&gt; yes, registered under the customers name 
+#&gt;                                      404 
+#&gt; 
+#&gt; $foreign.worker
+#&gt; yes  no 
+#&gt; 963  37 
+#&gt; 
+#&gt; $creditability
+#&gt;  bad good 
+#&gt;  300  700 
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

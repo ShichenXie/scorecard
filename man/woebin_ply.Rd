@@ -33,6 +33,7 @@ bins = woebin(dt, y = "creditability")
 
 # converting original value to woe
 dt_woe = woebin_ply(dt, bins=bins)
+str(dt_woe)
 
 \dontrun{
 # Example II

@@ -173,7 +173,13 @@
 <span class='co'># binning for dt</span>
 <span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
 <span class='co'># converting original value to woe</span>
-<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>)</div><span class='co'># NOT RUN {</span>
+<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>)
+<span class='fu'>str</span>(<span class='no'>dt_woe</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:
+#&gt;  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
+#&gt;  $ credit.amount_woe: num  0.0337 0.3905 -0.2583 0.3905 0.3905 ...
+#&gt;  $ purpose_woe      : num  -0.41 -0.41 0.28 0.28 0.28 ...
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
+</div><span class='co'># NOT RUN {</span>
 <span class='co'># Example II</span>
 <span class='co'># binning for germancredit dataset</span>
 <span class='no'>bins_germancredit</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)

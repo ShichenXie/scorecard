@@ -14,10 +14,13 @@
 #' @examples
 #' # load German credit data
 #' data(germancredit)
-#' df = germancredit
 #'
-#' # Display structure of germancredit
-#' str(df)
+#' # structure of germancredit
+#' str(germancredit)
+#'
+#' # summary of germancredit
+#' lapply(germancredit, summary)
+#'
 NULL
 
 # the dataset is modified from woebinning package

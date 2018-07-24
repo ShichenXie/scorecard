@@ -24,7 +24,16 @@ Information Value
 This function calculates information value (IV) for multiple x variables.
 }
 \details{
-IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The relationship between information value and predictive power is as follows: <0.02 (useless for prediction), 0.02 to 0.1 (Weak predictor), 0.1 to 0.3 (Medium predictor), 0.3 to 0.5 (Strong predictor) and >0.5 (Suspicious or too good to be true).
+IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}
+The relationship between information value and predictive power is as follows:
+\tabular{rr}{
+Information Value \tab Predictive Power \cr
+----------------- \tab ---------------- \cr
+< 0.02 \tab useless for prediction \cr
+0.02 to 0.1 \tab Weak predictor \cr
+0.1 to 0.3 \tab Medium predictor \cr
+> 0.3 \tab Strong predictor
+}
 }
 \examples{
 # Load German credit data
@@ -33,6 +42,6 @@ data(germancredit)
 # information values
 info_value = iv(germancredit, y = "creditability")
 
-info_value
+str(info_value)
 
 }
