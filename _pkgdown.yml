@@ -1,43 +1,29 @@
-title: scorecard
-url: http://shichen.name/scorecard
 template:
   params:
     bootswatch: flatly
+
 navbar:
-  structure:
-    left:
-    - home
-    - intro
-    - reference
-    - articles
-    - tutorials
-    - news
-    right:
-    - slides
-    - github
-  components:
-    home:
-      icon: fa-home fa-lg
+  title: scorecard
+  type: inverse
+  left:
+    - text: "Home" # icon: fa-home fa-lg
       href: index.html
-    reference:
-      text: Reference
+    - text: "Reference"
       href: reference/index.html
-    articles:
-      text: Articles
+    - text: "Articles"
       menu:
-      - text: Developing a Credit Scorcard
-        href: articles/demo.html
-    news:
-      text: Changelog
+        - text: "Developing a Credit Scorcard"
+          href: articles/demo.html
+    - text: "News"
       href: news/index.html
-    slides:
-      icon: fa-file-powerpoint-o fa-lg
+  right:
+    - icon: fa-file-powerpoint-o fa-lg
       text: "slides"
       href: http://shichen.name/slide/20171115scorecard/
-    github:
-      icon: fa-github fa-lg
+    - icon: fa-github fa-lg
       text: "github"
       href: https://github.com/ShichenXie/scorecard
+
 reference:
   - title: "dataset prepareing"
     contents:
