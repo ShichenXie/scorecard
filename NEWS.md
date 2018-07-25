@@ -1,3 +1,7 @@
+# scorecard 0.1.8.1
+
+* pdo in scorecard function suports negative value. If pdo is positive, the larger score means the lower probability to be positive. If pdo is negative, the larger score means the higher probability to be positive.
+
 # scorecard 0.1.8
 
 * remove columns have only one unique values in input dataset

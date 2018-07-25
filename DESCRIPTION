@@ -1,6 +1,6 @@
 Package: scorecard
 Title: Credit Risk Scorecard
-Version: 0.1.8
+Version: 0.1.8.1
 Authors@R: person("shichen", "xie", email = "xie@shichen.name", role = c("aut", "cre"))
 Description: `scorecard` makes the development of credit risk scorecard 
   easier and efficient by providing functions, such as information 
