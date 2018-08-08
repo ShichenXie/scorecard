@@ -20,7 +20,11 @@
 #'
 #' # variable filter
 #' dt_sel = var_filter(germancredit, y = "creditability")
+#' dim(dt_sel)
 #'
+#' # return the reason of varaible removed
+#' dt_sel2 = var_filter(germancredit, y = "creditability", return_rm_reason = TRUE)
+#' lapply(dt_sel2, dim)
 #'
 #' @import data.table
 #' @export

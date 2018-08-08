@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8.1</span>
       </span>
     </div>
 
@@ -187,8 +187,14 @@
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
 
 <span class='co'># variable filter</span>
-<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'>var_filter</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
-
+<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'>var_filter</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='fu'>dim</span>(<span class='no'>dt_sel</span>)</div><div class='output co'>#&gt; [1] 1000   15</div><div class='input'>
+<span class='co'># return the reason of varaible removed</span>
+<span class='no'>dt_sel2</span> <span class='kw'>=</span> <span class='fu'>var_filter</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>return_rm_reason</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='fu'>lapply</span>(<span class='no'>dt_sel2</span>, <span class='no'>dim</span>)</div><div class='output co'>#&gt; $dt
+#&gt; [1] 1000   15
+#&gt; 
+#&gt; $rm
+#&gt; [1] 6 2
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

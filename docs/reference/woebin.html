@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8.1</span>
       </span>
     </div>
 
@@ -206,7 +206,8 @@
 <span class='co'># Example I</span>
 <span class='co'># binning of two variables in germancredit dataset</span>
 <span class='co'># using tree method</span>
-<span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"credit.amount"</span>, <span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
+<span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
+   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
 #&gt;         variable         bin count count_distr good bad   badprob         woe
 #&gt; 1: credit.amount [-Inf,1400)   267       0.267  185  82 0.3071161  0.03366128
 #&gt; 2: credit.amount [1400,1800)   105       0.105   87  18 0.1714286 -0.72823850
@@ -233,7 +234,8 @@
 
 </div><span class='co'># NOT RUN {</span>
 <span class='co'># using chimerge method</span>
-<span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"credit.amount"</span>, <span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
+<span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
+   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
 
 <span class='co'># Example II</span>
 <span class='co'># binning of the germancredit dataset</span>

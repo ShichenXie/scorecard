@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8.1</span>
       </span>
     </div>
 
@@ -165,9 +165,10 @@
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
 
 <span class='co'># Example I</span>
-<span class='no'>dt1</span> <span class='kw'>=</span> <span class='no'>germancredit</span>[, <span class='fu'>c</span>(<span class='st'>"creditability"</span>, <span class='st'>"credit.amount"</span>)]
-
-<span class='no'>bins1</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt1</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>p1</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins1</span>)</div><span class='co'># NOT RUN {</span>
+<span class='no'>bins1</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='st'>"credit.amount"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='no'>p1</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins1</span>)
+<span class='fu'>print</span>(<span class='no'>p1</span>)</div><div class='output co'>#&gt; $credit.amount</div><div class='img'><img src='woebin_plot-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
+</div><span class='co'># NOT RUN {</span>
 <span class='co'># Example II</span>
 <span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
 <span class='no'>plotlist</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins</span>)

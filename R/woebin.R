@@ -494,12 +494,10 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
+woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
 
-  # melt data.table
-  dtm = data.table(y=y, variable=x_name, value=x)
 
   # binning
   if (!anyNA(breaks) & !is.null(breaks)) {
@@ -563,13 +561,15 @@ woebin2 = function(y, x, x_name, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.
 #' # Example I
 #' # binning of two variables in germancredit dataset
 #' # using tree method
-#' bins2_tree = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="tree")
+#' bins2_tree = woebin(germancredit, y="creditability",
+#'    x=c("credit.amount","housing"), method="tree")
 #' bins2_tree
 #'
 #'
 #' \dontrun{
 #' # using chimerge method
-#' bins2_chi = woebin(germancredit, y = "creditability", x = c("credit.amount", "housing"), method="chimerge")
+#' bins2_chi = woebin(germancredit, y="creditability",
+#'    x=c("credit.amount","housing"), method="chimerge")
 #'
 #' # Example II
 #' # binning of the germancredit dataset
@@ -686,7 +686,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
       bins[[x_i]] <-
       tryCatch(
         woebin2(
-          y=dt[[y]], x=dt[[x_i]], x_name=x_i,
+          dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
           breaks=breaks_list[[x_i]],
           spl_val=special_values[[x_i]],
           min_perc_fine_bin=min_perc_fine_bin,
@@ -720,7 +720,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
         # woebining on one variable
         tryCatch(
           woebin2(
-            y=dt[[y]], x=dt[[x_i]], x_name=x_i,
+            dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
             breaks=breaks_list[[x_i]],
             spl_val=special_values[[x_i]],
             min_perc_fine_bin=min_perc_fine_bin,
@@ -989,10 +989,10 @@ plot_bin = function(bin, title, show_iv) {
 #' data(germancredit)
 #'
 #' # Example I
-#' dt1 = germancredit[, c("creditability", "credit.amount")]
+#' bins1 = woebin(germancredit, y="creditability", x="credit.amount")
 #'
-#' bins1 = woebin(dt1, y="creditability")
 #' p1 = woebin_plot(bins1)
+#' print(p1)
 #'
 #' \dontrun{
 #' # Example II
