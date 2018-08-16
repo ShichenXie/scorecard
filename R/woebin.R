@@ -167,8 +167,8 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
     } else {
       brk = pretty(xvalue_rm_outlier, n)
     }
-    brk = sort(brk)
-    brk = unique(c(-Inf, brk[2:length(brk)], Inf))
+    brk = sort(brk[(brk < max(xvalue)) & (brk > min(xvalue))])
+    brk = unique(c(-Inf, brk, Inf))
     if (anyNA(xvalue)) brk = c(brk, NA)
 
     # initial binning datatable
