@@ -167,7 +167,7 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
     } else {
       brk = pretty(xvalue_rm_outlier, n)
     }
-    brk = sort(brk[(brk < max(xvalue_rm_outlier, na.rm =TRUE)) & (brk > min(xvalue_rm_outlier, na.rm =TRUE))])
+    brk = sort(brk[(brk < max(xvalue, na.rm =TRUE)) & (brk > min(xvalue, na.rm =TRUE))])
     brk = unique(c(-Inf, brk, Inf))
     if (anyNA(xvalue)) brk = c(brk, NA)
 
@@ -684,8 +684,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
 
       # woebining on one variable
       bins[[x_i]] <-
-      tryCatch(
-        woebin2(
+        try(do.call(woebin2, args = list(
           dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
           breaks=breaks_list[[x_i]],
           spl_val=special_values[[x_i]],
@@ -693,9 +692,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
           min_perc_coarse_bin=min_perc_coarse_bin,
           stop_limit=stop_limit, max_num_bin=max_num_bin,
           method=method
-        ),
-        error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
-      )
+        )), silent = TRUE)
     }
 
   } else {
@@ -718,18 +715,15 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
         x_i = xs[i]
 
         # woebining on one variable
-        tryCatch(
-          woebin2(
-            dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
-            breaks=breaks_list[[x_i]],
-            spl_val=special_values[[x_i]],
-            min_perc_fine_bin=min_perc_fine_bin,
-            min_perc_coarse_bin=min_perc_coarse_bin,
-            stop_limit=stop_limit, max_num_bin=max_num_bin,
-            method=method
-          ),
-          error = function(e) return(paste0("The variable '", x_i, "'", " caused the error: '", e, "'"))
-        )
+        try(do.call(woebin2, args = list(
+          dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
+          breaks=breaks_list[[x_i]],
+          spl_val=special_values[[x_i]],
+          min_perc_fine_bin=min_perc_fine_bin,
+          min_perc_coarse_bin=min_perc_coarse_bin,
+          stop_limit=stop_limit, max_num_bin=max_num_bin,
+          method=method
+        )), silent = TRUE)
       }
     # finish
     stopImplicitCluster()

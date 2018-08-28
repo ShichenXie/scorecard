@@ -5,6 +5,16 @@
 rmcol_datetime_unique1 = function(dt) {
   dt = setDT(dt)
 
+  # character columns with too many unique values
+  char_cols = names(which(dt[, sapply(.SD, function(x) is.character(x) | is.factor(x))]))
+  char_cols_too_many_unique = names(which(dt[, sapply(.SD, function(x) length(unique(x))), .SDcols = char_cols] >= 50))
+
+  if (length(char_cols_too_many_unique) > 0) {
+    # warning()
+    if (menu(c("yes", "no"), title = paste0("There are ",length(char_cols_too_many_unique), " variables have too many unique character/factor values, which might cause the binning process slow. Please double check the following variables: \n", paste0(char_cols_too_many_unique, collapse = ", "), "\n\nContinue the binning process?")) == 2) stop()
+  }
+
+  # columns with only one unique values
   unique1_cols = names(which(dt[,sapply(.SD, function(x) length(unique(x))==1)]))
   if (length(unique1_cols > 0)) {
     warning(paste0("There are ", length(unique1_cols), " columns have only one unique values, which are removed from input dataset. \n (ColumnNames: ", paste0(unique1_cols, collapse=', '), ")" ))
@@ -13,6 +23,7 @@ rmcol_datetime_unique1 = function(dt) {
   }
 
 
+  # remove datatime columns
   isdatetime = function(x) (class(x)[1] %in% c("Date","POSIXlt","POSIXct","POSIXt")) == TRUE
   datetime_col = names(which(dt[,sapply(.SD, isdatetime)]))
 

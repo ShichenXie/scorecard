@@ -6,7 +6,7 @@
 Status](https://travis-ci.org/shichenxie/scorecard.svg?branch=master)](https://travis-ci.org/shichenxie/scorecard)
 
 
-The goal of `scorecard` package is to make the development of traditional credit risk scorecard model easier and efficient by providing R functions for some common tasks. 
+The goal of `scorecard` package is to make the development of traditional credit risk scorecard model easier and efficient by providing functions for some common tasks. 
 - data partition (`split_df`)
 - variable selection (`iv`, `var_filter`)
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
@@ -15,12 +15,12 @@ The goal of `scorecard` package is to make the development of traditional credit
 
 ## Installation
 
-1. Install the release version of `scorecard` from [CRAN](https://cran.r-project.org/package=scorecard) with:
+- Install the release version of `scorecard` from [CRAN](https://cran.r-project.org/package=scorecard) with:
 ``` r
 install.packages("scorecard")
 ```
 
-2. Install the latest version of `scorecard` from [github](https://github.com/ShichenXie/scorecard) with:
+- Install the latest version of `scorecard` from [github](https://github.com/ShichenXie/scorecard) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("shichenxie/scorecard")
