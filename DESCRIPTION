@@ -1,7 +1,8 @@
 Package: scorecard
 Version: 0.1.9
 Title: Credit Risk Scorecard
-Description: The `scorecard` package makes the development of credit risk scorecard 
+Description: 
+  The `scorecard` package makes the development of credit risk scorecard 
   easier and efficient by providing functions, such as information 
   value, variable filter, optimal woe binning, scorecard scaling and 
   performance evaluation etc. 
