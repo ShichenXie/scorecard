@@ -1,8 +1,7 @@
 Package: scorecard
-Title: Credit Risk Scorecard
 Version: 0.1.9
-Authors@R: person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
-Description: `scorecard` makes the development of credit risk scorecard 
+Title: Credit Risk Scorecard
+Description: The `scorecard` package makes the development of credit risk scorecard 
   easier and efficient by providing functions, such as information 
   value, variable filter, optimal woe binning, scorecard scaling and 
   performance evaluation etc. 
@@ -11,14 +10,20 @@ Description: `scorecard` makes the development of credit risk scorecard
   Development and Implementation Using SAS. 
   2. Siddiqi, N. (2006, ISBN: 9780471754510). Credit risk scorecards. 
   Developing and Implementing Intelligent Credit Scoring.
-Depends: R (>= 3.1.0)
-Imports: data.table (>= 1.10.0), ggplot2, gridExtra, foreach, doParallel, parallel
-Suggests: knitr, rmarkdown, pkgdown
+Authors@R: person("Shichen", "Xie", , "xie@shichen.name", c("aut", "cre"))
+Depends: 
+    R (>= 3.1.0)
+Imports: 
+    data.table (>= 1.10.0), 
+    ggplot2, gridExtra, 
+    foreach, doParallel, parallel
+Suggests: 
+    knitr, rmarkdown, pkgdown
+License: MIT + file LICENSE
 URL: https://github.com/ShichenXie/scorecard
 BugReports: https://github.com/ShichenXie/scorecard/issues
-License: MIT + file LICENSE
-Encoding: UTF-8
 LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE)
+Encoding: UTF-8
