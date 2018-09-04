@@ -319,7 +319,7 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
   if (show_plot == TRUE) {
     plist = paste0(paste0('p',type,"=eva_p", type, '(df_',type,',title)'), collapse = ',')
     plist = eval(parse(text=paste0("list(",plist,")")))
-    p_nrows = floor(length(type)/2)
+    p_nrows = ceiling(length(type)/2)
 
     args.list <- c(plist, list(nrow=p_nrows, padding = 0))
     rt$pic = do.call(grid.arrange, args.list)
