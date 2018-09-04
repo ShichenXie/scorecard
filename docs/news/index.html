@@ -58,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.8.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.9</span>
       </span>
     </div>
 
@@ -118,12 +118,15 @@
       <small>Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="scorecard-0-1-8-1" class="section level1">
+    <div id="scorecard-0-1-9" class="section level1">
 <h1 class="page-header">
-<a href="#scorecard-0-1-8-1" class="anchor"></a>scorecard 0.1.8.1<small> Unreleased </small>
+<a href="#scorecard-0-1-9" class="anchor"></a>scorecard 0.1.9<small> Unreleased </small>
 </h1>
 <ul>
 <li>pdo in scorecard function now suports negative value. If pdo is positive, the larger score means the lower probability to be positive sample. If pdo is negative, the larger score means the higher probability to be positive sample.</li>
+<li>fixed a bug in woebin function using chimerge method, which is caused by initial breaks have out-range values.</li>
+<li>added a check function on the length of unique values in string columns, which might cause the binning process slow.</li>
+<li>fixed a bug in perf_eva function which is caused by the nrow of plot is setted to 0 when the length of plot type is one.</li>
 </ul>
 </div>
     <div id="scorecard-0-1-8" class="section level1">
@@ -221,7 +224,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#scorecard-0-1-8-1">0.1.8.1</a></li>
+        <li><a href="#scorecard-0-1-9">0.1.9</a></li>
         <li><a href="#scorecard-0-1-8">0.1.8</a></li>
         <li><a href="#scorecard-0-1-7">0.1.7</a></li>
         <li><a href="#scorecard-0-1-6">0.1.6</a></li>
@@ -239,7 +242,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by shichen xie.</p>
+  <p>Developed by Shichen Xie.</p>
 </div>
 
 <div class="pkgdown">
