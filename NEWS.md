@@ -4,6 +4,7 @@
 * fixed a bug in woebin function using chimerge method, which is caused by initial breaks have out-range values.
 * added a check function on the length of unique values in string columns, which might cause the binning process slow.
 * fixed a bug in perf_eva function which is caused by the nrow of plot is setted to 0 when the length of plot type is one.
+* the ratio argument in split_df function supports to set ratios for both train and test.
 
 # scorecard 0.1.8
 
