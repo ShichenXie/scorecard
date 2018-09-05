@@ -2,8 +2,7 @@
 
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/scorecard)](https://cran.r-project.org/package=scorecard)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/scorecard)](https://cran.r-project.org/package=scorecard)
-[![Travis-CI Build
-Status](https://travis-ci.org/shichenxie/scorecard.svg?branch=master)](https://travis-ci.org/shichenxie/scorecard)
+[![Travis build status](https://travis-ci.org/ShichenXie/woebin.svg?branch=master)](https://travis-ci.org/ShichenXie/woebin)
 
 
 The goal of `scorecard` package is to make the development of traditional credit risk scorecard model easier and efficient by providing functions for some common tasks. 
