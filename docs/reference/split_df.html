@@ -156,16 +156,26 @@
     <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
 
+<span class='co'># Example I</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'>split_df</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-<span class='no'>train</span> <span class='kw'>=</span> <span class='no'>dt_list</span>$<span class='no'>train</span>
-<span class='no'>test</span> <span class='kw'>=</span> <span class='no'>dt_list</span>$<span class='no'>test</span>
+<span class='no'>train</span> <span class='kw'>=</span> <span class='no'>dt_list</span><span class='kw'>[[</span><span class='fl'>1</span>]]
+<span class='no'>test</span> <span class='kw'>=</span> <span class='no'>dt_list</span><span class='kw'>[[</span><span class='fl'>2</span>]]
 
 <span class='co'># dimensions of train and test datasets</span>
 <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='no'>dim</span>)</div><div class='output co'>#&gt; $train
-#&gt; [1] 700  21
+#&gt; [1] 698  21
 #&gt; 
 #&gt; $test
-#&gt; [1] 300  21
+#&gt; [1] 302  21
+#&gt; </div><div class='input'>
+
+<span class='co'># Example II</span>
+<span class='no'>dt_list2</span> <span class='kw'>=</span> <span class='fu'>split_df</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.5</span>, <span class='fl'>0.2</span>))
+<span class='fu'>lapply</span>(<span class='no'>dt_list2</span>, <span class='no'>dim</span>)</div><div class='output co'>#&gt; $train
+#&gt; [1] 494  21
+#&gt; 
+#&gt; $test
+#&gt; [1] 211  21
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
