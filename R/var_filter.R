@@ -62,18 +62,18 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   # -iv
   iv_list = iv(dt, y, x)
   # -na percentage
-  na_perc = dt[, sapply(.SD, function(a) sum(is.na(a))/length(a)), .SDcols = x]
+  missing_rate = dt[, sapply(.SD, function(a) sum(is.na(a))/length(a)), .SDcols = x]
   # -element percentage
-  ele_perc = dt[, sapply(.SD, function(a) max(table(a))/sum(!is.na(a)) ), .SDcols = x]
+  identical_rate = dt[, sapply(.SD, function(a) max(table(a))/sum(!is.na(a)) ), .SDcols = x]
 
   # datatable  iv na ele
   dt_var_selector =
-    iv_list[data.table(variable = names(na_perc), na_perc = na_perc), on="variable"
-    ][data.table(variable = names(ele_perc), ele_perc = ele_perc), on="variable"]
+    iv_list[data.table(variable = names(missing_rate), missing_rate = missing_rate), on="variable"
+    ][data.table(variable = names(identical_rate), identical_rate = identical_rate), on="variable"]
 
-  # remove na_perc>95 | ele_perc>0.95 | iv<0.02
+  # remove missing_rate>95 | identical_rate>0.95 | iv<0.02
   # variable datatable selected
-  dt_var_sel = dt_var_selector[info_value >= iv_limit & na_perc <= missing_limit & ele_perc <= identical_limit]
+  dt_var_sel = dt_var_selector[info_value >= iv_limit & missing_rate <= missing_limit & identical_rate <= identical_limit]
 
   # add kept variable
   x_selected = dt_var_sel[, as.character(variable)]
@@ -83,11 +83,11 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   if (return_rm_reason) {
     # variable datatable deleted
     dt_var_rm = dt_var_selector[
-      info_value < iv_limit | na_perc > missing_limit | ele_perc > identical_limit
+      info_value < iv_limit | missing_rate > missing_limit | identical_rate > identical_limit
     ][, `:=`(
       info_value = ifelse(info_value < iv_limit, paste0("iv < ", iv_limit), ""),
-      na_perc = ifelse(na_perc > missing_limit, paste0("miss rate > ",missing_limit), ""),
-      ele_perc = ifelse(ele_perc > identical_limit, paste0("identical rate > ", identical_limit), "")
+      missing_rate = ifelse(missing_rate > missing_limit, paste0("miss rate > ",missing_limit), ""),
+      identical_rate = ifelse(identical_rate > identical_limit, paste0("identical rate > ", identical_limit), "")
     )]
 
     dt_rm_reason = melt(
@@ -105,6 +105,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
       dt_rm_reason = dt_rm_reason[!(variable %in% var_kp)]
     }
 
+    dt_rm_reason = merge(dt_rm_reason, dt_var_selector, all.y = TRUE)[order(rm_reason)]
     # return
     rt$dt = dt[, c(x_selected, y), with=FALSE ]
     rt$rm = dt_rm_reason

@@ -1,3 +1,7 @@
+# scorecard 0.1.9.1
+
+* If the argument return_rm_reason is TRUE in var_filter function, the info_value, missing_rate and identical_rate are provided.
+
 # scorecard 0.1.9
 
 * pdo in scorecard function now suports negative value. If pdo is positive, the larger score means the lower probability to be positive sample. If pdo is negative, the larger score means the higher probability to be positive sample.
