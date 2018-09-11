@@ -1,7 +1,3 @@
-# scorecard 0.1.9.1
-
-* If the argument return_rm_reason is TRUE in var_filter function, the info_value, missing_rate and identical_rate are provided.
-
 # scorecard 0.1.9
 
 * pdo in scorecard function now suports negative value. If pdo is positive, the larger score means the lower probability to be positive sample. If pdo is negative, the larger score means the higher probability to be positive sample.
@@ -9,6 +5,8 @@
 * added a check function on the length of unique values in string columns, which might cause the binning process slow.
 * fixed a bug in perf_eva function which is caused by the nrow of plot is setted to 0 when the length of plot type is one.
 * the ratio argument in split_df function supports to set ratios for both train and test.
+* If the argument return_rm_reason is TRUE in var_filter function, the info_value, missing_rate and identical_rate are provided in the result.
+
 
 # scorecard 0.1.8
 

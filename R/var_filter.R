@@ -26,6 +26,9 @@
 #' dt_sel2 = var_filter(germancredit, y = "creditability", return_rm_reason = TRUE)
 #' lapply(dt_sel2, dim)
 #'
+#' str(dt_sel2$dt)
+#' str(dt_sel2$rm)
+#'
 #' @import data.table
 #' @export
 #'
