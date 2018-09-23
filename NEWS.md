@@ -1,3 +1,8 @@
+# scorecard 0.1.9.1
+
+* fixed a bug is woebin function cant modify positive values
+
+
 # scorecard 0.1.9
 
 * pdo in scorecard function now suports negative value. If pdo is positive, the larger score means the lower probability to be positive sample. If pdo is negative, the larger score means the higher probability to be positive sample.

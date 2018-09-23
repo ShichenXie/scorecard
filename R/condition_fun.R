@@ -54,8 +54,10 @@ rep_blank_na = function(dt) {
 # check y
 #' @import data.table
 #'
-check_y = function(dt, y, positive){
+check_y = function(dt, y, positive) {
   dt = setDT(dt)
+  positive = as.character(positive)
+  dt[[y]]  = as.character(dt[[y]])
 
   # ncol of dt
   if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
@@ -74,18 +76,18 @@ check_y = function(dt, y, positive){
 
  # length of unique values in y
   if (length(unique(dt[[y]])) == 2) {
-    if ( any(c(0,1) %in% unique(dt[[y]]) == FALSE) ) {
+    # if ( any(c(0,1) %in% unique(dt[[y]]) == FALSE) ) {
 
-      if (any(grepl(positive, dt[[y]])==TRUE)) {
-        warning(paste0("The positive value in \"", y,"\" was replaced by 1 and negative value by 0."))
+      if (any(grepl(positive, dt[[y]]) == TRUE)) {
+        warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
         dt[[y]] = ifelse(grepl(positive, dt[[y]]), 1, 0)
       } else {
         stop(paste0("Incorrect inputs; the positive value in \"", y, "\" is not specified"))
       }
 
-    }
+    # }
   } else {
-    stop(paste0("Incorrect inputs; the length of unique values in \"",y , "\" != 2."))
+    stop(paste0("Incorrect inputs; the length of unique values in \"", y, "\" != 2."))
   }
 
   return(dt)
