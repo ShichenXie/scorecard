@@ -40,7 +40,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 Optimal or customized binning information.
 }
 \description{
-\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided. The default woe is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'.
 }
 \examples{
 # load germancredit data
