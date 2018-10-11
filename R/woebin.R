@@ -614,7 +614,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
   i = NULL
 
   # set dt as data.table
-  dt = setDT(dt)
+  dt = copy(setDT(dt))
+  if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # remove date/time col
   dt = rmcol_datetime_unique1(dt, check_char_num = TRUE)
   # replace "" by NA
