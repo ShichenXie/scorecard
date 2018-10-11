@@ -199,7 +199,7 @@ sec_to_hms = function(sec) {
   m = sec %% 3600 %/% 60
   s = floor(sec %% 3600 %% 60)
 
-  return(sprintf("%02s:%02s:%02s",h,m,s))
+  return(sprintf("%02.f:%02.f:%02.f",h,m,s))
 }
 
 
