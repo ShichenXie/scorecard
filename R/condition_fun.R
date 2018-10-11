@@ -97,6 +97,7 @@ check_y = function(dt, y, positive) {
     stop(paste0("Incorrect inputs; the length of unique values in \"", y, "\" != 2."))
   }
 
+  dt[[y]]  = as.integer(dt[[y]])
   return(dt)
 }
 
