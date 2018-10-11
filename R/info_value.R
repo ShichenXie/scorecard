@@ -5,7 +5,7 @@
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-#' @param positive Value of positive class, default is "bad|1".
+#' @param positive Value of positive class, default is "bad".
 #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via iv.
 #'
 #' @return Information Value
@@ -32,7 +32,7 @@
 #' @import data.table
 #' @export
 #'
-iv = function(dt, y, x=NULL, positive="bad|1", order=TRUE) {
+iv = function(dt, y, x=NULL, positive="bad", order=TRUE) {
   info_value = label = NULL # no visible binding for global variable
 
   # set dt as data.table

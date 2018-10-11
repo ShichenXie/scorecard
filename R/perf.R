@@ -190,7 +190,7 @@ eva_pf1 = function(dfrocpr, title) {
 #' @param groupnum The group number when calculating KS.  Default NULL, which means the number of sample size.
 #' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 #' @param show_plot Logical value, default is TRUE. It means whether to show plot.
-#' @param positive Value of positive class, default is "bad|1".
+#' @param positive Value of positive class, default is "bad".
 #' @param seed Integer, default is 186. The specify seed is used for random sorting data.
 #' @return ks, roc, lift, pr
 #'
@@ -255,7 +255,7 @@ eva_pf1 = function(dfrocpr, title) {
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
+perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad", seed=186) {
   # global variables
   .=FPR = TPR = cumbad = group = ks = NULL
 
