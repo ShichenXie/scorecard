@@ -11,7 +11,7 @@
 #' @param var_rm Name of force removed variables, default is NULL.
 #' @param var_kp Name of force kept variables, default is NULL.
 #' @param return_rm_reason Logical, default is FALSE.
-#' @param positive Value of positive class, default is "bad".
+#' @param positive Value of positive class, default is "bad|1".
 #' @return A data.table with y and selected x variables and a data.table with the reason of removed x variable if return_rm_reason == TRUE.
 #'
 #' @examples
@@ -32,7 +32,7 @@
 #' @import data.table
 #' @export
 #'
-var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad") {
+var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive="bad|1") {
   # start time
   start_time = proc.time()
 

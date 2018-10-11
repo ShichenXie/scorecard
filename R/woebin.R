@@ -546,7 +546,7 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
 #' @param min_perc_coarse_bin The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)'. Accepted range: 0-0.5; default is 0.1.
 #' @param max_num_bin Integer. The maximum number of binning.
-#' @param positive Value of positive class, default "bad".
+#' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
@@ -607,7 +607,7 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
 #' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad", no_cores=NULL, print_step=0L, method="tree") {
+woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree") {
   # start time
   start_time = proc.time()
   # global variable

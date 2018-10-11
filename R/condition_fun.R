@@ -82,8 +82,12 @@ check_y = function(dt, y, positive) {
     # if ( any(c(0,1) %in% unique(dt[[y]]) == FALSE) ) {
 
       if (any(grepl(positive, dt[[y]]) == TRUE)) {
-        warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
-        dt[[y]] = ifelse(grepl(positive, dt[[y]]), 1, 0)
+        y1 = dt[[y]]
+        y2 = ifelse(grepl(positive, y1), 1, 0)
+        if (any(y1 != y2)) {
+          dt[[y]] = y2
+          warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
+        }
       } else {
         stop(paste0("Incorrect inputs; the positive value in \"", y, "\" is not specified"))
       }
