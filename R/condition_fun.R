@@ -60,7 +60,7 @@ rep_blank_na = function(dt) {
 check_y = function(dt, y, positive) {
   dt = setDT(dt)
   positive = as.character(positive)
-  dt[[y]]  = as.character(dt[[y]])
+  # dt[[y]]  = as.character(dt[[y]])
 
   # ncol of dt
   if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
@@ -74,8 +74,10 @@ check_y = function(dt, y, positive) {
   # remove na in y
   if ( anyNA(dt[[y]]) ) {
     warning(paste0("There are NAs in ", y, ". The rows with NA in \"", y, "\" were removed from input data."))
-    y_sel = !is.na(dt[[y]]); dt = dt[y_sel]
+    dt = dt[!is.na(dt[[y]])]
   }
+
+  if (class(dt[[y]]) == "numeric") dt[, (y) := lapply(.SD, as.integer), .SDcols = y]
 
  # length of unique values in y
   if (length(unique(dt[[y]])) == 2) {
@@ -97,7 +99,6 @@ check_y = function(dt, y, positive) {
     stop(paste0("Incorrect inputs; the length of unique values in \"", y, "\" != 2."))
   }
 
-  dt[[y]]  = as.integer(dt[[y]])
   return(dt)
 }
 
