@@ -610,6 +610,8 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
 woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree") {
   # start time
   start_time = proc.time()
+  cat('[INFO] creating woe binning ... \n')
+
   # global variable
   i = NULL
 
@@ -824,6 +826,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L) {
   # start time
   start_time = proc.time()
+  cat('[INFO] converting into woe values ... \n')
   # global variables or functions
   . = V1 = bin = variable = woe = i = NULL
 
