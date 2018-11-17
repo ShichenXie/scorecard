@@ -20,11 +20,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
   # points0 = a - b*log(odds0)
   # points0 - PDO = a - b*log(2*odds0)
 
-  if ((sign(pdo)) == 1) {
-    b = pdo/log(2)
-  } else {
-    b = -pdo/log(2)
-  }
+  b = pdo/log(2)
   a = points0 + b*log(odds0) #log(odds0/(1+odds0))
 
   return(list(a=a, b=b))
