@@ -534,11 +534,11 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
 
 #' WOE Binning
 #'
-#' \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+#' \itemize{
+#'   \item \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+#'   \item `woe` is defined as ln(Distr_Bad_i/Distr_Good_i) by default. If you prefer ln(Distr_Good_i/Distr_Bad_i), set the argument `positive` as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, the zero will replaced by 0.99/total_number to make the woe calculable.
+#' }
 #'
-#' The default woe is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument `positive` as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, it will replaced by 0.99/total_number
-#'
-#' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
