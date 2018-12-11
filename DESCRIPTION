@@ -19,7 +19,10 @@ Imports:
     ggplot2, gridExtra, 
     foreach, doParallel, parallel
 Suggests: 
-    knitr, rmarkdown, pkgdown
+    knitr,
+    rmarkdown,
+    pkgdown,
+    testthat
 License: MIT + file LICENSE
 URL: https://github.com/ShichenXie/scorecard
 BugReports: https://github.com/ShichenXie/scorecard/issues

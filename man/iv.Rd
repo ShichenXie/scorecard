@@ -21,7 +21,7 @@ iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 Information Value
 }
 \description{
-This function calculates information value (IV) for multiple x variables.
+This function calculates information value (IV) for multiple x variables. It treats each unique x value as a group and counts the number of y classes. If there is a zero number of y class, it will be replaced by 0.99 to make sure it calculable.
 }
 \details{
 IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}

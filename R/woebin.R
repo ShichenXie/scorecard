@@ -534,7 +534,9 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
 
 #' WOE Binning
 #'
-#' \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided. The default woe is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument `positive` as negative value, such as '0' or 'good'.
+#' \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
+#'
+#' The default woe is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument `positive` as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, it will replaced by 0.99/total_number
 #'
 #' @name woebin
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
@@ -954,6 +956,8 @@ plot_bin = function(bin, title, show_iv) {
 
   # plot
   ggplot() +
+    # geom_text(aes(label="@shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") +
+    # coord_cartesian(clip = 'off') +
     geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
     geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
     geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +

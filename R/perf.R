@@ -319,6 +319,10 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
   if (show_plot == TRUE) {
     plist = paste0(paste0('p',type,"=eva_p", type, '(df_',type,',title)'), collapse = ',')
     plist = eval(parse(text=paste0("list(",plist,")")))
+    # plist = lapply(plist, function(p) {
+    #   p + geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
+    #     coord_cartesian(clip = 'off')
+    # })
     p_nrows = ceiling(length(type)/2)
 
     args.list <- c(plist, list(nrow=p_nrows, padding = 0))
@@ -568,6 +572,8 @@ perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=5
         guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
         scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
         labs(x=NULL, y="Score distribution") +
+        # geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
+        # coord_cartesian(clip = 'off') +
         theme_bw() +
         # theme(legend.position="bottom", legend.direction="horizontal") +
         theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
