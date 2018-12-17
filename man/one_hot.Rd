@@ -5,7 +5,7 @@
 \title{One Hot Encoding}
 \usage{
 one_hot(dt, cols_skip = NULL, cols_encode = NULL,
-  factor_to_integer = FALSE, nacol_rm = TRUE, replace_na = NULL)
+  factor_to_integer = FALSE, nacol_rm = FALSE, replace_na = -1)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -16,9 +16,9 @@ one_hot(dt, cols_skip = NULL, cols_encode = NULL,
 
 \item{factor_to_integer}{Logical. Converting factor variables to integer. Default is FALSE.}
 
-\item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is TRUE.}
+\item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.}
 
-\item{replace_na}{Replace missing values with the mean/median value of the variable in which they occur, or with specified value such as -1. Default is NULL.}
+\item{replace_na}{Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.}
 }
 \description{
 One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.
@@ -33,8 +33,12 @@ dat = rbind(
   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
   fill=TRUE)
 
-dat_onehot = one_hot(dat, cols_skip = 'creditability')
-dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1)
-dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'mean')
+# remove na columns
+dat_onehot0 = one_hot(dat, cols_skip = 'creditability', nacol_rm = FALSE) # default
+dat_onehot1 = one_hot(dat, cols_skip = 'creditability', nacol_rm = TRUE)
+
+# replace missing values
+dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1) # default
+dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'median')
 
 }

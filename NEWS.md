@@ -2,6 +2,7 @@
 
 * fixed a bug is woebin function cant modify positive values
 * pdo in scorecard function now supports negative value.
+* split_df will not remove datetime and identical variables
 * added a one-hot encoding function 
 
 # scorecard 0.1.9

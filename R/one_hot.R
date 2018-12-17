@@ -6,8 +6,8 @@
 #' @param cols_skip Name of categorical variables that will skip and without doing one-hot encoding. Default is NULL.
 #' @param cols_encode Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in cols_skip are counted.
 #' @param factor_to_integer Logical. Converting factor variables to integer. Default is FALSE.
-#' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is TRUE.
-#' @param replace_na Replace missing values with the mean/median value of the variable in which they occur, or with specified value such as -1. Default is NULL.
+#' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.
+#' @param replace_na Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.
 #'
 #' @examples
 #' # load germancredit data
@@ -19,12 +19,16 @@
 #'   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
 #'   fill=TRUE)
 #'
-#' dat_onehot = one_hot(dat, cols_skip = 'creditability')
-#' dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1)
-#' dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'mean')
+#' # remove na columns
+#' dat_onehot0 = one_hot(dat, cols_skip = 'creditability', nacol_rm = FALSE) # default
+#' dat_onehot1 = one_hot(dat, cols_skip = 'creditability', nacol_rm = TRUE)
+#'
+#' # replace missing values
+#' dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1) # default
+#' dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'median')
 #'
 #' @export
-one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer = FALSE, nacol_rm = TRUE, replace_na = NULL) {
+one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer = FALSE, nacol_rm = FALSE, replace_na = -1) {
   value = variable = NULL
 
   dt = copy(setDT(dt))
@@ -63,20 +67,28 @@ one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer =
       dcast_dt[, (nacols) := NULL]
     }
     # merge dataframes
-    dt_new = merge(dt[,rowid := .I], dcast_dt, all.x = TRUE, by = 'rowid')[, (c(cols_encode, 'rowid')) := NULL]
+    dt_new = cbind(dt, dcast_dt)[, (c(cols_encode, 'rowid')) := NULL]
   }
 
   # replace missing values with fillna
   if (!is.null(replace_na)) {
     dt_new = dt_new[, lapply(.SD, function(x) {
       if (anyNA(x)) {
+        # class of x is numeric
+        xisnum = all(class(x) %in% c('numeric', 'logical'))
+        # fillna values
         if (is.numeric(replace_na)) {
           fillna = replace_na
-        } else if (replace_na %in% c('mean', 'median')) {
+        } else if ( replace_na %in% c('mean', 'median') &  xisnum) {
           fillna = do.call(replace_na, list(x, na.rm=TRUE))
         } else {
           fillna = -1
         }
+        # set fill as character if x is not numeric
+        if (!xisnum) {
+          fillna = as.character(fillna)
+        }
+        # replace missing values in x
         x[is.na(x)] <- fillna
       }
       return(x)
