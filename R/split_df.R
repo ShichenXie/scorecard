@@ -1,5 +1,7 @@
 #' Split a dataset
 #'
+#' Split a dataset into train and test
+#'
 #' @param dt A data frame.
 #' @param y Name of y variable, default is NULL. The input data will split based on the predictor y, if it is provide.
 #' @param ratio A numeric value, default is 0.7. It indicates the ratio of total rows contained in one split, must less than 1.

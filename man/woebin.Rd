@@ -40,10 +40,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 Optimal or customized binning information.
 }
 \description{
-\itemize{
-\item \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the breaks_list was provided.
-\item \code{woe} is defined as ln(Distr_Bad_i/Distr_Good_i) by default. If you prefer ln(Distr_Good_i/Distr_Bad_i), set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, the zero will replaced by 0.99/total_number to make the woe calculable.
-}
+\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the \code{breaks_list} was provided. The default \code{woe} is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, the zero will replaced by 0.99 to make the woe calculable.
 }
 \examples{
 # load germancredit data

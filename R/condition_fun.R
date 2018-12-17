@@ -1,5 +1,9 @@
 # conditions # https://adv-r.hadley.nz/debugging
 
+# is date/time class
+isdatetime = function(x) {
+  any(class(x) %in% c("Date","POSIXlt","POSIXct","POSIXt"))
+}
 # remove date time # rm_datetime_col
 # remove columns if len(x.unique()) == 1
 rmcol_datetime_unique1 = function(dt, check_char_num = FALSE) {
@@ -27,7 +31,6 @@ rmcol_datetime_unique1 = function(dt, check_char_num = FALSE) {
 
 
   # remove datatime columns
-  isdatetime = function(x) (class(x)[1] %in% c("Date","POSIXlt","POSIXct","POSIXt")) == TRUE
   datetime_col = names(which(dt[,sapply(.SD, isdatetime)]))
 
   if (length(datetime_col) > 0) {

@@ -16,7 +16,7 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 186)
 \item{seed}{A random seed, default is 186.}
 }
 \description{
-Split a dataset
+Split a dataset into train and test
 }
 \examples{
 # load German credit data

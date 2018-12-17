@@ -1,7 +1,8 @@
-# scorecard 0.1.9.1
+# scorecard 0.1.9.2
 
 * fixed a bug is woebin function cant modify positive values
 * pdo in scorecard function now supports negative value.
+* added a one-hot encoding function 
 
 # scorecard 0.1.9
 
