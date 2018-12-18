@@ -5,9 +5,9 @@
 #' @param dt A data frame.
 #' @param cols_skip Name of categorical variables that will skip and without doing one-hot encoding. Default is NULL.
 #' @param cols_encode Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in cols_skip are counted.
-#' @param factor_to_integer Logical. Converting factor variables to integer. Default is FALSE.
 #' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.
 #' @param replace_na Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.
+#' @param factor_to_integer Logical. Converting factor variables to integer. Default is FALSE.
 #'
 #' @examples
 #' # load germancredit data
@@ -26,9 +26,10 @@
 #' # replace missing values
 #' dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1) # default
 #' dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'median')
+#' dat_onehot4 = one_hot(dat, cols_skip = 'creditability', replace_na = NULL)
 #'
 #' @export
-one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer = FALSE, nacol_rm = FALSE, replace_na = -1) {
+one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, nacol_rm = FALSE, replace_na = -1, factor_to_integer = FALSE) {
   value = variable = NULL
 
   dt = copy(setDT(dt))
@@ -36,12 +37,13 @@ one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer =
   # factor columns to integer
   if (factor_to_integer) {
     cols_factor = names(which(sapply(dt, is.factor)))
+    if (!is.null(cols_skip)) cols_factor = setdiff(cols_factor, cols_skip)
     dt[, (cols_factor) := lapply(.SD, as.integer), .SDcols = cols_factor]
   }
 
   # columns encoding
   if ( is.null(cols_encode)) {
-    cols_encode = names(which(sapply(dt, function(x) !is.numeric(x) & !isdatetime(x) & !is.logical(x))))
+    cols_encode = names(which(sapply(dt, function(x) !is.numeric(x) & !isdatetime(x) )))
   } else {
     cols_encode = x_variable(dt, y=cols_skip, x=cols_encode)
   }
@@ -58,7 +60,7 @@ one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer =
     temp_dt = dt[, cols_encode, with = FALSE][, rowid := .I]
     melted_dt = melt(temp_dt, id='rowid', na.rm = FALSE)[, value := paste(variable, value, sep='_')]
     dcast_dt  = dcast(melted_dt, rowid ~ value, fun.aggregate = length)
-    setnames( dcast_dt, gsub('[^[:alnum:]]', '_', names(dcast_dt)) )
+    # setnames( dcast_dt, gsub('[^[:alnum:]]', '_', names(dcast_dt)) )
 
     # remove nacols
     if (nacol_rm) {
@@ -72,10 +74,12 @@ one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer =
 
   # replace missing values with fillna
   if (!is.null(replace_na)) {
-    dt_new = dt_new[, lapply(.SD, function(x) {
+    names_fillna = names(dt_new)
+    if (!is.null(cols_skip)) names_fillna = setdiff(names_fillna, cols_skip)
+    dt_new = dt_new[, (names_fillna) := lapply(.SD, function(x) {
       if (anyNA(x)) {
         # class of x is numeric
-        xisnum = all(class(x) %in% c('numeric', 'logical'))
+        xisnum = all(class(x) %in% c('numeric', 'integer'))
         # fillna values
         if (is.numeric(replace_na)) {
           fillna = replace_na
@@ -92,7 +96,7 @@ one_hot = function(dt, cols_skip = NULL, cols_encode = NULL, factor_to_integer =
         x[is.na(x)] <- fillna
       }
       return(x)
-    })]
+    }), .SDcols = names_fillna]
   }
 
   return(dt_new[])

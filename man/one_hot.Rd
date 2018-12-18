@@ -4,8 +4,8 @@
 \alias{one_hot}
 \title{One Hot Encoding}
 \usage{
-one_hot(dt, cols_skip = NULL, cols_encode = NULL,
-  factor_to_integer = FALSE, nacol_rm = FALSE, replace_na = -1)
+one_hot(dt, cols_skip = NULL, cols_encode = NULL, nacol_rm = FALSE,
+  replace_na = -1, factor_to_integer = FALSE)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -14,11 +14,11 @@ one_hot(dt, cols_skip = NULL, cols_encode = NULL,
 
 \item{cols_encode}{Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in cols_skip are counted.}
 
-\item{factor_to_integer}{Logical. Converting factor variables to integer. Default is FALSE.}
-
 \item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.}
 
 \item{replace_na}{Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.}
+
+\item{factor_to_integer}{Logical. Converting factor variables to integer. Default is FALSE.}
 }
 \description{
 One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.
@@ -40,5 +40,6 @@ dat_onehot1 = one_hot(dat, cols_skip = 'creditability', nacol_rm = TRUE)
 # replace missing values
 dat_onehot2 = one_hot(dat, cols_skip = 'creditability', replace_na = -1) # default
 dat_onehot3 = one_hot(dat, cols_skip = 'creditability', replace_na = 'median')
+dat_onehot4 = one_hot(dat, cols_skip = 'creditability', replace_na = NULL)
 
 }
