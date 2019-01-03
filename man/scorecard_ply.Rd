@@ -4,7 +4,7 @@
 \alias{scorecard_ply}
 \title{Score Transformation}
 \usage{
-scorecard_ply(dt, card, only_total_score = TRUE, print_step = 1L)
+scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L)
 }
 \arguments{
 \item{dt}{Original data}

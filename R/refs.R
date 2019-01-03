@@ -12,3 +12,4 @@
 # # offset: log( ((1-p1)/(1-r1)) / (p1/r1))
 
 
+# [Examining Distributional Shifts by Using Population Stability Index (PSI) for Model Validation and Diagnosis](https://www.lexjansen.com/wuss/2017/47_Final_Paper_PDF.pdf)

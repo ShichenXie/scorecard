@@ -1,5 +1,5 @@
 Package: scorecard
-Version: 0.1.9.2
+Version: 0.2.0
 Title: Credit Risk Scorecard
 Description: 
   The `scorecard` package makes the development of credit risk scorecard 
@@ -17,7 +17,8 @@ Depends:
 Imports: 
     data.table (>= 1.10.0), 
     ggplot2, gridExtra, 
-    foreach, doParallel, parallel
+    foreach, doParallel, parallel,
+    openxlsx
 Suggests: 
     knitr,
     rmarkdown,

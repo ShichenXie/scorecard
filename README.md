@@ -84,8 +84,9 @@ m2 = eval(m_step$call)
 train_pred = predict(m2, train_woe, type='response')
 test_pred = predict(m2, test_woe, type='response')
 # performance
-train_perf = perf_eva(train$creditability, train_pred, title = "train")
-test_perf = perf_eva(test$creditability, test_pred, title = "test")
+perf = perf_eva(
+  pred = list(train=train_pred, test=test_pred), 
+  label = list(train=train$creditability, test=test$creditability))
 
 # score ------
 card = scorecard(bins_adj, m2)

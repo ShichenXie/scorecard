@@ -1,3 +1,129 @@
+# evaluation metric ------
+# dt = data.table(label=label, pred=pred)[!(is.na(label) | is.na(pred))]
+## mean squared error, MSE
+mse = function(dt, ...) {
+  label = pred = NULL
+  setDT(dt)
+  return(dt[,mean((label-pred)^2)])
+}
+## root mean squared error, RMSE
+rmse = function(dt, ...) {
+  setDT(dt)
+  return(sqrt(mse(dt)))
+}
+
+## mean absolute error, MAE
+mae = function(dt, ...) {
+  label = pred = NULL
+  setDT(dt)
+  return(dt[,mean(abs(label-pred))])
+}
+
+## mean square logarithmic error, MSLE
+msle = function(dt, ...) {
+  label = pred = NULL
+  setDT(dt)
+  return(dt[,mean((log1p(label)-log1p(pred))^2)]) # log1p = log(1+x)
+}
+## root mean square logarithmic error, RMSLE
+rmsle = function(dt, ...) {
+  setDT(dt)
+  return(sqrt(msle(dt)))
+}
+
+## coefficient of determination, R2
+r2 = function(dt, ...) {
+  label = pred = NULL
+  setDT(dt)
+  # total sum of squares, SST
+  sst = dt[, sum((label-mean(label))^2)]
+  ## regression sum of squares, SSR
+  sse = dt[, sum((label-pred)^2)]
+  # ## error sum of squares, SSE
+  # ssr = dt[, sum((pred-mean(label))^2)]
+  return(1-sse/sst)
+}
+
+## log loss for binary classification
+## http://wiki.fast.ai/index.php/Log_Loss
+logloss = function(dt, ...) {
+  ll = label = pred = NULL
+  setDT(dt)
+  return(dt[,ll:=label*log(pred)+(1-label)*log(1-pred)][,mean(-ll)])
+}
+
+
+## aera under curve (ROC), AUC
+auc = function(dt_ev, ...) {
+  . = FPR = TPR = NULL
+  rbind(dt_ev[,.(FPR,TPR)], data.table(FPR=0:1,TPR=0:1), fill=TRUE
+  )[order(FPR,TPR)
+    ][, sum((TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag")))]
+}
+## Gini
+gini = function(dt_ev, ...) {
+  2*auc(dt_ev)-1
+}
+## KS
+ks = function(dt_ev, ...) {
+  TN = totN = FN = totP = NULL
+  dt_ev[, max(abs(TN/totN - FN/totP))]
+}
+## Lift
+lift = function(dt_ev, threshold = 0.5, ...) {
+  precision = totP = totN = cumpop = NULL
+  # badrate of rejected sample / of overalll
+  # threshold: approval rate
+  dt_ev[, lift := precision/(totP/(totP+totN))][][cumpop >= 1-threshold,][1,lift]
+}
+
+
+# optimal cutoff ------
+# ks
+cutoff_ks = function(dt_ev) {
+  TN = totN = FN = totP = . = cumpop =  pred = NULL
+
+  dt_ev[, ks := abs(TN/totN - FN/totP)
+        ][ks == max(ks, na.rm = TRUE)
+          ][,.(cumpop, pred, ks)]
+}
+# roc
+cutoff_roc = function(dt_ev) {
+  . = cumpop = pred = TPR = FPR = co = NULL
+  dt_ev[, .(cumpop,pred,TPR,FPR)
+        ][, co := (TPR-FPR)^2/2
+          ][co == max(co, na.rm = TRUE)
+            ][, .(cumpop, pred, TPR, FPR)][1]
+}
+# fbeta
+cutoff_fbeta = function(dt_ev, beta=1, ...) {
+  . = cumpop = pred = precision =  recall = f = NULL
+
+  fb = dt_ev[, .(cumpop, pred,precision,recall)
+             ][, f := 1/(1/(1+beta^2)*(1/precision+beta^2/recall))
+               ][f == max(f, na.rm = TRUE) ][1]
+  setnames(fb, c('cumpop', 'pred', 'precision', 'recall', paste0('f',beta)))
+}
+
+## confusion matrix
+confusionMatrix = function(dt, threshold=0.5, ...) {
+  pred_label = pred = . = label = error = pred_1 = pred_0 = NULL
+
+  setDT(dt)
+  # data of actual and predicted label
+  dt_alpl = dt[, pred_label := pred >= threshold][, .N, keyby = .(label, pred_label)][, pred_label := paste0('pred_', as.integer(pred_label))]
+  # confusion matrix
+  cm = dcast(
+    dt_alpl, label ~pred_label, value.var = 'N'
+  )[1, error := pred_1/sum(pred_1+pred_0)
+    ][2, error := pred_0/sum(pred_1+pred_0)]
+  # total row
+  cm = rbind(cm, data.frame(label = 'total', t(colSums(cm[,-1]))), fill=TRUE)
+  cm[3, error := (cm[1,3]+cm[2,2])/sum(cm[3,2]+cm[3,3])]
+  return(cm)
+}
+
+
 # renamed as perf_eva
 #
 # The function perf_plot has renamed as perf_eva.
@@ -9,190 +135,514 @@
 # @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 # @param show_plot Logical value, default TRUE. It means whether to show plot.
 # @param seed An integer. The specify seed is used for random sorting data, default: 186.
-perf_plot = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=186) {
+perf_plot = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, seed=618) {
   stop("This function has renamed as perf_eva.")
 }
 
 
+# plot ------
+#Our transformation function
+fmt_dcimals <- function(x) sprintf("%.1f", x)
+number_ticks <- function(n) {function(limits) pretty(limits, n)}
 
-eva_dfkslift = function(df, groupnum = NULL) {
-  # global variables
-  pred=group=.=label=good=bad=ks=cumbad=cumgood=NULL
+#' @importFrom stats density
+plot_density = function(dt_lst, title=NULL, positive, ...) {
+  .=datset=dens=label=label_str=max_dens=pred=NULL
 
-  if (is.null(groupnum)) groupnum = nrow(df)
+  dt_df = rbindlist(dt_lst, idcol = 'datset')[, label := factor(label)]
 
-  df_kslift = df[
-    order(-pred)
-  ][, group := ceiling(.I/(.N/groupnum))
-  ][, .(good = sum(label==0), bad = sum(label==1)), by=group
-  ][, `:=`(
-    group = .I/.N,
-    good_distri=good/sum(good), bad_distri=bad/sum(bad),
-    badrate=bad/(good+bad), cumbadrate = (cumsum(bad)/cumsum(good+bad)),
-    lift = (cumsum(bad)/cumsum(good+bad))/(sum(bad)/sum(good+bad)),
-    cumgood=cumsum(good)/sum(good), cumbad=cumsum(bad)/sum(bad))
-  ][, ks := abs(cumbad - cumgood)]
+  # max pred
+  if (dt_df[,mean(pred) < -1]) dt_df[, pred := abs(pred)]
+  max_pred = dt_df[,max(pred)]
+  if (max_pred < 1) max_pred = 1
+  min_pred = dt_df[,min(pred)]
+  if (max_pred == 1) min_pred = 0
 
-  df_kslift = rbind(data.table(group=0, good=0, bad=0, good_distri=0, bad_distri=0, badrate=0, cumbadrate=0, lift=0, cumgood=0, cumbad=0, ks=0), df_kslift)
+  # dataframe of max density by datset and label
+  max_density_by_datset_label = dt_df[
+    , .(pred=density(pred)$x, dens=density(pred)$y), by=c('datset','label')
+  ][, max_dens := max(dens), by=c('datset','label')
+  ][ dens == max_dens
+  ][, max_dens := NULL]
 
-  return(df_kslift)
+  # max density
+  max_density = max_density_by_datset_label[, ceiling2(max(dens))]
+
+  # coord for label_string
+  coord_label = max_density_by_datset_label[
+    , .(pred=mean(pred), dens=mean(dens)), by=label
+  ][, label_str := ifelse(grepl(positive, label), 'positive', 'negative')]
+
+  # plot
+  pdens = ggplot(data = dt_df) +
+    # geom_histogram(aes(x=pred)) +
+    # geom_density(aes(x=pred), linetype='dotted') +
+    geom_density(aes(x=pred, color=datset, linetype=label), fill='gray', alpha=0.1, adjust = 1.618) +
+    geom_text(data = coord_label, aes(x=pred, y=dens, label=label_str)) +
+    # geom_vline(xintercept = threshold, linetype='dotted') +
+    # geom_text(aes(label='cut-off', x=threshold, y = 0), vjust=0) +
+    guides(linetype=FALSE, color=guide_legend(title=NULL)) +
+    theme_bw() +
+    theme(legend.position=c(1,1),
+          legend.justification=c(1,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines'))
+
+  # axis, labs
+  pdens = pdens + ggtitle(paste0(title, 'Density')) +
+    labs(x = "Prediction", y = "Density") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(ratio = (max_pred-min_pred)/(max_density), xlim = c(min_pred,max_pred), ylim = c(0,max_density), expand = FALSE)
+
+  return(pdens)
 }
-eva_pks = function(dfkslift, title) {
-  # global variables
-  ks=group=.=cumgood=cumbad=value=variable=NULL
 
-  dfks = dfkslift[ks == max(ks)][order(group)][1]
+plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  . = datset = KS = metrics = pred_threshold = coord = maxks = oc = pred = cumpop = cumgood = cumbad = NULL
 
-  pks = ggplot(melt(dfkslift[,.(group, cumgood, cumbad, ks)], id="group"), aes(x=group, y=value, colour=variable)) +
-    geom_line() + coord_fixed() +
-    geom_segment(aes(x = dfks$group, y = 0, xend = dfks$group, yend = dfks$ks), colour = "red", linetype = "dashed", arrow=arrow(ends="both", length=unit(.2,"cm"))) +
+  # data for ks plot
+  dt_ks = lapply(dat_eva_lst, function(x) {
+    TN = totN = FN = totP = NULL
+    x = x[, .(cumpop, pred, cumgood = TN/totN, cumbad = FN/totP, ks = abs(TN/totN - FN/totP))]
+    x = rbind(x, data.table(cumpop=0), fill=TRUE)
+    x[is.na(x)] <- 0
+    return(x[order(cumpop)])
+  })
+  dt_ks = merge(
+    rbindlist(dt_ks, fill = TRUE, idcol = 'datset'),
+    merge(rbindlist(pm, idcol = 'datset')[,.(datset,maxks=KS)],
+          rbindlist(co, idcol = 'datset')[metrics == 'ks',.(datset, pred_threshold,coord)], by = 'datset'),
+    by = 'datset', all.x = TRUE
+  )[, datset := sprintf('%s, KS=%.4f\np=%.4f, %s', format(datset), round(maxks,4), pred_threshold, coord)][]
+
+  # max ks row
+  dfks = dt_ks[, .SD[ks == max(ks)][1], by = 'datset'][, oc := sprintf('@%.4f', round(pred,4))][]#[, oc := sprintf('%.4f\n(%.4f,%.4f)', round(pred,4), round(cumpop,4), round(ks,4))]
+
+  # plot
+  pks = ggplot(data = dt_ks, aes(x=cumpop)) +
+    geom_line(aes(y=cumgood, color=datset), linetype='dotted') +
+    geom_line(aes(y=cumbad, color=datset), linetype='dotted') +
+    geom_line(aes(y=ks, color=datset)) +
+    geom_segment(data = dfks, aes(x = cumpop, y = 0, xend = cumpop, yend = ks, color=datset), linetype = "dashed") +
+    geom_point(data = dfks, aes(x=cumpop, y=ks), color='red') +
+    # geom_text(data = dfks, aes(x=cumpop, y=ks, label=oc, color=datset), vjust=0) +
+    annotate("text", x=0.4, y=0.7, vjust = -0.2, label="Good", colour = "gray") +
+    annotate("text", x=0.95, y=0.7, vjust = -0.2, label="Bad", colour = "gray") +
+    theme_bw() +
+    theme(legend.position=c(0,1),
+          legend.justification=c(0,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL))
+
+  # axis, labs, theme
+  pks = pks + ggtitle(paste0(title, 'K-S')) +
     labs(x = "% of population", y = "% of total Good/Bad") +
-    # annotate("text", x=0.50, y=Inf, label="K-S", vjust=1.5, size=6)+
-    ggtitle(paste0(title, 'K-S')) +
-    annotate("text", x=dfks$group, y=dfks$ks, vjust = -0.2, label=paste0("KS: ", round(dfks$ks,4) ), colour = "blue") +
-    annotate("text", x=0.20, y=0.80, vjust = -0.2, label="Bad", colour = "black") +
-    annotate("text", x=0.80, y=0.55, vjust = -0.2, label="Good", colour = "black") +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_colour_manual(values=c("black", "black", "blue")) +
-    theme_bw() + theme(legend.position="none")
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
 
   return(pks)
 }
-eva_plift = function(dfkslift, title) {
-  # global variables
-  .=group=bad=model=badrate=cumbadrate=good=NULL
-  badrate_avg = dfkslift[,sum(bad)/sum(good+bad)]
 
-  plift = ggplot( dfkslift[-1][,.(group, cumbadrate, badrate)], aes(x=group) ) +
-    # geom_line(aes(y=badrate), stat = "identity", fill=NA, colour = "black") +
-    geom_line(aes(y=cumbadrate)) +
-    # geom_point(aes(y=cumbadrate), shape=21, fill="white") +
-    coord_fixed() +
-    geom_segment(aes(x = 0, y = badrate_avg, xend = 1, yend = badrate_avg), colour = "red", linetype = "dashed") +
-    labs(x="% of population", y="% of Bad") +
-    # annotate("text", x=0.50,y=Inf, label="Lift", vjust=1.5, size=6)+
+plot_lift = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  cumpop = datset = NULL
+  dt_lift = lapply(dat_eva_lst, function(x) {
+    . = precision = totP = totN = NULL
+    x = x[, .(cumpop, lift = precision/(totP/(totP+totN)))]
+    x = rbind(x, data.table(cumpop=0), fill=TRUE)
+    return(x[order(cumpop)])
+  })
+  dt_lift = rbindlist(dt_lift, fill = TRUE, idcol = 'datset')
+
+  max_lift = dt_lift[, ceiling(max(lift,na.rm = TRUE))]
+
+  # plotting
+  plift = ggplot(data = dt_lift, aes(x=cumpop, color = datset)) +
+    geom_line(aes(y = lift), na.rm = TRUE) +
+    theme_bw() +
+    theme(legend.position=c(0,1),
+          legend.justification=c(0,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL))
+
+  # axis, labs, theme
+  plift = plift +
     ggtitle(paste0(title, 'Lift')) +
-    annotate("text", x=0.75,y=mean(dfkslift$cumbadrate), label="cumulate badrate", vjust=1)+
-    annotate("text", x=0.75,y=badrate_avg, label="average badrate", vjust=1, colour="red")+
-    guides(fill=guide_legend(title=NULL)) +
-    scale_fill_manual(values=c("white", "grey")) +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + theme_bw() +
-    theme(legend.position=c(0.5, 0.9),legend.direction="horizontal")
-
+    labs(x = "% of population", y = "Lift") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(ratio = 1/(max_lift),xlim = c(0,1), ylim = c(0,max_lift), expand = FALSE)
 
   return(plift)
 }
 
-eva_dfrocpr = function(df) {
-  # global variables
-  pred=.=label=countP=countN=FN=TN=TP=FP=precision=recall=NULL
+plot_gain = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  . = cumpop = datset = precision = NULL
+  dt_gain = lapply(dat_eva_lst, function(x) {
+    x = x[, .(cumpop, precision)]
+    x = rbind(x, data.table(cumpop=0), fill=TRUE)
+    return(x[order(cumpop)])
+  })
+  dt_gain = rbindlist(dt_gain, fill = TRUE, idcol = 'datset')
 
-  dfrocpr = df[
-    order(pred)
-  ][, .(countpred = .N, countP = sum(label==1), countN = sum(label==0)), by=pred
-  ][, `:=`(FN = cumsum(countP), TN = cumsum(countN) )
-  ][, `:=`(TP = sum(countP) - FN, FP = sum(countN) - TN)
-  ][, `:=`(TPR = TP/(TP+FN), FPR = FP/(TN+FP), precision = TP/(TP+FP), recall = TP/(TP+FN))
-  ][, `:=`(F1 = 2*precision*recall/(precision+recall))]
+  # plotting
+  pgain = ggplot(data = dt_gain, aes(x=cumpop, color = datset)) +
+    geom_line(aes(y = precision), na.rm = TRUE) +
+    theme_bw() +
+    theme(legend.position=c(0,1),
+          legend.justification=c(0,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL))
 
-  return(dfrocpr)
+  # axis, labs, theme
+  pgain = pgain +
+    ggtitle(paste0(title, 'Gain')) +
+    labs(x = "% of population", y = "Precision / PPV") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
+
+  return(pgain)
 }
-eva_proc = function(dfrocpr, title) {
-  # global variables
-  .=FPR=TPR=NULL
 
-  dfrocpr = rbind(dfrocpr[,.(FPR,TPR)], data.frame(FPR=0:1,TPR=0:1))
-  auc = dfrocpr[order(FPR,TPR)][, sum(
-    (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
-  )]
+plot_roc = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  . = datset = AUC = metrics = pred_threshold = coord = pred = TPR = FPR = ocFPR = ocTPR = NULL
 
-  proc = ggplot(dfrocpr, aes(x=FPR, y=TPR)) +
-    geom_ribbon(aes(ymin=0, ymax=TPR), fill="blue", alpha=0.1) +
-    geom_line() + coord_fixed() +
-    geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
-    # annotate("text", x = 0.5, y=Inf, label="ROC", vjust=1.5, size=6) +
-    ggtitle(paste0(title, 'ROC')) +
-    annotate("text", x=0.55, y=0.45, label=paste0("AUC: ", round(auc,4)), colour = "blue") +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    theme_bw()
+  dt_roc = lapply(dat_eva_lst, function(x) {
+    x = x[, .(TPR, FPR)]
+    x = rbind(x, data.table(TPR=0:1, FPR=0:1), fill=TRUE)
+    return(x[order(TPR, FPR)])
+  })
+  # merge with auc
+  dt_roc = merge(
+    rbindlist(dt_roc, fill = TRUE, idcol = 'datset'),
+    merge(rbindlist(pm, idcol = 'datset')[,.(datset,auc=AUC)],
+          rbindlist(co, idcol = 'datset')[metrics == 'roc',.(datset, pred_threshold,coord)], by = 'datset'),
+    by = 'datset', all.x = TRUE
+  )[, datset := sprintf('%s, KS=%.4f\np=%.4f, %s', format(datset), round(auc,4), pred_threshold, coord)][]
+
+  # optimal cutoff
+  dt_cut = merge(
+    rbindlist(pm, idcol = 'datset')[,.(datset,auc=AUC)],
+    rbindlist(lapply(dat_eva_lst, cutoff_roc), idcol = 'datset'), by = 'datset'
+  )[,.(datset, pred, ocTPR=TPR, ocFPR=FPR)
+  ]#[, oc := sprintf('@%.4f', round(pred,4))]#[, oc := sprintf('%.4f\n(%.4f,%.4f)', round(pred,4), round(ocFPR,4), round(ocTPR,4))]
+
+  # plot
+  proc = ggplot(dt_roc, aes(x=FPR)) +
+    geom_line(aes(y=TPR, color=datset)) +
+    geom_line(aes(y=FPR), linetype = "dashed", colour="gray") +
+    geom_ribbon(aes(ymin=0, ymax=TPR, fill=datset), alpha=0.1) +
+    geom_point(data = dt_cut, aes(x=ocFPR, y=ocTPR), color='red') +
+    # geom_text(data = dt_cut, aes(x=ocFPR, y=ocTPR, label=oc, color=datset), vjust=1) +
+    # geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
+    theme_bw() +
+    theme(legend.position=c(0,0),
+          legend.justification=c(0,0),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL), fill=FALSE)
+
+  # axis, labs, theme
+  proc = proc + ggtitle(paste0(title, 'ROC')) +
+    labs(x = "1-Specificity / FPR", y = "Sensitivity / TPR") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
 
   return(proc)
 }
-eva_ppr = function(dfrocpr, title) {
-  # global variables
-  recall=precision=NULL
 
-  ppr = ggplot(dfrocpr, aes(x=recall, y=precision)) +
-    geom_line() + coord_fixed() +
-    geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
-    labs(x = "Recall", y = "Precision") +
-    # annotate("text", x = 0.5, y=Inf, label="P-R", vjust=1.5, size=6) +
-    ggtitle(paste0(title, 'P-R')) +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    theme_bw()
+plot_pr = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  . = recall = precision = datset = NULL
+
+  dt_pr = lapply(dat_eva_lst, function(x) x[, .(recall, precision)][order(precision, recall)])
+  dt_pr = rbindlist(dt_pr, idcol = 'datset')
+
+  # plot
+  ppr = ggplot(dt_pr) +
+    geom_line(aes(x=recall, y=precision, color=datset), na.rm = TRUE) +
+    geom_line(aes(x=recall, y=recall), na.rm = TRUE, linetype = "dashed", colour="gray") +
+    # geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), colour = "red", linetype="dashed") +
+    theme_bw() +
+    theme(legend.position=c(0,0),
+          legend.justification=c(0,0),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL))
+
+  # axis, labs, theme
+  ppr = ppr + ggtitle(paste0(title, 'P-R')) +
+    labs(x = "Recall / TPR", y = "Precision / PPV") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
 
   return(ppr)
 }
-eva_pf1 = function(dfrocpr, title) {
-  # # break-even point
-  # BEP = dfrocpr[precision == recall][,precision]
-  # F1： 1/F1 = 1/2*(1/P+1/R)
-  # F_beta: 1/F_beta = 1/(1+beta^2)*(1/P+beta^2/R)
 
-  # global variables
-  pop=countpred=F1=pred=NULL
-  dfrocpr = dfrocpr[, pop := cumsum(countpred)/sum(countpred)]
-  # xy of F1 max
-  F1max_pop = dfrocpr[F1==max(F1,na.rm = TRUE),pop]
-  F1max_F1 = dfrocpr[F1==max(F1,na.rm = TRUE),F1]
-  # pred
-  pred_0=dfrocpr[1,pred]
-  pred_1=dfrocpr[.N,pred]
-  pred_F1max=dfrocpr[F1==F1max_F1,pred]
-  if ( !(mean(dfrocpr$pred, na.rm=TRUE)<=1 & mean(dfrocpr$pred, na.rm=TRUE)>=0) ) {
-    pred_0 = -pred_0
-    pred_1 = -pred_1
-    pred_F1max = -pred_F1max
+plot_lz = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
+  FN = totP = . = datset = Gini = cumpop = cumbadrate = NULL
+  dt_lz = lapply(dat_eva_lst, function(x) {
+    x = x[, .(cumpop, cumbadrate = FN/totP)]
+    x = rbind(x, data.table(cumpop=0, cumbadrate=0), fill=TRUE)
+    return(x[order(cumpop)])
+  })
+  dt_lz = merge(
+    rbindlist(dt_lz, fill = TRUE, idcol = 'datset'),
+    rbindlist(pm, idcol = 'datset')[,.(datset,gini=Gini)], by = 'datset', all.x = TRUE
+  )[, datset := sprintf('%s, Gini=%.4f', format(datset), round(gini,4))][]
+
+  # plot
+  plz = ggplot(dt_lz, aes(x=cumpop)) +
+    geom_line(aes(y=cumbadrate, color=datset)) +
+    geom_line(aes(y=cumpop), linetype = "dashed", colour="gray") +
+    # geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
+    geom_ribbon(aes(ymin=cumpop, ymax=cumbadrate, fill=datset), alpha=0.1) +
+    theme_bw() +
+    theme(legend.position=c(0,1),
+          legend.justification=c(0,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL), fill=FALSE)
+
+  # axis, labs, theme
+  plz = plz + ggtitle(paste0(title, 'Lorenz')) +
+    labs(x = "% of population", y = "% of total Good/Bad") +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
+
+  return(plz)
+}
+
+plot_f1 = function(dat_eva_lst, pm=NULL, co=NULL, beta=1, title=NULL, ...) {
+  . = datset = pred_threshold = coord = f1 = cumpop = metrics = NULL
+
+  dt_f = lapply(dat_eva_lst, function(x) {
+    . = cumpop = precision = recall = NULL
+    x = x[, .(cumpop, f = 1/(1/(1+beta^2)*(1/precision+beta^2/recall)))]
+    setnames(x, c('cumpop', paste0('f',beta)))
+    return(x[order(cumpop)])
+  })
+  dt_f = merge(
+    rbindlist(dt_f, fill = TRUE, idcol = 'datset'),
+    rbindlist(co, idcol = 'datset')[metrics == paste0('max_f',beta),.(datset, pred_threshold,coord)],
+    by = 'datset', all.x = TRUE
+  )[, datset := sprintf('%s\np=%.4f, %s', format(datset), pred_threshold, coord)][]
+
+
+  # optimal cutoff
+  dt_cut = dt_f[, .SD[f1 == max(f1, na.rm = TRUE)][1], by = 'datset']#[, oc := sprintf('%.4f\n(%.4f,%.4f)', round(pred,4), round(cumpop,4), round(ks,4))]
+
+  # plot
+  pf = ggplot(data = dt_f, aes(x=cumpop)) +
+    geom_line(aes_string(y=paste0('f',beta), color='datset'), na.rm = TRUE) +
+    geom_point(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta)), color='red') +
+    # geom_text(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta), label='oc', color='datset'), vjust=0) +
+    geom_segment(data = dt_cut, aes_string(x = 'cumpop', y = 0, xend = 'cumpop', yend = paste0('f',beta), color='datset'), linetype = "dashed") +
+    theme_bw() +
+    theme(legend.position=c(0,1),
+          legend.justification=c(0,1),
+          legend.background=element_blank(),
+          legend.key=element_blank(),
+          legend.key.size = unit(1.5, 'lines')) +
+    guides(color=guide_legend(title=NULL), fill=FALSE)
+
+  # axis, labs, theme
+  pf = pf + ggtitle(paste0(title, paste0("F",beta))) +
+    labs(x = "% of population", y = paste0("F",beta)) +
+    scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
+    coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
+
+  return(pf)
+}
+
+
+
+# dataset label pred
+#' @importFrom stats complete.cases
+func_dat_labelpred = function(pred, label, title, positive, seed, ...) {
+  # convert pred/label into list of list, such as:
+  # pred = list(datset = list(pred = ...))
+  lst_pl = list(pred=pred, label=label)
+  lst_pl2 = Map(function(x, xname) {
+    if (is.null(x)) return(x)
+
+    # if not list, convert into list
+    if (!inherits(x,'list')) {
+      x = list(dat=x)
+      if (!is.null(title)) names(x) <- title
+    }
+
+    # convert the objects in list of pred/label, into lists
+    x = lapply(x, function(xi) {
+      xi_lst = list()
+      if (!is.data.frame(xi)) {
+        xi_lst[[xname]] = xi
+      } else {
+        xi_lst = as.list(xi)
+      }
+      return(xi_lst)
+    })
+
+    # return pred/label
+    return(x)
+  }, x = lst_pl, xname = names(lst_pl))
+
+
+  # convert list into datatable using setDT()
+  dt_lst = list()
+  for (ds in names(lst_pl2$pred)) { # ds = dataset
+    lst_pred_ds = lst_pl2$pred[[ds]]
+
+    lst_label_ds = lst_pl2$label[[ds]]
+    if (is.null(lst_label_ds)) lst_label_ds[[ds]] = rep_len(NA, unique(sapply(lst_pred_ds, length)))
+
+    dt_lst[[ds]] = setDT(c(lst_pred_ds, lst_label_ds))
   }
 
 
-  pf1 = ggplot(dfrocpr) +
-    geom_line(aes(x=pop, y=F1)) + coord_fixed() +
-    geom_segment(aes(x = F1max_pop, y = 0, xend = F1max_pop, yend = F1max_F1), colour = "red", linetype="dashed") +
-    labs(x = "% of population", y = "F1") +
-    # annotate("text", x = 0.5, y=Inf, label="F1", vjust=1.5, size=6) +
-    ggtitle(paste0(title, 'F1')) +
-    annotate('text', x=0, y=0, label=paste0('pred: \n',round(pred_0,4)), vjust=-0.2, hjust=0) +
-    annotate('text', x=1, y=0, label=paste0('pred: \n',round(pred_1,4)), vjust=-0.2, hjust=1) +
-    # annotate('text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop], y=0, label=paste0('pred\n',round(pred_F1max,4)), vjust=-0.2) +
-    annotate(
-      'text', x=dfrocpr[F1==max(F1,na.rm = TRUE),pop],
-      y=dfrocpr[F1==max(F1,na.rm = TRUE),F1],
-      label=paste0('F1: ',dfrocpr[F1==max(F1,na.rm = TRUE),round(F1,4)], '\n@', round(pred_F1max,4)), vjust=-0.2, colour='blue') +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-    theme_bw()
+  # random sort datatable
+  dt_lst = lapply(dt_lst, function(x) {
+    set.seed(seed)
+    return(x[sample(.N, .N)])
+  })
+  # # if pred is score
+  # if (for_psi) {
+  #   for (pn in setdiff(names(dt_lst[[1]]), 'label')) {
+  #     if ( all(sapply(dt_lst, function(x) mean(x[[pn]],na.rm = TRUE)>1)) ) {
+  #       warning("Since the average of pred is not in [0,1], it is treated as predicted score but not probability.")
+  #       for (ds in names(dt_lst)) {
+  #         dt_lst[[ds]][[pn]] = -dt_lst[[ds]][[pn]]
+  #       }
+  #     }
+  #   }
+  # }
 
-  return(pf1)
+
+  # check label & remove rows with missing values in pred
+  dt_lst = lapply(dt_lst, function(x) {
+    if (!is.null(label)) x = check_y(x, 'label', positive)
+    if (anyNA(x)) {
+      warning("The NAs in dataset have been removed.")
+      x = x[complete.cases(copy(x)[,label:=NULL]), ]#x[!is.na(pred)]
+    }
+    return(x)
+  })
+
+  return(dt_lst)
 }
-#' KS, ROC, Lift, PR
+# dataset evaluation
+func_dat_eva = function(dt, groupnum=NULL, ...) {
+  . = label = pred = nP = nN = totP = FN = totN = TN = TP = FP = group = NULL
+
+  # nP, number of Positive samples in each predicted prob
+  # nN, number of Negative samples in each predicted prob
+
+  # totP, total Positive
+  # totN, total Negative
+
+  # FN, False Negative; cumsum of positive, cumbad
+  # TN, True Negative;  cumsum of negative, cumgood
+
+  # TP, True Positive;  totP-FN
+  # FP, False Positive; totN-TN
+  setDT(dt)
+  total_num = dt[,.N]
+
+  dt_ev = dt[, .(nP = sum(label==1), nN = sum(label==0)), keyby = pred]
+  if (!(is.null(groupnum) || total_num <= groupnum)) {
+    dt_ev = dt_ev[, pred := ceiling(cumsum(nP+nN)/(total_num/groupnum))
+                ][, .(nP = sum(nP), nN = sum(nN)), keyby = pred ]
+  }
+
+  dt_ev = dt_ev[, `:=`(FN = cumsum(nP), TN = cumsum(nN),
+                    totP = sum(nP), totN = sum(nN))
+           ][, `:=`(TP = totP-FN, FP = totN-TN)
+           ][, `:=`(TPR = TP/totP, FPR = FP/totN,
+                    precision = TP/(TP+FP), recall = TP/totP,
+                    cumpop = (FN+TN)/(totP+totN))][]
+
+  return(dt_ev)
+}
+
+
+# performance metrics
+pf_metrics = function(dt_lst, dt_ev_lst, all_metrics, sel_metrics) {
+  metrics_to_names = function(bm) {
+    bm = toupper(bm)
+    if (bm=='LOGLOSS') {
+      bm = 'LogLoss'
+    } else if (bm == 'GINI') {
+      bm = 'Gini'
+    }
+    return(bm)
+  }
+
+  # all metrics
+  all_pm = list()
+  for (n in names(dt_lst)) {
+    d1 = dt_lst[[n]]
+    d2 = dt_ev_lst[[n]]
+
+    allpm_list = list()
+    for (i in all_metrics) {
+      allpm_list[[metrics_to_names(i)]] = do.call(i, args = list(dt = d1, dt_ev=d2))
+    }
+    all_pm[[n]] = setDT(allpm_list)
+  }
+
+  # selected metrics
+  sel_pm = lapply(all_pm, function(x) x[,sapply(sel_metrics, metrics_to_names),with=FALSE])
+
+  return(list(all_pm=all_pm, sel_pm=sel_pm))
+}
+# optimal cutoffs
+pf_cutoffs = function(dt_ev_lst) {
+  . = pred = cumpop = f1 = f2 = FPR = TPR = NULL
+  co = list()
+  for (n in names(dt_ev_lst)) {
+    con = list(
+      max_f1  = cutoff_fbeta(dt_ev_lst[[n]],1)[,.(pred_threshold=pred, coord = sprintf('(%.2f,%.2f)',cumpop,f1))],
+      max_f2  = cutoff_fbeta(dt_ev_lst[[n]],2)[,.(pred_threshold=pred, coord = sprintf('(%.2f,%.2f)',cumpop,f2))],
+      ks  = cutoff_ks(dt_ev_lst[[n]])[,.(pred_threshold=pred, coord = sprintf('(%.2f,%.2f)',cumpop,ks))],
+      roc = cutoff_roc(dt_ev_lst[[n]])[,.(pred_threshold=pred, coord = sprintf('(%.2f,%.2f)',FPR,TPR))] )
+
+    co[[n]] = rbindlist(con, idcol = 'metrics')
+  }
+  return(co)
+}
+
+# eva ------
+
+#' Binomial Metrics
 #'
-#' \code{perf_eva} provides performance evaluations, such as kolmogorov-smirnow(ks), ROC, lift and precision-recall curves, based on provided label and predicted probability values.
+#' \code{perf_eva} calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.
 #'
-#' @name perf_eva
-#' @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
-#' @param pred Predicted probability or score.
-#' @param title Title of plot, default is NULL.
-#' @param groupnum The group number when calculating KS.  Default NULL, which means the number of sample size.
-#' @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
-#' @param show_plot Logical value, default is TRUE. It means whether to show plot.
+#' @param label A list or vector of label values.
+#' @param pred A list or vector of predicted probability or score.
+#' @param title The title of plot. Default is NULL.
+#' @param binomial_metric Default is c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.
+#' @param confusion_matrix Logical, whether to create a confusion matrix. Default is TRUE.
+#' @param threshold Confusion matrix threshold. Default is the pred on maximum F1.
+#' @param show_plot Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
 #' @param positive Value of positive class, default is "bad|1".
-#' @param seed Integer, default is 186. The specify seed is used for random sorting data.
-#' @return ks, roc, lift, pr
+#' @param ... additional parameters.
+#'
+#' @return A list of binomial metric, confusion matrix and plots
 #'
 #' @details
 #' Accuracy = true positive and true negative/total cases
@@ -226,124 +676,374 @@ eva_pf1 = function(dfrocpr, title) {
 #' # filter variable via missing rate, iv, identical value rate
 #' dt_sel = var_filter(germancredit, "creditability")
 #'
+#' # breaking dt into train and test ------
+#' dt_list = split_df(dt_sel, "creditability")
+#'
 #' # woe binning ------
-#' bins = woebin(dt_sel, "creditability")
-#' dt_woe = woebin_ply(dt_sel, bins)
+#' bins = woebin(dt_list$train, "creditability")
+#' # converting train and test into woe values
+#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
 #'
 #' # glm ------
-#' m1 = glm( creditability ~ ., family = binomial(), data = dt_woe)
-#' # summary(m1)
-#'
+#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
+#' # vif(m1, merge_coef = TRUE)
 #' # Select a formula-based model by AIC
 #' m_step = step(m1, direction="both", trace=FALSE)
 #' m2 = eval(m_step$call)
-#' # summary(m2)
+#' # vif(m2, merge_coef = TRUE)
 #'
 #' # predicted proability
-#' dt_pred = predict(m2, type='response', dt_woe)
+#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
 #'
-#' # performance ------
-#' # Example I # only ks & auc values
-#' perf_eva(dt_woe$creditability, dt_pred, show_plot=FALSE)
+#' # scorecard ------
+#' card = scorecard(bins, m2)
 #'
-#' # Example II # ks & roc plot
-#' perf_eva(dt_woe$creditability, dt_pred)
+#' # credit score, only_total_score = TRUE
+#' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
+#' # credit score, only_total_score = FALSE
+#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
 #'
-#' # Example III # ks, lift, roc & pr plot
-#' perf_eva(dt_woe$creditability, dt_pred, type = c("ks","lift","roc","pr"))
+#'
+#' ###### perf_eva examples ######
+#' # Example I, one datset
+#' ## predicted p1
+#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
+#' ## predicted score
+#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
+#'
+#' # Example II, multiple datsets
+#' label_list = lapply(dt_list, function(x) x$creditability)
+#' ## predicted p1
+#' perf_eva(pred = pred_list, label = label_list)
+#' ## predicted score
+#' # perf_eva(score_list, label_list)
+#'
+#'
+#' ###### perf_psi examples ######
+#' # Example I # only total psi
+#' psi1 = perf_psi(score = score_list, label = label_list)
+#' psi1$psi  # psi dataframe
+#' psi1$pic  # pic of score distribution
+#'
+#' # Example II # both total and variable psi
+#' psi2 = perf_psi(score = score_list, label = label_list)
+#' # psi2$psi  # psi dataframe
+#' # psi2$pic  # pic of score distribution
+#'
+#'
+#' ###### gains_table examples ######
+#' # Example I, score can be a list of score or pred
+#' gains_table(score = score_list, label = label_list)
+#' gains_table(score = pred_list, label = label_list)
+#'
+#' # Example II, specify the bins number and type
+#' gains_table(score = score_list, label = label_list, bin_num = 20)
+#' gains_table(score = score_list, label = label_list, bin_type = 'width')
 #' }
+#'
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"), show_plot=TRUE, positive="bad|1", seed=186) {
-  # global variables
-  .=FPR = TPR = cumbad = group = ks = NULL
+perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'), confusion_matrix=TRUE, threshold=NULL, show_plot=c('ks', 'roc'), positive="bad|1", ...) {
+  . = f1 = NULL
 
-  # inputs checking
-  if (is.factor(label)) label = as.character(label)
-  if (!(is.vector(label) & is.vector(pred) & length(label) == length(pred))) stop("Incorrect inputs; label and pred should be vectors with the same length.")
-  # if pred is score
-  if ( !(mean(pred, na.rm=TRUE)<=1 & mean(pred, na.rm=TRUE)>=0) ) {
-    warning("Since the average of pred is not in [0,1], it is treated as predicted score but not probability.")
-    pred = -pred
+  # arguments
+  seed = list(...)[['seed']]
+  if (is.null(seed)) seed = 618
+
+  # list of data with label and pred
+  dt_lst = suppressMessages(
+    func_dat_labelpred(pred=pred, label=label, title=title, positive=positive, seed=seed))
+  dt_lst = lapply(dt_lst, function(x) x[,.(label, pred=x[[setdiff(names(x),'label')]])])
+  pred_is_score = all(sapply(dt_lst, function(x) mean(x$pred, na.rm = TRUE)>1))
+  dt_lst = lapply(dt_lst, function(x) {
+    if (pred_is_score) {
+      # warning("Since the average of pred is not locate in [0,1], it is treated as predicted score but not probability.")
+      x[, pred := -pred]
+    }
+    return(x)
+  })
+  # datasets for evaluation
+  dt_ev_lst = lapply(dt_lst, function(x) func_dat_eva(x, groupnum = NULL))
+  # cutoff, Maximum Metrics
+  co = pf_cutoffs(dt_ev_lst)
+
+
+  # return list
+  rt_list = list()
+  ###### performance metric
+  all_metrics = c('mse','rmse','logloss','r2','ks','auc','gini')
+  if (pred_is_score) all_metrics = c('ks', 'auc', 'gini')
+  sel_metrics = intersect(binomial_metric, all_metrics)
+
+  pm_lst = pf_metrics(dt_lst, dt_ev_lst, all_metrics, sel_metrics)
+  if (length(sel_metrics)>0) rt_list[['binomial_metric']] = pm_lst$sel_pm
+  # cat('Binomial Metrics:\n')
+  # print(pm)
+
+  ###### confusion matrix
+  if (confusion_matrix) {
+    # if threshold is not provided, set it as max F1
+    if (is.null(threshold) || !is.numeric(threshold)) threshold = cutoff_fbeta(dt_ev_lst[[1]])[,pred]
+    # confusion matrix
+    # cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold))
+    rt_list[['confusion_matrix']] = lapply(dt_lst, function(x) confusionMatrix(dt=x, threshold=threshold))
   }
-  # random sort datatable
-  set.seed(seed)
-  df = data.table(label=label, pred=pred)[sample(.N)]
-  # remove NAs
-  if (anyNA(label) || anyNA(pred)) {
-    warning("The NAs in \"label\" or \"pred\" were removed.")
-    df = df[!is.na(label) & !is.na(pred)]
-  }
-  # check label
-  df = check_y(df, 'label', positive)
+  # cat(sprintf('Confusion Matrix with threshold=%s:\n', round(threshold,4)))
+  # print(cm)
+
+  ###### plot
   # title
   if (!is.null(title)) title = paste0(title,': ')
-
-
-  ### data ###
-  # dfkslift ------
-  if (any(c("ks","lift") %in% type)) {
-    df_kslift = eva_dfkslift(df, groupnum)
-    df_string1 = paste0('df_',intersect(c("ks","lift"), type), '=df_kslift')
-    eval(parse(text=df_string1))
-  }
-  # dfrocpr ------
-  if (any(c("roc","pr",'f1') %in% type)) {
-    df_rocpr = eva_dfrocpr(df)
-    df_string2 = paste0('df_',intersect(c("roc","pr",'f1'), type), '=df_rocpr')
-    eval(parse(text=df_string2))
-  }
-
-
-  ###  return list ###
-  rt = list()
-  # KS ------
-  if ("ks" %in% type) rt$KS = df_kslift[ks == max(ks)][order(group)][1,round(ks, 4)]
-  # ROC ------
-  if ("roc" %in% type) {
-    auc = rbind(df_rocpr[,.(FPR,TPR)], data.frame(FPR=0:1,TPR=0:1))[order(FPR,TPR)][, sum(
-      (TPR+shift(TPR, fill=0, type="lag"))/2*(FPR-shift(FPR, fill=0, type="lag"))
-    )]
-    # return list
-    rt$AUC = round(auc,4)
-
-    # gini
-    # gini = dfkslift[, sum(
-    #   (cumbad+shift(cumbad, fill=0, type="lag"))*(group-shift(group, fill=0, type="lag")) )]-1
-    rt$Gini = round(2*auc-1, 4)
+  # type
+  type = list(...)[["type"]]
+  # show_plot
+  if (isTRUE(show_plot) & !is.null(type)) show_plot = type
+  show_plot = intersect(show_plot, c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
+  # pic
+  if (length(show_plot)>0) {
+    # datasets for visualization
+    groupnum = list(...)[["groupnum"]]
+    if (is.null(groupnum)) groupnum = 1000
+    dt_ev_lst_plot = lapply(dt_lst, function(x) func_dat_eva(x, groupnum = groupnum))
+    # plot
+    plist = lapply(paste0('plot_', show_plot), function(x) do.call(x, args = list(dat_eva_lst = dt_ev_lst_plot, dt_lst=dt_lst, pm=pm_lst$all_pm, co=co, title=title, positive=positive)))
+    # return
+    rt_list[['pic']] = do.call(grid.arrange, c(plist, list(ncol=ceiling(sqrt(length(show_plot))), padding = 0)))
   }
 
+  return(rt_list)
+}
 
-  ###  export plot
-  if (show_plot == TRUE) {
-    plist = paste0(paste0('p',type,"=eva_p", type, '(df_',type,',title)'), collapse = ',')
-    plist = eval(parse(text=paste0("list(",plist,")")))
-    # plist = lapply(plist, function(p) {
-    #   p + geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
-    #     coord_cartesian(clip = 'off')
-    # })
-    p_nrows = ceiling(length(type)/2)
 
-    args.list <- c(plist, list(nrow=p_nrows, padding = 0))
-    rt$pic = do.call(grid.arrange, args.list)
+# psi ------
+# PSI function
+psi_metric = function(dt_s, names_datset) {
+  A=E=logAE=bin_psi=NULL
+  # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
+
+  # dat = copy(dat)[,y:=NULL][complete.cases(dat),]
+  AE = bin_PSI = NULL
+
+  # dataframe of bin, actual, expected
+  dt_bae = dcast(
+    dt_s[, .N, keyby = c('datset', 'bin')],
+    bin ~ datset, value.var="N", fill = 0.99
+  )
+
+  # psi
+  psi_dt = dt_bae[
+    , (c("A","E")) := lapply(.SD, function(x) x/sum(x)), .SDcols = names_datset
+  ][, `:=`(AE = A-E, logAE = log(A/E))
+  ][, `:=`(bin_psi = AE*logAE)
+  ][, sum(bin_psi)]
+
+  return(psi_dt)
+}
+
+# psi plot
+psi_plot = function(dt_s, psi_sn, title, sn) {
+  . = label = N = bad = badprob = distr = bin = midbin = bin1 = bin2 = datset = badprob2 = NULL
+
+  title = paste0(ifelse(is.null(title), sn, title), " PSI: ", round(psi_sn, 4))
+
+  distr_prob =
+    dt_s[, .(.N, bad = sum(label==1)), keyby = c('datset','bin')
+       ][, `:=`(distr = N/sum(N), badprob = bad/N), by = 'datset'
+       ][, `:=`(badprob2 = badprob*max(distr)), by = "datset"
+       ][, `:=`(
+         bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
+         bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
+      )][, midbin := (bin1+bin2)/2 ][]
+
+  # plot
+  p_score_distr =
+    ggplot(distr_prob) +
+    geom_bar(aes(x=bin, y=distr, fill=datset), alpha=0.6, stat="identity", position="dodge", na.rm=TRUE) +
+    geom_line(aes(x=bin, y=badprob2, group=datset, linetype=datset), colour='blue', na.rm=TRUE) +
+    geom_point(aes(x=bin, y=badprob2), colour='blue', shape=21, fill="white", na.rm=TRUE) +
+    guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
+    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
+    ggtitle(title) +
+    labs(x=NULL, y="Score distribution") +
+    # geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
+    theme_bw() +
+    theme(
+      plot.title=element_text(vjust = -2.5),
+      legend.position=c(1,1),
+      legend.justification=c(1,1),
+      legend.background=element_blank(),
+      axis.title.y.right = element_text(colour = "blue"),
+      axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
+      axis.text.y = element_text(angle=90, hjust = 0.5))
+
+  return(p_score_distr)
+}
+
+
+
+#' Gains Table
+#'
+#' \code{gains_table} creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+#'
+#' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
+#' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
+#' @param bin_num Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.
+#' @param bin_type The score is cutted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.
+#' @param positive Value of positive class, default is "bad|1".
+#' @param ... Additional parameters.
+#'
+#' @examples
+#' \dontrun{
+#' # load germancredit data
+#' data("germancredit")
+#'
+#' # filter variable via missing rate, iv, identical value rate
+#' dt_sel = var_filter(germancredit, "creditability")
+#'
+#' # breaking dt into train and test ------
+#' dt_list = split_df(dt_sel, "creditability")
+#'
+#' # woe binning ------
+#' bins = woebin(dt_list$train, "creditability")
+#' # converting train and test into woe values
+#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
+#'
+#' # glm ------
+#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
+#' # vif(m1, merge_coef = TRUE)
+#' # Select a formula-based model by AIC
+#' m_step = step(m1, direction="both", trace=FALSE)
+#' m2 = eval(m_step$call)
+#' # vif(m2, merge_coef = TRUE)
+#'
+#' # predicted proability
+#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
+#'
+#' # scorecard ------
+#' card = scorecard(bins, m2)
+#'
+#' # credit score, only_total_score = TRUE
+#' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
+#' # credit score, only_total_score = FALSE
+#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
+#'
+#'
+#' ###### perf_eva examples ######
+#' # Example I, one datset
+#' ## predicted p1
+#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
+#' ## predicted score
+#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
+#'
+#' # Example II, multiple datsets
+#' label_list = lapply(dt_list, function(x) x$creditability)
+#' ## predicted p1
+#' perf_eva(pred = pred_list, label = label_list)
+#' ## predicted score
+#' # perf_eva(score_list, label_list)
+#'
+#'
+#' ###### perf_psi examples ######
+#' # Example I # only total psi
+#' psi1 = perf_psi(score = score_list, label = label_list)
+#' psi1$psi  # psi dataframe
+#' psi1$pic  # pic of score distribution
+#'
+#' # Example II # both total and variable psi
+#' psi2 = perf_psi(score = score_list, label = label_list)
+#' # psi2$psi  # psi dataframe
+#' # psi2$pic  # pic of score distribution
+#'
+#'
+#' ###### gains_table examples ######
+#' # Example I, score can be a list of score or pred
+#' gains_table(score = score_list, label = label_list)
+#' gains_table(score = pred_list, label = label_list)
+#'
+#' # Example II, specify the bins number and type
+#' gains_table(score = score_list, label = label_list, bin_num = 20)
+#' gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' }
+#'
+#' @export
+gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|1', ...) {
+  datset = bin = group = V1 = . = count = bad = V2 = NULL
+
+  # arguments
+  # seed
+  seed = list(...)[['seed']]
+  if (is.null(seed)) seed = 618
+  # bin_num
+  if (bin_num!='max' & bin_num <= 1) bin_num = 10
+  # bin_type
+  if (!(bin_type %in% c('freq', 'width'))) bin_type='freq'
+  # return_dt_psi
+  return_dt_psi = list(...)[['return_dt_psi']]
+  if (is.null(return_dt_psi)) return_dt_psi = FALSE
+  # dt_sl
+  dt_sl = list(...)[['dt_sl']]
+
+  if (is.null(dt_sl) & !is.null(score) & !is.null(label)) {
+    names_datset = names(score)
+    # dateset list of score and label
+    dt_sl = suppressWarnings( func_dat_labelpred(
+      pred=score, label=label, title=NULL, positive=positive, seed=seed) )
+    dt_sl = lapply(dt_sl, function(x) {
+      x[,.(label, score=x[[setdiff(names(x),'label')]])]
+    })
+    dt_sl = rbindlist(dt_sl, idcol = 'datset')[, datset := factor(datset, levels = names_datset)]
   }
 
-  return(rt)
+
+  # gains table
+  if ( bin_num=='max' || bin_num>=dt_sl[, length(unique(score))] ) {
+    dt_psi = copy(dt_sl)[, bin := factor(score)]
+
+  } else {
+    if (bin_type == 'freq') {
+      # breaks in equal frequency
+      brkp = copy(dt_sl)[order(score)
+                       ][, group := ceiling(.I/(.N/bin_num))
+                   ][, score[.N], by = group
+                   ][, c(-Inf, V1[-.N], Inf)]
+
+    } else { #  if (bin_type == 'width')
+      # breaks in equal width
+      minmax = dt_sl[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')][,.(mins = max(V1), maxs = min(V2))]
+      brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
+      if (dt_sl[,mean(score)>1]) brkp = round(brkp)
+      brkp = c(-Inf, brkp[-c(1, length(brkp))], Inf)
+
+    }
+    dt_psi = copy(dt_sl)[, bin := cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
+
+  }
+  if (return_dt_psi) return(dt_psi)
+
+  # distribution tables
+  dt_distr = dt_psi[, .(count=.N, bad = sum(label==1)), keyby = .(datset,bin)
+                  ][order(datset, -bin)]
+  if (dt_sl[,mean(score)<=1]) dt_distr = dt_distr[order(datset, bin)] # if score is p1
+  dt_distr = dt_distr[, .(bin, count, cum_count = cumsum(count), good=count-bad, cum_good = cumsum(count-bad), bad, cum_bad = cumsum(bad), count_distr = count/sum(count), badprob=bad/count, cum_badprob = cumsum(bad)/cumsum(count), approval_rate = cumsum(count)/sum(count) ), by = datset]
+
+  return(dt_distr)
 }
 
 #' PSI
 #'
-#' \code{perf_psi} calculates population stability index (PSI) and provides credit score distribution based on credit score datasets.
+#' \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
 #'
-#' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = score_A, expect = score_E), both score_A and score_E are dataframes with the same column names.
-#' @param label A list of label value for actual and expected data samples. The default is NULL. For example, label = list(actual = label_A, expect = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.
+#' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
+#' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Default is NULL.
 #' @param title Title of plot, default is NULL.
-#' @param x_limits x-axis limits, default is NULL.
-#' @param x_tick_break x-axis ticker break, default is 50.
-#' @param show_plot Logical, default is TRUE. It means whether to show plot.
-#' @param return_distr_dat Logical, default is FALSE.
-#' @param seed Integer, default is 186. The specify seed is used for random sorting data.
+# @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
+#' @param threshold_variable Integer. Default is 20. If the number of unique values in provided score > threshold_variable, the score will count as total credit score, otherwise, it is variable score.
+#' @param show_plot Logical. Default is TRUE.
+# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of dataframes including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
+# @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
+#' @param positive Value of positive class, default is "bad|1".
+#' @param ... Additional parameters.
 #'
 #' @return a dataframe of psi & plots of credit score distribution
 #'
@@ -360,249 +1060,116 @@ perf_eva = function(label, pred, title=NULL, groupnum=NULL, type=c("ks", "roc"),
 #' dt_sel = var_filter(germancredit, "creditability")
 #'
 #' # breaking dt into train and test ------
-#' dt_list = split_df(dt_sel, "creditability", ratio = 0.6, seed=21)
-#' dt_train = dt_list$train; dt_test = dt_list$test
+#' dt_list = split_df(dt_sel, "creditability")
 #'
 #' # woe binning ------
-#' bins = woebin(dt_train, "creditability")
-#'
+#' bins = woebin(dt_list$train, "creditability")
 #' # converting train and test into woe values
-#' train = woebin_ply(dt_train, bins)
-#' test = woebin_ply(dt_test, bins)
+#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
 #'
 #' # glm ------
-#' m1 = glm(creditability ~ ., family = binomial(), data = train)
-#' # summary(m1)
-#'
+#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
+#' # vif(m1, merge_coef = TRUE)
 #' # Select a formula-based model by AIC
 #' m_step = step(m1, direction="both", trace=FALSE)
 #' m2 = eval(m_step$call)
-#' # summary(m2)
+#' # vif(m2, merge_coef = TRUE)
 #'
 #' # predicted proability
-#' train_pred = predict(m2, type='response', train)
-#' test_pred = predict(m2, type='response', test)
+#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
 #'
-#' # # ks & roc plot
-#' # perf_eva(train$creditability, train_pred, title = "train")
-#' # perf_eva(test$creditability, test_pred, title = "test")
-#'
-#' #' # scorecard
+#' # scorecard ------
 #' card = scorecard(bins, m2)
 #'
 #' # credit score, only_total_score = TRUE
-#' train_score = scorecard_ply(dt_train, card)
-#' test_score = scorecard_ply(dt_test, card)
+#' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
+#' # credit score, only_total_score = FALSE
+#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
 #'
-#' # Example I # psi
-#' psi = perf_psi(
-#'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train$creditability, test = test$creditability)
-#' )
-#' # psi$psi  # psi dataframe
-#' # psi$pic  # pic of score distribution
 #'
-#' # Example II # specifying score range
-#' psi_s = perf_psi(
-#'   score = list(train = train_score, test = test_score),
-#'   label = list(train = train$creditability, test = test$creditability),
-#'   x_limits = c(200, 750),
-#'   x_tick_break = 50
-#'   )
+#' ###### perf_eva examples ######
+#' # Example I, one datset
+#' ## predicted p1
+#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
+#' ## predicted score
+#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
 #'
-#' # Example III # credit score, only_total_score = FALSE
-#' train_score2 = scorecard_ply(dt_train, card, only_total_score=FALSE)
-#' test_score2 = scorecard_ply(dt_test, card, only_total_score=FALSE)
+#' # Example II, multiple datsets
+#' label_list = lapply(dt_list, function(x) x$creditability)
+#' ## predicted p1
+#' perf_eva(pred = pred_list, label = label_list)
+#' ## predicted score
+#' # perf_eva(score_list, label_list)
 #'
-#' # psi
-#' psi2 = perf_psi(
-#'   score = list(train = train_score2, test = test_score2),
-#'   label = list(train = train$creditability, test = test$creditability)
-#' )
+#'
+#' ###### perf_psi examples ######
+#' # Example I # only total psi
+#' psi1 = perf_psi(score = score_list, label = label_list)
+#' psi1$psi  # psi dataframe
+#' psi1$pic  # pic of score distribution
+#'
+#' # Example II # both total and variable psi
+#' psi2 = perf_psi(score = score_list, label = label_list)
 #' # psi2$psi  # psi dataframe
 #' # psi2$pic  # pic of score distribution
+#'
+#'
+#' ###### gains_table examples ######
+#' # Example I, score can be a list of score or pred
+#' gains_table(score = score_list, label = label_list)
+#' gains_table(score = pred_list, label = label_list)
+#'
+#' # Example II, specify the bins number and type
+#' gains_table(score = score_list, label = label_list, bin_num = 20)
+#' gains_table(score = score_list, label = label_list, bin_type = 'width')
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi = function(score, label=NULL, title=NULL, x_limits=NULL, x_tick_break=50, show_plot=TRUE, seed=186, return_distr_dat = FALSE) {
-  # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
+perf_psi = function(score, label=NULL, title=NULL, threshold_variable=20, show_plot=TRUE, positive="bad|1", ...) {
+  # # global variables
+  . = datset = group = V1 = bin = NULL
 
-  # global variables
-  . = A = ae = E = PSI = bad = badprob = badprob2 = bin = bin1 = bin2 = count = distr = logAE = midbin = test = train = y = NULL
-  # return list
-  rt = rt_psi = rt_pic = rt_dat = list()
+  # arguments
+  bin_type = list(...)[['bin_type']]
+  if (is.null(bin_type) || !(bin_type %in% c('freq', 'width'))) bin_type='width'
+
+  seed = list(...)[['seed']]
+  if (is.null(seed)) seed = 618
+
+  return_distr_dat = list(...)[['return_distr_dat']]
+  if (is.null(return_distr_dat)) return_distr_dat = FALSE
 
 
+  names_datset = names(score) # names of dataset
+  # dateset list of score and label
+  dt_sl = suppressWarnings( func_dat_labelpred(
+    pred=score, label=label, title=title, positive=positive, seed=seed) )
+  dt_sl = rbindlist(dt_sl, idcol = 'datset')[, datset := factor(datset, levels = names_datset)]
 
-  # inputs checking
-  # score
-  if (!is.list(score)) {
-    stop("Incorrect inputs; score should be a list.")
-  } else {
-    if (length(score) != 2) {
-      stop("Incorrect inputs; the length of score should be 2.")
-    } else {
-      if (!is.data.frame(score[[1]]) || !is.data.frame(score[[2]])) stop("Incorrect inputs; score is a list of two dataframes.")
 
-      if (!identical( names(score[[1]]), names(score[[2]]) )) stop("Incorrect inputs; the column names of two dataframes in score should be the same.")
-    }
+  rt = list() # return list
+  for (sn in setdiff(names(dt_sl), c('datset', 'label'))) { # sn: score names
+    # dataset for sn
+    dt_s = dt_sl[,.(datset, label, score=dt_sl[[sn]])]
+
+    sn_is_totalscore = dt_s[,length(unique(score)) > threshold_variable]
+    bin_num <- ifelse(sn_is_totalscore, 10, 'max')
+
+    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=TRUE, dt_sl=dt_s)
+
+    # population stability index
+    psi_sn = psi_metric(dt_psi, names_datset)
+    rt[['psi']][[sn]] = data.table(psi = psi_sn)
+    # pic
+    if (show_plot) rt[['pic']][[sn]] = psi_plot(dt_psi, psi_sn, title, sn)
+    # equal freq / width dataframe
+    if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_s)
   }
 
-  # label
-  if ( !is.null(label) ) {
-    if (!is.list(label)) {
-      stop("Incorrect inputs; label should be a list.")
-    } else {
-      if (length(label) != 2) {
-        stop("Incorrect inputs; the length of label should be 2.")
-      } else {
-        if (!identical(names(score), names(label))) stop("Incorrect inputs; the names of score and label should be the same. ")
-
-        if (is.data.frame(label[[1]])) {
-          if (ncol(label[[1]]) == 1) {
-            label[[1]] = label[[1]][[1]]
-          } else (
-            stop("Incorrect inputs; the number of columns in label should be 1.")
-          )
-        }
-        if (is.data.frame(label[[2]])) {
-          if (ncol(label[[2]]) == 1) {
-            label[[2]] = label[[2]][[1]]
-          } else {
-            stop("Incorrect inputs; the number of columns in label should be 1.")
-          }
-        }
-      }
-    }
-  }
-
-  # score dataframe column names
-  score_names = names(score[[1]])
-
-  # dataframe with score & label
-  for (i in names(score)) {
-    if (!is.null(label)) {
-      score[[i]]$y = label[[i]]
-    } else {
-      score[[i]]$y = NA
-    }
-  }
-  # dateset of score and label
-  dt_sl = cbind(rbindlist(score, idcol = "ae")) # ae refers to 'Actual & Expected'
-
-  # PSI function
-  psi = function(dat) {
-    # dat = copy(dat)[,y:=NULL][complete.cases(dat),]
-    AE = bin_PSI = NULL
-
-    # dataframe of bin, actual, expected
-    dt_bae = dcast(
-      dat[,.(count=as.numeric(.N)), keyby=c("ae", "bin")],
-      bin ~ ae, value.var="count", fill = 0.9
-    )
-
-    names_ae = setdiff(names(dt_bae), "bin")
-    psi_dt = dt_bae[
-      , (c("A","E")) := lapply(.SD, function(x) x/sum(x)), .SDcols = names_ae
-    ][, `:=`(AE = A-E, logAE = log(A/E))
-    ][, `:=`(bin_PSI = AE*logAE)
-    ][][, sum(bin_PSI)]
-
-    return(psi_dt)
-  }
-
-
-  set.seed(seed)
-  for ( sn in score_names ) {
-    # data manipulation to calculating psi and plot
-    if (length(unique(dt_sl[[sn]])) > 10) {
-      if (is.null(x_limits)) {
-        x_limits = quantile(dt_sl[[sn]], probs=c(0.02,0.98), na.rm = TRUE)
-        x_limits = round(x_limits/x_tick_break)*x_tick_break
-      }
-      # breakpoints
-      brkp = unique(c(
-        floor(min(dt_sl[[sn]])/x_tick_break)*x_tick_break,
-        seq(x_limits[1], x_limits[2], by=x_tick_break),
-        ceiling(max(dt_sl[[sn]])/x_tick_break)*x_tick_break
-      ))
-
-      # random sort datatable
-      dat = dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
-
-      dat$bin = cut(dat[[sn]], brkp, right = FALSE, dig.lab = 10, ordered_result = F)
-
-    } else {
-      # random sort datatable
-      dat = dt_sl[sample(1:nrow(dt_sl))][, c("ae", "y", sn), with = FALSE]
-      dat$bin = factor(dat[[sn]])
-
-    }
-
-
-    # psi ------
-    # rt[[paste0(sn, "_psi")]] = round(psi(dat), 4)
-    rt_psi[[sn]] = data.frame(PSI = psi(dat))#round(psi(dat), 4))
-
-
-
-    # plot ------
-    # distribution of scorecard probability
-    if (show_plot) {
-      # score distribution and bad probability
-      distr_prob = dat[
-        order(bin)
-        ][,.(count=.N, bad=sum(y==1)), keyby=c("ae", "bin")
-          ][,`:=`(
-            distr = count/sum(count),
-            badprob=bad/count
-          ), by = "ae"][,`:=`(badprob2=badprob*max(distr)), by = "ae"][, `:=`(
-            bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
-            bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
-          )][, midbin := (bin1+bin2)/2 ]
-
-
-      # plot
-      p_score_distr =
-        ggplot(distr_prob) +
-        geom_bar(aes(x=bin, y=distr, fill=ae), alpha=0.6, stat="identity", position="dodge") +
-        geom_line(aes(x=bin, y=badprob2, group=ae, colour=ae, linetype=ae)) +
-        geom_point(aes(x=bin, y=badprob2, colour=ae), shape=21, fill="white") +
-        guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
-        scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
-        labs(x=NULL, y="Score distribution") +
-        # geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
-        # coord_cartesian(clip = 'off') +
-        theme_bw() +
-        # theme(legend.position="bottom", legend.direction="horizontal") +
-        theme(plot.title=element_text(vjust = -2.5), legend.position=c(1,1), legend.justification=c(1,1), legend.background=element_blank())
-
-
-      if (!is.null(title)) {
-        p_score_distr = p_score_distr + ggtitle(paste0(title, " PSI: ", round(psi(dat), 4)))
-      } else {
-        p_score_distr = p_score_distr + ggtitle(paste0(sn, "_PSI: ", round(psi(dat), 4)))
-      }
-
-
-      # return of pic
-      rt_pic[[sn]] = p_score_distr
-
-      if (return_distr_dat) {
-        rt_dat[[sn]] = dcast(
-          distr_prob[,.(ae=factor(ae,levels=dt_sl[,unique(ae)]),bin,count,bad,badprob)],
-          bin ~ ae, value.var=c("count","bad","badprob"), sep="_"
-        )[,c(1,2,4,6,3,5,7)]
-      }
-    } # end of show plot
-  } # end of for loop
-
-
-  # return
-  rt$psi = rbindlist(rt_psi, idcol = "variable")
-  rt$pic = rt_pic
-  if (return_distr_dat) rt$dat = rt_dat
-
+  rt$psi = rbindlist(rt$psi, idcol = "variable")
+  # rt$dat = rbindlist(rt$dat, idcol = "variable")
   return(rt)
 }
+
+

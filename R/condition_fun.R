@@ -1,5 +1,14 @@
 # conditions # https://adv-r.hadley.nz/debugging
 
+# ceiling on decimal
+ceiling2 = function(x) {
+  x_sci = format(x, scientific = TRUE, digits=2)
+  z = ceiling(as.numeric(substr(x_sci, 1, 3)))
+  e = substr(x_sci, 4, nchar(x_sci))
+  as.numeric(paste0(z, e))
+}
+
+
 # is date/time class
 isdatetime = function(x) {
   any(class(x) %in% c("Date","POSIXlt","POSIXct","POSIXt"))

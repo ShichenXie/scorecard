@@ -7,7 +7,8 @@
 woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
   min_perc_fine_bin = 0.02, min_perc_coarse_bin = 0.05,
   stop_limit = 0.1, max_num_bin = 8, positive = "bad|1",
-  no_cores = NULL, print_step = 0L, method = "tree")
+  no_cores = NULL, print_step = 0L, method = "tree",
+  save_breaks_list = NULL, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -20,7 +21,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for continuous variables.}
+\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.}
 
 \item{min_perc_coarse_bin}{The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
 
@@ -35,12 +36,16 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
 \item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
+
+\item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
+
+\item{...}{Additional parameters.}
 }
 \value{
-Optimal or customized binning information.
+a list of dataframes include binning information for multiple variables.
 }
 \description{
-\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the \code{breaks_list} was provided. The default \code{woe} is defined as ln(Distr_Bad_i/Distr_Good_i). If you prefer ln(Distr_Good_i/Distr_Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calcuating woe, the zero will replaced by 0.99 to make the woe calculable.
+\code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the \code{breaks_list} was provided. The default \code{woe} is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.
 }
 \examples{
 # load germancredit data
@@ -58,6 +63,11 @@ bins2_tree
 # using chimerge method
 bins2_chi = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="chimerge")
+
+# save breaks_list as a R file
+bins2 = woebin(germancredit, y="creditability",
+   x=c("credit.amount","housing"), save_breaks_list='breaks_list')
+
 
 # Example II
 # binning of the germancredit dataset

@@ -4,8 +4,8 @@
 \alias{woebin_adj}
 \title{WOE Binning Adjustment}
 \usage{
-woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
-  method = "tree")
+woebin_adj(dt, y, bins, adj_all_var = FALSE, special_values = NULL,
+  method = "tree", save_breaks_list = NULL)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -14,11 +14,13 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
 
 \item{bins}{A list or data frame. Binning information generated from \code{woebin}.}
 
-\item{adj_all_var}{Logical, default is TRUE. If it is TRUE, all variables need to adjust binning breaks, otherwise, only include the variables that have more then one inflection point.}
+\item{adj_all_var}{Logical, whether to show monotonic woe variables. Default is FALSE.}
 
 \item{special_values}{the values specified in special_values will in separate bins. Default is NULL.}
 
 \item{method}{optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
+
+\item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
 }
 \description{
 \code{woebin_adj} interactively adjust the binning breaks.

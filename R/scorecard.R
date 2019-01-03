@@ -101,27 +101,23 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
   }
 
   # coefficients
-  coef = data.frame(summary(model)$coefficients)
-  coef$variable = row.names(coef)
-  coef = setnames(setDT(coef)[,c(1,5),with=FALSE], c("Estimate", "var_woe"))[, variable := gsub("_woe$", "", var_woe) ][]
-
+  coef_dt = data.table(var_woe = names(coef(model)), Estimate = coef(model))[, variable := sub("_woe$", "", var_woe) ][]
 
   # scorecard
-  len_x = coef[-1,.N]
-  basepoints = a - b*coef[1,Estimate]
-  card = list()
+  basepoints = a - b*coef_dt[1,Estimate]
 
+  card = list()
   if (basepoints_eq0) {
     card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = 0 )
 
-    for (i in coef[-1,variable]) {
-      card[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe + basepoints/len_x)]
+    for (i in coef_dt[-1,variable]) {
+      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe + basepoints/coef_dt[,.N-1])]
     }
   } else {
     card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints) )
 
-    for (i in coef[-1,variable]) {
-      card[[i]] = bins[variable==i][, points := round(-b*coef[variable==i, Estimate]*woe)]
+    for (i in coef_dt[-1,variable]) {
+      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe)]
     }
   }
 
@@ -183,7 +179,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=1L) {
+scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L) {
   # global variables or functions
   variable = bin = points = . = V1 = score = NULL
 
