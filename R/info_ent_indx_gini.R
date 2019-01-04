@@ -35,10 +35,10 @@ ie = function(dt, y, x=NULL, order=TRUE) {
 
   # set dt as data.table
   dt = setDT(dt)
-  # remove date/time col
-  dt = rmcol_datetime_unique1(dt)
-  # replace "" by NA
-  dt = rep_blank_na(dt)
+  # # remove date/time col
+  # dt = rmcol_datetime_unique1(dt)
+  # # replace "" by NA
+  # dt = rep_blank_na(dt)
   # check y
   # dt = check_y(dt, y, positive)
   # x variable names
@@ -152,10 +152,10 @@ ig = function(dt, y, x=NULL, order=TRUE) {
 
   # set dt as data.table
   dt = setDT(dt)
-  # remove date/time col
-  dt = rmcol_datetime_unique1(dt)
-  # replace "" by NA
-  dt = rep_blank_na(dt)
+  # # remove date/time col
+  # dt = rmcol_datetime_unique1(dt)
+  # # replace "" by NA
+  # dt = rep_blank_na(dt)
   # check y
   # dt = check_y(dt, y, positive)
   # x variable names

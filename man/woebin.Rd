@@ -5,10 +5,11 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
-  min_perc_fine_bin = 0.02, min_perc_coarse_bin = 0.05,
-  stop_limit = 0.1, max_num_bin = 8, positive = "bad|1",
-  no_cores = NULL, print_step = 0L, method = "tree",
-  save_breaks_list = NULL, ...)
+  stop_limit = 0.1, count_distr_limit = 0.05, bin_num_limit = 8,
+  positive = "bad|1", no_cores = NULL, print_step = 0L,
+  method = "tree", save_breaks_list = NULL, ignore_const_cols = TRUE,
+  ignore_datetime_cols = TRUE, check_cate_num = TRUE,
+  replace_blank_na = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -21,13 +22,11 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{min_perc_fine_bin}{The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
 
-\item{min_perc_coarse_bin}{The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.}
+\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)'. Accepted range: 0-0.5; default is 0.1.}
-
-\item{max_num_bin}{Integer. The maximum number of binning.}
+\item{bin_num_limit}{Integer. The maximum number of binning. Default is 8.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 
@@ -38,6 +37,14 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 \item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
 
 \item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
+
+\item{ignore_const_cols}{Logical. Ignore constant columns. Default is TRUE.}
+
+\item{ignore_datetime_cols}{Logical. Ignore datetime columns. Default is TRUE.}
+
+\item{check_cate_num}{Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.}
+
+\item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE.}
 
 \item{...}{Additional parameters.}
 }
@@ -57,7 +64,6 @@ data(germancredit)
 bins2_tree = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="tree")
 bins2_tree
-
 
 \dontrun{
 # using chimerge method

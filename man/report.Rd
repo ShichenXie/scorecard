@@ -4,10 +4,10 @@
 \alias{report}
 \title{Scorecard Modeling Report}
 \usage{
-report(dt, y, x, breaks_list, special_values = NULL,
-  save_report = "report", seed = 618, show_plot = c("ks", "roc"),
-  bin_num = 20, positive = "bad|1", points0 = 600, odds0 = 1/19,
-  pdo = 50)
+report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
+  save_report = "report", show_plot = c("ks", "lift", "gain", "roc",
+  "lz", "pr", "f1", "density"), bin_num = 20, positive = "bad|1",
+  points0 = 600, odds0 = 1/19, pdo = 50)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -20,11 +20,11 @@ report(dt, y, x, breaks_list, special_values = NULL,
 
 \item{special_values}{The values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
-
 \item{seed}{A random seed to split input dataframe. Default is 618.}
 
-\item{show_plot}{The graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
+\item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
+
+\item{show_plot}{The graphics used to evaluate model performance. Default is c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
 
 \item{bin_num}{The bins number in gains table.}
 

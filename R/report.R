@@ -7,9 +7,9 @@
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
 #' @param special_values The values specified in special_values will be in separate bins. Default is NULL.
-#' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
 #' @param seed A random seed to split input dataframe. Default is 618.
-#' @param show_plot The graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
+#' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
+#' @param show_plot The graphics used to evaluate model performance. Default is c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
 #' @param bin_num The bins number in gains table.
 #' @param positive Value of positive class, default "bad|1".
 #' @param points0 Target points, default 600.
@@ -70,7 +70,7 @@
 #' @import openxlsx
 #' @importFrom stats as.formula glm predict
 #' @export
-report = function(dt, y, x, breaks_list, special_values=NULL, save_report='report', seed=618, show_plot=c('ks', 'roc'), bin_num=20, positive='bad|1', points0=600, odds0=1/19, pdo=50) {
+report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_report='report',  show_plot=c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'), bin_num=20, positive='bad|1', points0=600, odds0=1/19, pdo=50) {
   info_value = gvif = . = variable = bin = woe = points = NULL
 
   dt = check_y(dt, y, positive)

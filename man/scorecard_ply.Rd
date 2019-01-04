@@ -4,7 +4,8 @@
 \alias{scorecard_ply}
 \title{Score Transformation}
 \usage{
-scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L)
+scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
+  replace_blank_na = TRUE)
 }
 \arguments{
 \item{dt}{Original data}
@@ -14,6 +15,8 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L)
 \item{only_total_score}{Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.}
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.}
+
+\item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
 }
 \value{
 Credit score

@@ -130,7 +130,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 }
 
 # required in woebin2 # return initial binning
-woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
+woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   # global variables or functions
   value = bin = . = y = variable = bad = good = brkp = badprob = count = merge_tolead = brkp2 = count_lag = count_lead = NULL
 
@@ -157,7 +157,7 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
     }
 
     # number of initial binning
-    n = trunc(1/min_perc_fine_bin)
+    n = trunc(1/init_count_distr)
     len_uniq_x = length(setdiff(unique(xvalue_rm_outlier), c(NA,Inf,-Inf)))
     if (len_uniq_x < n) n = len_uniq_x
 
@@ -245,7 +245,7 @@ woebin2_init_bin = function(dtm, min_perc_fine_bin, breaks, spl_val) {
 }
 
 # required in woebin2_tree # add 1 best break for tree-like binning
-woebin2_tree_add_1brkp = function(dtm, initial_binning, min_perc_coarse_bin, bestbreaks=NULL) {
+woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestbreaks=NULL) {
   # global variables or functions
   brkp = patterns = . = good = bad = variable = count_distr = value = min_count_distr = bstbin = min_count_distr = total_iv = bstbin = brkp = bin = NULL
 
@@ -311,8 +311,8 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, min_perc_coarse_bin, bes
   dtm_rows = nrow(dtm)
   total_iv_all_brks = total_iv_all_breaks(initial_binning, bestbreaks, dtm_rows)
 
-  # bestbreaks: total_iv == max(total_iv) & min(count_distr) >= min_perc_coarse_bin
-  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= min_perc_coarse_bin][total_iv==max(total_iv)][, bstbin]
+  # bestbreaks: total_iv == max(total_iv) & min(count_distr) >= count_distr_limit
+  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= count_distr_limit][total_iv==max(total_iv)][, bstbin]
   # add 1best break to bestbreaks
   bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
   bin_add_1bst = binning_add_1bst(initial_binning, bestbreaks)
@@ -321,12 +321,12 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, min_perc_coarse_bin, bes
 }
 
 # required in woebin2 # return tree-like binning
-woebin2_tree = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, breaks=NULL, spl_val=NULL) {
+woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
   # global variables or functions
   brkp = bstbrkp = total_iv = binning_tree = NULL
 
   # initial binning
-  bin_list = woebin2_init_bin(dtm, min_perc_fine_bin=min_perc_fine_bin, breaks=breaks, spl_val=spl_val)
+  bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
   initial_binning = bin_list$initial_binning
   binning_sv = bin_list$binning_sv
 
@@ -343,8 +343,8 @@ woebin2_tree = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, s
   step_num = 1
 
   # best breaks from three to n+1 bins
-  while ( (IVchg >= stop_limit) & (step_num+1 <= min(max_num_bin, len_brks)) ) {
-    binning_tree = woebin2_tree_add_1brkp(dtm, initial_binning, min_perc_coarse_bin, bestbreaks)
+  while ( (IVchg >= stop_limit) & (step_num+1 <= min(bin_num_limit, len_brks)) ) {
+    binning_tree = woebin2_tree_add_1brkp(dtm, initial_binning, count_distr_limit, bestbreaks)
     # print(binning_tree)
 
     # update parameters
@@ -364,15 +364,15 @@ woebin2_tree = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, s
   # return(binning_tree)
 }
 # examples
-# system.time( binning_list <- woebin2_init_bin(dtm, min_perc_fine_bin=0.02, breaks =NULL, spl_val=NULL) )
+# system.time( binning_list <- woebin2_init_bin(dtm, init_count_distr=0.02, breaks =NULL, spl_val=NULL) )
 # initial_binning=binning_list$initial_binning
 # binning_sv = binning_list$binning_sv
-# system.time( woebin2_tree_add_1brkp(dtm, initial_binning, min_perc_coarse_bin=0.05) )
-# system.time( woebin2_tree(dtm, initial_binning, min_perc_coarse_bin=0.05) )
+# system.time( woebin2_tree_add_1brkp(dtm, initial_binning, count_distr_limit=0.05) )
+# system.time( woebin2_tree(dtm, initial_binning, count_distr_limit=0.05) )
 
 # required in woebin2 # return chimerge binning
 #' @importFrom stats qchisq
-woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, breaks=NULL, spl_val=NULL) {
+woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
   .= a= a_colsum= a_lag= a_lag_rowsum= a_rowsum= a_sum= bad= bin= brkp= brkp2= chisq= count= count_distr= e= e_lag= chisq_lead= good= goodbad= merge_tolead =value= variable= NULL
 
   # [chimerge](http://blog.csdn.net/qunxingvip/article/details/50449376)
@@ -390,7 +390,7 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
   #   sum((Adf-Edf)^2/Edf)
   # }
   # initial binning
-  bin_list = woebin2_init_bin(dtm, min_perc_fine_bin=min_perc_fine_bin, breaks=breaks, spl_val=spl_val)
+  bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
 
   initial_binning = bin_list$initial_binning
   binning_sv = bin_list$binning_sv
@@ -427,20 +427,20 @@ woebin2_chimerge = function(dtm, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.0
   # remove brkp if chisq < chisq_limit
   while (
     bin_chisq_min < chisq_limit ||
-    bin_count_distr_min < min_perc_coarse_bin ||
-    bin_nrow > max_num_bin) {
+    bin_count_distr_min < count_distr_limit ||
+    bin_nrow > bin_num_limit) {
     # brkp needs to be removed
     if (bin_chisq_min < chisq_limit) {
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
-    } else if (bin_count_distr_min < min_perc_coarse_bin) {
+    } else if (bin_count_distr_min < count_distr_limit) {
       rm_brkp = binning_chisq[,`:=`(
         count_distr = count/sum(count),
         chisq_lead = shift(chisq, type = "lead", fill = Inf)
       )][,merge_tolead := ifelse(is.na(chisq), TRUE, chisq > chisq_lead)
        ][!is.na(brkp)][order(count_distr)][1,]
 
-    } else if (bin_nrow > max_num_bin) {
+    } else if (bin_nrow > bin_num_limit) {
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
     }
@@ -494,7 +494,7 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) dataframe.
-woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, method="tree") {
+woebin2 = function(dtm, breaks=NULL, spl_val=NULL, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, method="tree") {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
 
@@ -507,16 +507,16 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, min_perc_fine_bin=0.02, min_p
   } else {
     if (stop_limit == "N") {
       # binning of initial & specialvalues
-      bin_list = woebin2_init_bin(dtm, min_perc_fine_bin=min_perc_fine_bin, breaks=breaks, spl_val=spl_val)
+      bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
 
     } else {
       if (method == "tree") {
         # 2.tree-like optimal binning
-        bin_list = woebin2_tree(dtm, min_perc_fine_bin, min_perc_coarse_bin, stop_limit, max_num_bin, breaks=breaks, spl_val=spl_val)
+        bin_list = woebin2_tree(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val)
 
       } else if (method == "chimerge") {
         # 2.chimerge optimal binning
-        bin_list = woebin2_chimerge(dtm, min_perc_fine_bin, min_perc_coarse_bin, stop_limit, max_num_bin, breaks=breaks, spl_val=spl_val)
+        bin_list = woebin2_chimerge(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val)
       }
     }
   }
@@ -578,6 +578,8 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
   return(bins_breakslist)
 }
 
+# @param init_count_distr The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.
+
 #' WOE Binning
 #'
 #' \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the `breaks_list` was provided. The default `woe` is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument `positive` as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.
@@ -587,16 +589,20 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param min_perc_fine_bin The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.
-#' @param min_perc_coarse_bin The minimum percentage of final binning class number over total. Accepted range: 0.01-0.2; default is 0.05.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)'. Accepted range: 0-0.5; default is 0.1.
-#' @param max_num_bin Integer. The maximum number of binning.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
+#' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
 #' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
 #' @param save_breaks_list Logical, whether to save breaks_list in current working directory. Default is FALSE.
+#' @param ignore_const_cols Logical. Ignore constant columns. Default is TRUE.
+#' @param ignore_datetime_cols Logical. Ignore datetime columns. Default is TRUE.
+#' @param check_cate_num Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.
+#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE.
 #' @param ... Additional parameters.
+#'
 #' @return A list of dataframes include binning information for each x variables.
 #'
 #' @seealso \code{\link{woebin_ply}}, \code{\link{woebin_plot}}, \code{\link{woebin_adj}}
@@ -611,7 +617,6 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' bins2_tree = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), method="tree")
 #' bins2_tree
-#'
 #'
 #' \dontrun{
 #' # using chimerge method
@@ -659,27 +664,46 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom parallel detectCores
 #' @export
 #'
-woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc_fine_bin=0.02, min_perc_coarse_bin=0.05, stop_limit=0.1, max_num_bin=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ...) {
+woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
   # start time
   start_time = proc.time()
 
-  # print info
-  print_info = list(...)[['print_info']]
-  if (is.null(print_info)) print_info = TRUE
-  if (print_info) cat('[INFO] creating woe binning ... \n')
-
   # global variable
   i = NULL
+  # arguments
+  # print_info
+  print_info = list(...)[['print_info']]
+  if (is.null(print_info)) print_info = TRUE
+  # init_count_distr
+  min_perc_fine_bin = list(...)[['init_count_distr']]
+  init_count_distr = list(...)[['init_count_distr']]
+  if (is.null(init_count_distr)) {
+    init_count_distr <- ifelse(!is.null(min_perc_fine_bin), min_perc_fine_bin, 0.02)
+  }
+  # count_distr_limit
+  min_perc_coarse_bin = list(...)[['min_perc_coarse_bin']]
+  if (!is.null(min_perc_coarse_bin)) count_distr_limit = min_perc_coarse_bin
+  # bin_num_limit
+  max_num_bin = list(...)[['max_num_bin']]
+  if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
 
+
+
+  # print info
+  if (print_info) cat('[INFO] creating woe binning ... \n')
   # set dt as data.table
   dt = copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
-  # remove date/time col
-  dt = rmcol_datetime_unique1(dt, check_char_num = TRUE)
-  # replace "" by NA
-  dt = rep_blank_na(dt)
   # check y
   dt = check_y(dt, y, positive)
+  # remove constant columns
+  if (ignore_const_cols) dt = check_const_cols(dt)
+  # remove date/time columns
+  if (ignore_datetime_cols) dt = check_datetime_cols(dt)
+  # check categorical columns' unique values
+  if (check_cate_num) check_cateCols_uniqueValues(dt)
+  # replace black with na
+  if (replace_blank_na) dt = rep_blank_na(dt)
   # x variable names
   xs = x_variable(dt,y,x)
   xs_len = length(xs)
@@ -704,21 +728,21 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
     stop_limit = 0.1
   }
 
-  # min_perc_fine_bin range
-  if ( min_perc_fine_bin<0.01 || min_perc_fine_bin>0.2 || !is.numeric(min_perc_fine_bin) ) {
-    warning("Incorrect parameter specification; accepted min_perc_fine_bin parameter range is 0.01-0.2. Parameter was set to default (0.02).")
-    min_perc_fine_bin = 0.02
+  # init_count_distr range
+  if ( init_count_distr<0.01 || init_count_distr>0.2 || !is.numeric(init_count_distr) ) {
+    warning("Incorrect parameter specification; accepted init_count_distr parameter range is 0.01-0.2. Parameter was set to default (0.02).")
+    init_count_distr = 0.02
   }
-  # min_perc_coarse_bin
-  if ( min_perc_coarse_bin<0.01 || min_perc_coarse_bin>0.2 || !is.numeric(min_perc_coarse_bin) ) {
-    warning("Incorrect parameter specification; accepted min_perc_coarse_bin parameter range is 0.01-0.2. Parameter was set to default (0.05).")
-    min_perc_coarse_bin = 0.05
+  # count_distr_limit
+  if ( count_distr_limit<0.01 || count_distr_limit>0.2 || !is.numeric(count_distr_limit) ) {
+    warning("Incorrect parameter specification; accepted count_distr_limit parameter range is 0.01-0.2. Parameter was set to default (0.05).")
+    count_distr_limit = 0.05
   }
 
-  # max_num_bin
-  if (!is.numeric(max_num_bin)) {
-    warning("Incorrect inputs; max_num_bin should be numeric variable. Parameter was set to default (8).")
-    max_num_bin = 8
+  # bin_num_limit
+  if (!is.numeric(bin_num_limit)) {
+    warning("Incorrect inputs; bin_num_limit should be numeric variable. Parameter was set to default (8).")
+    bin_num_limit = 8
   }
 
   # method
@@ -747,9 +771,9 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
           dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
           breaks=breaks_list[[x_i]],
           spl_val=special_values[[x_i]],
-          min_perc_fine_bin=min_perc_fine_bin,
-          min_perc_coarse_bin=min_perc_coarse_bin,
-          stop_limit=stop_limit, max_num_bin=max_num_bin,
+          init_count_distr=init_count_distr,
+          count_distr_limit=count_distr_limit,
+          stop_limit=stop_limit, bin_num_limit=bin_num_limit,
           method=method
         )), silent = TRUE)
     }
@@ -769,7 +793,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
           if (xs_len==1) bs = list(bs)
           setNames(bs, xs)
         },
-        .export = c("dt", "xs", "y", "breaks_list", "min_perc_fine_bin", "stop_limit", "max_num_bin")
+        .export = c("dt", "xs", "y", "breaks_list", "init_count_distr", "stop_limit", "bin_num_limit")
       ) %dopar% {
         x_i = xs[i]
 
@@ -778,9 +802,9 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
           dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
           breaks=breaks_list[[x_i]],
           spl_val=special_values[[x_i]],
-          min_perc_fine_bin=min_perc_fine_bin,
-          min_perc_coarse_bin=min_perc_coarse_bin,
-          stop_limit=stop_limit, max_num_bin=max_num_bin,
+          init_count_distr=init_count_distr,
+          count_distr_limit=count_distr_limit,
+          stop_limit=stop_limit, bin_num_limit=bin_num_limit,
           method=method
         )), silent = TRUE)
       }
@@ -791,7 +815,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, min_perc
   rs = proc.time() - start_time
   # hms
   if (rs[3] > 10) cat(sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),"\n")
-
+  # save breaks_list
   if (!is.null(save_breaks_list)) bins_to_breaks(bins, dt, to_string=TRUE, save_name=save_breaks_list)
   return(bins)
 }
@@ -845,6 +869,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @param bins Binning information generated from \code{woebin}.
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
+#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.
 #'
 #' @return A dataframe with columns for variables converted into woe values.
@@ -882,7 +907,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, ...) {
+woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -896,12 +921,10 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, ...) {
 
   # set dt as data.table
   dt = setDT(dt)
-  # remove date/time col
-  dt = rmcol_datetime_unique1(dt)
+  # # remove date/time col
+  # dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
-  dt = rep_blank_na(dt)
-  # ncol of dt
-  # if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
+  if (replace_blank_na) dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
 

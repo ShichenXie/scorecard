@@ -786,7 +786,7 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
     # if threshold is not provided, set it as max F1
     if (is.null(threshold) || !is.numeric(threshold)) threshold = cutoff_fbeta(dt_ev_lst[[1]])[,pred]
     # confusion matrix
-    # cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold))
+    cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold))
     rt_list[['confusion_matrix']] = lapply(dt_lst, function(x) confusionMatrix(dt=x, threshold=threshold))
   }
   # cat(sprintf('Confusion Matrix with threshold=%s:\n', round(threshold,4)))
@@ -1031,6 +1031,10 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
   return(dt_distr)
 }
 
+# @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
+# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of dataframes including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
+# @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
+
 #' PSI
 #'
 #' \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
@@ -1038,10 +1042,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Default is NULL.
 #' @param title Title of plot, default is NULL.
-# @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
 #' @param show_plot Logical. Default is TRUE.
-# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of dataframes including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
-# @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
 #' @param positive Value of positive class, default is "bad|1".
 #' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
 #' @param ... Additional parameters.

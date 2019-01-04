@@ -5,14 +5,14 @@
 [![Travis build status](https://travis-ci.org/ShichenXie/scorecard.svg?branch=master)](https://travis-ci.org/ShichenXie/scorecard)
 
 
-The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarised in below. This package can also used in the development of machine learning models. The `scorecard` package is heavy depends on [`data.table` package](http://r-datatable.com) for optimal speed and memory efficiency. 
+The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarised in below. This package can also used in the development of machine learning models. `scorecard` package is heavy depends on [`data.table`](http://r-datatable.com) for optimal speed and memory efficiency. 
 
 - data preparation (`split_df`, `one_hot`)
 - variable selection (`var_filter`, `iv`, `vif`)
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
-- scorecard scaling (`scorecard`, `scorecard_ply`)
 - performance evaluation (`perf_eva`, `perf_psi`)
-- modeling report (`report`)
+- scorecard scaling (`scorecard`, `scorecard_ply`)
+- scorecard report (`report`)
 
 
 ## Installation

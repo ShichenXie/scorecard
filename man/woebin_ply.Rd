@@ -4,7 +4,8 @@
 \alias{woebin_ply}
 \title{WOE Transformation}
 \usage{
-woebin_ply(dt, bins, no_cores = NULL, print_step = 0L, ...)
+woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
+  replace_blank_na = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -14,6 +15,8 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L, ...)
 \item{no_cores}{Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.}
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
+
+\item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
 
 \item{...}{Additional parameters.}
 }

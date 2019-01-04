@@ -133,6 +133,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param card Scorecard generated from \code{scorecard}.
 #' @param only_total_score  Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
+#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
 #'
 #' @return Credit score
 #'
@@ -180,16 +181,16 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L) {
+scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace_blank_na=TRUE) {
   # global variables or functions
   variable = bin = points = . = V1 = score = NULL
 
   # set dt as data.table
   dt = copy(setDT(dt))
-  # remove date/time col
-  dt = rmcol_datetime_unique1(dt)
-  # replace "" by NA
-  dt = rep_blank_na(dt)
+  # # remove date/time col
+  # dt = rmcol_datetime_unique1(dt)
+  # replace blank values by NA
+  if (replace_blank_na) dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
 
