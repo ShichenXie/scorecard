@@ -11,17 +11,17 @@ iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
 
 \item{positive}{Value of positive class, default is "bad|1".}
 
 \item{order}{Logical, default is TRUE. If it is TRUE, the output will descending order via iv.}
 }
 \value{
-Information Value
+A dataframe with columns for variable and info_value
 }
 \description{
-This function calculates information value (IV) for multiple x variables. It treats each unique x value as a group and counts the number of y classes. If there is a zero number of y class, it will be replaced by 0.99 to make sure it calculable.
+This function calculates information value (IV) for multiple x variables. It treats each unique value in x variables as a group. If there is a zero number of y class, it will be replaced by 0.99 to make sure woe/iv is calculable.
 }
 \details{
 IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}

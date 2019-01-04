@@ -25,14 +25,16 @@ navbar:
       href: https://github.com/ShichenXie/scorecard
 
 reference:
-  - title: "dataset prepareing"
+  - title: "dataset preparation"
     contents:
       - germancredit
       - split_df
+      - one_hot
   - title: "variable selection"
     contents:
-      - iv
       - var_filter
+      - iv
+      - vif
   - title: "woe binning"
     contents:
       - woebin
@@ -47,3 +49,7 @@ reference:
     contents:
       - scorecard
       - scorecard_ply
+  - title: "scorecard reporting"
+    contents:
+      - gains_table
+      - report

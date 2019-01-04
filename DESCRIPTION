@@ -3,9 +3,10 @@ Version: 0.2.0
 Title: Credit Risk Scorecard
 Description: 
   The `scorecard` package makes the development of credit risk scorecard 
-  easier and efficient by providing functions, such as information 
-  value, variable filter, optimal woe binning, scorecard scaling and 
-  performance evaluation etc. 
+  easier and efficient by providing functions for some common tasks, 
+  such as data partition, variable selection, woe binning, scorecard scaling,
+  performance evaluation and report generation. These functions can also used
+  in the development of machine learning models.
     The references including: 
   1. Refaat, M. (2011, ISBN: 9781447511199). Credit Risk Scorecard: 
   Development and Implementation Using SAS. 

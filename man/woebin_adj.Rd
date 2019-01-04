@@ -22,6 +22,9 @@ woebin_adj(dt, y, bins, adj_all_var = FALSE, special_values = NULL,
 
 \item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
 }
+\value{
+A list of modified break points of each x variables.
+}
 \description{
 \code{woebin_adj} interactively adjust the binning breaks.
 }

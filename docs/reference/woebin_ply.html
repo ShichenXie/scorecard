@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='no'>bins</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='no'>bins</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,11 +149,15 @@
       <th>print_step</th>
       <td><p>A non-negative integer. Default is 1. If print_step&gt;0, print variable names by each print_step-th iteration. If print_step=0 or no_cores&gt;1, no message is print.</p></td>
     </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Binning information</p>
+    <p>A dataframe with columns for variables converted into woe values.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -168,10 +172,9 @@
 <span class='no'>dt</span> <span class='kw'>=</span> <span class='no'>germancredit</span>[, <span class='fu'>c</span>(<span class='st'>"creditability"</span>, <span class='st'>"credit.amount"</span>, <span class='st'>"purpose"</span>)]
 
 <span class='co'># binning for dt</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
 <span class='co'># converting original value to woe</span>
-<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>)
-<span class='fu'>str</span>(<span class='no'>dt_woe</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:
+<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'><span class='fu'>str</span>(<span class='no'>dt_woe</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:
 #&gt;  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
 #&gt;  $ credit.amount_woe: num  0.0337 0.3905 -0.2583 0.3905 0.3905 ...
 #&gt;  $ purpose_woe      : num  -0.41 -0.41 0.28 0.28 0.28 ...

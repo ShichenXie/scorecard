@@ -14,25 +14,27 @@ gains_table(score, label, bin_num = 10, bin_type = "freq",
 
 \item{bin_num}{Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.}
 
-\item{bin_type}{The score is cutted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.}
+\item{bin_type}{The score is cuted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.}
 
 \item{positive}{Value of positive class, default is "bad|1".}
 
 \item{...}{Additional parameters.}
+}
+\value{
+A dataframe
 }
 \description{
 \code{gains_table} creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 }
 \examples{
 \dontrun{
+# data preparing ------
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
-
-# breaking dt into train and test ------
-dt_list = split_df(dt_sel, "creditability")
+dt_f = var_filter(germancredit, "creditability")
+# breaking dt into train and test
+dt_list = split_df(dt_f, "creditability")
 
 # woe binning ------
 bins = woebin(dt_list$train, "creditability")

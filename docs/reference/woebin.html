@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="WOE Binning — woebin" />
 
-<meta property="og:description" content="woebin generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. woebin can also customizing breakpoints if the breaks_list was provided." />
+<meta property="og:description" content="woebin generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. woebin can also customizing breakpoints if the breaks_list was provided. The default woe is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument positive as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
       </span>
     </div>
 
@@ -124,14 +124,15 @@
 
     <div class="ref-description">
     
-    <p><code>woebin</code> generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. <code>woebin</code> can also customizing breakpoints if the breaks_list was provided.</p>
+    <p><code>woebin</code> generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. <code>woebin</code> can also customizing breakpoints if the <code>breaks_list</code> was provided. The default <code>woe</code> is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument <code>positive</code> as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>woebin</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>min_perc_fine_bin</span> <span class='kw'>=</span> <span class='fl'>0.02</span>, <span class='kw'>min_perc_coarse_bin</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
   <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>max_num_bin</span> <span class='kw'>=</span> <span class='fl'>8</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>,
-  <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>)</pre>
+  <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>,
+  <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,7 +147,7 @@
     </tr>
     <tr>
       <th>x</th>
-      <td><p>Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.</p></td>
+      <td><p>Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
     </tr>
     <tr>
       <th>breaks_list</th>
@@ -158,7 +159,7 @@
     </tr>
     <tr>
       <th>min_perc_fine_bin</th>
-      <td><p>The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial binning into 50 fine bins for continuous variables.</p></td>
+      <td><p>The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.</p></td>
     </tr>
     <tr>
       <th>min_perc_coarse_bin</th>
@@ -188,11 +189,19 @@
       <th>method</th>
       <td><p>Optimal binning method, it should be "tree" or "chimerge". Default is "tree".</p></td>
     </tr>
+    <tr>
+      <th>save_breaks_list</th>
+      <td><p>Logical, whether to save breaks_list in current working directory. Default is FALSE.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Optimal or customized binning information.</p>
+    <p>A list of dataframes include binning information for each x variables.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -207,7 +216,7 @@
 <span class='co'># binning of two variables in germancredit dataset</span>
 <span class='co'># using tree method</span>
 <span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
+   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
 #&gt;         variable         bin count count_distr good bad   badprob         woe
 #&gt; 1: credit.amount [-Inf,1400)   267       0.267  185  82 0.3071161  0.03366128
 #&gt; 2: credit.amount [1400,1800)   105       0.105   87  18 0.1714286 -0.72823850
@@ -236,6 +245,11 @@
 <span class='co'># using chimerge method</span>
 <span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
    <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
+
+<span class='co'># save breaks_list as a R file</span>
+<span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
+   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)
+
 
 <span class='co'># Example II</span>
 <span class='co'># binning of the germancredit dataset</span>

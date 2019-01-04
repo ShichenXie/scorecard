@@ -2,12 +2,12 @@
 #'
 #' \code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.
 #'
-#' @param model a model object.
-#' @param merge_coef whether to merge with coefficients of model summary matrix. Default is FALSE.
+#' @param model A model object.
+#' @param merge_coef Logical, whether to merge with coefficients of model summary matrix. Default is FALSE.
 #'
-#' @return A vector of vifs, or a matrix containing one row for each term in the model, and columns for the gvif, df, and gvif^(1/(2*df)).
+#' @return A dataframe with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
 #'
-#' @seealso \code{car::vif}, \url{https://cran.r-project.org/package=car}
+#' @seealso \url{https://cran.r-project.org/package=car}
 #' @examples
 #' data(germancredit)
 #'

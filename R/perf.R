@@ -640,9 +640,9 @@ pf_cutoffs = function(dt_ev_lst) {
 #' @param threshold Confusion matrix threshold. Default is the pred on maximum F1.
 #' @param show_plot Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
 #' @param positive Value of positive class, default is "bad|1".
-#' @param ... additional parameters.
+#' @param ... Additional parameters.
 #'
-#' @return A list of binomial metric, confusion matrix and plots
+#' @return A list of binomial metric, confusion matrix and graphics
 #'
 #' @details
 #' Accuracy = true positive and true negative/total cases
@@ -674,10 +674,10 @@ pf_cutoffs = function(dt_ev_lst) {
 #' data("germancredit")
 #'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
+#' dt_f = var_filter(germancredit, "creditability")
 #'
 #' # breaking dt into train and test ------
-#' dt_list = split_df(dt_sel, "creditability")
+#' dt_list = split_df(dt_f, "creditability")
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -818,7 +818,7 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
 
 # psi ------
 # PSI function
-psi_metric = function(dt_s, names_datset) {
+psi_metric = function(dt_sn, names_datset) {
   A=E=logAE=bin_psi=NULL
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
 
@@ -827,7 +827,7 @@ psi_metric = function(dt_s, names_datset) {
 
   # dataframe of bin, actual, expected
   dt_bae = dcast(
-    dt_s[, .N, keyby = c('datset', 'bin')],
+    dt_sn[, .N, keyby = c('datset', 'bin')],
     bin ~ datset, value.var="N", fill = 0.99
   )
 
@@ -842,18 +842,18 @@ psi_metric = function(dt_s, names_datset) {
 }
 
 # psi plot
-psi_plot = function(dt_s, psi_sn, title, sn) {
+psi_plot = function(dt_psi, psi_sn, title, sn) {
   . = label = N = bad = badprob = distr = bin = midbin = bin1 = bin2 = datset = badprob2 = NULL
 
   title = paste0(ifelse(is.null(title), sn, title), " PSI: ", round(psi_sn, 4))
 
   distr_prob =
-    dt_s[, .(.N, bad = sum(label==1)), keyby = c('datset','bin')
+    dt_psi[, .(.N, bad = sum(label==1)), keyby = c('datset','bin')
        ][, `:=`(distr = N/sum(N), badprob = bad/N), by = 'datset'
        ][, `:=`(badprob2 = badprob*max(distr)), by = "datset"
        ][, `:=`(
-         bin1 = as.integer(sub("\\[(.+),(.+)\\)", "\\1", bin)),
-         bin2 = as.integer(sub("\\[(.+),(.+)\\)", "\\2", bin))
+         bin1 = as.numeric(sub("\\[(.+),(.+)\\)", "\\1", bin)),
+         bin2 = as.numeric(sub("\\[(.+),(.+)\\)", "\\2", bin))
       )][, midbin := (bin1+bin2)/2 ][]
 
   # plot
@@ -889,20 +889,21 @@ psi_plot = function(dt_s, psi_sn, title, sn) {
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
 #' @param bin_num Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.
-#' @param bin_type The score is cutted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.
+#' @param bin_type The score is cuted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.
 #' @param positive Value of positive class, default is "bad|1".
 #' @param ... Additional parameters.
 #'
+#' @return A dataframe
+#'
 #' @examples
 #' \dontrun{
+#' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
-#'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
-#'
-#' # breaking dt into train and test ------
-#' dt_list = split_df(dt_sel, "creditability")
+#' dt_f = var_filter(germancredit, "creditability")
+#' # breaking dt into train and test
+#' dt_list = split_df(dt_f, "creditability")
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -1038,14 +1039,13 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Default is NULL.
 #' @param title Title of plot, default is NULL.
 # @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
-#' @param threshold_variable Integer. Default is 20. If the number of unique values in provided score > threshold_variable, the score will count as total credit score, otherwise, it is variable score.
 #' @param show_plot Logical. Default is TRUE.
 # @param return_distr_dat Logical. Default is FALSE. Whether to return a list of dataframes including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
 # @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
 #' @param positive Value of positive class, default is "bad|1".
+#' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
 #' @param ... Additional parameters.
-#'
-#' @return a dataframe of psi & plots of credit score distribution
+#' @return A dataframe of psi and graphics of credit score distribution
 #'
 #' @details The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
 #'
@@ -1053,14 +1053,13 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #'
 #' @examples
 #' \dontrun{
+#' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
-#'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
-#'
-#' # breaking dt into train and test ------
-#' dt_list = split_df(dt_sel, "creditability")
+#' dt_f = var_filter(germancredit, "creditability")
+#' # breaking dt into train and test
+#' dt_list = split_df(dt_f, "creditability")
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -1126,7 +1125,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi = function(score, label=NULL, title=NULL, threshold_variable=20, show_plot=TRUE, positive="bad|1", ...) {
+perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad|1", threshold_variable=20, ...) {
   # # global variables
   . = datset = group = V1 = bin = NULL
 
@@ -1151,12 +1150,12 @@ perf_psi = function(score, label=NULL, title=NULL, threshold_variable=20, show_p
   rt = list() # return list
   for (sn in setdiff(names(dt_sl), c('datset', 'label'))) { # sn: score names
     # dataset for sn
-    dt_s = dt_sl[,.(datset, label, score=dt_sl[[sn]])]
+    dt_sn = dt_sl[,.(datset, label, score=dt_sl[[sn]])]
 
-    sn_is_totalscore = dt_s[,length(unique(score)) > threshold_variable]
+    sn_is_totalscore = dt_sn[,length(unique(score)) > threshold_variable]
     bin_num <- ifelse(sn_is_totalscore, 10, 'max')
 
-    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=TRUE, dt_sl=dt_s)
+    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn)
 
     # population stability index
     psi_sn = psi_metric(dt_psi, names_datset)
@@ -1164,7 +1163,7 @@ perf_psi = function(score, label=NULL, title=NULL, threshold_variable=20, show_p
     # pic
     if (show_plot) rt[['pic']][[sn]] = psi_plot(dt_psi, psi_sn, title, sn)
     # equal freq / width dataframe
-    if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_s)
+    if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_sn)
   }
 
   rt$psi = rbindlist(rt$psi, idcol = "variable")

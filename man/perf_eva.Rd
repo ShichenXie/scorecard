@@ -26,10 +26,10 @@ perf_eva(pred, label, title = NULL, binomial_metric = c("mse", "rmse",
 
 \item{positive}{Value of positive class, default is "bad|1".}
 
-\item{...}{additional parameters.}
+\item{...}{Additional parameters.}
 }
 \value{
-A list of binomial metric, confusion matrix and plots
+A list of binomial metric, confusion matrix and graphics
 }
 \description{
 \code{perf_eva} calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.
@@ -53,10 +53,10 @@ NPV, Negative Predicted Value = true negative/total predicted negative
 data("germancredit")
 
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
+dt_f = var_filter(germancredit, "creditability")
 
 # breaking dt into train and test ------
-dt_list = split_df(dt_sel, "creditability")
+dt_list = split_df(dt_f, "creditability")
 
 # woe binning ------
 bins = woebin(dt_list$train, "creditability")

@@ -15,7 +15,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
 
 \item{breaks_list}{List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.}
 
@@ -42,7 +42,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 \item{...}{Additional parameters.}
 }
 \value{
-a list of dataframes include binning information for multiple variables.
+A list of dataframes include binning information for each x variables.
 }
 \description{
 \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the \code{breaks_list} was provided. The default \code{woe} is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.

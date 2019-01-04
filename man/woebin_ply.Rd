@@ -15,10 +15,10 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L, ...)
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
-\item{...}{additional parameters.}
+\item{...}{Additional parameters.}
 }
 \value{
-Binning information
+A dataframe with columns for variables converted into woe values.
 }
 \description{
 \code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.

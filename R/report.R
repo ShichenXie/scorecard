@@ -2,18 +2,18 @@
 #'
 #' \code{report} creates a scorecard model report and save it as xlsx file.
 #'
-#' @param dt a data frame with both x (predictor/feature) and y (response/label) variables.
-#' @param y name of y variable.
-#' @param x name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-#' @param breaks_list list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} when the argument save_breaks_list is provided.
-#' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param seed a random seed to split input dataframe. Default is 618.
-#' @param show_plot the graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
-#' @param bin_num the bins number in gains table.
-#' @param positive value of positive class, default "bad|1".
-#' @param save_report the name of xlsx file where the report is to be saved. Default is 'report'.
-#' @param points0 target points, default 600.
-#' @param odds0 target odds, default 1/19. Odds = p/(1-p).
+#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
+#' @param y Name of y variable.
+#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
+#' @param special_values The values specified in special_values will be in separate bins. Default is NULL.
+#' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
+#' @param seed A random seed to split input dataframe. Default is 618.
+#' @param show_plot The graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
+#' @param bin_num The bins number in gains table.
+#' @param positive Value of positive class, default "bad|1".
+#' @param points0 Target points, default 600.
+#' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds. Default is 50.
 #'
 #' @examples
@@ -70,7 +70,7 @@
 #' @import openxlsx
 #' @importFrom stats as.formula glm predict
 #' @export
-report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, show_plot=c('ks', 'roc'), bin_num=20, positive='bad|1', save_report='report', points0=600, odds0=1/19, pdo=50) {
+report = function(dt, y, x, breaks_list, special_values=NULL, save_report='report', seed=618, show_plot=c('ks', 'roc'), bin_num=20, positive='bad|1', points0=600, odds0=1/19, pdo=50) {
   info_value = gvif = . = variable = bin = woe = points = NULL
 
   dt = check_y(dt, y, positive)

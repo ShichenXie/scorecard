@@ -4,8 +4,8 @@
 \alias{perf_psi}
 \title{PSI}
 \usage{
-perf_psi(score, label = NULL, title = NULL, threshold_variable = 20,
-  show_plot = TRUE, positive = "bad|1", ...)
+perf_psi(score, label = NULL, title = NULL, show_plot = TRUE,
+  positive = "bad|1", threshold_variable = 20, ...)
 }
 \arguments{
 \item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}
@@ -14,16 +14,16 @@ perf_psi(score, label = NULL, title = NULL, threshold_variable = 20,
 
 \item{title}{Title of plot, default is NULL.}
 
-\item{threshold_variable}{Integer. Default is 20. If the number of unique values in provided score > threshold_variable, the score will count as total credit score, otherwise, it is variable score.}
-
 \item{show_plot}{Logical. Default is TRUE.}
 
 \item{positive}{Value of positive class, default is "bad|1".}
 
+\item{threshold_variable}{Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.}
+
 \item{...}{Additional parameters.}
 }
 \value{
-a dataframe of psi & plots of credit score distribution
+A dataframe of psi and graphics of credit score distribution
 }
 \description{
 \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
@@ -33,14 +33,13 @@ The population stability index (PSI) formula is displayed below: \deqn{PSI = \su
 }
 \examples{
 \dontrun{
+# data preparing ------
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
-
-# breaking dt into train and test ------
-dt_list = split_df(dt_sel, "creditability")
+dt_f = var_filter(germancredit, "creditability")
+# breaking dt into train and test
+dt_list = split_df(dt_f, "creditability")
 
 # woe binning ------
 bins = woebin(dt_list$train, "creditability")

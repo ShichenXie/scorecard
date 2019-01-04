@@ -4,34 +4,35 @@
 \alias{report}
 \title{Scorecard Modeling Report}
 \usage{
-report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
-  show_plot = c("ks", "roc"), bin_num = 20, positive = "bad|1",
-  save_report = "report", points0 = 600, odds0 = 1/19, pdo = 50)
+report(dt, y, x, breaks_list, special_values = NULL,
+  save_report = "report", seed = 618, show_plot = c("ks", "roc"),
+  bin_num = 20, positive = "bad|1", points0 = 600, odds0 = 1/19,
+  pdo = 50)
 }
 \arguments{
-\item{dt}{a data frame with both x (predictor/feature) and y (response/label) variables.}
+\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
-\item{y}{name of y variable.}
+\item{y}{Name of y variable.}
 
-\item{x}{name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
 
-\item{breaks_list}{list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} when the argument save_breaks_list is provided.}
+\item{breaks_list}{A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.}
 
-\item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
+\item{special_values}{The values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{seed}{a random seed to split input dataframe. Default is 618.}
+\item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
 
-\item{show_plot}{the graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
+\item{seed}{A random seed to split input dataframe. Default is 618.}
 
-\item{bin_num}{the bins number in gains table.}
+\item{show_plot}{The graphics used to evaluate model performance. Default is c('ks', 'roc'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
 
-\item{positive}{value of positive class, default "bad|1".}
+\item{bin_num}{The bins number in gains table.}
 
-\item{save_report}{the name of xlsx file where the report is to be saved. Default is 'report'.}
+\item{positive}{Value of positive class, default "bad|1".}
 
-\item{points0}{target points, default 600.}
+\item{points0}{Target points, default 600.}
 
-\item{odds0}{target odds, default 1/19. Odds = p/(1-p).}
+\item{odds0}{Target odds, default 1/19. Odds = p/(1-p).}
 
 \item{pdo}{Points to Double the Odds. Default is 50.}
 }

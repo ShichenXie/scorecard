@@ -7,12 +7,12 @@
 vif(model, merge_coef = FALSE)
 }
 \arguments{
-\item{model}{a model object.}
+\item{model}{A model object.}
 
-\item{merge_coef}{whether to merge with coefficients of model summary matrix. Default is FALSE.}
+\item{merge_coef}{Logical, whether to merge with coefficients of model summary matrix. Default is FALSE.}
 }
 \value{
-A vector of vifs, or a matrix containing one row for each term in the model, and columns for the gvif, df, and gvif^(1/(2*df)).
+A dataframe with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
 }
 \description{
 \code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.
@@ -35,5 +35,5 @@ vif(fit2, merge_coef=TRUE)
 
 }
 \seealso{
-\code{car::vif}, \url{https://cran.r-project.org/package=car}
+\url{https://cran.r-project.org/package=car}
 }

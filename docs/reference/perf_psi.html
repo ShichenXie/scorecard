@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="PSI — perf_psi" />
 
-<meta property="og:description" content="perf_psi calculates population stability index (PSI) and provides credit score distribution based on credit score datasets." />
+<meta property="og:description" content="perf_psi calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
       </span>
     </div>
 
@@ -124,54 +124,49 @@
 
     <div class="ref-description">
     
-    <p><code>perf_psi</code> calculates population stability index (PSI) and provides credit score distribution based on credit score datasets.</p>
+    <p><code>perf_psi</code> calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>perf_psi</span>(<span class='no'>score</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>x_limits</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>x_tick_break</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>186</span>,
-  <span class='kw'>return_distr_dat</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>perf_psi</span>(<span class='no'>score</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>threshold_variable</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>score</th>
-      <td><p>A list of credit score for actual and expected data samples. For example, score = list(actual = score_A, expect = score_E), both score_A and score_E are dataframes with the same column names.</p></td>
+      <td><p>A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).</p></td>
     </tr>
     <tr>
       <th>label</th>
-      <td><p>A list of label value for actual and expected data samples. The default is NULL. For example, label = list(actual = label_A, expect = label_E), both label_A and label_E are vectors or dataframes. The label values should be 0s and 1s, 0 represent for good and 1 for bad.</p></td>
+      <td><p>A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Default is NULL.</p></td>
     </tr>
     <tr>
       <th>title</th>
       <td><p>Title of plot, default is NULL.</p></td>
     </tr>
     <tr>
-      <th>x_limits</th>
-      <td><p>x-axis limits, default is NULL.</p></td>
-    </tr>
-    <tr>
-      <th>x_tick_break</th>
-      <td><p>x-axis ticker break, default is 50.</p></td>
-    </tr>
-    <tr>
       <th>show_plot</th>
-      <td><p>Logical, default is TRUE. It means whether to show plot.</p></td>
+      <td><p>Logical. Default is TRUE.</p></td>
     </tr>
     <tr>
-      <th>seed</th>
-      <td><p>Integer, default is 186. The specify seed is used for random sorting data.</p></td>
+      <th>positive</th>
+      <td><p>Value of positive class, default is "bad|1".</p></td>
     </tr>
     <tr>
-      <th>return_distr_dat</th>
-      <td><p>Logical, default is FALSE.</p></td>
+      <th>threshold_variable</th>
+      <td><p>Integer. Default is 20. If the number of unique values &gt; threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a dataframe of psi &amp; plots of credit score distribution</p>
+    <p>A dataframe of psi and graphics of credit score distribution</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -184,74 +179,74 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># data preparing ------</span>
 <span class='co'># load germancredit data</span>
 <span class='fu'>data</span>(<span class='st'>"germancredit"</span>)
-
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
-<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
-
-<span class='co'># breaking dt into train and test ------</span>
-<span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_sel</span>, <span class='st'>"creditability"</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='fl'>21</span>)
-<span class='no'>dt_train</span> <span class='kw'>=</span> <span class='no'>dt_list</span>$<span class='no'>train</span>; <span class='no'>dt_test</span> <span class='kw'>=</span> <span class='no'>dt_list</span>$<span class='no'>test</span>
+<span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
+<span class='co'># breaking dt into train and test</span>
+<span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
 
 <span class='co'># woe binning ------</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_train</span>, <span class='st'>"creditability"</span>)
-
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_list</span>$<span class='no'>train</span>, <span class='st'>"creditability"</span>)
 <span class='co'># converting train and test into woe values</span>
-<span class='no'>train</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt_train</span>, <span class='no'>bins</span>)
-<span class='no'>test</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt_test</span>, <span class='no'>bins</span>)
+<span class='no'>dt_woe_list</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>x</span>, <span class='no'>bins</span>))
 
 <span class='co'># glm ------</span>
-<span class='no'>m1</span> <span class='kw'>=</span> <span class='fu'>glm</span>(<span class='no'>creditability</span> ~ <span class='no'>.</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>binomial</span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>train</span>)
-<span class='co'># summary(m1)</span>
-
+<span class='no'>m1</span> <span class='kw'>=</span> <span class='fu'>glm</span>(<span class='no'>creditability</span> ~ <span class='no'>.</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>binomial</span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dt_woe_list</span>$<span class='no'>train</span>)
+<span class='co'># vif(m1, merge_coef = TRUE)</span>
 <span class='co'># Select a formula-based model by AIC</span>
 <span class='no'>m_step</span> <span class='kw'>=</span> <span class='fu'>step</span>(<span class='no'>m1</span>, <span class='kw'>direction</span><span class='kw'>=</span><span class='st'>"both"</span>, <span class='kw'>trace</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
 <span class='no'>m2</span> <span class='kw'>=</span> <span class='fu'>eval</span>(<span class='no'>m_step</span>$<span class='no'>call</span>)
-<span class='co'># summary(m2)</span>
+<span class='co'># vif(m2, merge_coef = TRUE)</span>
 
 <span class='co'># predicted proability</span>
-<span class='no'>train_pred</span> <span class='kw'>=</span> <span class='fu'>predict</span>(<span class='no'>m2</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'response'</span>, <span class='no'>train</span>)
-<span class='no'>test_pred</span> <span class='kw'>=</span> <span class='fu'>predict</span>(<span class='no'>m2</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'response'</span>, <span class='no'>test</span>)
+<span class='no'>pred_list</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_woe_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>predict</span>(<span class='no'>m2</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'response'</span>, <span class='no'>x</span>))
 
-<span class='co'># # ks &amp; roc plot</span>
-<span class='co'># perf_eva(train$creditability, train_pred, title = "train")</span>
-<span class='co'># perf_eva(test$creditability, test_pred, title = "test")</span>
-
-<span class='co'>#' # scorecard</span>
+<span class='co'># scorecard ------</span>
 <span class='no'>card</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard.html'>scorecard</a></span>(<span class='no'>bins</span>, <span class='no'>m2</span>)
 
 <span class='co'># credit score, only_total_score = TRUE</span>
-<span class='no'>train_score</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>dt_train</span>, <span class='no'>card</span>)
-<span class='no'>test_score</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>dt_test</span>, <span class='no'>card</span>)
+<span class='no'>score_list</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>x</span>, <span class='no'>card</span>))
+<span class='co'># credit score, only_total_score = FALSE</span>
+<span class='no'>score_list2</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>x</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span><span class='kw'>=</span><span class='fl'>FALSE</span>))
 
-<span class='co'># Example I # psi</span>
-<span class='no'>psi</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(
-  <span class='kw'>score</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train_score</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test_score</span>),
-  <span class='kw'>label</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test</span>$<span class='no'>creditability</span>)
-)
-<span class='co'># psi$psi  # psi dataframe</span>
-<span class='co'># psi$pic  # pic of score distribution</span>
 
-<span class='co'># Example II # specifying score range</span>
-<span class='no'>psi_s</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(
-  <span class='kw'>score</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train_score</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test_score</span>),
-  <span class='kw'>label</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test</span>$<span class='no'>creditability</span>),
-  <span class='kw'>x_limits</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>200</span>, <span class='fl'>750</span>),
-  <span class='kw'>x_tick_break</span> <span class='kw'>=</span> <span class='fl'>50</span>
-  )
+<span class='co'>###### perf_eva examples ######</span>
+<span class='co'># Example I, one datset</span>
+<span class='co'>## predicted p1</span>
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)
+<span class='co'>## predicted score</span>
+<span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
 
-<span class='co'># Example III # credit score, only_total_score = FALSE</span>
-<span class='no'>train_score2</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>dt_train</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-<span class='no'>test_score2</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>dt_test</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='co'># Example II, multiple datsets</span>
+<span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
+<span class='co'>## predicted p1</span>
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='co'>## predicted score</span>
+<span class='co'># perf_eva(score_list, label_list)</span>
 
-<span class='co'># psi</span>
-<span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(
-  <span class='kw'>score</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train_score2</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test_score2</span>),
-  <span class='kw'>label</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>train</span> <span class='kw'>=</span> <span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='no'>test</span>$<span class='no'>creditability</span>)
-)
+
+<span class='co'>###### perf_psi examples ######</span>
+<span class='co'># Example I # only total psi</span>
+<span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi dataframe</span>
+<span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span>
+
+<span class='co'># Example II # both total and variable psi</span>
+<span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'># psi2$psi  # psi dataframe</span>
 <span class='co'># psi2$pic  # pic of score distribution</span>
+
+
+<span class='co'>###### gains_table examples ######</span>
+<span class='co'># Example I, score can be a list of score or pred</span>
+<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+
+<span class='co'># Example II, specify the bins number and type</span>
+<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
+<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

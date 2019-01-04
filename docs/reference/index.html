@@ -58,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-dataset-prepareing" class="hasAnchor"><a href="#section-dataset-prepareing" class="anchor"></a>dataset prepareing</h2>
+          <h2 id="section-dataset-preparation" class="hasAnchor"><a href="#section-dataset-preparation" class="anchor"></a>dataset preparation</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -144,6 +144,12 @@
           <p><code><a href="split_df.html">split_df()</a></code> </p>
         </td>
         <td><p>Split a dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="one_hot.html">one_hot()</a></code> </p>
+        </td>
+        <td><p>One Hot Encoding</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -155,15 +161,21 @@
       <tr>
         
         <td>
+          <p><code><a href="var_filter.html">var_filter()</a></code> </p>
+        </td>
+        <td><p>Variable Filter</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="iv.html">iv()</a></code> </p>
         </td>
         <td><p>Information Value</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="var_filter.html">var_filter()</a></code> </p>
+          <p><code><a href="vif.html">vif()</a></code> </p>
         </td>
-        <td><p>Variable Filter</p></td>
+        <td><p>Variance Inflation Factors</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -209,7 +221,7 @@
         <td>
           <p><code><a href="perf_eva.html">perf_eva()</a></code> </p>
         </td>
-        <td><p>KS, ROC, Lift, PR</p></td>
+        <td><p>Binomial Metrics</p></td>
       </tr><tr>
         
         <td>
@@ -237,6 +249,26 @@
         </td>
         <td><p>Score Transformation</p></td>
       </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-scorecard-reporting" class="hasAnchor"><a href="#section-scorecard-reporting" class="anchor"></a>scorecard reporting</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="gains_table.html">gains_table()</a></code> </p>
+        </td>
+        <td><p>Gains Table</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="report.html">report()</a></code> </p>
+        </td>
+        <td><p>Scorecard Modeling Report</p></td>
+      </tr>
     </tbody>
     </table>
   </div>
@@ -244,11 +276,12 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-dataset-prepareing">dataset prepareing</a></li>
+      <li><a href="#section-dataset-preparation">dataset preparation</a></li>
       <li><a href="#section-variable-selection">variable selection</a></li>
       <li><a href="#section-woe-binning">woe binning</a></li>
       <li><a href="#section-model-performance">model performance</a></li>
       <li><a href="#section-scorecard-scaling">scorecard scaling</a></li>
+      <li><a href="#section-scorecard-reporting">scorecard reporting</a></li>
     </ul>
   </div>
 </div>

@@ -1,14 +1,13 @@
-# scorecard 0.1.9.2
+# scorecard 0.2.0
 
 * fixed a bug is woebin function cant modify positive values
 * pdo in scorecard function now supports negative value.
 * split_df will not remove datetime and identical variables
 * added a one-hot encoding function 
 * added save_breaks_list argument in both woebin and woebin_adj function, which can save breaks_list as file in current working directory.
-
 * revised perf_eva and perf_psi functions
 * added a vif function
-* 
+* added a report function to create report for scorecard modeling
 
 # scorecard 0.1.9
 

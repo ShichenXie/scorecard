@@ -13,7 +13,7 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
 
 \item{iv_limit}{The information value of kept variables should >= iv_limit. The default is 0.02.}
 
@@ -30,7 +30,7 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 \item{positive}{Value of positive class, default is "bad|1".}
 }
 \value{
-A data.table with y and selected x variables and a data.table with the reason of removed x variable if return_rm_reason == TRUE.
+A dataframe with columns for y and selected x variables, and a dataframe with columns for remove reason if return_rm_reason == TRUE.
 }
 \description{
 This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.

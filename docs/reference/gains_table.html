@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Binomial Metrics — perf_eva • scorecard</title>
+<title>Gains Table — gains_table • scorecard</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Binomial Metrics — perf_eva" />
+<meta property="og:title" content="Gains Table — gains_table" />
 
-<meta property="og:description" content="perf_eva calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics." />
+<meta property="og:description" content="gains_table creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -117,52 +117,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Binomial Metrics</h1>
+    <h1>Gains Table</h1>
     <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/perf.R'><code>R/perf.R</code></a></small>
-    <div class="hidden name"><code>perf_eva.Rd</code></div>
+    <div class="hidden name"><code>gains_table.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>perf_eva</code> calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.</p>
+    <p><code>gains_table</code> creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>perf_eva</span>(<span class='no'>pred</span>, <span class='no'>label</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>binomial_metric</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"mse"</span>, <span class='st'>"rmse"</span>,
-  <span class='st'>"logloss"</span>, <span class='st'>"r2"</span>, <span class='st'>"ks"</span>, <span class='st'>"auc"</span>, <span class='st'>"gini"</span>), <span class='kw'>confusion_matrix</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"ks"</span>, <span class='st'>"roc"</span>), <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>,
-  <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gains_table</span>(<span class='no'>score</span>, <span class='no'>label</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>"freq"</span>,
+  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>pred</th>
-      <td><p>A list or vector of predicted probability or score.</p></td>
+      <th>score</th>
+      <td><p>A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).</p></td>
     </tr>
     <tr>
       <th>label</th>
-      <td><p>A list or vector of label values.</p></td>
+      <td><p>A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>The title of plot. Default is NULL.</p></td>
+      <th>bin_num</th>
+      <td><p>Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.</p></td>
     </tr>
     <tr>
-      <th>binomial_metric</th>
-      <td><p>Default is c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.</p></td>
-    </tr>
-    <tr>
-      <th>confusion_matrix</th>
-      <td><p>Logical, whether to create a confusion matrix. Default is TRUE.</p></td>
-    </tr>
-    <tr>
-      <th>threshold</th>
-      <td><p>Confusion matrix threshold. Default is the pred on maximum F1.</p></td>
-    </tr>
-    <tr>
-      <th>show_plot</th>
-      <td><p>Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').</p></td>
+      <th>bin_type</th>
+      <td><p>The score is cuted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.</p></td>
     </tr>
     <tr>
       <th>positive</th>
@@ -176,31 +162,17 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of binomial metric, confusion matrix and graphics</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Accuracy = true positive and true negative/total cases</p>
-<p>Error rate = false positive and false negative/total cases</p>
-<p>TPR, True Positive Rate(Recall or Sensitivity) = true positive/total actual positive</p>
-<p>PPV, Positive Predicted Value(Precision) = true positive/total predicted positive</p>
-<p>TNR, True Negative Rate(Specificity) = true negative/total actual negative = 1-FPR</p>
-<p>NPV, Negative Predicted Value = true negative/total predicted negative</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='perf_psi.html'>perf_psi</a></code></p></div>
+    <p>A dataframe</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># data preparing ------</span>
 <span class='co'># load germancredit data</span>
 <span class='fu'>data</span>(<span class='st'>"germancredit"</span>)
-
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
 <span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
-
-<span class='co'># breaking dt into train and test ------</span>
+<span class='co'># breaking dt into train and test</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
 
 <span class='co'># woe binning ------</span>
@@ -231,14 +203,14 @@
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)
 <span class='co'>## predicted score</span>
 <span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 <span class='co'>## predicted p1</span>
-<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'>## predicted score</span>
 <span class='co'># perf_eva(score_list, label_list)</span>
 
@@ -257,12 +229,12 @@
 
 <span class='co'>###### gains_table examples ######</span>
 <span class='co'># Example I, score can be a list of score or pred</span>
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 
 <span class='co'># Example II, specify the bins number and type</span>
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)
+<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
+<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>
@@ -272,10 +244,6 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

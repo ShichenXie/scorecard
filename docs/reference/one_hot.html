@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Split a dataset — split_df • scorecard</title>
+<title>One Hot Encoding — one_hot • scorecard</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Split a dataset — split_df" />
+<meta property="og:title" content="One Hot Encoding — one_hot" />
 
-<meta property="og:description" content="Split a dataset into train and test" />
+<meta property="og:description" content="One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -117,18 +117,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Split a dataset</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/split_df.R'><code>R/split_df.R</code></a></small>
-    <div class="hidden name"><code>split_df.Rd</code></div>
+    <h1>One Hot Encoding</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/one_hot.R'><code>R/one_hot.R</code></a></small>
+    <div class="hidden name"><code>one_hot.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Split a dataset into train and test</p>
+    <p>One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>split_df</span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fl'>0.7</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>618</span>)</pre>
+    <pre class="usage"><span class='fu'>one_hot</span>(<span class='no'>dt</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_encode</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>, <span class='kw'>factor_to_integer</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,50 +139,50 @@
       <td><p>A data frame.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Name of y variable, default is NULL. The input data will split based on the predictor y, if it is provide.</p></td>
+      <th>var_skip</th>
+      <td><p>Name of categorical variables that will skip and without doing one-hot encoding. Default is NULL.</p></td>
     </tr>
     <tr>
-      <th>ratio</th>
-      <td><p>A numeric value, default is 0.7. It indicates the ratio of total rows contained in one split, must less than 1.</p></td>
+      <th>var_encode</th>
+      <td><p>Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in var_skip are counted.</p></td>
     </tr>
     <tr>
-      <th>seed</th>
-      <td><p>A random seed, default is 618.</p></td>
+      <th>nacol_rm</th>
+      <td><p>Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.</p></td>
+    </tr>
+    <tr>
+      <th>replace_na</th>
+      <td><p>Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.</p></td>
+    </tr>
+    <tr>
+      <th>factor_to_integer</th>
+      <td><p>Logical. Converting factor variables to integer. Default is FALSE.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of dataframes</p>
+    <p>A dataframe</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
+    <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
 <span class='fu'>data</span>(<span class='no'>germancredit</span>)
 
-<span class='co'># Example I</span>
-<span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'>split_df</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-<span class='no'>train</span> <span class='kw'>=</span> <span class='no'>dt_list</span><span class='kw'>[[</span><span class='fl'>1</span>]]
-<span class='no'>test</span> <span class='kw'>=</span> <span class='no'>dt_list</span><span class='kw'>[[</span><span class='fl'>2</span>]]
+<span class='fu'>library</span>(<span class='no'>data.table</span>)
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/rbindlist'>rbind</a></span>(
+  <span class='no'>germancredit</span>,
+  <span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'>sample</span>(<span class='fu'>c</span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
+  <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-<span class='co'># dimensions of train and test datasets</span>
-<span class='fu'>lapply</span>(<span class='no'>dt_list</span>, <span class='no'>dim</span>)</div><div class='output co'>#&gt; $train
-#&gt; [1] 681  21
-#&gt; 
-#&gt; $test
-#&gt; [1] 319  21
-#&gt; </div><div class='input'>
+<span class='co'># remove na columns</span>
+<span class='no'>dat_onehot0</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>) <span class='co'># default</span>
+<span class='no'>dat_onehot1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='co'># Example II</span>
-<span class='no'>dt_list2</span> <span class='kw'>=</span> <span class='fu'>split_df</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.5</span>, <span class='fl'>0.2</span>))
-<span class='fu'>lapply</span>(<span class='no'>dt_list2</span>, <span class='no'>dim</span>)</div><div class='output co'>#&gt; $train
-#&gt; [1] 491  21
-#&gt; 
-#&gt; $test
-#&gt; [1] 211  21
-#&gt; </div><div class='input'>
-</div></pre>
+<span class='co'># replace missing values</span>
+<span class='no'>dat_onehot2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>) <span class='co'># default</span>
+<span class='no'>dat_onehot3</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
+<span class='no'>dat_onehot4</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

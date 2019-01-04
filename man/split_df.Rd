@@ -15,6 +15,9 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 618)
 
 \item{seed}{A random seed, default is 618.}
 }
+\value{
+A list of dataframes
+}
 \description{
 Split a dataset into train and test
 }
