@@ -150,7 +150,7 @@
     </tr>
     <tr>
       <th>bin_type</th>
-      <td><p>The score is cuted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.</p></td>
+      <td><p>The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.</p></td>
     </tr>
     <tr>
       <th>positive</th>
@@ -166,6 +166,10 @@
 
     <p>A dataframe</p>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='perf_eva.html'>perf_eva</a></code> <code><a href='perf_psi.html'>perf_psi</a></code></p></div>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
@@ -176,6 +180,7 @@
 <span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
 <span class='co'># breaking dt into train and test</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
+<span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 
 <span class='co'># woe binning ------</span>
 <span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_list</span>$<span class='no'>train</span>, <span class='st'>"creditability"</span>)
@@ -210,7 +215,6 @@
 <span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
 
 <span class='co'># Example II, multiple datsets</span>
-<span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 <span class='co'>## predicted p1</span>
 <span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'>## predicted score</span>
@@ -230,9 +234,9 @@
 
 
 <span class='co'>###### gains_table examples ######</span>
-<span class='co'># Example I, score can be a list of score or pred</span>
+<span class='co'># Example I, input score and label can be a list or a vector</span>
+<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>$<span class='no'>train</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>$<span class='no'>train</span>)
 <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 
 <span class='co'># Example II, specify the bins number and type</span>
 <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
@@ -246,6 +250,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

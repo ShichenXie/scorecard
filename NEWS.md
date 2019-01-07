@@ -8,13 +8,14 @@
 * revised perf_eva and perf_psi functions
 * added a vif function
 * added a report function to create report for scorecard modeling
+* added a scorecard2 function, which donot requires a glm model object in inputs
 
 # scorecard 0.1.9
 
 * pdo in scorecard function now supports negative value. If pdo is positive, the larger score means the lower probability to be positive sample. If pdo is negative, the larger score means the higher probability to be positive sample.
 * fixed a bug in woebin function using chimerge method, which is caused by initial breaks have out-range values.
 * added a check function on the length of unique values in string columns, which might cause the binning process slow.
-* fixed a bug in perf_eva function which is caused by the nrow of plot is setted to 0 when the length of plot type is one.
+* fixed a bug in perf_eva function which is caused by the nrow of plot is set to 0 when the length of plot type is one.
 * the ratio argument in split_df function supports to set ratios for both train and test.
 * If the argument return_rm_reason is TRUE in var_filter function, the info_value, missing_rate and identical_rate are provided in the result.
 

@@ -14,11 +14,11 @@ woebin_adj(dt, y, bins, adj_all_var = FALSE, special_values = NULL,
 
 \item{bins}{A list or data frame. Binning information generated from \code{woebin}.}
 
-\item{adj_all_var}{Logical, whether to show monotonic woe variables. Default is FALSE.}
+\item{adj_all_var}{Logical, whether to show variables with monotonic woe trends. Default is FALSE.}
 
-\item{special_values}{the values specified in special_values will in separate bins. Default is NULL.}
+\item{special_values}{The values specified in special_values will in separate bins. Default is NULL.}
 
-\item{method}{optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
+\item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
 
 \item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
 }

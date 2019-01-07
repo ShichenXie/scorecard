@@ -27,6 +27,7 @@ data("germancredit")
 dt_f = var_filter(germancredit, y="creditability")
 # breaking dt into train and test
 dt_list = split_df(dt_f, y="creditability", ratio = 0.6, seed = 30)
+label_list = lapply(dt_list, function(x) x$creditability)
 
 # woe binning ------
 bins = woebin(dt_f, y="creditability")
@@ -61,7 +62,6 @@ m2 = eval(m_step$call)
 # m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)
 
 # performance ks & roc ------
-label_list = lapply(dt_list, function(x) x$creditability)
 ## predicted proability
 pred_list = lapply(dt_woe_list, function(x) predict(m2, x, type='response'))
 ## performance

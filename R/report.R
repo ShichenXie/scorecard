@@ -1,20 +1,16 @@
 #' Scorecard Modeling Report
 #'
-#' \code{report} creates a scorecard model report and save it as xlsx file.
+#' \code{report} creates a scorecard modeling report and save it as a xlsx file.
 #'
-#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
+#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables; or a list of dataframes.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
 #' @param special_values The values specified in special_values will be in separate bins. Default is NULL.
-#' @param seed A random seed to split input dataframe. Default is 618.
+#' @param seed A random seed to split input dataframe. Default is 618. If it is NULL, input dt will not split into two datasets.
 #' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
-#' @param show_plot The graphics used to evaluate model performance. Default is c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
-#' @param bin_num The bins number in gains table.
 #' @param positive Value of positive class, default "bad|1".
-#' @param points0 Target points, default 600.
-#' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
-#' @param pdo Points to Double the Odds. Default is 50.
+#' @param ... Additional paramters.
 #'
 #' @examples
 #' \dontrun{
@@ -64,41 +60,86 @@
 #'  housing=c("rent", "own", "for free")
 #'  )
 #'
-#' report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report')
+#' # Example I
+#' # input dt is a dataframe
+#' # split input dataframe into two
+#' report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1')
+#' # donot split input data
+#' report(germancredit, y, x, breaks_list, special_values, seed=NULL, save_report='report2')
+#'
+#' # Example II
+#' # input dt is a list
+#' # only one dataset
+#' report(list(dt=germancredit), y, x,
+#'   breaks_list, special_values, seed=NULL, save_report='report3')
+#' # multiple datasets
+#' report(list(dt1=germancredit[sample(1000,500)],
+#'             dt2=germancredit[sample(1000,500)]), y, x,
+#'  breaks_list, special_values, seed=NULL, save_report='report4')
+#' # multiple datasets
+#' report(list(dt1=germancredit[sample(1000,500)],
+#'             dt2=germancredit[sample(1000,500)],
+#'             dt3=germancredit[sample(1000,500)]), y, x,
+#'  breaks_list, special_values, seed=NULL, save_report='report5')
+#'
 #' }
 #'
 #' @import openxlsx
 #' @importFrom stats as.formula glm predict
 #' @export
-report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_report='report',  show_plot=c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'), bin_num=20, positive='bad|1', points0=600, odds0=1/19, pdo=50) {
-  info_value = gvif = . = variable = bin = woe = points = NULL
+report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_report='report', positive='bad|1', ...) {
+  # info_value = gvif = . = variable = bin = woe = points = NULL
+  .=bin=gvif=info_value=points=variable=woe=points = NULL
 
-  dt = check_y(dt, y, positive)
-  dat_lst = split_df(dt, y, seed = seed)
+  arguments = list(...)
+  # data list
+  dat_lst = list()
+  if (is.data.frame(dt)) {
+    if (is.null(seed)) {
+      dat_lst[['dat']] = setDT(dt)
+    } else {
+      dat_lst = split_df(dt, y, seed = seed)
+    }
+
+  } else if ((inherits(dt, 'list') & all(sapply(dt, is.data.frame)))) {
+    dat_lst = lapply(dt, setDT)
+  } else {
+    stop('The input dt should be a dataframe, or a list of two dataframes.')
+  }
+  dat_lst = lapply(dat_lst, function(x) check_y(x, y, positive))
+  # label list
+  label_list = lapply(dat_lst, function(x) x[[y]])
+
 
   # binning
   bins_lst = lapply(dat_lst, function(dat) {
     suppressWarnings(woebin(dat, y = y, x = x, breaks_list = breaks_list, special_values = special_values, print_info=FALSE))
   })
   dat_woe_lst = lapply(dat_lst, function(dat) {
-    woebin_ply(dat, bins_lst$train, print_info=FALSE)
+    woebin_ply(dat, bins_lst[[1]], print_info=FALSE)
   })
 
   # fitting
   m = glm(as.formula(paste0(y, " ~ .")), family = "binomial",
-          data = dat_woe_lst$train[,c(paste0(x,"_woe"),y),with=F])
+          data = dat_woe_lst[[1]][,c(paste0(x,"_woe"),y),with=F])
   pred_lst = lapply(dat_woe_lst, function(dat) {
     predict(m, type='response', dat)
   })
 
-  m_perf = perf_eva(pred = pred_lst, label = lapply(dat_lst, function(x) x$creditability), confusion_matrix = FALSE, show_plot = NULL)
+  binomial_metric = c("mse", "rmse", "logloss", "r2", "ks", "auc", "gini")
+  if ('binomial_metric' %in% names(arguments)) binomial_metric = arguments$binomial_metric
+  m_perf = perf_eva(pred = pred_lst, label = label_list, binomial_metric=binomial_metric, confusion_matrix = FALSE, show_plot = NULL)
 
   # scaling
-  card <- scorecard(bins_lst$train, m, points0, odds0, pdo, basepoints_eq0 = TRUE)
+  card <- do.call( scorecard, args = c(
+    list(bins=bins_lst[[1]], model=m),
+    arguments[intersect(c('points0', 'odds0', 'pdo', 'basepoints_eq0'), names(arguments))] ) )
   score_lst = lapply(dat_lst, function(x) scorecard_ply(x, card, print_step=0L))
 
-  m_psi = perf_psi(score = score_lst, label = lapply(dat_lst, function(x) x$creditability), return_distr_dat = TRUE)
-  gains_tbl = gains_table(score = score_lst, label = lapply(dat_lst, function(x) x$creditability), bin_num = bin_num)
+
+  bin_num = ifelse('bin_num' %in% names(arguments), arguments$bin_num, 10)
+  bin_type = ifelse('bin_type' %in% names(arguments), arguments$bin_type, 'freq')
+  gains_tbl = gains_table(score = score_lst, label = label_list, bin_num = bin_num)
 
 
 
@@ -121,11 +162,14 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   sheet  <- addWorksheet(wb, sheetName="model coefficients")
 
   dt_vif = vif(m, merge_coef = TRUE)[, gvif := round(gvif, 4)]
-  dt_iv = iv(dat_woe_lst$train[,c(paste0(x,"_woe"), y),with=FALSE], y, order = FALSE)[, info_value := round(info_value, 4)]
-  dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dt[,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
+  dt_iv = iv(dat_woe_lst[[1]][,c(paste0(x,"_woe"), y),with=FALSE], y, order = FALSE)[, info_value := round(info_value, 4)]
+  dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dat_lst[[1]][,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
 
   sum_tbl = Reduce(function(x,y) merge(x,y, all=TRUE, by='variable'), list(dt_vif, dt_iv, dt_mr))
-  writeData(wb,sheet, sum_tbl, startRow=1, startCol=1, colNames=T)
+
+  writeData(wb,sheet, sprintf('Model coefficients based on %s dataset', names(dat_lst)[1]), startRow=1, startCol=1, colNames=F)
+  writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
+
 
 
   # model performance ------
@@ -135,7 +179,9 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   eva_tbl = rbindlist(m_perf$binomial_metric, idcol = 'dataset')
   writeData(wb, sheet, eva_tbl, startRow=1, startCol=1, colNames=T)
 
-  perf_eva(pred = pred_lst, label = lapply(dat_lst, function(x) x$creditability), confusion_matrix = FALSE, binomial_metric = NULL, show_plot = show_plot)$pic
+  show_plot = c("ks","roc")
+  if ('show_plot' %in% names(arguments)) show_plot = arguments$show_plot
+  perf_eva(pred = pred_lst, label = label_list, confusion_matrix = FALSE, binomial_metric = NULL, show_plot = show_plot)$pic
   Sys.sleep(2)
   plot_ncol = ceiling(sqrt(length(show_plot)))
   plot_nrow = ceiling(length(show_plot)/plot_ncol)
@@ -147,39 +193,39 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   cat("[INFO] sheet4-variable woe binning\n")
   sheet  <- addWorksheet(wb, sheetName="variable woe binning")
 
-  ## binning plots
-  plist_train <- woebin_plot(bins_lst$train, title = "TRAIN")
-  plist_test <- woebin_plot(bins_lst$test, title = "TEST")
+  names_dat = names(dat_lst)
+  for (i in seq_len(length(names_dat))) {
+    di = names_dat[i]
+    # title row
+    writeData(wb,sheet, sprintf('graphics of %s dataset', di), startRow=1, startCol=7*(i-1)+1, colNames=F)
+    writeData(wb, sheet, sprintf('binning of %s dataset', di), startRow=1, startCol=7*length(names_dat)+1+13*(i-1), colNames=F)
 
-  # binning information
-  writeData(wb,sheet, "train dataset plots", startCol=1, startRow=1, colNames=F)
-  writeData(wb,sheet, "test dataset plots", startCol=8, startRow=1, colNames=F)
-  writeData(wb, sheet, "train dataset binning", startCol=15, startRow=1, colNames=F)
-  writeData(wb, sheet, "test dataset binning", startCol=28, startRow=1, colNames=F)
-  # writeData(wb,sheet, "valid dataset", startCol=50, startRow=1, colNames=F)
+    # binning
+    writeData(wb,sheet, rbindlist(bins_lst[[i]]),
+startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
+  }
 
-  # table
-  writeData(wb,sheet, rbindlist(bins_lst$train), startCol=15, startRow=2, colNames=T)
-  writeData(wb,sheet, rbindlist(bins_lst$test), startCol=28, startRow=2, colNames=T)
-  # picture
-  for (i in 1:length(x)) {
-    # writeData(wb,sheet, var_exp[variable == x[i]], startCol = 1, startRow = (i-1)*15+2, rowNames = FALSE)
 
-    print(plist_train[[i]])
-    insertPlot(wb, sheet, width = 12, height = 7, xy = NULL, startRow = (i-1)*15+4, startCol = 1, fileType = "png", units = "cm")
-
-    print(plist_test[[i]])
-    insertPlot(wb, sheet, width = 12, height = 7, xy = NULL, startRow = (i-1)*15+4, startCol = 8, fileType = "png", units = "cm")
-
-    # print(plist_valid[[i]])
-    # insertPlot(wb, sheet, width = 12, height = 7, xy = NULL, startRow = (i-1)*15+4, startCol = 15, fileType = "png", units = "cm")
-
+  # plots
+  for (i in seq_len(length(names_dat))) {
+    plist = woebin_plot(bins_lst[[di]], title = di)
+    for (j in seq_len(length(x))) {
+      # writeData(wb,sheet, var_exp[variable == x[j]], startCol = 1, startRow = (j-1)*15+2, rowNames = FALSE)
+      print(plist[[j]])
+      insertPlot(wb, sheet, width = 12, height = 7, xy = NULL,
+                 startRow = (j-1)*15+4, startCol = 7*(i-1)+1,
+                 fileType = "png", units = "cm")
+    }
   }
 
 
   # scorecard ------
   cat("[INFO] sheet5-scorecard\n")
   sheet  <- addWorksheet(wb, sheetName="scorecard")
+
+  odds0 = ifelse('odds0' %in% names(arguments), arguments$odds0, 1/19)
+  points0 = ifelse('points0' %in% names(arguments), arguments$points0, 600)
+  pdo = ifelse('pdo' %in% names(arguments), arguments$pdo, 50)
 
   # add scorecard scaling rule
   writeData(wb,sheet, "scorecard scaling", startCol=1, startRow=1, colNames=F)
@@ -191,25 +237,34 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
 
   # gains table ------
+  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate')
+
   cat("[INFO] sheet6-gains table\n")
   sheet  <- addWorksheet(wb, sheetName="gains table")
 
-  setnames(gains_tbl, c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate'))
+  setnames(gains_tbl, gains_table_cols)
   writeData(wb, sheet, gains_tbl, startCol=1, startRow=1, colNames=T)
 
   # population stability ------
-  cat("[INFO] sheet7-population stability\n")
-  sheet  <- addWorksheet(wb, sheetName="population stability")
+  if (length(dat_lst) > 1) {
+    cat("[INFO] sheet7-population stability\n")
+    sheet  <- addWorksheet(wb, sheetName="population stability")
 
-  psi_tbl = m_psi$dat$score
-  setnames(psi_tbl, c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate'))
-  writeData(wb, sheet, psi_tbl, startCol=1, startRow=1, colNames=T)
+    m_psi = perf_psi(score = score_lst, label = label_list, return_distr_dat = TRUE)
 
-  # pic
-  print(m_psi$pic$score)
-  Sys.sleep(2)
-  insertPlot(wb, sheet, width = 16, height = 7, xy = NULL, startRow=nrow(psi_tbl)+4, startCol=1, fileType="png", units= "cm")
-
+    # table in equal width
+    psi_tbl = m_psi$dat[[1]]
+    setnames(psi_tbl, gains_table_cols)
+    writeData(wb, sheet, psi_tbl, startCol=1, startRow=1, colNames=T)
+    # pic
+    for (i in seq_len(length(dat_lst)-1)) {
+      if (length(dat_lst)>2) {
+        print(m_psi$pic$score[[i]])
+      } else print(m_psi$pic$score)
+      Sys.sleep(2)
+      insertPlot(wb, sheet, width = 16, height = 7, xy = NULL, startRow=nrow(psi_tbl)+4+15*(i-1), startCol=1, fileType="png", units= "cm")
+    }
+  }
 
   # saving workbook ------
   report_name = sprintf('%s_%s.xlsx', save_report, format(Sys.time(),"%Y%m%d_%H%M%S"))

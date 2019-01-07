@@ -323,7 +323,7 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
 # required in woebin2 # return tree-like binning
 woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
   # global variables or functions
-  brkp = bstbrkp = total_iv = binning_tree = NULL
+  brkp = bstbrkp = total_iv = NULL
 
   # initial binning
   bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
@@ -343,6 +343,7 @@ woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop
   step_num = 1
 
   # best breaks from three to n+1 bins
+  binning_tree = NULL
   while ( (IVchg >= stop_limit) & (step_num+1 <= min(bin_num_limit, len_brks)) ) {
     binning_tree = woebin2_tree_add_1brkp(dtm, initial_binning, count_distr_limit, bestbreaks)
     # print(binning_tree)
@@ -663,7 +664,6 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom parallel detectCores
 #' @export
-#'
 woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
   # start time
   start_time = proc.time()
@@ -1196,9 +1196,9 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param dt A data frame.
 #' @param y Name of y variable.
 #' @param bins A list or data frame. Binning information generated from \code{woebin}.
-#' @param adj_all_var Logical, whether to show monotonic woe variables. Default is FALSE.
-#' @param special_values the values specified in special_values will in separate bins. Default is NULL.
-#' @param method optimal binning method, it should be "tree" or "chimerge". Default is "tree".
+#' @param adj_all_var Logical, whether to show variables with monotonic woe trends. Default is FALSE.
+#' @param special_values The values specified in special_values will in separate bins. Default is NULL.
+#' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
 #' @param save_breaks_list Logical, whether to save breaks_list in current working directory. Default is FALSE.
 #'
 #' @return A list of modified break points of each x variables.
@@ -1228,7 +1228,6 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-#'
 woebin_adj = function(dt, y, bins, adj_all_var=FALSE, special_values=NULL, method="tree", save_breaks_list=NULL) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL

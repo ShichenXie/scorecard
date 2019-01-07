@@ -630,10 +630,10 @@ pf_cutoffs = function(dt_ev_lst) {
 
 #' Binomial Metrics
 #'
-#' \code{perf_eva} calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.
+#' \code{perf_eva} calculates metrics to evaluate the performance of binomial classification model. It can also creates confusion matrix and model performance graphics.
 #'
-#' @param label A list or vector of label values.
 #' @param pred A list or vector of predicted probability or score.
+#' @param label A list or vector of label values.
 #' @param title The title of plot. Default is NULL.
 #' @param binomial_metric Default is c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.
 #' @param confusion_matrix Logical, whether to create a confusion matrix. Default is TRUE.
@@ -643,6 +643,7 @@ pf_cutoffs = function(dt_ev_lst) {
 #' @param ... Additional parameters.
 #'
 #' @return A list of binomial metric, confusion matrix and graphics
+#' @seealso \code{\link{perf_psi}}
 #'
 #' @details
 #' Accuracy = true positive and true negative/total cases
@@ -666,7 +667,6 @@ pf_cutoffs = function(dt_ev_lst) {
 # Lift chart: Lift(PV+/p1) ~ Depth with different threshold
 # Gains chart: PV + ~ Depth with different threshold
 #'
-#' @seealso \code{\link{perf_psi}}
 #'
 #' @examples
 #' \dontrun{
@@ -678,6 +678,7 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #' # breaking dt into train and test ------
 #' dt_list = split_df(dt_f, "creditability")
+#' label_list = lapply(dt_list, function(x) x$creditability)
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -712,7 +713,6 @@ pf_cutoffs = function(dt_ev_lst) {
 #' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
 #'
 #' # Example II, multiple datsets
-#' label_list = lapply(dt_list, function(x) x$creditability)
 #' ## predicted p1
 #' perf_eva(pred = pred_list, label = label_list)
 #' ## predicted score
@@ -732,9 +732,9 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #'
 #' ###### gains_table examples ######
-#' # Example I, score can be a list of score or pred
+#' # Example I, input score and label can be a list or a vector
+#' gains_table(score = score_list$train, label = label_list$train)
 #' gains_table(score = score_list, label = label_list)
-#' gains_table(score = pred_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
 #' gains_table(score = score_list, label = label_list, bin_num = 20)
@@ -797,8 +797,8 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
   if (!is.null(title)) title = paste0(title,': ')
   # type
   type = list(...)[["type"]]
+  if (!isFALSE(show_plot) & !is.null(type)) show_plot = type
   # show_plot
-  if (isTRUE(show_plot) & !is.null(type)) show_plot = type
   show_plot = intersect(show_plot, c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
   # pic
   if (length(show_plot)>0) {
@@ -889,11 +889,12 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
 #' @param bin_num Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.
-#' @param bin_type The score is cuted using equal frequency binning or equal width binning. Accepted values are 'freq' and 'width'. Default is 'freq'.
+#' @param bin_type The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.
 #' @param positive Value of positive class, default is "bad|1".
 #' @param ... Additional parameters.
 #'
 #' @return A dataframe
+#' @seealso \code{\link{perf_eva}} \code{\link{perf_psi}}
 #'
 #' @examples
 #' \dontrun{
@@ -904,6 +905,7 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #' dt_f = var_filter(germancredit, "creditability")
 #' # breaking dt into train and test
 #' dt_list = split_df(dt_f, "creditability")
+#' label_list = lapply(dt_list, function(x) x$creditability)
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -938,7 +940,6 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
 #'
 #' # Example II, multiple datsets
-#' label_list = lapply(dt_list, function(x) x$creditability)
 #' ## predicted p1
 #' perf_eva(pred = pred_list, label = label_list)
 #' ## predicted score
@@ -958,9 +959,9 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #'
 #'
 #' ###### gains_table examples ######
-#' # Example I, score can be a list of score or pred
+#' # Example I, input score and label can be a list or a vector
+#' gains_table(score = score_list$train, label = label_list$train)
 #' gains_table(score = score_list, label = label_list)
-#' gains_table(score = pred_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
 #' gains_table(score = score_list, label = label_list, bin_num = 20)
@@ -986,13 +987,14 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
   dt_sl = list(...)[['dt_sl']]
 
   if (is.null(dt_sl) & !is.null(score) & !is.null(label)) {
-    names_datset = names(score)
+
     # dateset list of score and label
     dt_sl = suppressWarnings( func_dat_labelpred(
       pred=score, label=label, title=NULL, positive=positive, seed=seed) )
     dt_sl = lapply(dt_sl, function(x) {
       x[,.(label, score=x[[setdiff(names(x),'label')]])]
     })
+    names_datset = names(dt_sl)
     dt_sl = rbindlist(dt_sl, idcol = 'datset')[, datset := factor(datset, levels = names_datset)]
   }
 
@@ -1047,10 +1049,10 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
 #' @param ... Additional parameters.
 #' @return A dataframe of psi and graphics of credit score distribution
+#' @seealso \code{\link{perf_eva}} \code{\link{gains_table}}
 #'
 #' @details The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
 #'
-#' @seealso \code{\link{perf_eva}}
 #'
 #' @examples
 #' \dontrun{
@@ -1061,6 +1063,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' dt_f = var_filter(germancredit, "creditability")
 #' # breaking dt into train and test
 #' dt_list = split_df(dt_f, "creditability")
+#' label_list = lapply(dt_list, function(x) x$creditability)
 #'
 #' # woe binning ------
 #' bins = woebin(dt_list$train, "creditability")
@@ -1095,7 +1098,6 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
 #'
 #' # Example II, multiple datsets
-#' label_list = lapply(dt_list, function(x) x$creditability)
 #' ## predicted p1
 #' perf_eva(pred = pred_list, label = label_list)
 #' ## predicted score
@@ -1115,9 +1117,9 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #'
 #'
 #' ###### gains_table examples ######
-#' # Example I, score can be a list of score or pred
+#' # Example I, input score and label can be a list or a vector
+#' gains_table(score = score_list$train, label = label_list$train)
 #' gains_table(score = score_list, label = label_list)
-#' gains_table(score = pred_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
 #' gains_table(score = score_list, label = label_list, bin_num = 20)
@@ -1141,10 +1143,11 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
   if (is.null(return_distr_dat)) return_distr_dat = FALSE
 
 
-  names_datset = names(score) # names of dataset
+
   # dateset list of score and label
   dt_sl = suppressWarnings( func_dat_labelpred(
     pred=score, label=label, title=title, positive=positive, seed=seed) )
+  names_datset = names(dt_sl) # names of dataset
   dt_sl = rbindlist(dt_sl, idcol = 'datset')[, datset := factor(datset, levels = names_datset)]
 
 
@@ -1158,16 +1161,33 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 
     dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn)
 
-    # population stability index
-    psi_sn = psi_metric(dt_psi, names_datset)
-    rt[['psi']][[sn]] = data.table(psi = psi_sn)
-    # pic
-    if (show_plot) rt[['pic']][[sn]] = psi_plot(dt_psi, psi_sn, title, sn)
+
+    # return list
+    temp_psi = list()
+    for (i in names_datset[-1]) {
+      # population stability index
+      names_dts = c(names_datset[1], i)
+      psi_sn = psi_metric(dt_psi[datset %in% names_dts], names_dts)
+      temp_psi[[paste0(names_dts, collapse = '_')]] = data.table(psi = psi_sn)
+
+      # pic
+      temp_pic = NULL
+      if (show_plot) {
+        temp_pic = psi_plot(dt_psi[datset %in% names_dts], psi_sn, title, sn)
+        if (length(names_datset) > 2) {
+          rt[['pic']][[sn]][[paste0(names_dts, collapse = '_')]] = temp_pic
+        } else {
+          rt[['pic']][[sn]] = temp_pic
+        }
+      }
+    }
+    rt[['psi']][[sn]] = rbindlist(temp_psi, idcol = 'dataset')
+
     # equal freq / width dataframe
     if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_sn)
   }
 
-  rt$psi = rbindlist(rt$psi, idcol = "variable")
+  rt$psi = rbindlist(rt$psi, idcol = "variable", fill = TRUE)
   # rt$dat = rbindlist(rt$dat, idcol = "variable")
   return(rt)
 }

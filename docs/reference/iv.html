@@ -182,7 +182,8 @@ The relationship between information value and predictive power is as follows:</
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>germancredit</span>)
 
 <span class='co'># information values</span>
-<span class='no'>info_value</span> <span class='kw'>=</span> <span class='fu'>iv</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The positive value in "creditability" was replaced by 1 and negative value by 0.</span></div><div class='input'>
+<span class='no'>info_value</span> <span class='kw'>=</span> <span class='fu'>iv</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)
+
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>info_value</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	20 obs. of  2 variables:
 #&gt;  $ variable  : chr  "status.of.existing.checking.account" "duration.in.month" "credit.history" "age.in.years" ...
 #&gt;  $ info_value: num  0.666 0.335 0.293 0.26 0.196 ...

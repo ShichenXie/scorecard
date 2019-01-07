@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Scorecard Modeling Report — report" />
 
-<meta property="og:description" content="report creates a scorecard model report and save it as xlsx file." />
+<meta property="og:description" content="report creates a scorecard modeling report and save it as a xlsx file." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,21 +126,19 @@
 
     <div class="ref-description">
     
-    <p><code>report</code> creates a scorecard model report and save it as xlsx file.</p>
+    <p><code>report</code> creates a scorecard modeling report and save it as a xlsx file.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>report</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>618</span>,
-  <span class='kw'>save_report</span> <span class='kw'>=</span> <span class='st'>"report"</span>, <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ks"</span>, <span class='st'>"lift"</span>, <span class='st'>"gain"</span>, <span class='st'>"roc"</span>,
-  <span class='st'>"lz"</span>, <span class='st'>"pr"</span>, <span class='st'>"f1"</span>, <span class='st'>"density"</span>), <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>,
-  <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>, <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>)</pre>
+  <span class='kw'>save_report</span> <span class='kw'>=</span> <span class='st'>"report"</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>A data frame with both x (predictor/feature) and y (response/label) variables.</p></td>
+      <td><p>A data frame with both x (predictor/feature) and y (response/label) variables; or a list of dataframes.</p></td>
     </tr>
     <tr>
       <th>y</th>
@@ -160,35 +158,19 @@
     </tr>
     <tr>
       <th>seed</th>
-      <td><p>A random seed to split input dataframe. Default is 618.</p></td>
+      <td><p>A random seed to split input dataframe. Default is 618. If it is NULL, input dt will not split into two datasets.</p></td>
     </tr>
     <tr>
       <th>save_report</th>
       <td><p>The name of xlsx file where the report is to be saved. Default is 'report'.</p></td>
     </tr>
     <tr>
-      <th>show_plot</th>
-      <td><p>The graphics used to evaluate model performance. Default is c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').</p></td>
-    </tr>
-    <tr>
-      <th>bin_num</th>
-      <td><p>The bins number in gains table.</p></td>
-    </tr>
-    <tr>
       <th>positive</th>
       <td><p>Value of positive class, default "bad|1".</p></td>
     </tr>
     <tr>
-      <th>points0</th>
-      <td><p>Target points, default 600.</p></td>
-    </tr>
-    <tr>
-      <th>odds0</th>
-      <td><p>Target odds, default 1/19. Odds = p/(1-p).</p></td>
-    </tr>
-    <tr>
-      <th>pdo</th>
-      <td><p>Points to Double the Odds. Default is 50.</p></td>
+      <th>...</th>
+      <td><p>Additional paramters.</p></td>
     </tr>
     </table>
     
@@ -241,7 +223,28 @@
  <span class='kw'>housing</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"rent"</span>, <span class='st'>"own"</span>, <span class='st'>"for free"</span>)
  )
 
-<span class='fu'>report</span>(<span class='no'>germancredit</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='fl'>618</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report'</span>)
+<span class='co'># Example I</span>
+<span class='co'># input dt is a dataframe</span>
+<span class='co'># split input dataframe into two</span>
+<span class='fu'>report</span>(<span class='no'>germancredit</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='fl'>618</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report1'</span>)
+<span class='co'># donot split input data</span>
+<span class='fu'>report</span>(<span class='no'>germancredit</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report2'</span>)
+
+<span class='co'># Example II</span>
+<span class='co'># input dt is a list</span>
+<span class='co'># only one dataset</span>
+<span class='fu'>report</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>), <span class='no'>y</span>, <span class='no'>x</span>,
+  <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report3'</span>)
+<span class='co'># multiple datasets</span>
+<span class='fu'>report</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>dt1</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            <span class='kw'>dt2</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='no'>y</span>, <span class='no'>x</span>,
+ <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report4'</span>)
+<span class='co'># multiple datasets</span>
+<span class='fu'>report</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>dt1</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            <span class='kw'>dt2</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            <span class='kw'>dt3</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='no'>y</span>, <span class='no'>x</span>,
+ <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report5'</span>)
+
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

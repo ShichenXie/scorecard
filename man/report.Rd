@@ -5,12 +5,10 @@
 \title{Scorecard Modeling Report}
 \usage{
 report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
-  save_report = "report", show_plot = c("ks", "lift", "gain", "roc",
-  "lz", "pr", "f1", "density"), bin_num = 20, positive = "bad|1",
-  points0 = 600, odds0 = 1/19, pdo = 50)
+  save_report = "report", positive = "bad|1", ...)
 }
 \arguments{
-\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
+\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables; or a list of dataframes.}
 
 \item{y}{Name of y variable.}
 
@@ -20,24 +18,16 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 
 \item{special_values}{The values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{seed}{A random seed to split input dataframe. Default is 618.}
+\item{seed}{A random seed to split input dataframe. Default is 618. If it is NULL, input dt will not split into two datasets.}
 
 \item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
 
-\item{show_plot}{The graphics used to evaluate model performance. Default is c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'). Accepted values are c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
-
-\item{bin_num}{The bins number in gains table.}
-
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{points0}{Target points, default 600.}
-
-\item{odds0}{Target odds, default 1/19. Odds = p/(1-p).}
-
-\item{pdo}{Points to Double the Odds. Default is 50.}
+\item{...}{Additional paramters.}
 }
 \description{
-\code{report} creates a scorecard model report and save it as xlsx file.
+\code{report} creates a scorecard modeling report and save it as a xlsx file.
 }
 \examples{
 \dontrun{
@@ -87,7 +77,28 @@ breaks_list=list(
  housing=c("rent", "own", "for free")
  )
 
-report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report')
+# Example I
+# input dt is a dataframe
+# split input dataframe into two
+report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1')
+# donot split input data
+report(germancredit, y, x, breaks_list, special_values, seed=NULL, save_report='report2')
+
+# Example II
+# input dt is a list
+# only one dataset
+report(list(dt=germancredit), y, x,
+  breaks_list, special_values, seed=NULL, save_report='report3')
+# multiple datasets
+report(list(dt1=germancredit[sample(1000,500)],
+            dt2=germancredit[sample(1000,500)]), y, x,
+ breaks_list, special_values, seed=NULL, save_report='report4')
+# multiple datasets
+report(list(dt1=germancredit[sample(1000,500)],
+            dt2=germancredit[sample(1000,500)],
+            dt3=germancredit[sample(1000,500)]), y, x,
+ breaks_list, special_values, seed=NULL, save_report='report5')
+
 }
 
 }

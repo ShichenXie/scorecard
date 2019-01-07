@@ -98,7 +98,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#scorecard" class="anchor"></a>scorecard</h1></div>
 
-<p>The goal of <code>scorecard</code> package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarised in below. This package can also used in the development of machine learning models. <code>scorecard</code> package is heavy depends on <a href="http://r-datatable.com"><code>data.table</code></a> for optimal speed and memory efficiency.</p>
+<p>The goal of <code>scorecard</code> package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification.</p>
 <ul>
 <li>data preparation (<code>split_df</code>, <code>one_hot</code>)</li>
 <li>variable selection (<code>var_filter</code>, <code>iv</code>, <code>vif</code>)</li>
@@ -134,41 +134,41 @@
 <a class="sourceLine" id="cb3-8" data-line-number="8">dt_f =<span class="st"> </span><span class="kw"><a href="reference/var_filter.html">var_filter</a></span>(germancredit, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># breaking dt into train and test</span></a>
 <a class="sourceLine" id="cb3-10" data-line-number="10">dt_list =<span class="st"> </span><span class="kw"><a href="reference/split_df.html">split_df</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">ratio =</span> <span class="fl">0.6</span>, <span class="dt">seed =</span> <span class="dv">30</span>)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co"># woe binning ------</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">bins =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="co"># woebin_plot(bins)</span></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="co"># binning adjustment</span></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co">## adjust breaks interactively</span></a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co"># breaks_adj = woebin_adj(dt_f, "creditability", bins) </span></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co">## or specify breaks manually</span></a>
-<a class="sourceLine" id="cb3-20" data-line-number="20">breaks_adj =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
-<a class="sourceLine" id="cb3-21" data-line-number="21">  <span class="dt">age.in.years=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
-<a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">other.debtors.or.guarantors=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span>))</a>
-<a class="sourceLine" id="cb3-23" data-line-number="23">bins_adj =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">breaks_list=</span>breaks_adj)</a>
-<a class="sourceLine" id="cb3-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb3-25" data-line-number="25"><span class="co"># converting train and test into woe values</span></a>
-<a class="sourceLine" id="cb3-26" data-line-number="26">dt_woe_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/woebin_ply.html">woebin_ply</a></span>(x, bins_adj))</a>
-<a class="sourceLine" id="cb3-27" data-line-number="27"></a>
-<a class="sourceLine" id="cb3-28" data-line-number="28"><span class="co"># glm ------</span></a>
-<a class="sourceLine" id="cb3-29" data-line-number="29">m1 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>( creditability <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/family">binomial</a></span>(), <span class="dt">data =</span> dt_woe_list<span class="op">$</span>train)</a>
-<a class="sourceLine" id="cb3-30" data-line-number="30"><span class="co"># vif(m1, merge_coef = TRUE) # summary(m1)</span></a>
-<a class="sourceLine" id="cb3-31" data-line-number="31"><span class="co"># Select a formula-based model by AIC (or by LASSO for large dataset)</span></a>
-<a class="sourceLine" id="cb3-32" data-line-number="32">m_step =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/step">step</a></span>(m1, <span class="dt">direction=</span><span class="st">"both"</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb3-33" data-line-number="33">m2 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/eval">eval</a></span>(m_step<span class="op">$</span>call)</a>
-<a class="sourceLine" id="cb3-34" data-line-number="34"><span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span></a>
-<a class="sourceLine" id="cb3-35" data-line-number="35"></a>
-<a class="sourceLine" id="cb3-36" data-line-number="36"><span class="co"># # Adjusting for oversampling (support.sas.com/kb/22/601.html)</span></a>
-<a class="sourceLine" id="cb3-37" data-line-number="37"><span class="co"># library(data.table)</span></a>
-<a class="sourceLine" id="cb3-38" data-line-number="38"><span class="co"># p1=0.03 # bad probability in population </span></a>
-<a class="sourceLine" id="cb3-39" data-line-number="39"><span class="co"># r1=0.3 # bad probability in sample dataset</span></a>
-<a class="sourceLine" id="cb3-40" data-line-number="40"><span class="co"># dt_woe = copy(dt_woe_list$train)[, weight := ifelse(creditability==1, p1/r1, (1-p1)/(1-r1) )][]</span></a>
-<a class="sourceLine" id="cb3-41" data-line-number="41"><span class="co"># fmla = as.formula(paste("creditability ~", paste(names(coef(m2))[-1], collapse="+")))</span></a>
-<a class="sourceLine" id="cb3-42" data-line-number="42"><span class="co"># m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)</span></a>
-<a class="sourceLine" id="cb3-43" data-line-number="43"></a>
-<a class="sourceLine" id="cb3-44" data-line-number="44"><span class="co"># performance ks &amp; roc ------</span></a>
-<a class="sourceLine" id="cb3-45" data-line-number="45">label_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) x<span class="op">$</span>creditability)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">label_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) x<span class="op">$</span>creditability)</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># woe binning ------</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">bins =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co"># woebin_plot(bins)</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co"># binning adjustment</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co">## adjust breaks interactively</span></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co"># breaks_adj = woebin_adj(dt_f, "creditability", bins) </span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="co">## or specify breaks manually</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">breaks_adj =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">age.in.years=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">  <span class="dt">other.debtors.or.guarantors=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span>))</a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">bins_adj =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">breaks_list=</span>breaks_adj)</a>
+<a class="sourceLine" id="cb3-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb3-26" data-line-number="26"><span class="co"># converting train and test into woe values</span></a>
+<a class="sourceLine" id="cb3-27" data-line-number="27">dt_woe_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/woebin_ply.html">woebin_ply</a></span>(x, bins_adj))</a>
+<a class="sourceLine" id="cb3-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co"># glm ------</span></a>
+<a class="sourceLine" id="cb3-30" data-line-number="30">m1 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>( creditability <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/family">binomial</a></span>(), <span class="dt">data =</span> dt_woe_list<span class="op">$</span>train)</a>
+<a class="sourceLine" id="cb3-31" data-line-number="31"><span class="co"># vif(m1, merge_coef = TRUE) # summary(m1)</span></a>
+<a class="sourceLine" id="cb3-32" data-line-number="32"><span class="co"># Select a formula-based model by AIC (or by LASSO for large dataset)</span></a>
+<a class="sourceLine" id="cb3-33" data-line-number="33">m_step =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/step">step</a></span>(m1, <span class="dt">direction=</span><span class="st">"both"</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-34" data-line-number="34">m2 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/eval">eval</a></span>(m_step<span class="op">$</span>call)</a>
+<a class="sourceLine" id="cb3-35" data-line-number="35"><span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span></a>
+<a class="sourceLine" id="cb3-36" data-line-number="36"></a>
+<a class="sourceLine" id="cb3-37" data-line-number="37"><span class="co"># # Adjusting for oversampling (support.sas.com/kb/22/601.html)</span></a>
+<a class="sourceLine" id="cb3-38" data-line-number="38"><span class="co"># library(data.table)</span></a>
+<a class="sourceLine" id="cb3-39" data-line-number="39"><span class="co"># p1=0.03 # bad probability in population </span></a>
+<a class="sourceLine" id="cb3-40" data-line-number="40"><span class="co"># r1=0.3 # bad probability in sample dataset</span></a>
+<a class="sourceLine" id="cb3-41" data-line-number="41"><span class="co"># dt_woe = copy(dt_woe_list$train)[, weight := ifelse(creditability==1, p1/r1, (1-p1)/(1-r1) )][]</span></a>
+<a class="sourceLine" id="cb3-42" data-line-number="42"><span class="co"># fmla = as.formula(paste("creditability ~", paste(names(coef(m2))[-1], collapse="+")))</span></a>
+<a class="sourceLine" id="cb3-43" data-line-number="43"><span class="co"># m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)</span></a>
+<a class="sourceLine" id="cb3-44" data-line-number="44"></a>
+<a class="sourceLine" id="cb3-45" data-line-number="45"><span class="co"># performance ks &amp; roc ------</span></a>
 <a class="sourceLine" id="cb3-46" data-line-number="46"><span class="co">## predicted proability</span></a>
 <a class="sourceLine" id="cb3-47" data-line-number="47">pred_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_woe_list, <span class="cf">function</span>(x) <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(m2, x, <span class="dt">type=</span><span class="st">'response'</span>))</a>
 <a class="sourceLine" id="cb3-48" data-line-number="48"><span class="co">## performance</span></a>

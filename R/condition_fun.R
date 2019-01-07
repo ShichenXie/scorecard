@@ -56,7 +56,7 @@ rep_blank_na = function(dt) {
   dt = setDT(dt)
 
   if (any(dt == "", na.rm = TRUE)) {
-    warning("There are blank characters in the columns of \"", paste0(names(which(dt[,sapply(.SD, function(x) any(x=="",na.rm = T))])), collapse = ",") ,"\", which were replaced by NAs.")
+    warning(sprintf('The blank characters are replaced with NAs, which are located in columns of \n%s', paste(names(which(dt[,sapply(.SD, function(x) any(x=="",na.rm = T))])), collapse = ", ")))
 
     dt[dt == ""] = NA
   }
@@ -79,7 +79,7 @@ check_y = function(dt, y, positive) {
 
   # remove rows have missing values in y
   if (dt[, anyNA(get(y))]) {
-    warning(paste0("There are NAs in ", y, ". The rows with NA in \"", y, "\" were removed from input data."))
+    warning(sprintf("There are NAs in %s. The rows with NAs in \"%s\" are removed from input data.", y, y))
     dt = dt[!is.na(get(y))]
   }
 
@@ -95,7 +95,7 @@ check_y = function(dt, y, positive) {
       y2 = ifelse(grepl(positive, y1), 1L, 0L)
       if (any(y1 != y2)) {
         dt[[y]] = y2
-        warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
+        # warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
       }
     } else {
       stop(paste0("Incorrect inputs; the positive value in \"", y, "\" is not specified"))
@@ -124,7 +124,7 @@ x_variable = function(dt, y, x) {
   if (is.null(x)) x = x_all
 
   if ( length(setdiff(x,x_all)) > 0 ) {
-    warning(paste0("Incorrect inputs; the variables \n\"", paste0(setdiff(x,x_all), collapse = ","), "\"\n are not exist in input data, which are removed."))
+    warning(sprintf('Incorrect inputs; there are %s variables are not exist in the input dataframe, which are removed from x. \n%s', length(setdiff(x, x_all)), paste(setdiff(x, x_all), collapse = ', ')) )
     x = intersect(x, x_all)
   }
 
@@ -209,3 +209,20 @@ sec_to_hms = function(sec) {
 
 
 
+# y to good bad
+# groupby or dcast
+# groupby is faster via data.table package
+y_to_goodbad = function(dt, y) {
+  # dt = data.table(x = rnorm(1e+8), y = sample(c(rep(0,9),1), 1e+8, replace = TRUE))
+  #
+  # system.time(
+  #   dcast(dt, x~y, fun=length, value.var = 'y')
+  # )
+  #
+  # system.time(
+  #   dt[, .(good=sum(y==0), bad=sum(y==1)), by=x]
+  # )
+
+
+
+}

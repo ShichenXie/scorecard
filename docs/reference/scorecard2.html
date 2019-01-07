@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Creating a Scorecard — scorecard • scorecard</title>
+<title>Creating a Scorecard — scorecard2 • scorecard</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Creating a Scorecard — scorecard" />
+<meta property="og:title" content="Creating a Scorecard — scorecard2" />
 
 <meta property="og:description" content="scorecard creates a scorecard based on the results from woebin and glm." />
 <meta name="twitter:card" content="summary" />
@@ -121,7 +121,7 @@
     <div class="page-header">
     <h1>Creating a Scorecard</h1>
     <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/scorecard.R'><code>R/scorecard.R</code></a></small>
-    <div class="hidden name"><code>scorecard.Rd</code></div>
+    <div class="hidden name"><code>scorecard2.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -130,8 +130,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>scorecard</span>(<span class='no'>bins</span>, <span class='no'>model</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>, <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-  <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>scorecard2</span>(<span class='no'>bins</span>, <span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>, <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>,
+  <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,8 +141,16 @@
       <td><p>Binning information generated from <code>woebin</code> function.</p></td>
     </tr>
     <tr>
-      <th>model</th>
-      <td><p>A glm model object.</p></td>
+      <th>dt</th>
+      <td><p>A data frame with both x (predictor/feature) and y (response/label) variables.</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>Name of y variable.</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>Name of x variables. If it is NULL, then all variables in bins are used. Default is NULL.</p></td>
     </tr>
     <tr>
       <th>points0</th>
@@ -160,6 +168,14 @@
       <th>basepoints_eq0</th>
       <td><p>Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.</p></td>
     </tr>
+    <tr>
+      <th>positive</th>
+      <td><p>Value of positive class, default "bad|1".</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -168,7 +184,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='scorecard2.html'>scorecard2</a></code> <code><a href='scorecard_ply.html'>scorecard_ply</a></code></p></div>
+    <div class='dont-index'><p><code><a href='scorecard.html'>scorecard</a></code> <code><a href='scorecard_ply.html'>scorecard_ply</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -201,8 +217,8 @@
 
 <span class='co'># scorecard</span>
 <span class='co'># Example I # creat a scorecard</span>
-<span class='no'>card</span> <span class='kw'>=</span> <span class='fu'>scorecard</span>(<span class='no'>bins</span>, <span class='no'>m</span>)
-<span class='no'>card2</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard2.html'>scorecard2</a></span>(<span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>, <span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>'creditability'</span>,
+<span class='no'>card</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard.html'>scorecard</a></span>(<span class='no'>bins</span>, <span class='no'>m</span>)
+<span class='no'>card2</span> <span class='kw'>=</span> <span class='fu'>scorecard2</span>(<span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>, <span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>'creditability'</span>,
   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"status.of.existing.checking.account"</span>, <span class='st'>"duration.in.month"</span>, <span class='st'>"credit.history"</span>,
    <span class='st'>"purpose"</span>, <span class='st'>"credit.amount"</span>, <span class='st'>"savings.account.and.bonds"</span>,
    <span class='st'>"present.employment.since"</span>, <span class='st'>"installment.rate.in.percentage.of.disposable.income"</span>,

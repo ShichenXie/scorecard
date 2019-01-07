@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Binomial Metrics — perf_eva" />
 
-<meta property="og:description" content="perf_eva calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics." />
+<meta property="og:description" content="perf_eva calculates metrics to evaluate the performance of binomial classification model. It can also creates confusion matrix and model performance graphics." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,7 +126,7 @@
 
     <div class="ref-description">
     
-    <p><code>perf_eva</code> calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.</p>
+    <p><code>perf_eva</code> calculates metrics to evaluate the performance of binomial classification model. It can also creates confusion matrix and model performance graphics.</p>
     
     </div>
 
@@ -204,6 +204,7 @@
 
 <span class='co'># breaking dt into train and test ------</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
+<span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 
 <span class='co'># woe binning ------</span>
 <span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_list</span>$<span class='no'>train</span>, <span class='st'>"creditability"</span>)
@@ -238,7 +239,6 @@
 <span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
 
 <span class='co'># Example II, multiple datsets</span>
-<span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 <span class='co'>## predicted p1</span>
 <span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'>## predicted score</span>
@@ -258,9 +258,9 @@
 
 
 <span class='co'>###### gains_table examples ######</span>
-<span class='co'># Example I, score can be a list of score or pred</span>
+<span class='co'># Example I, input score and label can be a list or a vector</span>
+<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>$<span class='no'>train</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>$<span class='no'>train</span>)
 <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 
 <span class='co'># Example II, specify the bins number and type</span>
 <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)

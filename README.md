@@ -5,7 +5,7 @@
 [![Travis build status](https://travis-ci.org/ShichenXie/scorecard.svg?branch=master)](https://travis-ci.org/ShichenXie/scorecard)
 
 
-The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarised in below. This package can also used in the development of machine learning models. `scorecard` package is heavy depends on [`data.table`](http://r-datatable.com) for optimal speed and memory efficiency. 
+The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification. 
 
 - data preparation (`split_df`, `one_hot`)
 - variable selection (`var_filter`, `iv`, `vif`)
@@ -43,6 +43,7 @@ data("germancredit")
 dt_f = var_filter(germancredit, y="creditability")
 # breaking dt into train and test
 dt_list = split_df(dt_f, y="creditability", ratio = 0.6, seed = 30)
+label_list = lapply(dt_list, function(x) x$creditability)
 
 # woe binning ------
 bins = woebin(dt_f, y="creditability")
@@ -77,7 +78,6 @@ m2 = eval(m_step$call)
 # m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)
 
 # performance ks & roc ------
-label_list = lapply(dt_list, function(x) x$creditability)
 ## predicted proability
 pred_list = lapply(dt_woe_list, function(x) predict(m2, x, type='response'))
 ## performance

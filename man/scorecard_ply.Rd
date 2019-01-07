@@ -19,7 +19,7 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
 \item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
 }
 \value{
-Credit score
+A dataframe in score values
 }
 \description{
 \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
@@ -55,6 +55,12 @@ m = eval(m_step$call)
 # scorecard
 # Example I # creat a scorecard
 card = scorecard(bins, m)
+card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
+  x=c("status.of.existing.checking.account", "duration.in.month", "credit.history",
+   "purpose", "credit.amount", "savings.account.and.bonds",
+   "present.employment.since", "installment.rate.in.percentage.of.disposable.income",
+   "personal.status.and.sex", "other.debtors.or.guarantors", "property",
+   "age.in.years", "other.installment.plans", "housing"))
 
 # credit score
 # Example I # only total score
@@ -65,5 +71,5 @@ score2 = scorecard_ply(dt, card, only_total_score = F)
 }
 }
 \seealso{
-\code{\link{scorecard}}
+\code{\link{scorecard}} \code{\link{scorecard2}}
 }

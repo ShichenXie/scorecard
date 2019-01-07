@@ -32,7 +32,7 @@ perf_eva(pred, label, title = NULL, binomial_metric = c("mse", "rmse",
 A list of binomial metric, confusion matrix and graphics
 }
 \description{
-\code{perf_eva} calculates metrics to evaluate the performance of binomial classification model.  It can also creates confusion matrix and model performance graphics.
+\code{perf_eva} calculates metrics to evaluate the performance of binomial classification model. It can also creates confusion matrix and model performance graphics.
 }
 \details{
 Accuracy = true positive and true negative/total cases
@@ -57,6 +57,7 @@ dt_f = var_filter(germancredit, "creditability")
 
 # breaking dt into train and test ------
 dt_list = split_df(dt_f, "creditability")
+label_list = lapply(dt_list, function(x) x$creditability)
 
 # woe binning ------
 bins = woebin(dt_list$train, "creditability")
@@ -91,7 +92,6 @@ perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'tra
 # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
 
 # Example II, multiple datsets
-label_list = lapply(dt_list, function(x) x$creditability)
 ## predicted p1
 perf_eva(pred = pred_list, label = label_list)
 ## predicted score
@@ -111,9 +111,9 @@ psi2 = perf_psi(score = score_list, label = label_list)
 
 
 ###### gains_table examples ######
-# Example I, score can be a list of score or pred
+# Example I, input score and label can be a list or a vector
+gains_table(score = score_list$train, label = label_list$train)
 gains_table(score = score_list, label = label_list)
-gains_table(score = pred_list, label = label_list)
 
 # Example II, specify the bins number and type
 gains_table(score = score_list, label = label_list, bin_num = 20)
