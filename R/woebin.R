@@ -754,7 +754,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
   # binning for each x variable
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   if (is.null(no_cores) || no_cores<1) {
-    no_cores = ifelse(xs_len < 10, 1, detectCores())
+    no_cores = ifelse(xs_len < 10, 1, detectCores(logical=F))
   }
 
 
@@ -950,7 +950,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   if (is.null(no_cores)) {
-    no_cores = ifelse(xs_len < 10, 1, detectCores())
+    no_cores = ifelse(xs_len < 10, 1, detectCores(logical=F))
   }
 
   if (no_cores == 1) {
