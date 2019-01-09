@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="One Hot Encoding — one_hot" />
 
-<meta property="og:description" content="One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation." />
+<meta property="og:description" content="One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,12 +126,12 @@
 
     <div class="ref-description">
     
-    <p>One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.</p>
+    <p>One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>one_hot</span>(<span class='no'>dt</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_encode</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>, <span class='kw'>factor_to_integer</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,7 +142,7 @@
     </tr>
     <tr>
       <th>var_skip</th>
-      <td><p>Name of categorical variables that will skip and without doing one-hot encoding. Default is NULL.</p></td>
+      <td><p>Name of categorical variables that will skip for one-hot encoding. Default is NULL.</p></td>
     </tr>
     <tr>
       <th>var_encode</th>
@@ -154,11 +154,7 @@
     </tr>
     <tr>
       <th>replace_na</th>
-      <td><p>Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.</p></td>
-    </tr>
-    <tr>
-      <th>factor_to_integer</th>
-      <td><p>Logical. Converting factor variables to integer. Default is FALSE.</p></td>
+      <td><p>Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.</p></td>
     </tr>
     </table>
     
@@ -173,18 +169,42 @@
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>data.table</span>)
 <span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/rbindlist'>rbind</a></span>(
-  <span class='no'>germancredit</span>,
+  <span class='no'>germancredit</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
   <span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
   <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-<span class='co'># remove na columns</span>
-<span class='no'>dat_onehot0</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>) <span class='co'># default</span>
-<span class='no'>dat_onehot1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='co'># one hot encoding</span>
+<span class='co'>## keep na columns from categorical variable</span>
+<span class='no'>dat_onehot1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>) <span class='co'># default</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>dat_onehot1</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  4 variables:
+#&gt;  $ duration.in.month                      : num  6 48 12 42 24 36 24 36 12 30 ...
+#&gt;  $ number.of.existing.credits.at.this.bank: num  2 1 1 1 2 1 1 1 1 2 ...
+#&gt;  $ present.residence.since                : num  4 2 3 4 4 4 4 2 4 2 ...
+#&gt;  $ creditability                          : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'><span class='co'>## remove na columns from categorical variable</span>
+<span class='no'>dat_onehot2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>dat_onehot2</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  4 variables:
+#&gt;  $ duration.in.month                      : num  6 48 12 42 24 36 24 36 12 30 ...
+#&gt;  $ number.of.existing.credits.at.this.bank: num  2 1 1 1 2 1 1 1 1 2 ...
+#&gt;  $ present.residence.since                : num  4 2 3 4 4 4 4 2 4 2 ...
+#&gt;  $ creditability                          : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
+<span class='co'>## one hot and replace NAs</span>
+<span class='no'>dat_onehot3</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>dat_onehot3</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  4 variables:
+#&gt;  $ duration.in.month                      : num  6 48 12 42 24 36 24 36 12 30 ...
+#&gt;  $ number.of.existing.credits.at.this.bank: num  2 1 1 1 2 1 1 1 1 2 ...
+#&gt;  $ present.residence.since                : num  4 2 3 4 4 4 4 2 4 2 ...
+#&gt;  $ creditability                          : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
 
-<span class='co'># replace missing values</span>
-<span class='no'>dat_onehot2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>) <span class='co'># default</span>
-<span class='no'>dat_onehot3</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
-<span class='no'>dat_onehot4</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</div></pre>
+<span class='co'># replace missing values only</span>
+<span class='co'>### replace with -1</span>
+<span class='no'>dat_repna1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>)
+<span class='co'>### replace with median for numeric, and mode for categorical</span>
+<span class='no'>dat_repna2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
+<span class='co'>### replace with to mean for numeric, and mode for categorical</span>
+<span class='no'>dat_repna3</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'mean'</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

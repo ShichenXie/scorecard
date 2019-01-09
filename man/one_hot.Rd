@@ -5,7 +5,7 @@
 \title{One Hot Encoding}
 \usage{
 one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
-  replace_na = NULL, factor_to_integer = FALSE)
+  replace_na = NULL)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -17,8 +17,6 @@ one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
 \item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.}
 
 \item{replace_na}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.}
-
-\item{factor_to_integer}{Logical. Converting factor variables to integer. Default is FALSE.}
 }
 \value{
 A dataframe
@@ -38,24 +36,24 @@ dat = rbind(
 
 # one hot encoding
 ## keep na columns from categorical variable
-dat_onehot0 = one_hot(dat, var_skip = 'creditability', nacol_rm = FALSE) # default
-str(dat_onehot0)
-## remove na columns from categorical variable
-dat_onehot1 = one_hot(dat, var_skip = 'creditability', nacol_rm = TRUE)
+dat_onehot1 = one_hot(dat, var_skip = 'creditability', nacol_rm = FALSE) # default
 str(dat_onehot1)
+## remove na columns from categorical variable
+dat_onehot2 = one_hot(dat, var_skip = 'creditability', nacol_rm = TRUE)
+str(dat_onehot2)
 
 ## one hot and replace NAs
-dat_onehot2 = one_hot(dat, var_skip = 'creditability', replace_na = -1)
-str(dat_onehot2)
+dat_onehot3 = one_hot(dat, var_skip = 'creditability', replace_na = -1)
+str(dat_onehot3)
 
 
 # replace missing values only
 ### replace with -1
-dat_onehot3 = one_hot(dat, var_skip = names(dat), replace_na = -1)
+dat_repna1 = one_hot(dat, var_skip = names(dat), replace_na = -1)
 ### replace with median for numeric, and mode for categorical
-dat_onehot4 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
+dat_repna2 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
 ### replace with to mean for numeric, and mode for categorical
-dat_onehot5 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
+dat_repna3 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
 
 
 }

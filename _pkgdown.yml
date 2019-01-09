@@ -48,6 +48,7 @@ reference:
   - title: "scorecard scaling"
     contents:
       - scorecard
+      - scorecard2
       - scorecard_ply
   - title: "scorecard report"
     contents:

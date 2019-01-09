@@ -1,3 +1,7 @@
+# scorecard 0.2.1
+
+* revised one_hot function
+
 # scorecard 0.2.0
 
 * fixed a bug is woebin function cant modify positive values
