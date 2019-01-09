@@ -12,7 +12,7 @@ The goal of `scorecard` package is to make the development of the traditional cr
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
 - performance evaluation (`perf_eva`, `perf_psi`)
 - scorecard scaling (`scorecard`, `scorecard_ply`)
-- scorecard report (`report`)
+- scorecard report (`gains_table`, `report`)
 
 
 ## Installation

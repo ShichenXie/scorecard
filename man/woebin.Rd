@@ -36,7 +36,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
 
-\item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
+\item{save_breaks_list}{A string. The file name to save breaks_list. Default is None.}
 
 \item{ignore_const_cols}{Logical. Ignore constant columns. Default is TRUE.}
 

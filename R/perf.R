@@ -471,6 +471,7 @@ plot_f1 = function(dat_eva_lst, pm=NULL, co=NULL, beta=1, title=NULL, ...) {
 }
 
 
+# eva ------
 
 # dataset label pred
 #' @importFrom stats complete.cases
@@ -626,7 +627,6 @@ pf_cutoffs = function(dt_ev_lst) {
   return(co)
 }
 
-# eva ------
 
 #' Binomial Metrics
 #'

@@ -1,12 +1,12 @@
 #' One Hot Encoding
 #'
-#' One-hot encoding on categorical variables. It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.
+#' One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.
 #'
 #' @param dt A data frame.
-#' @param var_skip Name of categorical variables that will skip and without doing one-hot encoding. Default is NULL.
+#' @param var_skip Name of categorical variables that will skip for one-hot encoding. Default is NULL.
 #' @param var_encode Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in var_skip are counted.
 #' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.
-#' @param replace_na Replace missing values with a specified value such as -1 by default, or the mean/median value of the variable in which they occur. If it is NULL, then no missing values will be replaced.
+#' @param replace_na Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.
 #' @param factor_to_integer Logical. Converting factor variables to integer. Default is FALSE.
 #'
 #' @return A dataframe
@@ -17,21 +17,34 @@
 #'
 #' library(data.table)
 #' dat = rbind(
-#'   germancredit,
+#'   germancredit[, c(sample(20,3),21)],
 #'   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
 #'   fill=TRUE)
 #'
-#' # remove na columns
+#' # one hot encoding
+#' ## keep na columns from categorical variable
 #' dat_onehot0 = one_hot(dat, var_skip = 'creditability', nacol_rm = FALSE) # default
+#' str(dat_onehot0)
+#' ## remove na columns from categorical variable
 #' dat_onehot1 = one_hot(dat, var_skip = 'creditability', nacol_rm = TRUE)
+#' str(dat_onehot1)
 #'
-#' # replace missing values
-#' dat_onehot2 = one_hot(dat, var_skip = 'creditability', replace_na = -1) # default
-#' dat_onehot3 = one_hot(dat, var_skip = 'creditability', replace_na = 'median')
-#' dat_onehot4 = one_hot(dat, var_skip = 'creditability', replace_na = NULL)
+#' ## one hot and replace NAs
+#' dat_onehot2 = one_hot(dat, var_skip = 'creditability', replace_na = -1)
+#' str(dat_onehot2)
+#'
+#'
+#' # replace missing values only
+#' ### replace with -1
+#' dat_onehot3 = one_hot(dat, var_skip = names(dat), replace_na = -1)
+#' ### replace with median for numeric, and mode for categorical
+#' dat_onehot4 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
+#' ### replace with to mean for numeric, and mode for categorical
+#' dat_onehot5 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
+#'
 #'
 #' @export
-one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, replace_na = -1, factor_to_integer = FALSE) {
+one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, replace_na = NULL, factor_to_integer = FALSE) {
   value = variable = NULL
 
   dt = copy(setDT(dt))
@@ -54,7 +67,7 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
 
 
   # one hot encoding
-  if (is.null(var_encode)) {
+  if (is.null(var_encode) || length(var_encode)==0) {
     # if there is no categorical column
     dt_new = dt
   } else {
@@ -77,16 +90,21 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
   # replace missing values with fillna
   if (!is.null(replace_na)) {
     names_fillna = names(dt_new)
-    if (!is.null(var_skip)) names_fillna = setdiff(names_fillna, var_skip)
+    # if (!is.null(var_skip)) names_fillna = setdiff(names_fillna, var_skip)
     dt_new = dt_new[, (names_fillna) := lapply(.SD, function(x) {
       if (anyNA(x)) {
         # class of x is numeric
         xisnum = all(class(x) %in% c('numeric', 'integer'))
+
         # fillna values
         if (is.numeric(replace_na)) {
           fillna = replace_na
-        } else if ( replace_na %in% c('mean', 'median') &  xisnum) {
-          fillna = do.call(replace_na, list(x, na.rm=TRUE))
+        } else if ( replace_na %in% c('mean', 'median')) {
+          if (xisnum) {
+            fillna = do.call(replace_na, list(x, na.rm=TRUE))
+          } else {
+            fillna = names(which.max(table(x)))
+          }
         } else {
           fillna = -1
         }
@@ -94,8 +112,14 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
         if (!xisnum) {
           fillna = as.character(fillna)
         }
+
         # replace missing values in x
-        x[is.na(x)] <- fillna
+        if (is.factor(x)) {
+          # https://stackoverflow.com/questions/39126537/replace-na-in-a-factor-column
+          x = `levels<-`(addNA(x), c(levels(x), fillna))
+        } else {
+          x[is.na(x)] <- fillna
+        }
       }
       return(x)
     }), .SDcols = names_fillna]

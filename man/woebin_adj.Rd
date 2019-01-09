@@ -20,7 +20,7 @@ woebin_adj(dt, y, bins, adj_all_var = FALSE, special_values = NULL,
 
 \item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
 
-\item{save_breaks_list}{Logical, whether to save breaks_list in current working directory. Default is FALSE.}
+\item{save_breaks_list}{A string. The file name to save breaks_list. Default is None.}
 }
 \value{
 A list of modified break points of each x variables.

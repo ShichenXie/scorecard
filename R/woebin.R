@@ -597,7 +597,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
-#' @param save_breaks_list Logical, whether to save breaks_list in current working directory. Default is FALSE.
+#' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
 #' @param ignore_const_cols Logical. Ignore constant columns. Default is TRUE.
 #' @param ignore_datetime_cols Logical. Ignore datetime columns. Default is TRUE.
 #' @param check_cate_num Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.
@@ -1199,7 +1199,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param adj_all_var Logical, whether to show variables with monotonic woe trends. Default is FALSE.
 #' @param special_values The values specified in special_values will in separate bins. Default is NULL.
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
-#' @param save_breaks_list Logical, whether to save breaks_list in current working directory. Default is FALSE.
+#' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
 #'
 #' @return A list of modified break points of each x variables.
 #'

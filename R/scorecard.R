@@ -131,7 +131,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 
 #' Creating a Scorecard
 #'
-#' \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.
+#' \code{scorecard2} creates a scorecard based on the results from \code{woebin}.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
