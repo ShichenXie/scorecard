@@ -122,7 +122,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt),ncol(dt),sec_to_hms(rs[3]), ncol(dt)-length(x_selected)-1),"\n")
+  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt),ncol(dt),sec_to_hms(rs[3]), ncol(dt)-length(x_selected)-1),"\n")
 
   return(rt)
 }

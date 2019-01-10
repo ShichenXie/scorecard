@@ -670,7 +670,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
 
   # global variable
   i = NULL
-  # arguments
+  # arguments ------
   # print_info
   print_info = list(...)[['print_info']]
   if (is.null(print_info)) print_info = TRUE
@@ -751,12 +751,11 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
     method = "tree"
   }
 
-  # binning for each x variable
+  # binning ------
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   if (is.null(no_cores) || no_cores<1) {
     no_cores = ifelse(xs_len < 10, 1, detectCores(logical=F))
   }
-
 
   bins = list()
   if (no_cores == 1) {
@@ -783,7 +782,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
     # run
     bins <-
       foreach(
-        i = 1:xs_len,
+        i = seq_len(xs_len),
         .combine = list,
         .multicombine = TRUE,
         .maxcombine = xs_len+1,
@@ -793,7 +792,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
           if (xs_len==1) bs = list(bs)
           setNames(bs, xs)
         },
-        .export = c("dt", "xs", "y", "breaks_list", "init_count_distr", "stop_limit", "bin_num_limit")
+        .export = c('dt', 'xs', 'y', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'method')
       ) %dopar% {
         x_i = xs[i]
 
@@ -804,7 +803,8 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
           spl_val=special_values[[x_i]],
           init_count_distr=init_count_distr,
           count_distr_limit=count_distr_limit,
-          stop_limit=stop_limit, bin_num_limit=bin_num_limit,
+          stop_limit=stop_limit,
+          bin_num_limit=bin_num_limit,
           method=method
         )), silent = TRUE)
       }
@@ -814,7 +814,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),"\n")
+  if (rs[3] > 10 & print_info) cat(sprintf("[INFO] Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),"\n")
   # save breaks_list
   if (!is.null(save_breaks_list)) bins_to_breaks(bins, dt, to_string=TRUE, save_name=save_breaks_list)
   return(bins)
@@ -975,14 +975,14 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
         .init = dt_init,
         .inorder = FALSE,
         .errorhandling = "pass",
-        .export = c("dt", "xs")
+        .export = c('dt', 'bins', 'xs')
       ) %dopar% {
         x_i = xs[i]
 
         binx = bins[variable==x_i]
         dtx = dt[, x_i, with=FALSE]
 
-        woepoints_ply1(dtx, binx, x_i, woe_points="woe")
+        woepoints_ply1(dtx, binx, x_i, woe_points='woe')
       }
     # finish
     stopImplicitCluster()
@@ -991,7 +991,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),"\n")
+  if (rs[3] > 10 & print_info) cat(sprintf("[INFO] Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),"\n")
 
   return(dat)
 }

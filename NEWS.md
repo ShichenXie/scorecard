@@ -1,6 +1,7 @@
-# scorecard 0.2.1
+# scorecard 0.2.0.999
 
 * revised one_hot function
+* modified .export used in foreach loop
 
 # scorecard 0.2.0
 

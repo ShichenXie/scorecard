@@ -48,11 +48,11 @@ str(dat_onehot3)
 
 
 # replace missing values only
-### replace with -1
+## replace with -1
 dat_repna1 = one_hot(dat, var_skip = names(dat), replace_na = -1)
-### replace with median for numeric, and mode for categorical
+## replace with median for numeric, and mode for categorical
 dat_repna2 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
-### replace with to mean for numeric, and mode for categorical
+## replace with to mean for numeric, and mode for categorical
 dat_repna3 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
 
 
