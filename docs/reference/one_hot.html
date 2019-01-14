@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
       </span>
     </div>
 
@@ -199,11 +199,11 @@
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
 
 <span class='co'># replace missing values only</span>
-<span class='co'>### replace with -1</span>
+<span class='co'>## replace with -1</span>
 <span class='no'>dat_repna1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> -<span class='fl'>1</span>)
-<span class='co'>### replace with median for numeric, and mode for categorical</span>
+<span class='co'>## replace with median for numeric, and mode for categorical</span>
 <span class='no'>dat_repna2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
-<span class='co'>### replace with to mean for numeric, and mode for categorical</span>
+<span class='co'>## replace with to mean for numeric, and mode for categorical</span>
 <span class='no'>dat_repna3</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>dat</span>), <span class='kw'>replace_na</span> <span class='kw'>=</span> <span class='st'>'mean'</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
