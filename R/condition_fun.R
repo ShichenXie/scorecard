@@ -73,25 +73,25 @@ check_y = function(dt, y, positive) {
   # number of columns >= 2
   if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
   # length of y == 1
-  if (length(y) != 1) stop("Incorrect inputs; the length of \"",y,"\" != 1.")
+  if (length(y) != 1) stop("Incorrect inputs; the length of \"y\" != 1.")
   # exist of y column
   if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
 
   # remove rows have missing values in y
-  if (dt[, anyNA(get(y))]) {
+  if (anyNA(dt[[y]])) {
     warning(sprintf("There are NAs in %s. The rows with NAs in \"%s\" are removed from input data.", y, y))
-    dt = dt[!is.na(get(y))]
+    dt = dt[!is.na(dt[[y]])]
   }
 
   # numeric to integer
-  if (dt[,class(get(y)) == 'numeric']) dt[, (y) := as.integer(get(y))]
+  if (class(dt[[y]]) == "numeric") dt[, (y) := lapply(.SD, as.integer), .SDcols = y]
   # factor to character
-  if (dt[,class(get(y)) == 'factor' ]) dt[, (y) := as.character(get(y))]
+  if (class(dt[[y]]) == "factor") dt[, (y) := lapply(.SD, as.character), .SDcols = y]
 
   # length of unique values in y
-  if (dt[, length(unique(get(y))) == 2]) {
-    if (dt[, any(grepl(positive, get(y)))]) {
-      y1 = dt[,get(y)]
+  if (length(unique(dt[[y]])) == 2) {
+    if (any(grepl(positive, dt[[y]]))) {
+      y1 = dt[[y]]
       y2 = ifelse(grepl(positive, y1), 1L, 0L)
       if (any(y1 != y2)) {
         dt[[y]] = y2

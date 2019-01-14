@@ -1,3 +1,8 @@
+# scorecard 0.2.2
+
+* fixed a bug in check_y function when the name of label column is 'y' in input data.
+* fixed a bug in woebin_adj function when count_distr_limit is not default value in woebin function.
+
 # scorecard 0.2.1
 
 * revised one_hot function

@@ -1196,10 +1196,11 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param dt A data frame.
 #' @param y Name of y variable.
 #' @param bins A list or data frame. Binning information generated from \code{woebin}.
-#' @param adj_all_var Logical, whether to show variables with monotonic woe trends. Default is FALSE.
+#' @param adj_all_var Logical, whether to show variables have monotonic woe trends. Default is TRUE
 #' @param special_values The values specified in special_values will in separate bins. Default is NULL.
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
+#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05. This argument should be the same with woebin's.
 #'
 #' @return A list of modified break points of each x variables.
 #'
@@ -1228,7 +1229,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-woebin_adj = function(dt, y, bins, adj_all_var=FALSE, special_values=NULL, method="tree", save_breaks_list=NULL) {
+woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit = 0.05) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
@@ -1246,7 +1247,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=FALSE, special_values=NULL, metho
   xs_all = bins[,unique(variable)]
   if (adj_all_var == FALSE) {
     xs_adj = bins[
-      !(bin == "missing" & count_distr >= 0.05)
+      !(bin == "missing" & count_distr >= count_distr_limit)
     ][, badprob2 := badprob >= shift(badprob, type = "lag"), by=variable
     ][!is.na(badprob2), length(unique(badprob2)), by=variable
     ][V1 > 1, variable]
