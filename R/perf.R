@@ -327,7 +327,7 @@ plot_roc = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
     merge(rbindlist(pm, idcol = 'datset')[,.(datset,auc=AUC)],
           rbindlist(co, idcol = 'datset')[metrics == 'roc',.(datset, pred_threshold,coord)], by = 'datset'),
     by = 'datset', all.x = TRUE
-  )[, datset := sprintf('%s, KS=%.4f\np=%.4f, %s', format(datset), round(auc,4), pred_threshold, coord)][]
+  )[, datset := sprintf('%s, AUC=%.4f\np=%.4f, %s', format(datset), round(auc,4), pred_threshold, coord)][]
 
   # optimal cutoff
   dt_cut = merge(
