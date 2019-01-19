@@ -797,7 +797,7 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
   if (!is.null(title)) title = paste0(title,': ')
   # type
   type = list(...)[["type"]]
-  if (!isFALSE(show_plot) & !is.null(type)) show_plot = type
+  if (isTRUE(show_plot) & !is.null(show_plot) & !is.null(type)) show_plot = type
   # show_plot
   show_plot = intersect(show_plot, c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
   # pic
