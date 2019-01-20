@@ -35,7 +35,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
-#' @return A scorecard dataframe
+#' @return A scorecard data frame
 #'
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
 #'
@@ -143,7 +143,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.
-#' @return A scorecard dataframe
+#' @return A scorecard data frame
 #'
 #' @seealso \code{\link{scorecard}} \code{\link{scorecard_ply}}
 #'
@@ -229,13 +229,13 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #'
 #' \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 #'
-#' @param dt Original data
-#' @param card Scorecard generated from \code{scorecard}.
+#' @param dt A data frame, which is the rriginal dataset for training model.
+#' @param card The scorecard generated from the function \code{scorecard}.
 #' @param only_total_score  Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
 #' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
 #'
-#' @return A dataframe in score values
+#' @return A data frame in score values
 #'
 #' @seealso \code{\link{scorecard}} \code{\link{scorecard2}}
 #'

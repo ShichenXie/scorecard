@@ -8,7 +8,7 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
   save_report = "report", positive = "bad|1", ...)
 }
 \arguments{
-\item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables; or a list of dataframes.}
+\item{dt}{A data frame or a list of data frames that have both x (predictor/feature) and y (response/label) variables. If there are multiple data frames are provided, only the first data frame would be used for training, and the others would be used for testing/validation.}
 
 \item{y}{Name of y variable.}
 
@@ -18,7 +18,7 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 
 \item{special_values}{The values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{seed}{A random seed to split input dataframe. Default is 618. If it is NULL, input dt will not split into two datasets.}
+\item{seed}{A random seed to split input data frame. Default is 618. If it is NULL, input dt will not split into two datasets.}
 
 \item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
 
@@ -78,8 +78,8 @@ breaks_list=list(
  )
 
 # Example I
-# input dt is a dataframe
-# split input dataframe into two
+# input dt is a data frame
+# split input data frame into two
 report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1')
 # donot split input data
 report(germancredit, y, x, breaks_list, special_values, seed=NULL, save_report='report2')

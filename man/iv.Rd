@@ -18,7 +18,7 @@ iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 \item{order}{Logical, default is TRUE. If it is TRUE, the output will descending order via iv.}
 }
 \value{
-A dataframe with columns for variable and info_value
+A data frame with columns for variable and info_value
 }
 \description{
 This function calculates information value (IV) for multiple x variables. It treats each unique value in x variables as a group. If there is a zero number of y class, it will be replaced by 0.99 to make sure woe/iv is calculable.

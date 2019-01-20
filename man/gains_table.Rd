@@ -21,10 +21,10 @@ gains_table(score, label, bin_num = 10, bin_type = "freq",
 \item{...}{Additional parameters.}
 }
 \value{
-A dataframe
+A data frame
 }
 \description{
-\code{gains_table} creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+\code{gains_table} creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 }
 \examples{
 \dontrun{
@@ -79,12 +79,12 @@ perf_eva(pred = pred_list, label = label_list)
 ###### perf_psi examples ######
 # Example I # only total psi
 psi1 = perf_psi(score = score_list, label = label_list)
-psi1$psi  # psi dataframe
+psi1$psi  # psi data frame
 psi1$pic  # pic of score distribution
 
 # Example II # both total and variable psi
 psi2 = perf_psi(score = score_list, label = label_list)
-# psi2$psi  # psi dataframe
+# psi2$psi  # psi data frame
 # psi2$pic  # pic of score distribution
 
 

@@ -21,7 +21,7 @@ scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50,
 \item{basepoints_eq0}{Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.}
 }
 \value{
-A scorecard dataframe
+A scorecard data frame
 }
 \description{
 \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.

@@ -19,7 +19,7 @@ one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
 \item{replace_na}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.}
 }
 \value{
-A dataframe
+A data frame
 }
 \description{
 One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.

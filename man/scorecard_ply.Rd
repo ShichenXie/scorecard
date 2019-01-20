@@ -8,9 +8,9 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
   replace_blank_na = TRUE)
 }
 \arguments{
-\item{dt}{Original data}
+\item{dt}{A data frame, which is the rriginal dataset for training model.}
 
-\item{card}{Scorecard generated from \code{scorecard}.}
+\item{card}{The scorecard generated from the function \code{scorecard}.}
 
 \item{only_total_score}{Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.}
 
@@ -19,7 +19,7 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
 \item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
 }
 \value{
-A dataframe in score values
+A data frame in score values
 }
 \description{
 \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.

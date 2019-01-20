@@ -12,7 +12,7 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
 
 \item{y}{Name of y variable.}
 
-\item{bins}{A list or data frame. Binning information generated from \code{woebin}.}
+\item{bins}{A list of data frames. Binning information generated from \code{woebin}.}
 
 \item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Default is TRUE}
 

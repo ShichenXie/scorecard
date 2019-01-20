@@ -158,7 +158,7 @@ plot_density = function(dt_lst, title=NULL, positive, ...) {
   min_pred = dt_df[,min(pred)]
   if (max_pred == 1) min_pred = 0
 
-  # dataframe of max density by datset and label
+  # data frame of max density by datset and label
   max_density_by_datset_label = dt_df[
     , .(pred=density(pred)$x, dens=density(pred)$y), by=c('datset','label')
   ][, max_dens := max(dens), by=c('datset','label')
@@ -722,12 +722,12 @@ pf_cutoffs = function(dt_ev_lst) {
 #' ###### perf_psi examples ######
 #' # Example I # only total psi
 #' psi1 = perf_psi(score = score_list, label = label_list)
-#' psi1$psi  # psi dataframe
+#' psi1$psi  # psi data frame
 #' psi1$pic  # pic of score distribution
 #'
 #' # Example II # both total and variable psi
 #' psi2 = perf_psi(score = score_list, label = label_list)
-#' # psi2$psi  # psi dataframe
+#' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
 #'
@@ -825,7 +825,7 @@ psi_metric = function(dt_sn, names_datset) {
   # dat = copy(dat)[,y:=NULL][complete.cases(dat),]
   AE = bin_PSI = NULL
 
-  # dataframe of bin, actual, expected
+  # data frame of bin, actual, expected
   dt_bae = dcast(
     dt_sn[, .N, keyby = c('datset', 'bin')],
     bin ~ datset, value.var="N", fill = 0.99
@@ -884,7 +884,7 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 
 #' Gains Table
 #'
-#' \code{gains_table} creates a dataframe including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+#' \code{gains_table} creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
@@ -893,7 +893,7 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #' @param positive Value of positive class, default is "bad|1".
 #' @param ... Additional parameters.
 #'
-#' @return A dataframe
+#' @return A data frame
 #' @seealso \code{\link{perf_eva}} \code{\link{perf_psi}}
 #'
 #' @examples
@@ -949,12 +949,12 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
 #' ###### perf_psi examples ######
 #' # Example I # only total psi
 #' psi1 = perf_psi(score = score_list, label = label_list)
-#' psi1$psi  # psi dataframe
+#' psi1$psi  # psi data frame
 #' psi1$pic  # pic of score distribution
 #'
 #' # Example II # both total and variable psi
 #' psi2 = perf_psi(score = score_list, label = label_list)
-#' # psi2$psi  # psi dataframe
+#' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
 #'
@@ -1034,7 +1034,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 }
 
 # @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
-# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of dataframes including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
+# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of data frames including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
 # @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
 
 #' PSI
@@ -1048,7 +1048,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @param positive Value of positive class, default is "bad|1".
 #' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
 #' @param ... Additional parameters.
-#' @return A dataframe of psi and graphics of credit score distribution
+#' @return A data frame of psi and graphics of credit score distribution
 #' @seealso \code{\link{perf_eva}} \code{\link{gains_table}}
 #'
 #' @details The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
@@ -1107,12 +1107,12 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' ###### perf_psi examples ######
 #' # Example I # only total psi
 #' psi1 = perf_psi(score = score_list, label = label_list)
-#' psi1$psi  # psi dataframe
+#' psi1$psi  # psi data frame
 #' psi1$pic  # pic of score distribution
 #'
 #' # Example II # both total and variable psi
 #' psi2 = perf_psi(score = score_list, label = label_list)
-#' # psi2$psi  # psi dataframe
+#' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
 #'
@@ -1183,7 +1183,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
     }
     rt[['psi']][[sn]] = rbindlist(temp_psi, idcol = 'dataset')
 
-    # equal freq / width dataframe
+    # equal freq / width data frame
     if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_sn)
   }
 

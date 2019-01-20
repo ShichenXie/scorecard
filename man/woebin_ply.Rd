@@ -21,7 +21,7 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
 \item{...}{Additional parameters.}
 }
 \value{
-A dataframe with columns for variables converted into woe values.
+A data frame with columns for variables converted into woe values.
 }
 \description{
 \code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.
@@ -49,7 +49,7 @@ bins_germancredit = woebin(germancredit, y="creditability")
 # bins is a list which generated from woebin()
 germancredit_woe = woebin_ply(germancredit, bins_germancredit)
 
-# bins is a dataframe
+# bins is a data frame
 bins_df = data.table::rbindlist(bins_germancredit)
 germancredit_woe = woebin_ply(germancredit, bins_df)
 }

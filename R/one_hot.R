@@ -8,7 +8,7 @@
 #' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.
 #' @param replace_na Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.
 #'
-#' @return A dataframe
+#' @return A data frame
 #'
 #' @examples
 #' # load germancredit data
@@ -82,7 +82,7 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
       nacols = setdiff(nacols, names(dt))
       dcast_dt[, (nacols) := NULL]
     }
-    # merge dataframes
+    # merge data frames
     dt_new = cbind(dt, dcast_dt)[, (c(var_encode, 'rowid')) := NULL]
   }
 

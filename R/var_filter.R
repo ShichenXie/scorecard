@@ -13,7 +13,7 @@
 #' @param return_rm_reason Logical, default is FALSE.
 #' @param positive Value of positive class, default is "bad|1".
 #'
-#' @return A dataframe with columns for y and selected x variables, and a dataframe with columns for remove reason if return_rm_reason == TRUE.
+#' @return A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if return_rm_reason == TRUE.
 #'
 #' @examples
 #' # Load German credit data

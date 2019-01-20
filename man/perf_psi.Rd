@@ -23,7 +23,7 @@ perf_psi(score, label = NULL, title = NULL, show_plot = TRUE,
 \item{...}{Additional parameters.}
 }
 \value{
-A dataframe of psi and graphics of credit score distribution
+A data frame of psi and graphics of credit score distribution
 }
 \description{
 \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
@@ -84,12 +84,12 @@ perf_eva(pred = pred_list, label = label_list)
 ###### perf_psi examples ######
 # Example I # only total psi
 psi1 = perf_psi(score = score_list, label = label_list)
-psi1$psi  # psi dataframe
+psi1$psi  # psi data frame
 psi1$pic  # pic of score distribution
 
 # Example II # both total and variable psi
 psi2 = perf_psi(score = score_list, label = label_list)
-# psi2$psi  # psi dataframe
+# psi2$psi  # psi data frame
 # psi2$pic  # pic of score distribution
 
 

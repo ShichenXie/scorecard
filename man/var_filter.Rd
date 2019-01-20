@@ -30,7 +30,7 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 \item{positive}{Value of positive class, default is "bad|1".}
 }
 \value{
-A dataframe with columns for y and selected x variables, and a dataframe with columns for remove reason if return_rm_reason == TRUE.
+A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if return_rm_reason == TRUE.
 }
 \description{
 This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.

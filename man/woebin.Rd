@@ -49,7 +49,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 \item{...}{Additional parameters.}
 }
 \value{
-A list of dataframes include binning information for each x variables.
+A list of data frames include binning information for each x variables.
 }
 \description{
 \code{woebin} generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. \code{woebin} can also customizing breakpoints if the \code{breaks_list} was provided. The default \code{woe} is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument \code{positive} as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.
@@ -78,7 +78,7 @@ bins2 = woebin(germancredit, y="creditability",
 # Example II
 # binning of the germancredit dataset
 bins_germ = woebin(germancredit, y = "creditability")
-# converting bins_germ into a dataframe
+# converting bins_germ into a data frame
 # bins_germ_df = data.table::rbindlist(bins_germ)
 
 # Example III

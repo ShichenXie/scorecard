@@ -29,7 +29,7 @@ scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
 \item{...}{Additional parameters.}
 }
 \value{
-A scorecard dataframe
+A scorecard data frame
 }
 \description{
 \code{scorecard2} creates a scorecard based on the results from \code{woebin}. It has the same function with \code{scorecard}, but without model object input.

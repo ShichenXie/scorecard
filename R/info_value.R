@@ -8,7 +8,7 @@
 #' @param positive Value of positive class, default is "bad|1".
 #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via iv.
 #'
-#' @return A dataframe with columns for variable and info_value
+#' @return A data frame with columns for variable and info_value
 #'
 #' @details IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}
 #' The relationship between information value and predictive power is as follows:

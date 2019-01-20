@@ -2,12 +2,12 @@
 #'
 #' \code{report} creates a scorecard modeling report and save it as a xlsx file.
 #'
-#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables; or a list of dataframes.
+#' @param dt A data frame or a list of data frames that have both x (predictor/feature) and y (response/label) variables. If there are multiple data frames are provided, only the first data frame would be used for training, and the others would be used for testing/validation.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
 #' @param special_values The values specified in special_values will be in separate bins. Default is NULL.
-#' @param seed A random seed to split input dataframe. Default is 618. If it is NULL, input dt will not split into two datasets.
+#' @param seed A random seed to split input data frame. Default is 618. If it is NULL, input dt will not split into two datasets.
 #' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional paramters.
@@ -61,8 +61,8 @@
 #'  )
 #'
 #' # Example I
-#' # input dt is a dataframe
-#' # split input dataframe into two
+#' # input dt is a data frame
+#' # split input data frame into two
 #' report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1')
 #' # donot split input data
 #' report(germancredit, y, x, breaks_list, special_values, seed=NULL, save_report='report2')
@@ -104,7 +104,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   } else if ((inherits(dt, 'list') & all(sapply(dt, is.data.frame)))) {
     dat_lst = lapply(dt, setDT)
   } else {
-    stop('The input dt should be a dataframe, or a list of two dataframes.')
+    stop('The input dt should be a data frame, or a list of two data frames.')
   }
   dat_lst = lapply(dat_lst, function(x) check_y(x, y, positive))
   # label list

@@ -5,7 +5,7 @@
 #' @param model A model object.
 #' @param merge_coef Logical, whether to merge with coefficients of model summary matrix. Default is FALSE.
 #'
-#' @return A dataframe with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
+#' @return A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
 #'
 #' @seealso \url{https://cran.r-project.org/package=car}
 #' @examples

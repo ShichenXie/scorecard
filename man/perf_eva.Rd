@@ -101,12 +101,12 @@ perf_eva(pred = pred_list, label = label_list)
 ###### perf_psi examples ######
 # Example I # only total psi
 psi1 = perf_psi(score = score_list, label = label_list)
-psi1$psi  # psi dataframe
+psi1$psi  # psi data frame
 psi1$pic  # pic of score distribution
 
 # Example II # both total and variable psi
 psi2 = perf_psi(score = score_list, label = label_list)
-# psi2$psi  # psi dataframe
+# psi2$psi  # psi data frame
 # psi2$pic  # pic of score distribution
 
 
