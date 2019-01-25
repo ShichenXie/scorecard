@@ -49,7 +49,7 @@ var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, id
   . = info_value = variable = rt = rm_reason = NULL
 
   # set dt as data.table
-  dt = copy(setDT(dt))
+  dt = setDT(copy(dt)) # copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # check y
   dt = check_y(dt, y, positive)

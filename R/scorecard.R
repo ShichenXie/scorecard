@@ -197,7 +197,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
   variable = NULL
 
-  setDT(dt)
+  dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
   if (!is.data.table(bins)) {
     if (is.data.frame(bins)) {
@@ -292,7 +292,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   variable = bin = points = . = V1 = score = NULL
 
   # set dt as data.table
-  dt = copy(setDT(dt))
+  dt = setDT(copy(dt)) # copy(setDT(dt))
   # # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace blank values by NA

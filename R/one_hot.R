@@ -46,7 +46,7 @@
 one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, replace_na = NULL) {
   value = variable = NULL
 
-  dt = copy(setDT(dt))
+  dt = setDT(copy(dt)) # copy(setDT(dt))
 
   # # factor columns to integer
   # if (factor_to_integer) {

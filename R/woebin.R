@@ -796,7 +796,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
   # print info
   if (print_info) cat('[INFO] creating woe binning ... \n')
   # set dt as data.table
-  dt = copy(setDT(dt))
+  dt = setDT(copy(dt))  #copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # check y
   dt = check_y(dt, y, positive)
@@ -915,6 +915,14 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
     # finish
     stopImplicitCluster()
   }
+
+  # check errors in binning
+  error_variables = names(bins)[which(sapply(bins, function(x) inherits(x, 'try-error')))]
+  if (length(error_variables) > 0) {
+    warning(sprintf('There are %s columns are removed from binning results,\n%s', length(error_variables), paste0(error_variables, collapse=', ')))
+    bins = bins[setdiff(names(bins), error_variables)]
+  }
+
   # running time
   rs = proc.time() - start_time
   # hms
@@ -1024,7 +1032,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   . = V1 = bin = variable = woe = i = NULL
 
   # set dt as data.table
-  dt = setDT(dt)
+  dt = setDT(copy(dt))
   # # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
@@ -1337,7 +1345,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
-  dt = setDT(dt)
+  dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
   if (!is.data.table(bins)) {
     if (is.data.frame(bins)) {

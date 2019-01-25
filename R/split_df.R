@@ -32,7 +32,7 @@ split_df = function(dt, y=NULL, ratio=0.7, seed=618) {
   ind = NULL
 
   # set dt as data.table
-  dt = setDT(dt)
+  dt = setDT(copy(dt)) # setDT(dt)
   # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace "" by NA

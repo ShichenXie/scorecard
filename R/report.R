@@ -100,7 +100,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   dat_lst = list()
   if (is.data.frame(dt)) {
     if (is.null(seed)) {
-      dat_lst[['dat']] = setDT(dt)
+      dat_lst[['dat']] = setDT(copy(dt))
     } else {
       dat_lst = split_df(dt, y, seed = seed)
     }

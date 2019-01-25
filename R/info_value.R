@@ -37,7 +37,7 @@ iv = function(dt, y, x=NULL, positive="bad|1", order=TRUE) {
   info_value = label = NULL # no visible binding for global variable
 
   # set dt as data.table
-  dt = copy(setDT(dt))
+  dt = setDT(copy(dt)) #copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # check y
   dt = check_y(dt, y, positive)
