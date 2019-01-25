@@ -65,7 +65,7 @@ rep_blank_na = function(dt) {
 }
 
 # check y
-check_y = function(dt, y, positive) {
+check_y = function(dt, y, positive="bad|1") {
   dt = setDT(dt)
   positive = as.character(positive)
   # dt[[y]]  = as.character(dt[[y]])

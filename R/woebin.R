@@ -71,6 +71,80 @@ check_empty_bins = function(dtm, binning) {
   return(binning)
 }
 
+# check zero in good bad, remove bins that have zeros in good or bad column
+check_zero_goodbad = function(dtm, binning, count_distr_limit = NULL) {
+  brkp = good = bad = count = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = badprob = value = NULL
+
+  while (binning[!is.na(brkp)][good==0 | bad==0,.N] > 0) {
+    # brkp needs to be removed if good==0 or bad==0
+    rm_brkp = binning[!is.na(brkp)][
+      ,count := good+bad
+      ][,`:=`(
+        count_lag=shift(count,type="lag", fill=nrow(dtm)+1),
+        count_lead=shift(count,type="lead", fill=nrow(dtm)+1)
+      )][, merge_tolead := count_lag > count_lead
+         ][good == 0 | bad == 0][count == min(count)]
+
+    # set brkp to lead's or lag's
+    shift_type = ifelse(rm_brkp[1,merge_tolead], 'lead', 'lag')
+    binning = binning[
+      ,brkp2 := shift(brkp,type=shift_type)
+      ][brkp == rm_brkp[1,brkp], brkp := brkp2]
+
+    # groupby brkp
+    binning = binning[
+      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), good=sum(good), bad=sum(bad)), by=brkp
+      ][, badprob:=bad/(good+bad)]
+  }
+
+  # format bin
+  if (is.numeric(dtm[,value])) {
+    binning = binning[
+      grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)
+      ][bin == 'missing', brkp := NA
+      ][bin != 'missing', brkp := as.numeric(sub("^\\[(.*),.+", "\\1", bin))]
+  }
+  return(binning)
+}
+
+# check count distri, remove bins that count_distribution rate less than count_distr_limit
+check_count_distri = function(dtm, binning, count_distr_limit) {
+  count_distr = good = bad = brkp = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = value = NULL
+
+  binning[, count_distr := (good+bad)/sum(good+bad)]
+  while (binning[!is.na(brkp)][count_distr<count_distr_limit,.N] > 0) {
+    # brkp needs to be removed if good==0 or bad==0
+    rm_brkp = binning[!is.na(brkp)][
+      ,count_distr := (good+bad)/sum(good+bad)
+      ][,`:=`(
+        count_lag=shift(count_distr,type="lag", fill=nrow(dtm)+1),
+        count_lead=shift(count_distr,type="lead", fill=nrow(dtm)+1)
+      )][, merge_tolead := count_lag > count_lead
+         ][count_distr<count_distr_limit][count_distr == min(count_distr)]
+
+    # set brkp to lead's or lag's
+    shift_type = ifelse(rm_brkp[1,merge_tolead], 'lead', 'lag')
+    binning = binning[
+      ,brkp2 := shift(brkp,type=shift_type)
+      ][brkp == rm_brkp[1,brkp], brkp := brkp2]
+
+    # groupby brkp
+    binning = binning[
+      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), good=sum(good), bad=sum(bad)), by=brkp
+      ][, count_distr := (good+bad)/sum(good+bad)]
+  }
+
+  # format bin
+  if (is.numeric(dtm[,value])) {
+    binning = binning[
+      grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)
+      ][bin == 'missing', brkp := NA
+        ][bin != 'missing', brkp := as.numeric(sub("^\\[(.*),.+", "\\1", bin))]
+  }
+  return(binning)
+}
+
+
 # required in woebin2 # return binning if breaks provided
 #' @import data.table
 woebin2_breaks = function(dtm, breaks, spl_val) {
@@ -132,8 +206,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 # required in woebin2 # return initial binning
 woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   # global variables or functions
-  value = bin = . = y = variable = bad = good = brkp = badprob = count = merge_tolead = brkp2 = count_lag = count_lead = NULL
-
+  . = bad = badprob = bin = brkp = good = value = variable = y = NULL
 
   # dtm $ binning_sv
   dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
@@ -212,35 +285,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   }
 
   # remove brkp that good == 0 or bad == 0 ------
-  while (init_bin[!is.na(brkp)][good==0 | bad==0,.N] > 0) {
-    # brkp needs to be removed if good==0 or bad==0
-    rm_brkp = init_bin[!is.na(brkp)][
-      ,count := good+bad
-    ][,`:=`(
-      count_lag=shift(count,type="lag", fill=nrow(dtm)+1),
-      count_lead=shift(count,type="lead", fill=nrow(dtm)+1)
-   )][, merge_tolead := count_lag > count_lead
-    ][good == 0 | bad == 0][count == min(count)]
-
-    # set brkp to lead's or lag's
-    shift_type = ifelse(rm_brkp[1,merge_tolead], 'lead', 'lag')
-    init_bin = init_bin[
-      ,brkp2 := shift(brkp,type=shift_type)
-    ][brkp == rm_brkp[1,brkp], brkp := brkp2]
-
-    # groupby brkp
-    init_bin = init_bin[
-      ,.(variable=unique(variable), bin=paste0(bin, collapse = "%,%"), good=sum(good), bad=sum(bad)), by=brkp
-    ][, badprob:=bad/(good+bad)]
-  }
-
-  # format bin
-  if (is.numeric(dtm[,value])) {
-    init_bin = init_bin[
-      grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)
-    ][, brkp := as.numeric(sub("^\\[(.*),.+", "\\1", bin))]
-  }
-
+  init_bin = check_zero_goodbad(dtm, init_bin)
   return(list(binning_sv=binning_sv, initial_binning=init_bin))
 }
 
@@ -371,6 +416,7 @@ woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop
 # system.time( woebin2_tree_add_1brkp(dtm, initial_binning, count_distr_limit=0.05) )
 # system.time( woebin2_tree(dtm, initial_binning, count_distr_limit=0.05) )
 
+
 # required in woebin2 # return chimerge binning
 #' @importFrom stats qchisq
 woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
@@ -472,6 +518,54 @@ woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, 
   # return(binning_chisq)
 }
 
+
+# required in woebin2 # return equal binning, supports numerical variables only
+woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL, method='freq') {
+  value = group = . = minv = maxv = bin = y = variable = bad = good = badprob = NULL
+
+  # dtm $ binning_sv
+  dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
+  dtm = dtm_binsv_list$dtm
+  binning_sv = dtm_binsv_list$binning_sv
+  if (is.null(dtm) || dtm[,.N]==0) return(list(binning_sv=binning_sv, binning=NULL))
+
+  # dt_sl = dtm[,.(label=y, datset=variable, score=value)]
+  # dtm = dt_sl[,.(y=label, variable=datset, value=score)]
+
+
+  # breaks
+  if (bin_num_limit >= dtm[, length(unique(value))] ) {
+    # in each value
+    brkp = dtm[order(value)][, unique(value)]
+    brkp = c(-Inf, brkp[-1], Inf)
+  } else {
+    if (method == 'freq') {
+      brkp = copy(dtm)[order(value)
+                      ][, group := ceiling(.I/(.N/bin_num_limit))
+                      ][, .(value=value[1]), by = group
+                      ][, c(-Inf, value[-1], Inf)]
+
+    } else if (method == 'width') {
+      minmax = dtm[, .(maxv = max(value), minv = min(value))]
+      brkp = seq(minmax[,minv], minmax[,maxv], length.out = bin_num_limit+1)
+      brkp = c(-Inf, brkp[-c(1, length(brkp))], Inf)
+
+    }
+  }
+  binning_equal = dtm[, bin := cut(value, unique(brkp), right = FALSE, dig.lab = 10, ordered_result = F)
+              ][, .(good = sum(y==0), bad = sum(y==1)), keyby = .(variable, bin)
+              ][, `:=`(brkp = as.numeric( sub("^\\[(.*),.+", "\\1", bin)), badprob = bad/(good+bad))
+              ][, .(variable, bin, brkp, good, bad, badprob)]
+
+
+  # create binning
+  binning_equal = check_empty_bins(dtm, binning_equal)
+  binning_equal = check_zero_goodbad(dtm, binning_equal)
+  binning_equal = check_count_distri(dtm, binning_equal, count_distr_limit)
+
+  return(list(binning_sv=binning_sv, binning=binning_equal))
+}
+
 # required in woebin2 # # format binning output
 binning_format = function(binning) {
   # global variables or functions
@@ -518,6 +612,9 @@ woebin2 = function(dtm, breaks=NULL, spl_val=NULL, init_count_distr=0.02, count_
       } else if (method == "chimerge") {
         # 2.chimerge optimal binning
         bin_list = woebin2_chimerge(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val)
+      } else if (method %in% c('freq','width')) {
+        # 3. in equal freq or width
+        bin_list = woebin2_equal(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, method = method)
       }
     }
   }
@@ -628,6 +725,13 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' bins2 = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
 #'
+#' # binning in equal freq/width # only supports numerical variables
+#' numeric_cols = c("duration.in.month", "credit.amount",
+#'   "installment.rate.in.percentage.of.disposable.income", "present.residence.since",
+#'   "age.in.years", "number.of.existing.credits.at.this.bank",
+#'   "number.of.people.being.liable.to.provide.maintenance.for")
+#' bins_freq  = woebin(germancredit, y="creditability", x=numeric_cols, method="freq")
+#' bins_width = woebin(germancredit, y="creditability", x=numeric_cols, method="width")
 #'
 #' # Example II
 #' # binning of the germancredit dataset
@@ -746,7 +850,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
   }
 
   # method
-  if (!(method %in% c("tree", "chimerge"))) {
+  if (!(method %in% c("tree", "chimerge", 'freq', 'width'))) {
     warning("Incorrect inputs; method should be tree or chimerge. Parameter was set to default (tree).")
     method = "tree"
   }

@@ -49,13 +49,12 @@ NPV, Negative Predicted Value = true negative/total predicted negative
 }
 \examples{
 \dontrun{
+# data preparing ------
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
 dt_f = var_filter(germancredit, "creditability")
-
-# breaking dt into train and test ------
+# breaking dt into train and test
 dt_list = split_df(dt_f, "creditability")
 label_list = lapply(dt_list, function(x) x$creditability)
 

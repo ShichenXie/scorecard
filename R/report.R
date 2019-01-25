@@ -63,7 +63,9 @@
 #' # Example I
 #' # input dt is a data frame
 #' # split input data frame into two
-#' report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1')
+#' report(germancredit, y, x, breaks_list, special_values, seed=618, save_report='report1',
+#'   show_plot = c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
+#'
 #' # donot split input data
 #' report(germancredit, y, x, breaks_list, special_values, seed=NULL, save_report='report2')
 #'
@@ -72,10 +74,12 @@
 #' # only one dataset
 #' report(list(dt=germancredit), y, x,
 #'   breaks_list, special_values, seed=NULL, save_report='report3')
+#'
 #' # multiple datasets
 #' report(list(dt1=germancredit[sample(1000,500)],
 #'             dt2=germancredit[sample(1000,500)]), y, x,
 #'  breaks_list, special_values, seed=NULL, save_report='report4')
+#'
 #' # multiple datasets
 #' report(list(dt1=germancredit[sample(1000,500)],
 #'             dt2=germancredit[sample(1000,500)],

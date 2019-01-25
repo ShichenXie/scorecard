@@ -36,7 +36,7 @@ split_df = function(dt, y=NULL, ratio=0.7, seed=618) {
   # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
-  dt = rep_blank_na(dt)
+  # dt = rep_blank_na(dt)
 
   # set ratio range
   if (!is.numeric(ratio) || length(ratio) >2 || sum(ratio)>1) {

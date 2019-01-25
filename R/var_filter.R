@@ -30,6 +30,13 @@
 #' str(dt_sel2$dt)
 #' str(dt_sel2$rm)
 #'
+#' # keep columns manually, such as rowid
+#' germancredit$rowid = row.names(germancredit)
+#' dt_sel3 = var_filter(germancredit, y = "creditability", var_kp = 'rowid')
+#'
+#' # remove columns manually
+#' dt_sel4 = var_filter(germancredit, y = "creditability", var_rm = 'rowid')
+#'
 #' @import data.table
 #' @export
 #'

@@ -74,6 +74,13 @@ bins2_chi = woebin(germancredit, y="creditability",
 bins2 = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
 
+# binning in equal freq/width # only supports numerical variables
+numeric_cols = c("duration.in.month", "credit.amount",
+  "installment.rate.in.percentage.of.disposable.income", "present.residence.since",
+  "age.in.years", "number.of.existing.credits.at.this.bank",
+  "number.of.people.being.liable.to.provide.maintenance.for")
+bins_freq  = woebin(germancredit, y="creditability", x=numeric_cols, method="freq")
+bins_width = woebin(germancredit, y="creditability", x=numeric_cols, method="width")
 
 # Example II
 # binning of the germancredit dataset
