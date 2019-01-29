@@ -234,6 +234,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #' @param only_total_score  Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
 #' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
+#' @param var_kp Name of force kept variables, such as id column. Default is NULL.
 #'
 #' @return A data frame in score values
 #'
@@ -287,7 +288,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #' @import data.table
 #' @export
 #'
-scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace_blank_na=TRUE) {
+scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace_blank_na=TRUE, var_kp = NULL) {
   # global variables or functions
   variable = bin = points = . = V1 = score = NULL
 
@@ -341,6 +342,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
 
 
   if (only_total_score) dat_score = dat_score[, .(score)]
+  if (!is.null(var_kp)) dat_score = cbind(dat[,c(var_kp),with=FALSE], dat_score)
   return(dat_score)
 }
 

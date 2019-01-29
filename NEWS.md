@@ -1,3 +1,7 @@
+# scorecard 0.2.2.999
+
+* add var_skip argument in woebin function, and var_kp argument in scorecard_ply function.
+
 # scorecard 0.2.2
 
 * fixed a bug in check_y function when the name of label column is 'y' in input data.

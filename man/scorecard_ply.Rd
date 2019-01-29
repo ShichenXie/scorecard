@@ -5,7 +5,7 @@
 \title{Score Transformation}
 \usage{
 scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
-  replace_blank_na = TRUE)
+  replace_blank_na = TRUE, var_kp = NULL)
 }
 \arguments{
 \item{dt}{A data frame, which is the rriginal dataset for training model.}
@@ -17,6 +17,8 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.}
 
 \item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
+
+\item{var_kp}{Name of force kept variables, such as id column. Default is NULL.}
 }
 \value{
 A data frame in score values

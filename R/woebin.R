@@ -684,10 +684,11 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.
+#' @param var_skip Name of variables that will skip for binning. Default is NULL.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the minimum of chi-square larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
 #' @param positive Value of positive class, default "bad|1".
@@ -697,7 +698,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
 #' @param ignore_const_cols Logical. Ignore constant columns. Default is TRUE.
 #' @param ignore_datetime_cols Logical. Ignore datetime columns. Default is TRUE.
-#' @param check_cate_num Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.
+#' @param check_cate_num Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Default is TRUE.
 #' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE.
 #' @param ... Additional parameters.
 #'
@@ -768,7 +769,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom parallel detectCores
 #' @export
-woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
+woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -809,7 +810,7 @@ woebin = function(dt, y, x=NULL, breaks_list=NULL, special_values=NULL, stop_lim
   # replace black with na
   if (replace_blank_na) dt = rep_blank_na(dt)
   # x variable names
-  xs = x_variable(dt,y,x)
+  xs = x_variable(dt, y, x, var_skip)
   xs_len = length(xs)
   # print_step
   print_step = check_print_step(print_step)

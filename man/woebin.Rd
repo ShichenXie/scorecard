@@ -4,25 +4,27 @@
 \alias{woebin}
 \title{WOE Binning}
 \usage{
-woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
-  stop_limit = 0.1, count_distr_limit = 0.05, bin_num_limit = 8,
-  positive = "bad|1", no_cores = NULL, print_step = 0L,
-  method = "tree", save_breaks_list = NULL, ignore_const_cols = TRUE,
-  ignore_datetime_cols = TRUE, check_cate_num = TRUE,
-  replace_blank_na = TRUE, ...)
+woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
+  special_values = NULL, stop_limit = 0.1, count_distr_limit = 0.05,
+  bin_num_limit = 8, positive = "bad|1", no_cores = NULL,
+  print_step = 0L, method = "tree", save_breaks_list = NULL,
+  ignore_const_cols = TRUE, ignore_datetime_cols = TRUE,
+  check_cate_num = TRUE, replace_blank_na = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
+\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.}
+
+\item{var_skip}{Name of variables that will skip for binning. Default is NULL.}
 
 \item{breaks_list}{List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.}
 
 \item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the minimum of chi-square larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
 
 \item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.}
 
@@ -42,7 +44,7 @@ woebin(dt, y, x = NULL, breaks_list = NULL, special_values = NULL,
 
 \item{ignore_datetime_cols}{Logical. Ignore datetime columns. Default is TRUE.}
 
-\item{check_cate_num}{Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.}
+\item{check_cate_num}{Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Default is TRUE.}
 
 \item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE.}
 

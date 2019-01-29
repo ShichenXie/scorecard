@@ -1071,7 +1071,9 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @param show_plot Logical. Default is TRUE.
 #' @param positive Value of positive class, default is "bad|1".
 #' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
+#' @param var_skip Name of variables that are not score, such as id column. It should be the same with the var_kp in scorecard_ply function. Default is NULL.
 #' @param ... Additional parameters.
+#'
 #' @return A data frame of psi and graphics of credit score distribution
 #' @seealso \code{\link{perf_eva}} \code{\link{gains_table}}
 #'
@@ -1152,7 +1154,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' @import data.table ggplot2 gridExtra
 #' @export
 #'
-perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad|1", threshold_variable=20, ...) {
+perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad|1", threshold_variable=20, var_skip=NULL, ...) {
   # # global variables
   . = datset = group = V1 = bin = NULL
 
@@ -1176,7 +1178,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 
 
   rt = list() # return list
-  for (sn in setdiff(names(dt_sl), c('datset', 'label'))) { # sn: score names
+  for (sn in setdiff(names(dt_sl), c('datset', 'label', var_skip))) { # sn: score names
     # dataset for sn
     dt_sn = dt_sl[,.(datset, label, score=dt_sl[[sn]])]
 

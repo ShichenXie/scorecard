@@ -118,8 +118,8 @@ check_print_step = function(print_step) {
 }
 
 # x variable
-x_variable = function(dt, y, x) {
-  x_all = setdiff(names(dt), y)
+x_variable = function(dt, y, x, var_skip=NULL) {
+  x_all = setdiff(names(dt), c(y, var_skip))
 
   if (is.null(x)) x = x_all
 
