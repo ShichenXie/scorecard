@@ -1,6 +1,8 @@
-# scorecard 0.2.2.999
+# scorecard 0.2.3
 
-* add var_skip argument in woebin function, and var_kp argument in scorecard_ply function.
+* add var_skip argument in woebin function, and var_kp argument in scorecard_ply function. Therefore, the id column can be handle during the development of scorecard model.
+* fixed a typo in perf_eva function
+* replace !isFalse(x) with isTRUE(x) & !is.null(x) in perf_eva function. The isFalse function is only available after R3.5. 
 
 # scorecard 0.2.2
 

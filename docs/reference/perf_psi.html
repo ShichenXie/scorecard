@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>perf_psi</span>(<span class='no'>score</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>threshold_variable</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>threshold_variable</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,6 +161,10 @@
       <td><p>Integer. Default is 20. If the number of unique values &gt; threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.</p></td>
     </tr>
     <tr>
+      <th>var_skip</th>
+      <td><p>Name of variables that are not score, such as id column. It should be the same with the var_kp in scorecard_ply function. Default is NULL.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Additional parameters.</p></td>
     </tr>
@@ -168,7 +172,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A dataframe of psi and graphics of credit score distribution</p>
+    <p>A data frame of psi and graphics of credit score distribution</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -232,12 +236,12 @@
 <span class='co'>###### perf_psi examples ######</span>
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi dataframe</span>
+<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span>
 <span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span>
 
 <span class='co'># Example II # both total and variable psi</span>
 <span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='co'># psi2$psi  # psi dataframe</span>
+<span class='co'># psi2$psi  # psi data frame</span>
 <span class='co'># psi2$pic  # pic of score distribution</span>
 
 

@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -181,7 +181,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A dataframe with columns for y and selected x variables, and a dataframe with columns for remove reason if return_rm_reason == TRUE.</p>
+    <p>A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if return_rm_reason == TRUE.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -220,6 +220,11 @@
 #&gt;  $ missing_rate  : num  0 0 0 0 0 0 0 0 0 0 ...
 #&gt;  $ identical_rate: num  0.963 0.63 0.633 0.845 0.413 0.596 0.051 0.003 0.53 0.184 ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
+<span class='co'># keep columns manually, such as rowid</span>
+<span class='no'>germancredit</span>$<span class='no'>rowid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/row.names'>row.names</a></span>(<span class='no'>germancredit</span>)
+<span class='no'>dt_sel3</span> <span class='kw'>=</span> <span class='fu'>var_filter</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>var_kp</span> <span class='kw'>=</span> <span class='st'>'rowid'</span>)</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
+<span class='co'># remove columns manually</span>
+<span class='no'>dt_sel4</span> <span class='kw'>=</span> <span class='fu'>var_filter</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>, <span class='kw'>var_rm</span> <span class='kw'>=</span> <span class='st'>'rowid'</span>)</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

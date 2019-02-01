@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -130,12 +130,12 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>woebin</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>bin_num_limit</span> <span class='kw'>=</span> <span class='fl'>8</span>,
-  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ignore_const_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>ignore_datetime_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>check_cate_num</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>replace_blank_na</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+  <span class='kw'>bin_num_limit</span> <span class='kw'>=</span> <span class='fl'>8</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>ignore_const_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ignore_datetime_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>check_cate_num</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>replace_blank_na</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,7 +150,11 @@
     </tr>
     <tr>
       <th>x</th>
-      <td><p>Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
+      <td><p>Name of x variables. Default is NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.</p></td>
+    </tr>
+    <tr>
+      <th>var_skip</th>
+      <td><p>Name of variables that will skip for binning. Default is NULL.</p></td>
     </tr>
     <tr>
       <th>breaks_list</th>
@@ -162,7 +166,7 @@
     </tr>
     <tr>
       <th>stop_limit</th>
-      <td><p>Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method, or stop binning merge when the minimum of chi-square less than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.</p></td>
+      <td><p>Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the minimum of chi-square larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.</p></td>
     </tr>
     <tr>
       <th>count_distr_limit</th>
@@ -202,7 +206,7 @@
     </tr>
     <tr>
       <th>check_cate_num</th>
-      <td><p>Logical. Check categorical columns if have more than 50 unique values. Default is TRUE.</p></td>
+      <td><p>Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Default is TRUE.</p></td>
     </tr>
     <tr>
       <th>replace_blank_na</th>
@@ -216,7 +220,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of dataframes include binning information for each x variables.</p>
+    <p>A list of data frames include binning information for each x variables.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -264,11 +268,18 @@
 <span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
    <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)
 
+<span class='co'># binning in equal freq/width # only supports numerical variables</span>
+<span class='no'>numeric_cols</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"duration.in.month"</span>, <span class='st'>"credit.amount"</span>,
+  <span class='st'>"installment.rate.in.percentage.of.disposable.income"</span>, <span class='st'>"present.residence.since"</span>,
+  <span class='st'>"age.in.years"</span>, <span class='st'>"number.of.existing.credits.at.this.bank"</span>,
+  <span class='st'>"number.of.people.being.liable.to.provide.maintenance.for"</span>)
+<span class='no'>bins_freq</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"freq"</span>)
+<span class='no'>bins_width</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"width"</span>)
 
 <span class='co'># Example II</span>
 <span class='co'># binning of the germancredit dataset</span>
 <span class='no'>bins_germ</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)
-<span class='co'># converting bins_germ into a dataframe</span>
+<span class='co'># converting bins_germ into a data frame</span>
 <span class='co'># bins_germ_df = data.table::rbindlist(bins_germ)</span>
 
 <span class='co'># Example III</span>

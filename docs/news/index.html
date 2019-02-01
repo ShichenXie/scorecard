@@ -60,7 +60,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -120,9 +120,28 @@
       <small>Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="scorecard-0-2-3" class="section level1">
+<h1 class="page-header">
+<a href="#scorecard-0-2-3" class="anchor"></a>scorecard 0.2.3<small> Unreleased </small>
+</h1>
+<ul>
+<li>add var_skip argument in woebin function, and var_kp argument in scorecard_ply function. Therefore, the id column can be handle during the development of scorecard model.</li>
+<li>fixed a typo in perf_eva function</li>
+<li>replace !isFalse(x) with isTRUE(x) &amp; !is.null(x) in perf_eva function. The isFalse function is only available after R3.5.</li>
+</ul>
+</div>
+    <div id="scorecard-0-2-2" class="section level1">
+<h1 class="page-header">
+<a href="#scorecard-0-2-2" class="anchor"></a>scorecard 0.2.2<small> 2019-01-14 </small>
+</h1>
+<ul>
+<li>fixed a bug in check_y function when the name of label column is ‘y’ in input data.</li>
+<li>fixed a bug in woebin_adj function when count_distr_limit is not default value in woebin function.</li>
+</ul>
+</div>
     <div id="scorecard-0-2-1" class="section level1">
 <h1 class="page-header">
-<a href="#scorecard-0-2-1" class="anchor"></a>scorecard 0.2.1<small> Unreleased </small>
+<a href="#scorecard-0-2-1" class="anchor"></a>scorecard 0.2.1<small> 2019-01-14 </small>
 </h1>
 <ul>
 <li>revised one_hot function</li>
@@ -254,6 +273,8 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#scorecard-0-2-3">0.2.3</a></li>
+        <li><a href="#scorecard-0-2-2">0.2.2</a></li>
         <li><a href="#scorecard-0-2-1">0.2.1</a></li>
         <li><a href="#scorecard-0-2-0">0.2.0</a></li>
         <li><a href="#scorecard-0-1-9">0.1.9</a></li>

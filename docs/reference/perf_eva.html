@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -196,13 +196,12 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># data preparing ------</span>
 <span class='co'># load germancredit data</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"germancredit"</span>)
-
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
 <span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
-
-<span class='co'># breaking dt into train and test ------</span>
+<span class='co'># breaking dt into train and test</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
 <span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 
@@ -248,12 +247,12 @@
 <span class='co'>###### perf_psi examples ######</span>
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi dataframe</span>
+<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span>
 <span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span>
 
 <span class='co'># Example II # both total and variable psi</span>
 <span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='co'># psi2$psi  # psi dataframe</span>
+<span class='co'># psi2$psi  # psi data frame</span>
 <span class='co'># psi2$pic  # pic of score distribution</span>
 
 

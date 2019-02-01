@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -130,8 +130,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_adj</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>bins</span>, <span class='kw'>adj_all_var</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin_adj</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>bins</span>, <span class='kw'>adj_all_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,11 +146,11 @@
     </tr>
     <tr>
       <th>bins</th>
-      <td><p>A list or data frame. Binning information generated from <code>woebin</code>.</p></td>
+      <td><p>A list of data frames. Binning information generated from <code>woebin</code>.</p></td>
     </tr>
     <tr>
       <th>adj_all_var</th>
-      <td><p>Logical, whether to show variables with monotonic woe trends. Default is FALSE.</p></td>
+      <td><p>Logical, whether to show variables have monotonic woe trends. Default is TRUE</p></td>
     </tr>
     <tr>
       <th>special_values</th>
@@ -163,6 +163,10 @@
     <tr>
       <th>save_breaks_list</th>
       <td><p>A string. The file name to save breaks_list. Default is None.</p></td>
+    </tr>
+    <tr>
+      <th>count_distr_limit</th>
+      <td><p>The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05. This argument should be the same with woebin's.</p></td>
     </tr>
     </table>
     

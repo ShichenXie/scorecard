@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -164,7 +164,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A dataframe with columns for variables converted into woe values.</p>
+    <p>A data frame with columns for variables converted into woe values.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -195,7 +195,7 @@
 <span class='co'># bins is a list which generated from woebin()</span>
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)
 
-<span class='co'># bins is a dataframe</span>
+<span class='co'># bins is a data frame</span>
 <span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/rbindlist'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_df</span>)
 <span class='co'># }</span><div class='input'>

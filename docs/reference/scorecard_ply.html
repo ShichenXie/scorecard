@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -131,18 +131,18 @@
     </div>
 
     <pre class="usage"><span class='fu'>scorecard_ply</span>(<span class='no'>dt</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
-  <span class='kw'>replace_blank_na</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>replace_blank_na</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>var_kp</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>Original data</p></td>
+      <td><p>A data frame, which is the rriginal dataset for training model.</p></td>
     </tr>
     <tr>
       <th>card</th>
-      <td><p>Scorecard generated from <code>scorecard</code>.</p></td>
+      <td><p>The scorecard generated from the function <code>scorecard</code>.</p></td>
     </tr>
     <tr>
       <th>only_total_score</th>
@@ -156,11 +156,15 @@
       <th>replace_blank_na</th>
       <td><p>Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with <code>woebin</code>'s.</p></td>
     </tr>
+    <tr>
+      <th>var_kp</th>
+      <td><p>Name of force kept variables, such as id column. Default is NULL.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A dataframe in score values</p>
+    <p>A data frame in score values</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
