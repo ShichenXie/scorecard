@@ -1,3 +1,7 @@
+# scorecard 0.2.3.999
+
+* fixed a bug in woebin when only NA and special values
+
 # scorecard 0.2.3
 
 * add var_skip argument in woebin function, and var_kp argument in scorecard_ply function. Therefore, the id column can be handle during the development of scorecard model.

@@ -375,7 +375,7 @@ woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop
   initial_binning = bin_list$initial_binning
   binning_sv = bin_list$binning_sv
 
-  if (nrow(initial_binning)==1) {
+  if (nrow(initial_binning)<=1 || is.null(initial_binning)) {
     return(list(binning_sv=binning_sv, binning=initial_binning))
   }
   # initialize parameters
@@ -438,9 +438,12 @@ woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, 
   # }
   # initial binning
   bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
-
   initial_binning = bin_list$initial_binning
   binning_sv = bin_list$binning_sv
+
+  if (nrow(initial_binning)<=1 || is.null(initial_binning)) {
+    return(list(binning_sv=binning_sv, binning=initial_binning))
+  }
 
   # function to create a chisq column in initial_binning
   add_chisq = function(initial_binning) {
@@ -872,13 +875,14 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
       # woebining on one variable
       bins[[x_i]] <-
         try(do.call(woebin2, args = list(
-          dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
-          breaks=breaks_list[[x_i]],
-          spl_val=special_values[[x_i]],
-          init_count_distr=init_count_distr,
-          count_distr_limit=count_distr_limit,
-          stop_limit=stop_limit, bin_num_limit=bin_num_limit,
-          method=method
+          dtm              = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
+          breaks           = breaks_list[[x_i]],
+          spl_val          = special_values[[x_i]],
+          init_count_distr = init_count_distr,
+          count_distr_limit= count_distr_limit,
+          stop_limit       = stop_limit,
+          bin_num_limit    = bin_num_limit,
+          method           = method
         )), silent = TRUE)
     }
 
@@ -903,14 +907,14 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
 
         # woebining on one variable
         try(do.call(woebin2, args = list(
-          dtm = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
-          breaks=breaks_list[[x_i]],
-          spl_val=special_values[[x_i]],
-          init_count_distr=init_count_distr,
-          count_distr_limit=count_distr_limit,
-          stop_limit=stop_limit,
-          bin_num_limit=bin_num_limit,
-          method=method
+          dtm              = data.table(y=dt[[y]], variable=x_i, value=dt[[x_i]]),
+          breaks           = breaks_list[[x_i]],
+          spl_val          = special_values[[x_i]],
+          init_count_distr = init_count_distr,
+          count_distr_limit= count_distr_limit,
+          stop_limit       = stop_limit,
+          bin_num_limit    = bin_num_limit,
+          method           = method
         )), silent = TRUE)
       }
     # finish
@@ -920,7 +924,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   # check errors in binning
   error_variables = names(bins)[which(sapply(bins, function(x) inherits(x, 'try-error')))]
   if (length(error_variables) > 0) {
-    warning(sprintf('There are %s columns are removed from binning results,\n%s', length(error_variables), paste0(error_variables, collapse=', ')))
+    warning(sprintf('There are binning errors on %s columns, which are removed from results,\n%s', length(error_variables), paste0(error_variables, collapse=', ')))
     bins = bins[setdiff(names(bins), error_variables)]
   }
 
