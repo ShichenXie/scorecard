@@ -158,7 +158,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
   dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
   dtm = dtm_binsv_list$dtm
   binning_sv = dtm_binsv_list$binning_sv
-  if (dtm[,.N] == 0) return(list(binning_sv=binning_sv, binning=NULL))
+  if (dtm[,.N] == 0 || is.null(dtm)) return(list(binning_sv=binning_sv, binning=NULL))
 
 
   # binning
@@ -186,6 +186,10 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 
   } else if (is.factor(dtm[,value]) || is.character(dtm[,value])) {
     dtm = dtm[,value := as.character(value)]
+    if (!setequal(dtm[,unique(value)], bk_df[,value])) {
+      warning(sprintf('Please specify all categorical values in `breaks_list` for the column `%s`', dtm[1,variable]))
+      stop()
+    }
 
     # merge binning with bk_df
     binning = merge(
@@ -924,7 +928,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   # check errors in binning
   error_variables = names(bins)[which(sapply(bins, function(x) inherits(x, 'try-error')))]
   if (length(error_variables) > 0) {
-    warning(sprintf('There are binning errors on %s columns, which are removed from results,\n%s', length(error_variables), paste0(error_variables, collapse=', ')))
+    warning(sprintf('There are errors on %s columns, which are removed from binning results:\n%s', length(error_variables), paste0(error_variables, collapse=', ')))
     bins = bins[setdiff(names(bins), error_variables)]
   }
 
