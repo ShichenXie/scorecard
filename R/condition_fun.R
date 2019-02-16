@@ -138,10 +138,18 @@ check_breaks_list = function(breaks_list, xs) {
     if (is.character(breaks_list)) {
       breaks_list = eval(parse(text = breaks_list))
     }
-    if (!is.list(breaks_list)) {
+    if (!inherits(breaks_list, 'list')) {
       stop("Incorrect inputs; breaks_list should be a list.")
 
     } else {
+      # remove missing from breakpoints
+      breaks_list = lapply(breaks_list, function(x) {
+        x=setdiff(x, 'missing')
+        if (length(x)==0) x = NULL
+        return(x)
+      })
+
+      # check variable names
       xs_breakslist = names(breaks_list)
       if (!identical(xs_breakslist, xs)) {
 
