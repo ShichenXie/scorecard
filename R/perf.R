@@ -101,7 +101,7 @@ cutoff_fbeta = function(dt_ev, beta=1, ...) {
 
   fb = dt_ev[, .(cumpop, pred,precision,recall)
              ][, f := 1/(1/(1+beta^2)*(1/precision+beta^2/recall))
-               ][f == max(f, na.rm = TRUE) ][1]
+               ][which.max(f)][1]
   setnames(fb, c('cumpop', 'pred', 'precision', 'recall', paste0('f',beta)))
 }
 
@@ -755,11 +755,19 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
   dt_lst = suppressMessages(
     func_dat_labelpred(pred=pred, label=label, title=title, positive=positive, seed=seed))
   dt_lst = lapply(dt_lst, function(x) x[,.(label, pred=x[[setdiff(names(x),'label')]])])
+
+  # if pred is score
   pred_is_score = all(sapply(dt_lst, function(x) mean(x$pred, na.rm = TRUE)>1))
   dt_lst = lapply(dt_lst, function(x) {
+    nP = nN = NULL
     if (pred_is_score) {
-      # warning("Since the average of pred is not locate in [0,1], it is treated as predicted score but not probability.")
-      x[, pred := -pred]
+      # make sure the positive samples are locate at below when order by pred
+      rid19 = quantile(x[,.I], c(0.1, 0.9))
+      x2 = x[, .(nP = sum(label==1), nN = sum(label==0)), keyby = pred]
+      if (x2[1:rid19[1], sum(nP) > sum(nN)] && x2[rid19[2]:.N, sum(nP) < sum(nN)]) {
+        x = x[, pred := -pred]
+        # warning("Since the average of pred is not locate in [0,1], it is treated as predicted score but not probability.")
+      }
     }
     return(x)
   })
@@ -785,8 +793,9 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
   if (confusion_matrix) {
     # if threshold is not provided, set it as max F1
     if (is.null(threshold) || !is.numeric(threshold)) threshold = cutoff_fbeta(dt_ev_lst[[1]])[,pred]
+    if (pred_is_score) threshold_abs = abs(threshold)
     # confusion matrix
-    cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold))
+    cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold_abs))
     rt_list[['confusion_matrix']] = lapply(dt_lst, function(x) confusionMatrix(dt=x, threshold=threshold))
   }
   # cat(sprintf('Confusion Matrix with threshold=%s:\n', round(threshold,4)))

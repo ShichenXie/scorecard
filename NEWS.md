@@ -1,7 +1,10 @@
-# scorecard 0.2.3.999
+# scorecard 0.2.3.9999
 
 * fixed a bug in woebin when only NA and special values
 * remove 'missing' value from breaks_list if it exists.
+* woebin function donot require y if label column is not available for equal freq/width method. 
+* woebin_ply supports converting data into bin value.
+# fixed a bug in perf_eva when pred is score
 
 # scorecard 0.2.3
 

@@ -109,7 +109,7 @@ check_zero_goodbad = function(dtm, binning, count_distr_limit = NULL) {
 
 # check count distri, remove bins that count_distribution rate less than count_distr_limit
 check_count_distri = function(dtm, binning, count_distr_limit) {
-  count_distr = good = bad = brkp = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = value = NULL
+  count_distr = count = good = bad = brkp = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = value = NULL
   if (!('count' %in% names(binning))) binning[, count := good + bad]
 
   binning[, count_distr := (count)/sum(count)]
@@ -532,7 +532,7 @@ woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, 
 
 # required in woebin2 # return equal binning, supports numerical variables only
 woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL, method='freq') {
-  value = group = . = minv = maxv = bin = y = variable = bad = good = badprob = NULL
+  count = value = group = . = minv = maxv = bin = y = variable = bad = good = badprob = NULL
 
   # dtm $ binning_sv
   dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
@@ -580,7 +580,7 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
 # required in woebin2 # # format binning output
 binning_format = function(binning) {
   # global variables or functions
-  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
+  . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = count = NULL
 
   # required columns in input binning: variable, bin, good, bad
   if (!('count' %in% names(binning))) binning[, count := good+bad]
@@ -736,10 +736,6 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' bins2_chi = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), method="chimerge")
 #'
-#' # save breaks_list as a R file
-#' bins2 = woebin(germancredit, y="creditability",
-#'    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
-#'
 #' # binning in equal freq/width # only supports numerical variables
 #' numeric_cols = c("duration.in.month", "credit.amount",
 #'   "installment.rate.in.percentage.of.disposable.income", "present.residence.since",
@@ -747,6 +743,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'   "number.of.people.being.liable.to.provide.maintenance.for")
 #' bins_freq  = woebin(germancredit, y="creditability", x=numeric_cols, method="freq")
 #' bins_width = woebin(germancredit, y="creditability", x=numeric_cols, method="width")
+#'
 #' # y can be NULL if no label column in dataset
 #' bins_freq_noy  = woebin(germancredit, y=NULL, x=numeric_cols)
 #'
@@ -777,6 +774,11 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' bins_cus_brk = woebin(dat, y="creditability",
 #'   x=c("age.in.years","credit.amount","housing","purpose"),
 #'   breaks_list=breaks_list, special_values=special_values)
+#'
+#' # Example IV
+#' # save breaks_list as a R file
+#' bins2 = woebin(germancredit, y="creditability",
+#'    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
 #'
 #' }
 #'
