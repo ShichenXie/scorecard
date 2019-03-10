@@ -4,7 +4,9 @@
 * remove 'missing' value from breaks_list if it exists.
 * woebin function donot require y if label column is not available for equal freq/width method. 
 * woebin_ply supports converting data into bin value.
-# fixed a bug in perf_eva when pred is score
+* fixed a bug in perf_eva when pred is score
+* move the gains table to the last sheet in exported report excel, and only have one data set.
+
 
 # scorecard 0.2.3
 

@@ -496,6 +496,7 @@ func_dat_labelpred = function(pred, label, title, positive, seed, ...) {
         xi_lst[[xname]] = xi
       } else {
         xi_lst = as.list(xi)
+        if (xname == 'label') names(xi_lst) = xname
       }
       return(xi_lst)
     })

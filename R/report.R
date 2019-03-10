@@ -112,7 +112,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   }
   dat_lst = lapply(dat_lst, function(x) check_y(x, y, positive))
   # label list
-  label_list = lapply(dat_lst, function(x) x[[y]])
+  label_list = lapply(dat_lst, function(x) x[,y,with=FALSE])
 
 
   # binning
@@ -143,13 +143,14 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   bin_num = ifelse('bin_num' %in% names(arguments), arguments$bin_num, 10)
   bin_type = ifelse('bin_type' %in% names(arguments), arguments$bin_type, 'freq')
-  gains_tbl = gains_table(score = score_lst, label = label_list, bin_num = bin_num)
-
+  gains_tbl = gains_table(score = rbindlist(score_lst), label = rbindlist(label_list), bin_num = bin_num, bin_type=bin_type)
+  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate')
 
 
   wb <- createWorkbook()
   # dataset information ------
-  cat("[INFO] sheet1-dataset information\n")
+  n = 1
+  cat(sprintf("[INFO] sheet%s-dataset information\n", n))
   sheet  <- addWorksheet(wb, sheetName="dataset information")
 
   sample_info <- lapply(dat_lst, function(x) {
@@ -162,7 +163,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
 
   # model coefficients ------
-  cat("[INFO] sheet2-model coefficients\n")
+  n = n+1
+  cat(sprintf("[INFO] sheet%s-model coefficients\n", n))
   sheet  <- addWorksheet(wb, sheetName="model coefficients")
 
   dt_vif = vif(m, merge_coef = TRUE)[, gvif := round(gvif, 4)]
@@ -177,7 +179,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
 
   # model performance ------
-  cat("[INFO] sheet3-model performance\n")
+  n = n+1
+  cat(sprintf("[INFO] sheet%s-model performance\n", n))
   sheet  <- addWorksheet(wb, sheetName="model performance")
 
   eva_tbl = rbindlist(m_perf$binomial_metric, idcol = 'dataset')
@@ -194,7 +197,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
 
   # variable binning ------
-  cat("[INFO] sheet4-variable woe binning\n")
+  n = n+1
+  cat(sprintf("[INFO] sheet%s-variable woe binning\n", n))
   sheet  <- addWorksheet(wb, sheetName="variable woe binning")
 
   names_dat = names(dat_lst)
@@ -224,7 +228,8 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
 
 
   # scorecard ------
-  cat("[INFO] sheet5-scorecard\n")
+  n = n+1
+  cat(sprintf("[INFO] sheet%s-scorecard\n", n))
   sheet  <- addWorksheet(wb, sheetName="scorecard")
 
   odds0 = ifelse('odds0' %in% names(arguments), arguments$odds0, 1/19)
@@ -240,18 +245,10 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
   writeData(wb,sheet, rbindlist(card, fill = T)[,.(variable, bin, woe, points)], startCol=1, startRow=8, colNames=T)
 
 
-  # gains table ------
-  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate')
-
-  cat("[INFO] sheet6-gains table\n")
-  sheet  <- addWorksheet(wb, sheetName="gains table")
-
-  setnames(gains_tbl, gains_table_cols)
-  writeData(wb, sheet, gains_tbl, startCol=1, startRow=1, colNames=T)
-
   # population stability ------
   if (length(dat_lst) > 1) {
-    cat("[INFO] sheet7-population stability\n")
+    n = n+1
+    cat(sprintf("[INFO] sheet%s-population stability\n", n))
     sheet  <- addWorksheet(wb, sheetName="population stability")
 
     m_psi = perf_psi(score = score_lst, label = label_list, return_distr_dat = TRUE)
@@ -269,6 +266,15 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
       insertPlot(wb, sheet, width = 16, height = 7, xy = NULL, startRow=nrow(psi_tbl)+4+15*(i-1), startCol=1, fileType="png", units= "cm")
     }
   }
+
+
+  # gains table ------
+  n = n+1
+  cat(sprintf("[INFO] sheet%s-gains table\n", n))
+  sheet  <- addWorksheet(wb, sheetName="gains table")
+
+  setnames(gains_tbl, gains_table_cols)
+  writeData(wb, sheet, gains_tbl, startCol=1, startRow=1, colNames=T)
 
   # saving workbook ------
   report_name = sprintf('%s_%s.xlsx', save_report, format(Sys.time(),"%Y%m%d_%H%M%S"))
