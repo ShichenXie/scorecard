@@ -824,7 +824,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   # remove date/time columns
   if (ignore_datetime_cols) dt = check_datetime_cols(dt)
   # check categorical columns' unique values
-  if (check_cate_num) check_cateCols_uniqueValues(dt)
+  if (check_cate_num) check_cateCols_uniqueValues(dt, var_skip)
   # replace black with na
   if (replace_blank_na) dt = rep_blank_na(dt)
   # x variable names

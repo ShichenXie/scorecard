@@ -37,10 +37,12 @@ check_datetime_cols = function(dt) {
   return(dt)
 }
 # check categorical columns' unique values
-check_cateCols_uniqueValues = function(dt) {
+check_cateCols_uniqueValues = function(dt, var_skip = NULL) {
   setDT(dt)
   # categorical columns
   cate_cols = names(which(dt[, sapply(.SD, function(x) is.character(x) | is.factor(x))]))
+  cate_cols = setdiff(cate_cols, var_skip)
+
   if (length(cate_cols) > 0) {
     # have more than 50 unique values
     cateCols_uniVal50 = names(which(dt[, sapply(.SD, function(x) length(unique(x)) > 50), .SDcols = cate_cols]))

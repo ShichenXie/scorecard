@@ -302,7 +302,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   print_step = check_print_step(print_step)
 
   # card # if (is.list(card)) rbindlist(card)
-  if (inherits(card, 'list') && all(sapply(card, is.data.frame))) {card = rbindlist(card)}
+  if (inherits(card, 'list') && all(sapply(card, is.data.frame))) {card = rbindlist(card, fill = TRUE)}
   card = setDT(card)
 
   # x variables
