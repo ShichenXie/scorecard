@@ -6,7 +6,7 @@
 * woebin_ply supports converting data into bin value.
 * fixed a bug in perf_eva when pred is score
 * move the gains table to the last sheet in exported report excel, and only have one data set.
-
+* fixed a bug in woebin_ply when only x variables in bins are available in input dataset
 
 # scorecard 0.2.3
 

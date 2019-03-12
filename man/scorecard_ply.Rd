@@ -66,10 +66,10 @@ card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
 
 # credit score
 # Example I # only total score
-score1 = scorecard_ply(dt, card)
+score1 = scorecard_ply(germancredit, card)
 
 # Example II # credit score for both total and each variable
-score2 = scorecard_ply(dt, card, only_total_score = F)
+score2 = scorecard_ply(germancredit, card, only_total_score = F)
 }
 }
 \seealso{

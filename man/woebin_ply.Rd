@@ -54,7 +54,7 @@ bins_df = data.table::rbindlist(bins_germancredit)
 germancredit_woe = woebin_ply(germancredit, bins_df)
 
 # return value is bin but not woe
-germancredit_woe = woebin_ply(germancredit, bins_germancredit, value = 'bin')
+germancredit_bin = woebin_ply(germancredit, bins_germancredit, value = 'bin')
 }
 
 }

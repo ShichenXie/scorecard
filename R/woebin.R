@@ -702,7 +702,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param var_skip Name of variables that will skip for binning. Default is NULL.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the minimum of chi-square larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
 #' @param positive Value of positive class, default "bad|1".
@@ -1040,7 +1040,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' germancredit_woe = woebin_ply(germancredit, bins_df)
 #'
 #' # return value is bin but not woe
-#' germancredit_woe = woebin_ply(germancredit, bins_germancredit, value = 'bin')
+#' germancredit_bin = woebin_ply(germancredit, bins_germancredit, value = 'bin')
 #' }
 #'
 #' @import data.table
@@ -1059,7 +1059,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   if (is.null(value) || !(value %in% c('woe', 'bin'))) value = 'woe'
 
   # global variables or functions
-  . = V1 = bin = variable = woe = i = NULL
+  . = V1 = bin = variable = woe = i = databc_colomun_placeholder = NULL
 
   # set dt as data.table
   dt = setDT(copy(dt))
@@ -1072,13 +1072,8 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
 
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) {bins = rbindlist(bins)}
+  bins = setDT(bins)
 
   # x variables
   xs_bin = bins[,unique(variable)]
@@ -1088,7 +1083,10 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   xs_len = length(xs)
 
   # initial data set
-  dt_init = copy(dt)[,(xs):=NULL]
+  n = 0
+  while (paste0('dat_col_placeholder',n) %in% xs) n = n+1
+  dt_init = copy(dt)[, (paste0('dat_col_placeholder',n)) := 1][,(xs) := NULL]
+  # the databc_colomun_placeholder will be remove in the result, in case dt_init is an empty dataframe
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   if (is.null(no_cores)) {
@@ -1135,7 +1133,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   # hms
   if (rs[3] > 10 & print_info) cat(sprintf("[INFO] Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),"\n")
 
-  return(dat)
+  return(dat[, (paste0('dat_col_placeholder',n)) := NULL])
 }
 
 

@@ -280,17 +280,17 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #'
 #' # credit score
 #' # Example I # only total score
-#' score1 = scorecard_ply(dt, card)
+#' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(dt, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
 #' }
 #' @import data.table
 #' @export
 #'
 scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace_blank_na=TRUE, var_kp = NULL) {
   # global variables or functions
-  variable = bin = points = . = V1 = score = NULL
+  variable = bin = points = . = V1 = score = dat_col_placeholder = NULL
 
   # set dt as data.table
   dt = setDT(copy(dt)) # copy(setDT(dt))
@@ -302,20 +302,17 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   print_step = check_print_step(print_step)
 
   # card # if (is.list(card)) rbindlist(card)
-  if (!is.data.table(card)) {
-    if (is.data.frame(card)) {
-      card = setDT(card)
-    } else {
-      card = rbindlist(card, fill=TRUE)
-    }
-  }
+  if (inherits(card, 'list') && all(sapply(card, is.data.frame))) {card = rbindlist(card)}
+  card = setDT(card)
 
   # x variables
   xs = card[variable != "basepoints", unique(variable)]
   # length of x variables
   xs_len = length(xs)
   # initial datasets
-  dat = copy(dt)[,(xs):=NULL]
+  n = 0
+  while (paste0('dat_col_placeholder',n) %in% xs) n = n+1
+  dat = copy(dt)[, (paste0('dat_col_placeholder',n)) := 1][,(xs) := NULL]
 
   # loop on x variables
   for (i in 1:xs_len) {

@@ -794,6 +794,8 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
   if (confusion_matrix) {
     # if threshold is not provided, set it as max F1
     if (is.null(threshold) || !is.numeric(threshold)) threshold = cutoff_fbeta(dt_ev_lst[[1]])[,pred]
+
+    threshold_abs = threshold
     if (pred_is_score) threshold_abs = abs(threshold)
     # confusion matrix
     cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold_abs))
