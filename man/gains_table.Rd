@@ -27,7 +27,7 @@ A data frame
 \code{gains_table} creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 }
 \examples{
-\dontrun{
+\donttest{
 # data preparing ------
 # load germancredit data
 data("germancredit")

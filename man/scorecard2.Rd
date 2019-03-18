@@ -35,7 +35,7 @@ A scorecard data frame
 \code{scorecard2} creates a scorecard based on the results from \code{woebin}. It has the same function with \code{scorecard}, but without model object input.
 }
 \examples{
-\dontrun{
+\donttest{
 # load germancredit data
 data("germancredit")
 

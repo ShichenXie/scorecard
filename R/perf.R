@@ -671,7 +671,7 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
@@ -924,7 +924,7 @@ gains_table_format = function(dt_distr) {
 #' @seealso \code{\link{perf_eva}} \code{\link{perf_psi}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
@@ -1093,7 +1093,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")

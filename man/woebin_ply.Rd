@@ -40,7 +40,7 @@ bins = woebin(dt, y = "creditability")
 dt_woe = woebin_ply(dt, bins=bins)
 str(dt_woe)
 
-\dontrun{
+\donttest{
 # Example II
 # binning for germancredit dataset
 bins_germancredit = woebin(germancredit, y="creditability")

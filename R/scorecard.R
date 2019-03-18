@@ -40,7 +40,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # load germancredit data
 #' data("germancredit")
 #'
@@ -148,7 +148,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @seealso \code{\link{scorecard}} \code{\link{scorecard_ply}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # load germancredit data
 #' data("germancredit")
 #'
@@ -241,7 +241,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #' @seealso \code{\link{scorecard}} \code{\link{scorecard2}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # load germancredit data
 #' data("germancredit")
 #'

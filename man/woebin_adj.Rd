@@ -31,7 +31,7 @@ A list of modified break points of each x variables.
 \code{woebin_adj} interactively adjust the binning breaks.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load German credit data
 data(germancredit)
 

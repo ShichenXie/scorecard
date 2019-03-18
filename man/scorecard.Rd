@@ -27,7 +27,7 @@ A scorecard data frame
 \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.
 }
 \examples{
-\dontrun{
+\donttest{
 # load germancredit data
 data("germancredit")
 

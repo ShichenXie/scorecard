@@ -731,7 +731,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'    x=c("credit.amount","housing"), method="tree")
 #' bins2_tree
 #'
-#' \dontrun{
+#' \donttest{
 #' # using chimerge method
 #' bins2_chi = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), method="chimerge")
@@ -1026,7 +1026,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' dt_woe = woebin_ply(dt, bins=bins)
 #' str(dt_woe)
 #'
-#' \dontrun{
+#' \donttest{
 #' # Example II
 #' # binning for germancredit dataset
 #' bins_germancredit = woebin(germancredit, y="creditability")
@@ -1222,7 +1222,7 @@ plot_bin = function(bin, title, show_iv) {
 #' p1 = woebin_plot(bins1)
 #' print(p1)
 #'
-#' \dontrun{
+#' \donttest{
 #' # Example II
 #' bins = woebin(germancredit, y="creditability")
 #' plotlist = woebin_plot(bins)
@@ -1347,7 +1347,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load German credit data
 #' data(germancredit)
 #'

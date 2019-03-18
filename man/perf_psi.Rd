@@ -34,7 +34,7 @@ A data frame of psi and graphics of credit score distribution
 The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
 }
 \examples{
-\dontrun{
+\donttest{
 # data preparing ------
 # load germancredit data
 data("germancredit")

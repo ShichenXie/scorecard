@@ -48,7 +48,7 @@ TNR, True Negative Rate(Specificity) = true negative/total actual negative = 1-F
 NPV, Negative Predicted Value = true negative/total predicted negative
 }
 \examples{
-\dontrun{
+\donttest{
 # data preparing ------
 # load germancredit data
 data("germancredit")

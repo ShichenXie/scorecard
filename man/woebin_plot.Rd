@@ -31,7 +31,7 @@ bins1 = woebin(germancredit, y="creditability", x="credit.amount")
 p1 = woebin_plot(bins1)
 print(p1)
 
-\dontrun{
+\donttest{
 # Example II
 bins = woebin(germancredit, y="creditability")
 plotlist = woebin_plot(bins)

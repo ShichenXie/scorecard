@@ -27,7 +27,7 @@ A data frame in score values
 \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 }
 \examples{
-\dontrun{
+\donttest{
 # load germancredit data
 data("germancredit")
 

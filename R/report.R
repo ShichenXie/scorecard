@@ -13,7 +13,7 @@
 #' @param ... Additional paramters.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("germancredit")
 #'
 #' y = 'creditability'
@@ -202,7 +202,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   sheet  <- addWorksheet(wb, sheetName="variable woe binning")
 
   names_dat = names(dat_lst)
-  for (i in seq_len(length(names_dat))) {
+  for (i in seq_along(names_dat)) {
     di = names_dat[i]
     # title row
     writeData(wb,sheet, sprintf('graphics of %s dataset', di), startRow=1, startCol=7*(i-1)+1, colNames=F)
@@ -215,9 +215,10 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
 
 
   # plots
-  for (i in seq_len(length(names_dat))) {
+  for (i in seq_along(names_dat)) {
+    di = names_dat[i]
     plist = woebin_plot(bins_lst[[di]], title = di)
-    for (j in seq_len(length(x))) {
+    for (j in seq_along(x)) {
       # writeData(wb,sheet, var_exp[variable == x[j]], startCol = 1, startRow = (j-1)*15+2, rowNames = FALSE)
       print(plist[[j]])
       insertPlot(wb, sheet, width = 12, height = 7, xy = NULL,

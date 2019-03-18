@@ -67,7 +67,7 @@ bins2_tree = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="tree")
 bins2_tree
 
-\dontrun{
+\donttest{
 # using chimerge method
 bins2_chi = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="chimerge")

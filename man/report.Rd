@@ -30,7 +30,7 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 \code{report} creates a scorecard modeling report and save it as a xlsx file.
 }
 \examples{
-\dontrun{
+\donttest{
 data("germancredit")
 
 y = 'creditability'
