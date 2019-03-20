@@ -248,7 +248,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
     } else {
       brk = pretty(xvalue_rm_outlier, n)
     }
-    brk = sort(brk[(brk < max(xvalue, na.rm =TRUE)) & (brk > min(xvalue, na.rm =TRUE))])
+    brk = sort(brk[(brk <= max(xvalue, na.rm =TRUE)) & (brk > min(xvalue, na.rm =TRUE))])
     brk = unique(c(-Inf, brk, Inf))
     if (anyNA(xvalue)) brk = c(brk, NA)
 
@@ -374,7 +374,15 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
 }
 
 # required in woebin2 # return tree-like binning
-woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
+woebin2_tree = function(
+  dtm,
+  init_count_distr  = 0.02,
+  count_distr_limit = 0.05,
+  stop_limit        = 0.1,
+  bin_num_limit     = 8,
+  breaks            = NULL,
+  spl_val           = NULL
+) {
   # global variables or functions
   brkp = bstbrkp = total_iv = NULL
 
@@ -427,7 +435,15 @@ woebin2_tree = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop
 
 # required in woebin2 # return chimerge binning
 #' @importFrom stats qchisq
-woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL) {
+woebin2_chimerge = function(
+  dtm,
+  init_count_distr  = 0.02,
+  count_distr_limit = 0.05,
+  stop_limit        = 0.1,
+  bin_num_limit     = 8,
+  breaks            = NULL,
+  spl_val           = NULL
+) {
   .= a= a_colsum= a_lag= a_lag_rowsum= a_rowsum= a_sum= bad= bin= brkp= brkp2= chisq= count= count_distr= e= e_lag= chisq_lead= good= goodbad= merge_tolead =value= variable= NULL
 
   # [chimerge](http://blog.csdn.net/qunxingvip/article/details/50449376)
@@ -462,11 +478,11 @@ woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, 
     a_rowsum = sum(a),
     a_lag_rowsum = sum(a_lag),
     a_colsum = a+a_lag,
-    a_sum = sum(a+a_lag)), by=brkp
+    a_sum = sum(a+a_lag)), by='bin'
   ][, `:=`(
-    e = a_rowsum/a_sum*a_colsum,
-    e_lag = a_lag_rowsum/a_sum*a_colsum
-  )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by=brkp]
+    e = (a_rowsum*a_colsum)/a_sum,
+    e_lag = a_lag_rowsum*a_colsum/a_sum
+  )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by='bin']
 
   return(merge(initial_binning[,count:=good+bad], chisq_df, all.x = TRUE))
   }
@@ -515,9 +531,10 @@ woebin2_chimerge = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, 
     ## add chisq to new binning data frame
     binning_chisq = add_chisq(binning_chisq)
     ## param
+    bin_nrow = binning_chisq[,.N]
+    if (bin_nrow == 1) break
     bin_chisq_min = binning_chisq[, min(chisq, na.rm = TRUE)]
     bin_count_distr_min = binning_chisq[!is.na(brkp), min((good+bad)/dtm_rows)]
-    bin_nrow = binning_chisq[,.N]
   }
 
   # format bin # remove (.+\\)%,%\\[.+,)
@@ -603,7 +620,16 @@ binning_format = function(binning) {
 
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) data frame.
-woebin2 = function(dtm, breaks=NULL, spl_val=NULL, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, method="tree") {
+woebin2 = function(
+  dtm,
+  breaks            = NULL,
+  spl_val           = NULL,
+  init_count_distr  = 0.02,
+  count_distr_limit = 0.05,
+  stop_limit        = 0.1,
+  bin_num_limit     = 8,
+  method            = "tree"
+) {
   # global variables or functions
   . = bad = badprob = bin = bin_iv = good = total_iv = variable = woe = is_sv = NULL
 

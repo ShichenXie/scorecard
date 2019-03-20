@@ -7,6 +7,8 @@
 * fixed a bug in perf_eva when pred is score
 * move the gains table to the last sheet in exported report excel, and only have one data set.
 * fixed a bug in woebin_ply when only x variables in bins are available in input dataset
+* fixed a bug in report function export test binning graphics only.
+* fixed a bug in woebin function when there are only two unique values for tree and chimerge methods.
 
 # scorecard 0.2.3
 
