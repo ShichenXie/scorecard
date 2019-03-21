@@ -88,6 +88,9 @@ perf_eva(pred = pred_list, label = label_list)
 psi1 = perf_psi(score = score_list, label = label_list)
 psi1$psi  # psi data frame
 psi1$pic  # pic of score distribution
+# modify colors
+# perf_psi(score = score_list, label = label_list,
+#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 
 # Example II # both total and variable psi
 psi2 = perf_psi(score = score_list, label = label_list)

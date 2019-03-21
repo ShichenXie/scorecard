@@ -17,7 +17,7 @@ Depends:
     R (>= 3.1.0)
 Imports: 
     data.table (>= 1.10.0), 
-    ggplot2, gridExtra, 
+    ggplot2, gridExtra,
     foreach, doParallel, parallel,
     openxlsx
 Suggests: 

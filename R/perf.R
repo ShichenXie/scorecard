@@ -215,7 +215,7 @@ plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
     merge(rbindlist(pm, idcol = 'datset')[,.(datset,maxks=KS)],
           rbindlist(co, idcol = 'datset')[metrics == 'ks',.(datset, pred_threshold,coord)], by = 'datset'),
     by = 'datset', all.x = TRUE
-  )[, datset := sprintf('%s, KS=%.4f\np=%.4f, %s', format(datset), round(maxks,4), pred_threshold, coord)][]
+  )[, datset := sprintf('%s, KS=%.4f\np=%.2f, %s', format(datset), round(maxks,4), abs(pred_threshold), coord)][]
 
   # max ks row
   dfks = dt_ks[, .SD[ks == max(ks)][1], by = 'datset'][, oc := sprintf('@%.4f', round(pred,4))][]#[, oc := sprintf('%.4f\n(%.4f,%.4f)', round(pred,4), round(cumpop,4), round(ks,4))]
@@ -327,7 +327,7 @@ plot_roc = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
     merge(rbindlist(pm, idcol = 'datset')[,.(datset,auc=AUC)],
           rbindlist(co, idcol = 'datset')[metrics == 'roc',.(datset, pred_threshold,coord)], by = 'datset'),
     by = 'datset', all.x = TRUE
-  )[, datset := sprintf('%s, AUC=%.4f\np=%.4f, %s', format(datset), round(auc,4), pred_threshold, coord)][]
+  )[, datset := sprintf('%s, AUC=%.4f\np=%.2f, %s', format(datset), round(auc,4), abs(pred_threshold), coord)][]
 
   # optimal cutoff
   dt_cut = merge(
@@ -440,7 +440,7 @@ plot_f1 = function(dat_eva_lst, pm=NULL, co=NULL, beta=1, title=NULL, ...) {
     rbindlist(dt_f, fill = TRUE, idcol = 'datset'),
     rbindlist(co, idcol = 'datset')[metrics == paste0('max_f',beta),.(datset, pred_threshold,coord)],
     by = 'datset', all.x = TRUE
-  )[, datset := sprintf('%s\np=%.4f, %s', format(datset), pred_threshold, coord)][]
+  )[, datset := sprintf('%s\np=%.2f, %s', format(datset), abs(pred_threshold), coord)][]
 
 
   # optimal cutoff
@@ -763,9 +763,9 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
     nP = nN = NULL
     if (pred_is_score) {
       # make sure the positive samples are locate at below when order by pred
-      rid19 = quantile(x[,.I], c(0.1, 0.9))
       x2 = x[, .(nP = sum(label==1), nN = sum(label==0)), keyby = pred]
-      if (x2[1:rid19[1], sum(nP) > sum(nN)] && x2[rid19[2]:.N, sum(nP) < sum(nN)]) {
+      r19 = as.integer(quantile(x2[,.I], c(0.1, 0.9)))
+      if (x2[1:r19[1], sum(nP) > sum(nN)] && x2[r19[2]:.N, sum(nP) < sum(nN)]) {
         x = x[, pred := -pred]
         # warning("Since the average of pred is not locate in [0,1], it is treated as predicted score but not probability.")
       }
@@ -854,9 +854,10 @@ psi_metric = function(dt_sn, names_datset) {
 }
 
 # psi plot
-psi_plot = function(dt_psi, psi_sn, title, sn) {
+psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = NULL) {
   . = label = N = bad = badprob = distr = bin = midbin = bin1 = bin2 = datset = badprob2 = NULL
 
+  # plot title
   title = paste0(ifelse(is.null(title), sn, title), " PSI: ", round(psi_sn, 4))
 
   distr_prob =
@@ -871,9 +872,9 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
   # plot
   p_score_distr =
     ggplot(distr_prob) +
-    geom_bar(aes(x=bin, y=distr, fill=datset), alpha=0.6, stat="identity", position="dodge", na.rm=TRUE) +
-    geom_line(aes(x=bin, y=badprob2, group=datset, linetype=datset), colour='blue', na.rm=TRUE) +
-    geom_point(aes(x=bin, y=badprob2), colour='blue', shape=21, fill="white", na.rm=TRUE) +
+    geom_bar(aes(x=bin, y=distr, fill=datset), stat="identity", position="dodge", na.rm=TRUE) +
+    geom_line(aes(x=bin, y=badprob2, group=datset, linetype=datset), colour= line_color, na.rm=TRUE) +
+    geom_point(aes(x=bin, y=badprob2), colour= line_color, shape=21, fill="white", na.rm=TRUE) +
     guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
     scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
     ggtitle(title) +
@@ -885,9 +886,11 @@ psi_plot = function(dt_psi, psi_sn, title, sn) {
       legend.position=c(1,1),
       legend.justification=c(1,1),
       legend.background=element_blank(),
-      axis.title.y.right = element_text(colour = "blue"),
-      axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
+      axis.title.y.right = element_text(colour = line_color),
+      axis.text.y.right  = element_text(colour = line_color,angle=90, hjust = 0.5),
       axis.text.y = element_text(angle=90, hjust = 0.5))
+
+  if (!is.null(bar_color)) p_score_distr = p_score_distr + scale_fill_manual(values= bar_color)
 
   return(p_score_distr)
 }
@@ -1147,6 +1150,9 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #' psi1 = perf_psi(score = score_list, label = label_list)
 #' psi1$psi  # psi data frame
 #' psi1$pic  # pic of score distribution
+#' # modify colors
+#' # perf_psi(score = score_list, label = label_list,
+#' #          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 #'
 #' # Example II # both total and variable psi
 #' psi2 = perf_psi(score = score_list, label = label_list)
@@ -1180,6 +1186,14 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
   return_distr_dat = list(...)[['return_distr_dat']]
   if (is.null(return_distr_dat)) return_distr_dat = FALSE
 
+  if (show_plot) {
+    line_color = list(...)[['line_color']]
+    if (is.null(line_color)) line_color = 'blue'
+
+    bar_color = list(...)[['bar_color']]
+  }
+
+
 
 
   # dateset list of score and label
@@ -1211,7 +1225,9 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
       # pic
       temp_pic = NULL
       if (show_plot) {
-        temp_pic = psi_plot(dt_psi[datset %in% names_dts], psi_sn, title, sn)
+        temp_pic = psi_plot(
+          dt_psi[datset %in% names_dts], psi_sn, title, sn,
+          line_color = line_color, bar_color = bar_color)
         if (length(names_datset) > 2) {
           rt[['pic']][[sn]][[paste0(names_dts, collapse = '_')]] = temp_pic
         } else {

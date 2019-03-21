@@ -1165,7 +1165,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
 
 # required in woebin_plot
 #' @import data.table ggplot2
-plot_bin = function(bin, title, show_iv) {
+plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) {
   # global variables or functions
   . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = NULL
 
@@ -1206,23 +1206,26 @@ plot_bin = function(bin, title, show_iv) {
   }
 
   # plot
-  ggplot() +
+  p_bin = ggplot() +
     # geom_text(aes(label="@shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") +
     # coord_cartesian(clip = 'off') +
     geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
     geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
-    geom_line(data=dat, aes(x = rowid, y = badprob2), colour = "blue") +
-    geom_point(data=dat, aes(x = rowid, y=badprob2), colour = "blue", shape=21, fill="white") +
-    geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour="blue", vjust = -0.5) +
+    geom_line(data=dat, aes(x = rowid, y = badprob2), colour = line_color) +
+    geom_point(data=dat, aes(x = rowid, y=badprob2), colour = line_color, shape=21, fill="white") +
+    geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour=line_color, vjust = -0.5) +
     scale_y_continuous(limits = c(0,y_left_max), sec.axis = sec_axis(~./(y_left_max/y_right_max), name = "Bad probability")) +
     labs(title = title_string, x=NULL, y="Bin count distribution", fill=NULL) +
     theme_bw() +
     theme(
       legend.position="bottom", legend.direction="horizontal",
-      axis.title.y.right = element_text(colour = "blue"),
-      axis.text.y.right  = element_text(colour = "blue",angle=90, hjust = 0.5),
+      axis.title.y.right = element_text(colour = line_color),
+      axis.text.y.right  = element_text(colour = line_color,angle=90, hjust = 0.5),
       axis.text.y = element_text(angle=90, hjust = 0.5) )
 
+  if (!is.null(bar_color)) p_bin = p_bin + scale_fill_manual(values= bar_color)
+
+  return(p_bin)
 }
 #' WOE Binning Visualization
 #'
@@ -1233,6 +1236,7 @@ plot_bin = function(bin, title, show_iv) {
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param title String added to the plot title. Default is NULL.
 #' @param show_iv Logical. Default is TRUE, which means show information value in the plot title.
+#' @param ... ignored parameters
 #'
 #' @return A list of binning graphics.
 #'
@@ -1246,7 +1250,8 @@ plot_bin = function(bin, title, show_iv) {
 #' bins1 = woebin(germancredit, y="creditability", x="credit.amount")
 #'
 #' p1 = woebin_plot(bins1)
-#' print(p1)
+#' # modify colors
+#' # woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 #'
 #' \donttest{
 #' # Example II
@@ -1265,11 +1270,15 @@ plot_bin = function(bin, title, show_iv) {
 #' @import data.table ggplot2
 #' @export
 #'
-woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE) {
+woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, ...) {
   # global variables or functions
   variable = NULL
   xs = x
 
+  # line bar colors
+  line_color = list(...)[['line_color']]
+  if (is.null(line_color)) line_color = 'blue'
+  bar_color = list(...)[['bar_color']]
 
   # converting data.frame into list
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -1287,7 +1296,7 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE) {
 
   # plot export
   plotlist = list()
-  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv)
+  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv, line_color = line_color, bar_color = bar_color)
 
 
   return(plotlist)
