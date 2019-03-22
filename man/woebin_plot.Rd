@@ -15,7 +15,7 @@ woebin_plot(bins, x = NULL, title = NULL, show_iv = TRUE, ...)
 
 \item{show_iv}{Logical. Default is TRUE, which means show information value in the plot title.}
 
-\item{...}{ignored parameters}
+\item{...}{Additional parameters}
 }
 \value{
 A list of binning graphics.

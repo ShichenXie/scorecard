@@ -1,4 +1,4 @@
-# scorecard 0.2.3.9999
+# scorecard 0.2.4
 
 * fixed a bug in woebin when only NA and special values
 * remove 'missing' value from breaks_list if it exists.

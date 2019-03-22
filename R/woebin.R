@@ -734,7 +734,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param positive Value of positive class, default "bad|1".
 #' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
-#' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
+#' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
 #' @param ignore_const_cols Logical. Ignore constant columns. Default is TRUE.
 #' @param ignore_datetime_cols Logical. Ignore datetime columns. Default is TRUE.
@@ -1236,7 +1236,7 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param title String added to the plot title. Default is NULL.
 #' @param show_iv Logical. Default is TRUE, which means show information value in the plot title.
-#' @param ... ignored parameters
+#' @param ... Additional parameters
 #'
 #' @return A list of binning graphics.
 #'

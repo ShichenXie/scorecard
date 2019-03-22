@@ -36,7 +36,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
-\item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
+\item{method}{Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".}
 
 \item{save_breaks_list}{A string. The file name to save breaks_list. Default is None.}
 
