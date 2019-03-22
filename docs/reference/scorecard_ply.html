@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -172,17 +172,13 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='co'># load germancredit data</span>
+    <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"germancredit"</span>)
 
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
-<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
-
+<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
 <span class='co'># woe binning ------</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_sel</span>, <span class='st'>"creditability"</span>)
-<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt_sel</span>, <span class='no'>bins</span>)
-
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_sel</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt_sel</span>, <span class='no'>bins</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># glm ------</span>
 <span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/glm'>glm</a></span>(<span class='no'>creditability</span> ~ <span class='no'>.</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/family'>binomial</a></span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dt_woe</span>)
 <span class='co'># summary(m)</span>
@@ -211,11 +207,10 @@
 
 <span class='co'># credit score</span>
 <span class='co'># Example I # only total score</span>
-<span class='no'>score1</span> <span class='kw'>=</span> <span class='fu'>scorecard_ply</span>(<span class='no'>dt</span>, <span class='no'>card</span>)
+<span class='no'>score1</span> <span class='kw'>=</span> <span class='fu'>scorecard_ply</span>(<span class='no'>germancredit</span>, <span class='no'>card</span>)
 
 <span class='co'># Example II # credit score for both total and each variable</span>
-<span class='no'>score2</span> <span class='kw'>=</span> <span class='fu'>scorecard_ply</span>(<span class='no'>dt</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span> <span class='kw'>=</span> <span class='no'>F</span>)
-<span class='co'># }</span></pre>
+<span class='no'>score2</span> <span class='kw'>=</span> <span class='fu'>scorecard_ply</span>(<span class='no'>germancredit</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span> <span class='kw'>=</span> <span class='no'>F</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

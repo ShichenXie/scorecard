@@ -13,7 +13,7 @@
 #' @param ... Additional paramters.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' data("germancredit")
 #'
 #' y = 'creditability'

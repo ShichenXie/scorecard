@@ -31,8 +31,10 @@ data(germancredit)
 bins1 = woebin(germancredit, y="creditability", x="credit.amount")
 
 p1 = woebin_plot(bins1)
+print(p1)
 # modify colors
-# woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
+p1_c = woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
+print(p1_c)
 
 \donttest{
 # Example II

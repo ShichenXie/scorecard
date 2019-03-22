@@ -728,7 +728,8 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param var_skip Name of variables that will skip for binning. Default is NULL.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+# 'qchisq(1-stoplimit, 1)'
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
 #' @param positive Value of positive class, default "bad|1".
@@ -757,7 +758,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'    x=c("credit.amount","housing"), method="tree")
 #' bins2_tree
 #'
-#' \donttest{
+#' \dontrun{
 #' # using chimerge method
 #' bins2_chi = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), method="chimerge")
@@ -1250,8 +1251,10 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #' bins1 = woebin(germancredit, y="creditability", x="credit.amount")
 #'
 #' p1 = woebin_plot(bins1)
+#' print(p1)
 #' # modify colors
-#' # woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
+#' p1_c = woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
+#' print(p1_c)
 #'
 #' \donttest{
 #' # Example II
@@ -1382,7 +1385,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @seealso  \code{\link{woebin}}, \code{\link{woebin_ply}}, \code{\link{woebin_plot}}
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Load German credit data
 #' data(germancredit)
 #'

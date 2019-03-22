@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -166,7 +166,7 @@
     </tr>
     <tr>
       <th>stop_limit</th>
-      <td><p>Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the minimum of chi-square larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.</p></td>
+      <td><p>Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.</p></td>
     </tr>
     <tr>
       <th>count_distr_limit</th>
@@ -190,7 +190,7 @@
     </tr>
     <tr>
       <th>method</th>
-      <td><p>Optimal binning method, it should be "tree" or "chimerge". Default is "tree".</p></td>
+      <td><p>Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".</p></td>
     </tr>
     <tr>
       <th>save_breaks_list</th>
@@ -264,10 +264,6 @@
 <span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
    <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
 
-<span class='co'># save breaks_list as a R file</span>
-<span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)
-
 <span class='co'># binning in equal freq/width # only supports numerical variables</span>
 <span class='no'>numeric_cols</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"duration.in.month"</span>, <span class='st'>"credit.amount"</span>,
   <span class='st'>"installment.rate.in.percentage.of.disposable.income"</span>, <span class='st'>"present.residence.since"</span>,
@@ -275,6 +271,9 @@
   <span class='st'>"number.of.people.being.liable.to.provide.maintenance.for"</span>)
 <span class='no'>bins_freq</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"freq"</span>)
 <span class='no'>bins_width</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"width"</span>)
+
+<span class='co'># y can be NULL if no label column in dataset</span>
+<span class='no'>bins_freq_noy</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>)
 
 <span class='co'># Example II</span>
 <span class='co'># binning of the germancredit dataset</span>
@@ -303,6 +302,11 @@
 <span class='no'>bins_cus_brk</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>dat</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"age.in.years"</span>,<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>,<span class='st'>"purpose"</span>),
   <span class='kw'>breaks_list</span><span class='kw'>=</span><span class='no'>breaks_list</span>, <span class='kw'>special_values</span><span class='kw'>=</span><span class='no'>special_values</span>)
+
+<span class='co'># Example IV</span>
+<span class='co'># save breaks_list as a R file</span>
+<span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
+   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)
 
 <span class='co'># }</span><div class='input'>
 </div></pre>

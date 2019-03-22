@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_plot</span>(<span class='no'>bins</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_iv</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin_plot</span>(<span class='no'>bins</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_iv</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,6 +151,10 @@
       <th>show_iv</th>
       <td><p>Logical. Default is TRUE, which means show information value in the plot title.</p></td>
     </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -169,20 +173,19 @@
 <span class='co'># Example I</span>
 <span class='no'>bins1</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='st'>"credit.amount"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'>
 <span class='no'>p1</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins1</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>p1</span>)</div><div class='output co'>#&gt; $credit.amount</div><div class='img'><img src='woebin_plot-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
-</div><span class='co'># NOT RUN {</span>
-<span class='co'># Example II</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-<span class='no'>plotlist</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>plotlist</span>$<span class='no'>credit.amount</span>)
-
-<span class='co'># # save binning plot</span>
-<span class='co'># for (i in 1:length(plotlist)) {</span>
-<span class='co'>#   ggplot2::ggsave(</span>
-<span class='co'>#      paste0(names(plotlist[i]), ".png"), plotlist[[i]],</span>
-<span class='co'>#      width = 15, height = 9, units="cm" )</span>
-<span class='co'>#   }</span>
-<span class='co'># }</span><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>p1</span>)</div><div class='output co'>#&gt; $credit.amount</div><div class='img'><img src='woebin_plot-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'><span class='co'># modify colors</span>
+<span class='no'>p1_c</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins1</span>, <span class='kw'>line_color</span><span class='kw'>=</span><span class='st'>'#FC8D59'</span>, <span class='kw'>bar_color</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'#FFFFBF'</span>, <span class='st'>'#99D594'</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>p1_c</span>)</div><div class='output co'>#&gt; $credit.amount</div><div class='img'><img src='woebin_plot-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
+</div><div class='input'><span class='co'># Example II</span>
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>plotlist</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>plotlist</span>$<span class='no'>credit.amount</span>)</div><div class='img'><img src='woebin_plot-3.png' alt='' width='700' height='433' /></div><div class='input'>
+# # save binning plot
+# for (i in 1:length(plotlist)) {
+#   ggplot2::ggsave(
+#      paste0(names(plotlist[i]), ".png"), plotlist[[i]],
+#      width = 15, height = 9, units="cm" )
+#   }
+</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

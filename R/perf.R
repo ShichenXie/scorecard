@@ -734,12 +734,12 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #' ###### gains_table examples ######
 #' # Example I, input score and label can be a list or a vector
-#' gains_table(score = score_list$train, label = label_list$train)
-#' gains_table(score = score_list, label = label_list)
+#' g1 = gains_table(score = score_list$train, label = label_list$train)
+#' g2 = gains_table(score = score_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
-#' gains_table(score = score_list, label = label_list, bin_num = 20)
-#' gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
+#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
 #' }
 #'
 #' @import data.table ggplot2 gridExtra
@@ -990,12 +990,12 @@ gains_table_format = function(dt_distr) {
 #'
 #' ###### gains_table examples ######
 #' # Example I, input score and label can be a list or a vector
-#' gains_table(score = score_list$train, label = label_list$train)
-#' gains_table(score = score_list, label = label_list)
+#' g1 = gains_table(score = score_list$train, label = label_list$train)
+#' g2 = gains_table(score = score_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
-#' gains_table(score = score_list, label = label_list, bin_num = 20)
-#' gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
+#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
 #' }
 #'
 #' @export
@@ -1162,12 +1162,12 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #'
 #' ###### gains_table examples ######
 #' # Example I, input score and label can be a list or a vector
-#' gains_table(score = score_list$train, label = label_list$train)
-#' gains_table(score = score_list, label = label_list)
+#' g1 = gains_table(score = score_list$train, label = label_list$train)
+#' g2 = gains_table(score = score_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
-#' gains_table(score = score_list, label = label_list, bin_num = 20)
-#' gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
+#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export

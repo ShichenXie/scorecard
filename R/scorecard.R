@@ -79,10 +79,10 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #'
 #' # credit score
 #' # Example I # only total score
-#' score1 = scorecard_ply(dt, card)
+#' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(dt, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
 #' }
 #' @import data.table
 #' @export
@@ -187,10 +187,10 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 #' # credit score
 #' # Example I # only total score
-#' score1 = scorecard_ply(dt, card)
+#' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(dt, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
 #' }
 #' @import data.table
 #' @export

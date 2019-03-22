@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -184,21 +184,18 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='co'># data preparing ------</span>
+    <pre class="examples"><div class='input'><span class='co'># data preparing ------</span>
 <span class='co'># load germancredit data</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"germancredit"</span>)
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
-<span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)
-<span class='co'># breaking dt into train and test</span>
+<span class='no'>dt_f</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='co'># breaking dt into train and test</span>
 <span class='no'>dt_list</span> <span class='kw'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span>(<span class='no'>dt_f</span>, <span class='st'>"creditability"</span>)
 <span class='no'>label_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>$<span class='no'>creditability</span>)
 
 <span class='co'># woe binning ------</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_list</span>$<span class='no'>train</span>, <span class='st'>"creditability"</span>)
-<span class='co'># converting train and test into woe values</span>
-<span class='no'>dt_woe_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>x</span>, <span class='no'>bins</span>))
-
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_list</span>$<span class='no'>train</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='co'># converting train and test into woe values</span>
+<span class='no'>dt_woe_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>x</span>, <span class='no'>bins</span>))</div><div class='output co'>#&gt; [INFO] converting into woe values ... 
+#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># glm ------</span>
 <span class='no'>m1</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/glm'>glm</a></span>(<span class='no'>creditability</span> ~ <span class='no'>.</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/family'>binomial</a></span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dt_woe_list</span>$<span class='no'>train</span>)
 <span class='co'># vif(m1, merge_coef = TRUE)</span>
@@ -222,22 +219,70 @@
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)
-<span class='co'>## predicted score</span>
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3567.</div><div class='img'><img src='perf_psi-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+#&gt; $binomial_metric$train
+#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1496592 0.3868581 0.4549272 0.2887263 0.5190203 0.8311232 0.6622464
+#&gt; 
+#&gt; 
+#&gt; $confusion_matrix
+#&gt; $confusion_matrix$train
+#&gt;    label pred_0 pred_1     error
+#&gt; 1:     0    375    101 0.2121849
+#&gt; 2:     1     57    148 0.2780488
+#&gt; 3: total    432    249 0.2320117
+#&gt; 
+#&gt; 
+#&gt; $pic
+#&gt; TableGrob (1 x 2) "arrange": 2 grobs
+#&gt;   z     cells    name           grob
+#&gt; 1 1 (1-1,1-1) arrange gtable[layout]
+#&gt; 2 2 (1-1,2-2) arrange gtable[layout]
+#&gt; </div><div class='input'><span class='co'>## predicted score</span>
 <span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='co'>## predicted score</span>
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3567.</div><div class='img'><img src='perf_psi-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+#&gt; $binomial_metric$train
+#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1496592 0.3868581 0.4549272 0.2887263 0.5190203 0.8311232 0.6622464
+#&gt; 
+#&gt; $binomial_metric$test
+#&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1724029 0.4152142 0.521678 0.1755692 0.4447368 0.7732848 0.5465695
+#&gt; 
+#&gt; 
+#&gt; $confusion_matrix
+#&gt; $confusion_matrix$train
+#&gt;    label pred_0 pred_1     error
+#&gt; 1:     0    375    101 0.2121849
+#&gt; 2:     1     57    148 0.2780488
+#&gt; 3: total    432    249 0.2320117
+#&gt; 
+#&gt; $confusion_matrix$test
+#&gt;    label pred_0 pred_1     error
+#&gt; 1:     0    174     50 0.2232143
+#&gt; 2:     1     34     61 0.3578947
+#&gt; 3: total    208    111 0.2633229
+#&gt; 
+#&gt; 
+#&gt; $pic
+#&gt; TableGrob (1 x 2) "arrange": 2 grobs
+#&gt;   z     cells    name           grob
+#&gt; 1 1 (1-1,1-1) arrange gtable[layout]
+#&gt; 2 2 (1-1,2-2) arrange gtable[layout]
+#&gt; </div><div class='input'><span class='co'>## predicted score</span>
 <span class='co'># perf_eva(score_list, label_list)</span>
 
 
 <span class='co'>###### perf_psi examples ######</span>
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
-<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span>
-<span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span>
+<span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span></div><div class='output co'>#&gt;    variable    dataset        psi
+#&gt; 1:    score train_test 0.05431346</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='perf_psi-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'><span class='co'># modify colors</span>
+<span class='co'># perf_psi(score = score_list, label = label_list,</span>
+<span class='co'>#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))</span>
 
 <span class='co'># Example II # both total and variable psi</span>
 <span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
@@ -247,13 +292,12 @@
 
 <span class='co'>###### gains_table examples ######</span>
 <span class='co'># Example I, input score and label can be a list or a vector</span>
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>$<span class='no'>train</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>$<span class='no'>train</span>)
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
+<span class='no'>g1</span> <span class='kw'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>$<span class='no'>train</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>$<span class='no'>train</span>)
+<span class='no'>g2</span> <span class='kw'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 
 <span class='co'># Example II, specify the bins number and type</span>
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
-<span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)
-<span class='co'># }</span></pre>
+<span class='no'>g3</span> <span class='kw'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
+<span class='no'>g4</span> <span class='kw'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

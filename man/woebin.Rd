@@ -24,7 +24,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the stop_limit if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than 'qchisq(1-stoplimit, 1)' if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
 
 \item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.}
 
@@ -67,7 +67,7 @@ bins2_tree = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="tree")
 bins2_tree
 
-\donttest{
+\dontrun{
 # using chimerge method
 bins2_chi = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), method="chimerge")

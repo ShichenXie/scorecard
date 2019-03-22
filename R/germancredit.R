@@ -19,7 +19,7 @@
 #' str(germancredit)
 #'
 #' # summary of germancredit
-#' lapply(germancredit, summary)
+#' # lapply(germancredit, summary)
 #'
 NULL
 

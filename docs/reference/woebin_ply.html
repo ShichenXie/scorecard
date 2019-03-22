@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -186,19 +186,17 @@
 #&gt;  $ credit.amount_woe: num  0.0337 0.3905 -0.2583 0.3905 0.3905 ...
 #&gt;  $ purpose_woe      : num  -0.41 -0.41 0.28 0.28 0.28 ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
-</div><span class='co'># NOT RUN {</span>
-<span class='co'># Example II</span>
+</div><div class='input'><span class='co'># Example II</span>
 <span class='co'># binning for germancredit dataset</span>
-<span class='no'>bins_germancredit</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-
+<span class='no'>bins_germancredit</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'>
 <span class='co'># converting the values in germancredit to woe</span>
 <span class='co'># bins is a list which generated from woebin()</span>
-<span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)
-
+<span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># bins is a data frame</span>
 <span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/rbindlist'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
-<span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_df</span>)
-<span class='co'># }</span><div class='input'>
+<span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_df</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
+<span class='co'># return value is bin but not woe</span>
+<span class='no'>germancredit_bin</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='st'>'bin'</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

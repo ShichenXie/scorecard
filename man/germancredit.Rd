@@ -25,7 +25,7 @@ data(germancredit)
 str(germancredit)
 
 # summary of germancredit
-lapply(germancredit, summary)
+# lapply(germancredit, summary)
 
 }
 \keyword{data}
