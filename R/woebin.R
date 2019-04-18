@@ -675,13 +675,8 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
   .= bin= bin2= is_special_values= variable= x_breaks= x_class = NULL
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
+  bins = setDT(bins)
 
   # x variables
   xs_all = bins[,unique(variable)]
@@ -695,7 +690,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
   # breaks
   bins_breakslist = bins[
     , bin2 := sub("^\\[(.*), *(.*)\\)((%,%missing)*)", "\\2\\3", bin)
-    ][!(bin2 %in% c("-Inf","Inf","missing") & !is_special_values)
+    ][!(bin2 %in% c("-Inf","Inf","missing")) & !is_special_values
     ][vars_class, on="variable"
     ][, .(
       x_breaks = paste(ifelse(x_class=="numeric", bin2, paste0("\"",bin2,"\"")), collapse=", "),
@@ -1099,7 +1094,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
 
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) {bins = rbindlist(bins)}
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
   bins = setDT(bins)
 
   # x variables
@@ -1283,15 +1278,9 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, ...) {
   if (is.null(line_color)) line_color = 'blue'
   bar_color = list(...)[['bar_color']]
 
-  # converting data.frame into list
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
+  bins = setDT(bins)
 
   # x variable names
   if (is.null(xs)) xs = bins[,unique(variable)]
@@ -1407,19 +1396,14 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit = 0.05) {
+woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit=0.05) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
+  bins = setDT(bins)
 
   # x variables
   xs_all = bins[,unique(variable)]

@@ -97,13 +97,8 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
   # odds = pred/(1-pred); score = a - b*log(odds)
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins, fill = TRUE)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
+  bins = setDT(bins)
 
   # coefficients
   coef_dt = data.table(var_woe = names(coef(model)), Estimate = coef(model))[, variable := sub("_woe$", "", var_woe) ][]
@@ -199,13 +194,8 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (!is.data.table(bins)) {
-    if (is.data.frame(bins)) {
-      bins = setDT(bins)
-    } else {
-      bins = rbindlist(bins, fill = TRUE)
-    }
-  }
+  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
+  bins = setDT(bins)
 
   # check x and y
   dt = check_y(dt, y, positive)
