@@ -1,6 +1,10 @@
 # scorecard 0.2.4.999
 
+<<<<<<< HEAD
 * fixed a bug in woebin_adj that returns breaks_list including missing without quotes.
+=======
+* fixed a bug in woebin_adj that returns breaks_list including unquoted missing.
+>>>>>>> 7edbbb8f483b4979c125aff2807e5e83aa1d831f
 
 # scorecard 0.2.4
 
