@@ -1,3 +1,7 @@
+# scorecard 0.2.4.999
+
+* fixed a bug in woebin_adj that returns breaks_list including unquoted missing.
+
 # scorecard 0.2.4
 
 * fixed a bug in woebin when only NA and special values
