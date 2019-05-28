@@ -743,6 +743,7 @@ pf_cutoffs = function(dt_ev_lst) {
 #' }
 #'
 #' @import data.table ggplot2 gridExtra
+#' @importFrom utils head tail
 #' @export
 #'
 perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'), confusion_matrix=TRUE, threshold=NULL, show_plot=c('ks', 'roc'), positive="bad|1", ...) {
@@ -763,9 +764,11 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
     nP = nN = NULL
     if (pred_is_score) {
       # make sure the positive samples are locate at below when order by pred
-      x2 = x[, .(nP = sum(label==1), nN = sum(label==0)), keyby = pred]
-      r19 = as.integer(quantile(x2[,.I], c(0.1, 0.9)))
-      if (x2[1:r19[1], sum(nP) > sum(nN)] && x2[r19[2]:.N, sum(nP) < sum(nN)]) {
+      x2 = x[, .(nP = sum(label==1), nN = sum(label==0)), keyby = pred
+           ][,.(nP,nN)]
+      h_x2 = x2[,lapply(.SD, function(x) sum(head(x,.N*0.2))/sum(x))]
+      t_x2 = x2[,lapply(.SD, function(x) sum(tail(x,.N*0.2))/sum(x))]
+      if ( h_x2[, nP > nN]  &&  t_x2[, nP < nN] ) {
         x = x[, pred := -pred]
         # warning("Since the average of pred is not locate in [0,1], it is treated as predicted score but not probability.")
       }

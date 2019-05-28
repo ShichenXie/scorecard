@@ -58,7 +58,7 @@ rep_blank_na = function(dt) {
   dt = setDT(dt)
 
   if (any(dt == "", na.rm = TRUE)) {
-    warning(sprintf('The blank values are replaced with NAs in the following columns:\n%s', paste(names(which(dt[,sapply(.SD, function(x) any(x=="",na.rm = T))])), collapse = ", ")))
+    warning(sprintf('The blank values are replaced with NAs in the following columns:\n%s', paste(names(which(dt[,sapply(.SD, function(x) any(grepl('^\\s*$', x), na.rm = T))])), collapse = ", ")))
 
     dt[dt == ""] = NA
   }
