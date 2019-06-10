@@ -739,7 +739,7 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #' # Example II, specify the bins number and type
 #' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
 #' }
 #'
 #' @import data.table ggplot2 gridExtra
@@ -922,7 +922,7 @@ gains_table_format = function(dt_distr) {
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
 #' @param bin_num Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.
-#' @param bin_type The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.
+#' @param method The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.
 #' @param positive Value of positive class, default is "bad|1".
 #' @param ... Additional parameters.
 #'
@@ -998,11 +998,11 @@ gains_table_format = function(dt_distr) {
 #'
 #' # Example II, specify the bins number and type
 #' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
 #' }
 #'
 #' @export
-gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|1', ...) {
+gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1', ...) {
   . = V1 = V2 = bad = bin = count = datset = group = NULL
 
   # arguments
@@ -1018,8 +1018,10 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 
   # bin_num
   if (bin_num != 'max' & bin_num <= 1) bin_num = 10
-  # bin_type
-  if (!(bin_type %in% c('freq', 'width'))) bin_type = 'freq'
+  # method
+  bin_type = list(...)[['seed']]
+  if (!is.null(bin_type)) method = bin_type
+  if (!(method %in% c('freq', 'width'))) method = 'freq'
 
 
 
@@ -1047,14 +1049,14 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
     # in each value
     dt_psi = copy(dt_sl)[, bin := factor(score)]
   } else {
-    if (bin_type == 'freq') {
+    if (method == 'freq') {
       # in equal frequency
       brkp = copy(dt_sl)[order(score)
                          ][, group := ceiling(.I/(.N/bin_num))
                          ][, .(score = score[1]), by = group
                          ][, c(-Inf, score[-1], Inf)]
 
-    } else if (bin_type == 'width') {
+    } else if (method == 'width') {
       # in equal width
       minmax = dt_sl[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
                    ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
@@ -1075,7 +1077,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
   return(dt_distr)
 }
 
-# @param bin_type Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
+# @param method Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
 # @param return_distr_dat Logical. Default is FALSE. Whether to return a list of data frames including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
 # @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
 
@@ -1170,7 +1172,7 @@ gains_table = function(score, label, bin_num=10, bin_type='freq', positive='bad|
 #'
 #' # Example II, specify the bins number and type
 #' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
+#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export
@@ -1181,7 +1183,9 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 
   # arguments
   bin_type = list(...)[['bin_type']]
-  if (is.null(bin_type) || !(bin_type %in% c('freq', 'width'))) bin_type='width'
+  method   = list(...)[['method']]
+  if (!is.null(bin_type)) method = bin_type
+  if (is.null(method) || !(method %in% c('freq', 'width'))) method='width'
 
   seed = list(...)[['seed']]
   if (is.null(seed)) seed = 618
@@ -1214,7 +1218,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
     sn_is_totalscore = dt_sn[,length(unique(score)) > threshold_variable]
     bin_num <- ifelse(sn_is_totalscore, 10, 'max')
 
-    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn)
+    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, method=method, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn)
 
 
     # return list
@@ -1241,7 +1245,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
     rt[['psi']][[sn]] = rbindlist(temp_psi, idcol = 'dataset')
 
     # equal freq / width data frame
-    if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, bin_type=bin_type, positive = positive, return_dt_psi=FALSE, dt_sl=dt_sn)
+    if (return_distr_dat) rt[['dat']][[sn]] = gains_table(score=NULL, label=NULL, bin_num=10, method=method, positive = positive, return_dt_psi=FALSE, dt_sl=dt_sn)
   }
 
   rt$psi = rbindlist(rt$psi, idcol = "variable", fill = TRUE)

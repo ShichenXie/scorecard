@@ -2,6 +2,7 @@
 
 * fixed a bug in woebin_adj that returns breaks_list including missing without quotes.
 * fixed a bug in perf_eva when pred is score.
+* fixed a bug in woebin function when y is not provided.
 
 # scorecard 0.2.4
 

@@ -4,7 +4,7 @@
 \alias{gains_table}
 \title{Gains Table}
 \usage{
-gains_table(score, label, bin_num = 10, bin_type = "freq",
+gains_table(score, label, bin_num = 10, method = "freq",
   positive = "bad|1", ...)
 }
 \arguments{
@@ -14,7 +14,7 @@ gains_table(score, label, bin_num = 10, bin_type = "freq",
 
 \item{bin_num}{Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.}
 
-\item{bin_type}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.}
+\item{method}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.}
 
 \item{positive}{Value of positive class, default is "bad|1".}
 
@@ -95,7 +95,7 @@ g2 = gains_table(score = score_list, label = label_list)
 
 # Example II, specify the bins number and type
 g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
+g4 = gains_table(score = score_list, label = label_list, method = 'width')
 }
 
 }

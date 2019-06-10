@@ -105,7 +105,7 @@ g2 = gains_table(score = score_list, label = label_list)
 
 # Example II, specify the bins number and type
 g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-g4 = gains_table(score = score_list, label = label_list, bin_type = 'width')
+g4 = gains_table(score = score_list, label = label_list, method = 'width')
 }
 }
 \seealso{

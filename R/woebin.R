@@ -25,7 +25,7 @@ add_missing_spl_val = function(dtm, breaks, spl_val) {
 }
 # split dtm into bin_sv and dtm (without speical_values)
 dtm_binning_sv = function(dtm, breaks, spl_val) {
-  binning_sv = value = . = y = variable = good = bad = bin = NULL
+  binning_sv = value = . = y = variable = count = good = bad = bin = NULL
   # spl_val
   spl_val = add_missing_spl_val(dtm, breaks, spl_val)
   if (!is.null(spl_val)) {
@@ -39,12 +39,12 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
     # if (nrow(dtm_sv) == 0) return(list(binning_sv=NULL, dtm=dtm))
     # binning_sv
     binning_sv = merge(
-      dtm_sv[, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = value][,value:=as.character(value)],
+      dtm_sv[, .(count=.N, good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = value][,value:=as.character(value)],
       sv_df[,value:=as.character(value)],
       all.x = TRUE, by='value'
     )[, value:=ifelse(is.na(value), "missing", as.character(value))
-    ][, .(bin=paste0(value,collapse="%,%"), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
-    ][, .(variable, bin, good, bad)]
+    ][, .(bin=paste0(value,collapse="%,%"), count=sum(count), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
+    ][, .(variable, bin, count, good, bad)]
   }
 
   return(list(binning_sv=binning_sv, dtm=dtm))
@@ -150,7 +150,7 @@ check_count_distri = function(dtm, binning, count_distr_limit) {
 #' @import data.table
 woebin2_breaks = function(dtm, breaks, spl_val) {
   # global variables or functions
-  value = bin = . = y = variable = bad = good = V1 = badprob = bksv_list = bin_chr = NULL
+  value = bin = . = y = variable = count = bad = good = V1 = badprob = bksv_list = bin_chr = NULL
 
   # breaks from vector to data frame
   bk_df = split_vec_todf(breaks)
@@ -168,7 +168,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 
     binning = dtm[
       , bin := cut(value, bstbrks, right = FALSE, dig.lab = 10, ordered_result = FALSE)
-    ][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(bin)
+    ][, .(count = .N, good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(bin)
     ][order(bin)]
     # check empty bins
     binning = check_empty_bins(dtm, binning)
@@ -181,7 +181,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
         bk_df,
         all.x = TRUE, by="value"
       )[order(rowid,value)][, bin:=ifelse(is.na(bin), "missing", as.character(bin))
-      ][, .(bin=paste0(bin,collapse="%,%"), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
+      ][, .(bin=paste0(bin,collapse="%,%"), count = sum(count), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
       ][order(rowid)]
     }
 
@@ -198,7 +198,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
     # merge binning with bk_df
     binning = merge(
       dtm, bk_df[,bin:=bin_chr], all.x = TRUE
-    )[order(rowid, bin)][, .(good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(rowid, bin)]
+    )[order(rowid, bin)][, .(count = .N, good = sum(y==0), bad = sum(y==1), variable=unique(variable)) , by = .(rowid, bin)]
 
   }
 
@@ -384,7 +384,7 @@ woebin2_tree = function(
   spl_val           = NULL
 ) {
   # global variables or functions
-  brkp = bstbrkp = total_iv = NULL
+  brkp = bstbrkp = total_iv = count = good = bad =  NULL
 
   # initial binning
   bin_list = woebin2_init_bin(dtm, init_count_distr=init_count_distr, breaks=breaks, spl_val=spl_val)
@@ -422,7 +422,7 @@ woebin2_tree = function(
 
   if (is.null(binning_tree)) binning_tree = initial_binning
 
-  return(list(binning_sv=binning_sv, binning=binning_tree))
+  return(list(binning_sv=binning_sv, binning=binning_tree[, count := good + bad]))
   # return(binning_tree)
 }
 # examples
@@ -542,7 +542,7 @@ woebin2_chimerge = function(
     binning_chisq = binning_chisq[grepl("%,%",bin), bin := sub("^(\\[.+?,).+,(.+?\\))$", "\\1\\2", bin)]
   }
 
-  return(list(binning_sv=binning_sv, binning=binning_chisq))
+  return(list(binning_sv=binning_sv, binning=binning_chisq[, count := good + bad]))
   # return(binning_chisq)
 }
 
@@ -905,8 +905,8 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
 
   bins = list()
   if (!is.null(y)) {
-    y = dt[[y]]
-  } else y = NA
+    ycol = dt[[y]]
+  } else ycol = NA
   if (no_cores == 1) {
     for (i in 1:xs_len) {
       x_i = xs[i]
@@ -916,7 +916,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
       # woebining on one variable
       bins[[x_i]] <-
         try(do.call(woebin2, args = list(
-          dtm              = data.table(y=y, variable=x_i, value=dt[[x_i]]),
+          dtm              = data.table(y=ycol, variable=x_i, value=dt[[x_i]]),
           breaks           = breaks_list[[x_i]],
           spl_val          = special_values[[x_i]],
           init_count_distr = init_count_distr,
@@ -948,7 +948,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
 
         # woebining on one variable
         try(do.call(woebin2, args = list(
-          dtm              = data.table(y=y, variable=x_i, value=dt[[x_i]]),
+          dtm              = data.table(y=ycol, variable=x_i, value=dt[[x_i]]),
           breaks           = breaks_list[[x_i]],
           spl_val          = special_values[[x_i]],
           init_count_distr = init_count_distr,
@@ -1165,6 +1165,7 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
   # global variables or functions
   . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = NULL
 
+  if ( all(is.na(bin$good)) || all(is.na(bin$bad)) ) return(NULL)
   # data
   ## y_right_max
   y_right_max = ceiling(max(bin$badprob, na.rm=T)*10)
