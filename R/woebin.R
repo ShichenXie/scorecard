@@ -941,8 +941,8 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
         .final = function(bs) {
           if (xs_len==1) bs = list(bs)
           setNames(bs, xs)
-        },
-        .export = c('dt', 'xs', 'y', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'method')
+        }#,
+        # .export = c('dt', 'xs', 'y', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'method')
       ) %dopar% {
         x_i = xs[i]
 
@@ -1136,8 +1136,8 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
         .combine=cbind,
         .init = dt_init,
         .inorder = FALSE,
-        .errorhandling = "pass",
-        .export = c('dt', 'bins', 'xs')
+        .errorhandling = "pass"#,
+        # .export = c('dt', 'bins', 'xs')
       ) %dopar% {
         x_i = xs[i]
 
