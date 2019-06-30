@@ -807,7 +807,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @import data.table foreach
 #' @importFrom stats IQR quantile setNames
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
-#' @importFrom parallel detectCores
+#' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
 woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
   # start time
@@ -868,7 +868,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   #   stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
   # }
   # stop_limit range
-  if ( stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit) ) {
+  if (!((stop_limit >0 & stop_limit <=0.5) || stop_limit == 'N')) { # stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit)
     warning("Incorrect parameter specification; accepted stop_limit parameter range is 0-0.5. Parameter was set to default (0.1).")
     stop_limit = 0.1
   }
@@ -928,7 +928,10 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
     }
 
   } else {
-    registerDoParallel(no_cores)
+    type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSCOK', 'FORK')
+    cl = makeCluster(no_cores, type = type_psock_fork)
+    registerDoParallel(cl)
+    # registerDoParallel(no_cores)
     # run
     bins <-
       foreach(
@@ -959,7 +962,8 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
         )), silent = TRUE)
       }
     # finish
-    stopImplicitCluster()
+    stopCluster(cl)
+    # stopImplicitCluster()
   }
 
   # check errors in binning
@@ -1128,7 +1132,10 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
       dat = cbind(dat, woepoints_ply1(dtx, binx, x_i, woe_points=value))
     }
   } else {
-    registerDoParallel(no_cores)
+    type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSCOK', 'FORK')
+    cl = makeCluster(no_cores, type = type_psock_fork)
+    registerDoParallel(cl)
+    # registerDoParallel(no_cores)
     # run
     dat <-
       foreach(
@@ -1147,7 +1154,8 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
         woepoints_ply1(dtx, binx, x_i, woe_points=value)
       }
     # finish
-    stopImplicitCluster()
+    stopCluster(cl)
+    # stopImplicitCluster()
   }
 
   # running time
@@ -1336,9 +1344,17 @@ woebin_adj_print_basic_info = function(i, xs_adj, bins, dt, bins_breakslist) {
 woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
   bin_adj = NULL
 
-  text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
+  # dt2 = dt[, c(y,x_i), with = FALSE]
+  brk_lst = NULL
+  brk_lst[[x_i]] = brk_txt2vector(breaks)
+  spc_val = NULL
+  spc_val[[x_i]] = eval(parse(text = sprintf('c(%s)', sv_i)))
+  if (stop_limit != 'N') stop_limit = 0.1
 
-  eval(parse(text = text_woebin))
+  # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
+
+  # eval(parse(text = text_woebin))
+  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method)
 
 
   ## print adjust breaks
@@ -1369,6 +1385,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05. This argument should be the same with woebin's.
+#' @param ... Additional parameters.
 #'
 #' @return A list of modified break points of each x variables.
 #'
@@ -1397,7 +1414,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit=0.05) {
+woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit=0.05, ...) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
@@ -1441,13 +1458,13 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     # x variable
     breaks = stop_limit = NULL
     x_i = xs_adj[i]
-    sv_i = paste(paste0("\'",special_values[[x_i]],"\'"), collapse = ",")
+    sv_i = special_values[[x_i]]
 
     # basic information of x_i variable ------
     woebin_adj_print_basic_info(i, xs_adj, bins, dt, bins_breakslist)
 
     # adjusting breaks ------
-    adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
+    adj_brk = menu2(choices = c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
 
     while (adj_brk == 2) {
       # modify breaks adj_brk == 2
@@ -1457,21 +1474,23 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
         stop_limit = "N"
         breaks = NULL
       } else {
-        stop_limit = NULL
+        stop_limit <- ifelse('stop_limit' %in% names(list(...)), list(...)[['stop_limit']], 0.1)
       }
 
-      tryCatch(breaks <- woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, sv_i, method=method), error = function(e) e)
+      breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, sv_i, method=method), silent = TRUE)
 
-      adj_brk = menu(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
+      adj_brk = menu2(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
     }
 
     if (adj_brk == 3) {
       # go back adj_brk == 3
       i = ifelse(i > 1, i-1, i)
-    } else {
+    } else if (adj_brk == 1) {
       # go next adj_brk == 1
       if (!(is.null(breaks) || breaks == "")) bins_breakslist[variable == x_i][["x_breaks"]]  <- breaks
     i = i + 1
+    } else if (grepl('^go[1-9][0-9]*$', adj_brk)) {
+      i = as.integer(sub('go','', adj_brk))
     }
   }
 
