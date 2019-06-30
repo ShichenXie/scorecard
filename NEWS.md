@@ -5,7 +5,7 @@
 * fixed a bug in woebin function when y is not provided.
 * remove .export in foreach loop, inorder to ignore the warning of 'already exported varables ...'
 * modified the calculation of identical rate in var_filter function
-* using forking on non-windows os, and psock on windows when makeCluster in parallel 
+* using forking on non-windows os and psock on windows when makeCluster in parallel 
 
 # scorecard 0.2.4
 
