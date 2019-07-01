@@ -1472,7 +1472,6 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     breaks = NULL
     x_i = xs_adj[i]
     sv_i = special_values[[x_i]]
-    stp_lmt = stop_limit[[x_i]]
 
     # basic information of x_i variable ------
     woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist)
@@ -1481,6 +1480,8 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     adj_brk = menu2(choices = c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
 
     while (adj_brk == 2) {
+      stp_lmt = stop_limit[[x_i]]
+
       # modify breaks adj_brk == 2
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
