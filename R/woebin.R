@@ -1345,9 +1345,9 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
   bin_adj = NULL
 
   # dt2 = dt[, c(y,x_i), with = FALSE]
-  brk_lst = NULL
+  brk_lst = list()
   brk_lst[[x_i]] = brk_txt2vector(breaks)
-  spc_val = NULL
+  spc_val = list()
   spc_val[[x_i]] = eval(parse(text = sprintf('c(%s)', sv_i)))
   if (stop_limit != 'N') stop_limit = 0.1
 
