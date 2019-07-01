@@ -214,7 +214,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 # required in woebin2 # return initial binning
 woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   # global variables or functions
-  . = bad = badprob = bin = brkp = good = value = variable = y = NULL
+  . = bad = badprob = bin = brkp = count = good = value = variable = y = NULL
 
   # dtm $ binning_sv
   dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
@@ -293,7 +293,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   }
 
   # remove brkp that good == 0 or bad == 0 ------
-  init_bin = check_zero_goodbad(dtm, init_bin)
+  init_bin = check_zero_goodbad(dtm, init_bin)[, count := good + bad]
   return(list(binning_sv=binning_sv, initial_binning=init_bin))
 }
 
@@ -724,7 +724,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param var_skip Name of variables that will skip for binning. Default is NULL.
 #' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1. If it is 'N', each x value is a bin.
 # 'qchisq(1-stoplimit, 1)'
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
@@ -771,12 +771,19 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' bins_freq_noy  = woebin(germancredit, y=NULL, x=numeric_cols)
 #'
 #' # Example II
+#' # setting of stop_limit
+#' # stop_limit = 0.1 (by default)
+#' bins_x1 = woebin(germancredit, y = 'creditability', x = 'foreign.worker', stop_limit = 0.1)
+#' # stop_limit = 'N', each x value is a bin
+#' bins_x1_N = woebin(germancredit, y = 'creditability', x = 'foreign.worker', stop_limit = 'N')
+#'
+#' # Example III
 #' # binning of the germancredit dataset
 #' bins_germ = woebin(germancredit, y = "creditability")
 #' # converting bins_germ into a data frame
 #' # bins_germ_df = data.table::rbindlist(bins_germ)
 #'
-#' # Example III
+#' # Example IV
 #' # customizing the breakpoints of binning
 #' library(data.table)
 #' dat = rbind(
@@ -798,7 +805,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'   x=c("age.in.years","credit.amount","housing","purpose"),
 #'   breaks_list=breaks_list, special_values=special_values)
 #'
-#' # Example IV
+#' # Example V
 #' # save breaks_list as a R file
 #' bins2 = woebin(germancredit, y="creditability",
 #'    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
@@ -859,20 +866,9 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   breaks_list = check_breaks_list(breaks_list, xs)
   # special_values
   special_values = check_special_values(special_values, xs)
+  # stop_limit
+  stop_limit = check_stop_limit(stop_limit, xs)
 
-
-
-  # # stop_limit vector
-  # if (length(stop_limit) == 1) {
-  #   stop_limit = rep(stop_limit, length(xs))
-  # } else if (length(stop_limit) != length(xs)) {
-  #   stop("Incorrect inputs; the length of stop_limit should be 1 or the same as x variables.")
-  # }
-  # stop_limit range
-  if (!((stop_limit >0 & stop_limit <=0.5) || stop_limit == 'N')) { # stop_limit<0 || stop_limit>0.5 || !is.numeric(stop_limit)
-    warning("Incorrect parameter specification; accepted stop_limit parameter range is 0-0.5. Parameter was set to default (0.1).")
-    stop_limit = 0.1
-  }
 
   # init_count_distr range
   if ( init_count_distr<0.01 || init_count_distr>0.2 || !is.numeric(init_count_distr) ) {
@@ -922,7 +918,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
           spl_val          = special_values[[x_i]],
           init_count_distr = init_count_distr,
           count_distr_limit= count_distr_limit,
-          stop_limit       = stop_limit,
+          stop_limit       = stop_limit[[x_i]],
           bin_num_limit    = bin_num_limit,
           method           = method
         )), silent = TRUE)
@@ -957,7 +953,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
           spl_val          = special_values[[x_i]],
           init_count_distr = init_count_distr,
           count_distr_limit= count_distr_limit,
-          stop_limit       = stop_limit,
+          stop_limit       = stop_limit[[x_i]],
           bin_num_limit    = bin_num_limit,
           method           = method
         )), silent = TRUE)
@@ -1348,7 +1344,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 
   brk_lst[x_i] = list(brk_txt2vector(breaks))
   spc_val[x_i] = list(sv_i)
-  if (stop_limit != 'N') stop_limit = 0.1
+  # if (stop_limit != 'N') stop_limit = 0.1
 
   # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
 
@@ -1439,6 +1435,11 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   xs_len = length(xs_adj)
   # special_values
   special_values = check_special_values(special_values, xs_adj)
+  # stop_limit
+  stop_limit = 0.1
+  if ('stop_limit' %in% names(list(...))) stop_limit = list(...)[['stop_limit']]
+    print(stop_limit)
+  stop_limit = check_stop_limit(stop_limit, xs_adj)
 
   # breakslist of bins
   bins_breakslist = bins_to_breaks(bins, dt)
@@ -1468,9 +1469,10 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   breaks_list = NULL
   while (i <= xs_len) {
     # x variable
-    breaks = stop_limit = NULL
+    breaks = NULL
     x_i = xs_adj[i]
     sv_i = special_values[[x_i]]
+    stp_lmt = stop_limit[[x_i]]
 
     # basic information of x_i variable ------
     woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist)
@@ -1483,13 +1485,11 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
       breaks = readline("> Enter modified breaks: ")
       breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
       if (breaks == "N") {
-        stop_limit = "N"
+        stp_lmt = "N"
         breaks = NULL
-      } else {
-        stop_limit <- ifelse('stop_limit' %in% names(list(...)), list(...)[['stop_limit']], 0.1)
       }
 
-      breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stop_limit, sv_i, method=method), silent = TRUE)
+      breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stp_lmt, sv_i, method=method), silent = TRUE)
 
       adj_brk = menu2(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
     }

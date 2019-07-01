@@ -217,7 +217,27 @@ sec_to_hms = function(sec) {
   return(sprintf("%02.f:%02.f:%02.f",h,m,s))
 }
 
+# check check_stop_limit
+check_stop_limit = function(stop_limit, xs) {
+  sl = list()
 
+  if (!is.list(stop_limit)) {
+    sl = as.list(rep(stop_limit, length(xs)))
+    sl = setNames(sl, xs)
+  } else {
+    xs2 = setdiff(xs, names(stop_limit))
+
+    sl = c(stop_limit,
+           as.list(rep(0.1), length(xs2)) )
+    sl = setNames(sl, c(names(stop_limit), xs2))
+  }
+
+  sl = lapply(sl, function(s) {
+    if (!((s >0 & s <=0.5) || s == 'N')) s = 0.1
+    return(s)
+  })
+  return(sl)
+}
 
 # y to good bad
 # groupby or dcast

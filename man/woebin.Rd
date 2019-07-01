@@ -24,7 +24,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1. If it is 'N', each x value is a bin.}
 
 \item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.}
 
@@ -84,12 +84,19 @@ bins_width = woebin(germancredit, y="creditability", x=numeric_cols, method="wid
 bins_freq_noy  = woebin(germancredit, y=NULL, x=numeric_cols)
 
 # Example II
+# setting of stop_limit
+# stop_limit = 0.1 (by default)
+bins_x1 = woebin(germancredit, y = 'creditability', x = 'foreign.worker', stop_limit = 0.1)
+# stop_limit = 'N', each x value is a bin
+bins_x1_N = woebin(germancredit, y = 'creditability', x = 'foreign.worker', stop_limit = 'N')
+
+# Example III
 # binning of the germancredit dataset
 bins_germ = woebin(germancredit, y = "creditability")
 # converting bins_germ into a data frame
 # bins_germ_df = data.table::rbindlist(bins_germ)
 
-# Example III
+# Example IV
 # customizing the breakpoints of binning
 library(data.table)
 dat = rbind(
@@ -111,7 +118,7 @@ bins_cus_brk = woebin(dat, y="creditability",
   x=c("age.in.years","credit.amount","housing","purpose"),
   breaks_list=breaks_list, special_values=special_values)
 
-# Example IV
+# Example V
 # save breaks_list as a R file
 bins2 = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
