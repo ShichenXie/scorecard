@@ -693,7 +693,8 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
     ][!(bin2 %in% c("-Inf","Inf","missing")) & !is_special_values
     ][vars_class, on="variable"
     ][, .(
-      x_breaks = paste(ifelse(x_class=="numeric", bin2, paste0("\"",bin2,"\"")), collapse=", "),
+      x_breaks = paste0(paste0("\"",bin2,"\""), collapse=", "),
+      # x_breaks = paste(ifelse(x_class=="numeric", bin2, paste0("\"",bin2,"\"")), collapse=", "),
       x_class=unique(x_class)
     ), by=variable]
 
@@ -702,7 +703,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
     bins_breakslist = paste0(c("breaks_list=list(", bins_breakslist, ")"), collapse = "\n ")
     if (!is.null(save_name)) {
       save_name = sprintf('%s_%s.R', save_name, format(Sys.time(),"%Y%m%d_%H%M%S"))
-      writeLines(bins_breakslist, save_name)
+      writeLines(bins_breakslist, save_name, useBytes = TRUE)
       cat(sprintf('[INFO] The breaks_list is saved as %s\n', save_name))
       return()
     }
@@ -1306,12 +1307,10 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, ...) {
 
 
 # print basic information in woebin_adj
-woebin_adj_print_basic_info = function(i, xs_adj, bins, dt, bins_breakslist) {
+woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist) {
   x_i = xs_adj[i]
   xs_len = length(xs_adj)
   variable = x_breaks = NULL
-
-  bin = bins[variable==x_i]
 
   cat("--------", paste0(i, "/", xs_len), x_i, "--------\n")
   ## class
@@ -1336,19 +1335,19 @@ woebin_adj_print_basic_info = function(i, xs_adj, bins, dt, bins_breakslist) {
 
   cat("> Current breaks: \n", breaks_bin,"\n \n")
   ## woebin plotting
-  plist = woebin_plot(bin)
+  brklst = list()
+  brklst[x_i] = list(brk_txt2vector(breaks_bin))
+
+  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE))
   print(plist[[1]])
 
 }
 # plot adjusted binning in woebin_adj
 woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
-  bin_adj = NULL
+  bin_adj = brk_lst = spc_val = NULL
 
-  # dt2 = dt[, c(y,x_i), with = FALSE]
-  brk_lst = list()
-  brk_lst[[x_i]] = brk_txt2vector(breaks)
-  spc_val = list()
-  spc_val[[x_i]] = eval(parse(text = sprintf('c(%s)', sv_i)))
+  brk_lst[x_i] = list(brk_txt2vector(breaks))
+  spc_val[x_i] = list(sv_i)
   if (stop_limit != 'N') stop_limit = 0.1
 
   # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
@@ -1359,17 +1358,19 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 
   ## print adjust breaks
   breaks_bin = setdiff(sub("^\\[(.*), *(.*)\\)((%,%missing)*)", "\\2\\3", bin_adj[[1]]$bin), c("-Inf","Inf","missing"))
-  breaks_bin = ifelse(
-    is.numeric(dt[[x_i]]),
-    paste0(breaks_bin, collapse=", "),
-    paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
+  breaks_bin = paste0(paste0("\"",breaks_bin,"\""), collapse=", ")
+    # ifelse(
+    # is.numeric(dt[[x_i]]),
+    # paste0(breaks_bin, collapse=", "),
+    # paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
   cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
 
   # print bin_adj
   print(woebin_plot(bin_adj)[[1]])
 
   # # breaks
-  if (breaks == "" || is.null(breaks)) breaks = breaks_bin
+  # if (breaks == "" || is.null(breaks))
+    breaks = breaks_bin
 
   return(breaks)
 }
@@ -1441,13 +1442,24 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
 
   # breakslist of bins
   bins_breakslist = bins_to_breaks(bins, dt)
+
+  # converting break list to text
+  bin_brk2txt = function(bins_breakslist) {
+    breaks_list = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
+    breaks_list = paste0(c("list(", breaks_list, ")"), collapse = "\n ")
+    return(breaks_list)
+  }
+  # save break list
+  save_brk_lst = function(breaks_list, save_name) {
+    writeLines(breaks_list, sprintf('%s.R', save_name), useBytes = TRUE)
+    cat(sprintf('[INFO] The breaks_list is saved as %s\n', sprintf('%s.R', save_name)))
+  }
+
   # loop on adjusting variables
   if (xs_len == 0) {
     warning("The binning breaks of all variables are perfect according to default settings.")
 
-    breaks_list = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
-    breaks_list = paste0(c("list(", breaks_list, ")"), collapse = "\n ")
-
+    breaks_list = bin_brk2txt(bins_breakslist)
     return(breaks_list)
   }
 
@@ -1461,7 +1473,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     sv_i = special_values[[x_i]]
 
     # basic information of x_i variable ------
-    woebin_adj_print_basic_info(i, xs_adj, bins, dt, bins_breakslist)
+    woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist)
 
     # adjusting breaks ------
     adj_brk = menu2(choices = c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
@@ -1489,18 +1501,16 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
       # go next adj_brk == 1
       if (!(is.null(breaks) || breaks == "")) bins_breakslist[variable == x_i][["x_breaks"]]  <- breaks
     i = i + 1
+    } else if (adj_brk == 'save') {
+      if (is.null(save_breaks_list)) save_breaks_list = 'brk_lst'
+      save_brk_lst(bin_brk2txt(bins_breakslist), save_breaks_list)
     } else if (grepl('^go[1-9][0-9]*$', adj_brk)) {
       i = as.integer(sub('go','', adj_brk))
     }
   }
 
-  breaks_list = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
-  breaks_list = paste0(c("list(", breaks_list, ")"), collapse = "\n ")
-
+  breaks_list = bin_brk2txt(bins_breakslist)
   cat(breaks_list,"\n")
-  if (!is.null(save_breaks_list)) {
-    bins_adj = woebin(dt, y, x=bins_breakslist[,variable], breaks_list=breaks_list, print_info=FALSE)
-    bins_to_breaks(bins_adj, dt, to_string=TRUE, save_name=save_breaks_list)
-  }
+  if (!is.null(save_breaks_list)) save_brk_lst(breaks_list, save_breaks_list)
   return(breaks_list)
 }
