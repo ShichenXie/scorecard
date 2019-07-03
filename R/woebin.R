@@ -1503,8 +1503,8 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
       if (!(is.null(breaks) || breaks == "")) bins_breakslist[variable == x_i][["x_breaks"]]  <- breaks
     i = i + 1
     } else if (adj_brk == 'save') {
-      if (is.null(save_breaks_list)) save_breaks_list = 'brk_lst'
-      save_brk_lst(bin_brk2txt(bins_breakslist), save_breaks_list)
+      save_name = ifelse(is.null(save_breaks_list), 'brk_lst', save_breaks_list)
+      save_brk_lst(bin_brk2txt(bins_breakslist), save_name)
     } else if (grepl('^go[1-9][0-9]*$', adj_brk)) {
       i = as.integer(sub('go','', adj_brk))
     }

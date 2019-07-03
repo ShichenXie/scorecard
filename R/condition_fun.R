@@ -265,7 +265,7 @@ menu2 = function(choices, title, chk_rng = TRUE) {
   if (chk_rng) {
     sel = 'init'
     while (!(sel %in% c(seq_len(length(choices)), 'save') || grepl('^go[1-9][0-9]*$', sel))) {
-      sel = readline("Selection: ")
+      sel = readline("Selection (1-3, goX, save): ")
       if (grepl('^[1-9][0-9]*$', sel)) sel = as.integer(sel)
     }
   } else {

@@ -1,9 +1,9 @@
 # scorecard 0.2.4.999
 
-* fixed a bug in woebin_adj that returns breaks_list including missing without quotes.
+* fixed various bugs in woebin_adj that returns breaks_list including missing without quotes.
 * fixed a bug in perf_eva when pred is score.
 * fixed a bug in woebin function when y is not provided.
-* remove .export in foreach loop, inorder to ignore the warning of 'already exported varables ...'
+* remove the .export option in foreach loop, inorder to suppress the warning of 'already exported varables ...'
 * modified the calculation of identical rate in var_filter function
 * using forking on non-windows os and psock on windows when makeCluster in parallel 
 
