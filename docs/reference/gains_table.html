@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>gains_table</span>(<span class='no'>score</span>, <span class='no'>label</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>"freq"</span>,
+    <pre class="usage"><span class='fu'>gains_table</span>(<span class='no'>score</span>, <span class='no'>label</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"freq"</span>,
   <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -149,7 +149,7 @@
       <td><p>Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.</p></td>
     </tr>
     <tr>
-      <th>bin_type</th>
+      <th>method</th>
       <td><p>The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.</p></td>
     </tr>
     <tr>
@@ -282,7 +282,7 @@
 
 <span class='co'># Example II, specify the bins number and type</span>
 <span class='no'>g3</span> <span class='kw'>=</span> <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>20</span>)
-<span class='no'>g4</span> <span class='kw'>=</span> <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>bin_type</span> <span class='kw'>=</span> <span class='st'>'width'</span>)</div><div class='input'>
+<span class='no'>g4</span> <span class='kw'>=</span> <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'width'</span>)</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

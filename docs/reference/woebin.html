@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
       </span>
     </div>
 
@@ -166,7 +166,7 @@
     </tr>
     <tr>
       <th>stop_limit</th>
-      <td><p>Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1.</p></td>
+      <td><p>Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1. If it is 'N', each x value is a bin.</p></td>
     </tr>
     <tr>
       <th>count_distr_limit</th>
@@ -276,12 +276,19 @@
 <span class='no'>bins_freq_noy</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>)
 
 <span class='co'># Example II</span>
+<span class='co'># setting of stop_limit</span>
+<span class='co'># stop_limit = 0.1 (by default)</span>
+<span class='no'>bins_x1</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>'foreign.worker'</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>)
+<span class='co'># stop_limit = 'N', each x value is a bin</span>
+<span class='no'>bins_x1_N</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>'foreign.worker'</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='st'>'N'</span>)
+
+<span class='co'># Example III</span>
 <span class='co'># binning of the germancredit dataset</span>
 <span class='no'>bins_germ</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)
 <span class='co'># converting bins_germ into a data frame</span>
 <span class='co'># bins_germ_df = data.table::rbindlist(bins_germ)</span>
 
-<span class='co'># Example III</span>
+<span class='co'># Example IV</span>
 <span class='co'># customizing the breakpoints of binning</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>data.table</span>)
 <span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/rbindlist'>rbind</a></span>(
@@ -303,7 +310,7 @@
   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"age.in.years"</span>,<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>,<span class='st'>"purpose"</span>),
   <span class='kw'>breaks_list</span><span class='kw'>=</span><span class='no'>breaks_list</span>, <span class='kw'>special_values</span><span class='kw'>=</span><span class='no'>special_values</span>)
 
-<span class='co'># Example IV</span>
+<span class='co'># Example V</span>
 <span class='co'># save breaks_list as a R file</span>
 <span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
    <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)

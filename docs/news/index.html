@@ -60,7 +60,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
       </span>
     </div>
 
@@ -120,9 +120,22 @@
       <small>Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="scorecard-0-2-5" class="section level1">
+<h1 class="page-header">
+<a href="#scorecard-0-2-5" class="anchor"></a>scorecard 0.2.5<small> Unreleased </small>
+</h1>
+<ul>
+<li>fixed various bugs in woebin_adj that returns breaks_list including missing without quotes.</li>
+<li>fixed a bug in perf_eva when pred is score.</li>
+<li>fixed a bug in woebin function when y is not provided.</li>
+<li>remove the .export option in foreach loop, inorder to suppress the warning of ‘already exported varables …’</li>
+<li>modified the calculation of identical rate in var_filter function</li>
+<li>using forking on non-windows os and psock on windows when makeCluster in parallel</li>
+</ul>
+</div>
     <div id="scorecard-0-2-4" class="section level1">
 <h1 class="page-header">
-<a href="#scorecard-0-2-4" class="anchor"></a>scorecard 0.2.4<small> Unreleased </small>
+<a href="#scorecard-0-2-4" class="anchor"></a>scorecard 0.2.4<small> 2019-03-26 </small>
 </h1>
 <ul>
 <li>fixed a bug in woebin when only NA and special values</li>
@@ -289,6 +302,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#scorecard-0-2-5">0.2.5</a></li>
         <li><a href="#scorecard-0-2-4">0.2.4</a></li>
         <li><a href="#scorecard-0-2-3">0.2.3</a></li>
         <li><a href="#scorecard-0-2-2">0.2.2</a></li>
