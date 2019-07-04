@@ -895,7 +895,9 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   if (is.null(y) & !(method %in% c('freq', 'width'))) method = 'freq'
 
   # binning ------
-  # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
+  # loop on xs 
+  # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
+  # https://privefl.github.io/blog/a-guide-to-parallelism-in-r/
   if (is.null(no_cores) || no_cores<1) {
     no_cores = ifelse(xs_len < 10, 1, detectCores(logical=F))
   }
