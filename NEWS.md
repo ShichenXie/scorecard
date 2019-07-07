@@ -1,3 +1,8 @@
+# scorecard 0.2.5.999
+
+* split_df function supports multiple data frames.
+* added a cross validation function perf_cv
+
 # scorecard 0.2.5
 
 * fixed various bugs in woebin_adj that returns breaks_list including missing without quotes.

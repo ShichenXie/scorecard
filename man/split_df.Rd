@@ -4,7 +4,8 @@
 \alias{split_df}
 \title{Split a dataset}
 \usage{
-split_df(dt, y = NULL, ratio = 0.7, seed = 618)
+split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
+  name_dfs = c("train", "test"))
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -14,6 +15,10 @@ split_df(dt, y = NULL, ratio = 0.7, seed = 618)
 \item{ratio}{A numeric value, default is 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
 
 \item{seed}{A random seed, default is 618.}
+
+\item{no_dfs}{Number of returned data frames. Default is 2.}
+
+\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will seted as 'dX'. Defaults are train and test.}
 }
 \value{
 A list of data frames

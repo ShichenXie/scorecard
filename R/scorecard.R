@@ -209,7 +209,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 
   # model
   model = glm(
-    as.formula(paste(y, "~ .")), family = "binomial",
+    as.formula(paste(y, "~ .")), family = binomial(),
     data = dt_woe[,c(paste0(x,"_woe"),y), with=F])
 
   return(scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0))

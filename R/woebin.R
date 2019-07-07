@@ -729,7 +729,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
 #' @param positive Value of positive class, default "bad|1".
-#' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
+#' @param no_cores Number of CPU cores for parallel computation. Default is NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
@@ -895,7 +895,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   if (is.null(y) & !(method %in% c('freq', 'width'))) method = 'freq'
 
   # binning ------
-  # loop on xs 
+  # loop on xs
   # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   # https://privefl.github.io/blog/a-guide-to-parallelism-in-r/
   if (is.null(no_cores) || no_cores<1) {
@@ -1028,7 +1028,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #'
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
-#' @param no_cores Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
+#' @param no_cores Number of CPU cores for parallel computation. Default is NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.
 #' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.

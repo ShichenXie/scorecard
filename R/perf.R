@@ -1254,3 +1254,68 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 }
 
 
+#' @importFrom stats binomial
+perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = c('ks', 'auc'), positive="bad|1", ...) {
+  # set dt as data.table
+  dt = setDT(copy(dt))
+  # check y
+  dt = check_y(dt, y, positive)
+  # x variable names
+  x = x_variable(dt, y, x)
+  # dt
+  dt = dt[, c(y,x), with=FALSE]
+
+  # seed
+  seed = list(...)[['seed']]
+  if (is.null(seed)) seed = 618
+  # ratio
+  ratio = list(...)[['ratio']]
+  if (is.null(ratio)) ratio = c(0.7, 0.3)
+  # model
+  model = list(...)[['model']]
+
+  # split dt into no_folds
+  if (is.null(seeds)) {
+    dts = do.call('split_df', list(
+      dt = dt, y = y,
+      ratio = rep(1/no_folds, no_folds), no_dfs = no_folds,
+      seed = seed
+    ))
+
+    dt_lst = lapply(as.list(seq_len(no_folds)), function(x) {
+      return(list(train = rbindlist(dts[-x]),
+           test = rbindlist(dts[x])))
+    })
+    names(dt_lst) = seq_len(no_folds)
+  } else {
+    dt_lst = lapply(as.list(seeds), function(x) {
+      do.call('split_df', list(
+        dt = dt, y = y, ratio = ratio, seed = x
+      ))
+    })
+    names(dt_lst) = seeds
+  }
+
+
+  # glm
+  f_glm = function(dt, y) {
+    m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = dt)
+    p = predict(m1, dt, type='response')
+    return(p)
+  }
+  if (is.null(model)) model = 'f_glm'
+
+  perf = rbindlist(lapply(dt_lst, function(x) {
+    rbindlist(lapply(x, function(d) {
+      p = do.call('f_glm', list(dt = d, y = y))
+
+      perf_eva(p, d[[y]], show_plot = NULL, binomial_metric = binomial_metric, confusion_matrix = F)$binomial_metric$dat
+    }), idcol = 'dataset_tt')
+  }), idcol = 'set')
+  setnames(perf, tolower(names(perf)))
+
+  perf = lapply(tolower(binomial_metric), function(m) dcast(perf, set~dataset_tt, value.var = m))
+  names(perf) = tolower(binomial_metric)
+  # perf = rbindlist(perf, idcol = 'metric')
+  return(perf)
+}
