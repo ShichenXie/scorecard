@@ -2,6 +2,7 @@
 
 * split_df function supports multiple data frames.
 * added a cross validation function perf_cv
+* modified the default value for no_cores in woebin and woebin_ply function.
 
 # scorecard 0.2.5
 
