@@ -12,7 +12,7 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
 
 \item{bins}{Binning information generated from \code{woebin}.}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Default is NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.}
+\item{no_cores}{Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.}
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 

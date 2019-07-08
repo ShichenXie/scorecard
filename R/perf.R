@@ -112,6 +112,8 @@ confusionMatrix = function(dt, threshold=0.5, ...) {
   setDT(dt)
   # data of actual and predicted label
   dt_alpl = dt[, pred_label := pred >= threshold][, .N, keyby = .(label, pred_label)][, pred_label := paste0('pred_', as.integer(pred_label))]
+
+  if (length(table(dt_alpl$pred_label)) == 1) return(NULL)
   # confusion matrix
   cm = dcast(
     dt_alpl, label ~pred_label, value.var = 'N'
@@ -1255,7 +1257,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 
 
 #' @importFrom stats binomial
-perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = c('ks', 'auc'), positive="bad|1", ...) {
+perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 'ks', positive="bad|1", ...) {
   # set dt as data.table
   dt = setDT(copy(dt))
   # check y
@@ -1273,6 +1275,8 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
   if (is.null(ratio)) ratio = c(0.7, 0.3)
   # model
   model = list(...)[['model']]
+  # break list
+  brk_lst = list(...)[['breaks_list']]
 
   # split dt into no_folds
   if (is.null(seeds)) {
@@ -1282,40 +1286,55 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
       seed = seed
     ))
 
-    dt_lst = lapply(as.list(seq_len(no_folds)), function(x) {
+    tt_lst = lapply(as.list(seq_len(no_folds)), function(x) {
       return(list(train = rbindlist(dts[-x]),
            test = rbindlist(dts[x])))
     })
-    names(dt_lst) = seq_len(no_folds)
+    names(tt_lst) = seq_len(no_folds)
   } else {
-    dt_lst = lapply(as.list(seeds), function(x) {
+    tt_lst = lapply(as.list(seeds), function(x) {
       do.call('split_df', list(
         dt = dt, y = y, ratio = ratio, seed = x
       ))
     })
-    names(dt_lst) = seeds
+    names(tt_lst) = seeds
   }
 
 
   # glm
-  f_glm = function(dt, y) {
-    m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = dt)
-    p = predict(m1, dt, type='response')
-    return(p)
+  if (is.null(brk_lst)) {
+    f_glm = function(tt, y) {
+      m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt$train)
+      pp = lapply(tt, function(t) predict(m1, t, type='response'))
+      return(pp)
+    }
+  } else {
+    f_glm = function(tt, y) {
+      bin_train = woebin(tt$train, y = y, breaks_list = brk_lst, print_info = FALSE)
+      tt_woe = lapply(tt, function(t) woebin_ply(t, bin_train, print_info = FALSE))
+
+      m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt_woe$train)
+      pp = lapply(tt_woe, function(t) predict(m1, t, type='response'))
+      return(pp)
+    }
   }
   if (is.null(model)) model = 'f_glm'
 
-  perf = rbindlist(lapply(dt_lst, function(x) {
-    rbindlist(lapply(x, function(d) {
-      p = do.call('f_glm', list(dt = d, y = y))
+  # performance
+  perf_list = lapply(tt_lst, function(tt) {
+    pp = do.call(model, list(tt = tt, y = y))
+    eva_tt = lapply(names(pp), function(x) {
+      perf_eva(pp[[x]], tt[[x]][[y]], show_plot = NULL, binomial_metric = binomial_metric, confusion_matrix = F)$binomial_metric$dat
+    })
+    names(eva_tt) = names(pp)
+    eva = rbindlist(eva_tt, idcol = 'tt')
+  })
 
-      perf_eva(p, d[[y]], show_plot = NULL, binomial_metric = binomial_metric, confusion_matrix = F)$binomial_metric$dat
-    }), idcol = 'dataset_tt')
-  }), idcol = 'set')
+  perf = rbindlist(perf_list, idcol = 'datset')
   setnames(perf, tolower(names(perf)))
 
-  perf = lapply(tolower(binomial_metric), function(m) dcast(perf, set~dataset_tt, value.var = m))
-  names(perf) = tolower(binomial_metric)
-  # perf = rbindlist(perf, idcol = 'metric')
-  return(perf)
+  perf_metric = lapply(tolower(binomial_metric), function(m) dcast(perf, datset~tt, value.var = m))
+  names(perf_metric) = tolower(binomial_metric)
+
+  return(perf_metric)
 }

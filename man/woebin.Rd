@@ -32,7 +32,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Default is NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.}
+\item{no_cores}{Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.}
 
 \item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
