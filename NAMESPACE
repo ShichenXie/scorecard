@@ -3,6 +3,7 @@
 export(gains_table)
 export(iv)
 export(one_hot)
+export(perf_cv)
 export(perf_eva)
 export(perf_psi)
 export(report)

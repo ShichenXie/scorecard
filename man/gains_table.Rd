@@ -12,11 +12,11 @@ gains_table(score, label, bin_num = 10, method = "freq",
 
 \item{label}{A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).}
 
-\item{bin_num}{Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.}
+\item{bin_num}{Integer, the number of score bins. Defaults to 10. If it is 'max', then individual scores are used as bins.}
 
-\item{method}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.}
+\item{method}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.}
 
-\item{positive}{Value of positive class, default is "bad|1".}
+\item{positive}{Value of positive class, Defaults to "bad|1".}
 
 \item{...}{Additional parameters.}
 }

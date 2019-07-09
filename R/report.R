@@ -4,11 +4,11 @@
 #'
 #' @param dt A data frame or a list of data frames that have both x (predictor/feature) and y (response/label) variables. If there are multiple data frames are provided, only the first data frame would be used for training, and the others would be used for testing/validation.
 #' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
-#' @param special_values The values specified in special_values will be in separate bins. Default is NULL.
-#' @param seed A random seed to split input data frame. Default is 618. If it is NULL, input dt will not split into two datasets.
-#' @param save_report The name of xlsx file where the report is to be saved. Default is 'report'.
+#' @param special_values The values specified in special_values will be in separate bins. Defaults to NULL.
+#' @param seed A random seed to split input data frame. Defaults to 618. If it is NULL, input dt will not split into two datasets.
+#' @param save_report The name of xlsx file where the report is to be saved. Defaults to 'report'.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional paramters.
 #'

@@ -3,7 +3,7 @@
 #' \code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.
 #'
 #' @param model A model object.
-#' @param merge_coef Logical, whether to merge with coefficients of model summary matrix. Default is FALSE.
+#' @param merge_coef Logical, whether to merge with coefficients of model summary matrix. Defaults to FALSE.
 #'
 #' @return A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
 #'

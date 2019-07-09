@@ -3,10 +3,10 @@
 #' One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.
 #'
 #' @param dt A data frame.
-#' @param var_skip Name of categorical variables that will skip for one-hot encoding. Default is NULL.
-#' @param var_encode Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in var_skip are counted.
-#' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.
-#' @param replace_na Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.
+#' @param var_skip Name of categorical variables that will skip for one-hot encoding. Defaults to NULL.
+#' @param var_encode Name of categorical variables to be one-hot encoded, Defaults to NULL. If it is NULL, then all categorical variables except in var_skip are counted.
+#' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Defaults to FALSE.
+#' @param replace_na Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Defaults to NULL, which means no missing values will be replaced.
 #'
 #' @return A data frame
 #'

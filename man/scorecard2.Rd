@@ -14,7 +14,7 @@ scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. If it is NULL, then all variables in bins are used. Default is NULL.}
+\item{x}{Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.}
 
 \item{points0}{Target points, default 600.}
 
@@ -22,7 +22,7 @@ scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
 
 \item{pdo}{Points to Double the Odds, default 50.}
 
-\item{basepoints_eq0}{Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.}
+\item{basepoints_eq0}{Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 

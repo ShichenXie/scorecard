@@ -4,9 +4,9 @@
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
-#' @param positive Value of positive class, default is "bad|1".
-#' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via iv.
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param positive Value of positive class, Defaults to "bad|1".
+#' @param order Logical, Defaults to TRUE. If it is TRUE, the output will descending order via iv.
 #'
 #' @return A data frame with columns for variable and info_value
 #'

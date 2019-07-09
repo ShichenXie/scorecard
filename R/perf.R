@@ -638,12 +638,12 @@ pf_cutoffs = function(dt_ev_lst) {
 #'
 #' @param pred A list or vector of predicted probability or score.
 #' @param label A list or vector of label values.
-#' @param title The title of plot. Default is NULL.
-#' @param binomial_metric Default is c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.
-#' @param confusion_matrix Logical, whether to create a confusion matrix. Default is TRUE.
-#' @param threshold Confusion matrix threshold. Default is the pred on maximum F1.
-#' @param show_plot Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
-#' @param positive Value of positive class, default is "bad|1".
+#' @param title The title of plot. Defaults to NULL.
+#' @param binomial_metric Defaults to c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.
+#' @param confusion_matrix Logical, whether to create a confusion matrix. Defaults to TRUE.
+#' @param threshold Confusion matrix threshold. Defaults to the pred on maximum F1.
+#' @param show_plot Defaults to c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').
+#' @param positive Value of positive class, Defaults to "bad|1".
 #' @param ... Additional parameters.
 #'
 #' @return A list of binomial metric, confusion matrix and graphics
@@ -923,9 +923,9 @@ gains_table_format = function(dt_distr) {
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
-#' @param bin_num Integer, the number of score bins. Default is 10. If it is 'max', then individual scores are used as bins.
-#' @param method The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Default is 'freq'.
-#' @param positive Value of positive class, default is "bad|1".
+#' @param bin_num Integer, the number of score bins. Defaults to 10. If it is 'max', then individual scores are used as bins.
+#' @param method The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.
+#' @param positive Value of positive class, Defaults to "bad|1".
 #' @param ... Additional parameters.
 #'
 #' @return A data frame
@@ -1079,21 +1079,21 @@ gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1'
   return(dt_distr)
 }
 
-# @param method Whether in equal frequency or width when preparing dataset to calculates psi. Default is 'width'.
-# @param return_distr_dat Logical. Default is FALSE. Whether to return a list of data frames including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
-# @param bin_num Integer. Default is 10. The number of score bins in distribution tables.
+# @param method Whether in equal frequency or width when preparing dataset to calculates psi. Defaults to 'width'.
+# @param return_distr_dat Logical. Defaults to FALSE. Whether to return a list of data frames including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
+# @param bin_num Integer. Defaults to 10. The number of score bins in distribution tables.
 
 #' PSI
 #'
 #' \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
-#' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Default is NULL.
-#' @param title Title of plot, default is NULL.
-#' @param show_plot Logical. Default is TRUE.
-#' @param positive Value of positive class, default is "bad|1".
-#' @param threshold_variable Integer. Default is 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
-#' @param var_skip Name of variables that are not score, such as id column. It should be the same with the var_kp in scorecard_ply function. Default is NULL.
+#' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Defaults to NULL.
+#' @param title Title of plot, Defaults to NULL.
+#' @param show_plot Logical. Defaults to TRUE.
+#' @param positive Value of positive class, Defaults to "bad|1".
+#' @param threshold_variable Integer. Defaults to 20. If the number of unique values > threshold_variable, the provided score will be counted as total credit score, otherwise, it is variable score.
+#' @param var_skip Name of variables that are not score, such as id column. It should be the same with the var_kp in scorecard_ply function. Defaults to NULL.
 #' @param ... Additional parameters.
 #'
 #' @return A data frame of psi and graphics of credit score distribution
@@ -1256,8 +1256,44 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 }
 
 
+#' Cross validation
+#'
+#' \code{perf_cv} provides cross validation on logistic regression and other binomial classification models.
+#'
+#' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
+#' @param y Name of y variable.
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param breaks_list List of break points, defaults to NULL. If it is NULL, then using orignial values of the input data to fitting model, otherwise converting into woe values based on training data.
+#' @param no_folds Number of folds for K-fold cross-validation. Defaults to 5.
+#' @param seeds The seeds to create multiple random splits of the input dataset into traning and validation data by using \code{split_df} function. Defaults to NULL.
+#' @param binomial_metric Defaults to ks.
+#' @param positive Value of positive class, defaults to "bad|1".
+#' @param ... Additional parameters.
+#'
+#' @return A list of data frames of binomial metrics for each datasets.
+#'
+#'
+#' @examples
+#' \dontrun{
+#' data("germancredit")
+#'
+#' dt = var_filter(germancredit, y = 'creditability')
+#' bins = woebin(dt, y = 'creditability')
+#' dt_woe = woebin_ply(dt, bins)
+#'
+#' perf1 = perf_cv(dt_woe, y = 'creditability', no_folds = 5)
+#'
+#' perf2 = perf_cv(dt_woe, y = 'creditability', no_folds = 5,
+#'    seeds = sample(1000, 10))
+#'
+#' perf3 = perf_cv(dt_woe, y = 'creditability', no_folds = 5,
+#'    binomial_metric = c('ks', 'auc'))
+#'
+#' }
+#'
+#' @export
 #' @importFrom stats binomial
-perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 'ks', positive="bad|1", ...) {
+perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 'ks', positive="bad|1", breaks_list = NULL, ...) {
   # set dt as data.table
   dt = setDT(copy(dt))
   # check y
@@ -1272,11 +1308,9 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
   if (is.null(seed)) seed = 618
   # ratio
   ratio = list(...)[['ratio']]
-  if (is.null(ratio)) ratio = c(0.7, 0.3)
+  if (is.null(ratio)) ratio = c(1-1/no_folds, 1/no_folds)
   # model
   model = list(...)[['model']]
-  # break list
-  brk_lst = list(...)[['breaks_list']]
 
   # split dt into no_folds
   if (is.null(seeds)) {
@@ -1288,13 +1322,13 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
 
     tt_lst = lapply(as.list(seq_len(no_folds)), function(x) {
       return(list(train = rbindlist(dts[-x]),
-           test = rbindlist(dts[x])))
+           validation = rbindlist(dts[x])))
     })
     names(tt_lst) = seq_len(no_folds)
   } else {
     tt_lst = lapply(as.list(seeds), function(x) {
       do.call('split_df', list(
-        dt = dt, y = y, ratio = ratio, seed = x
+        dt = dt, y = y, ratio = ratio, seed = x, name_dfs = c("train", "validation")
       ))
     })
     names(tt_lst) = seeds
@@ -1302,7 +1336,7 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
 
 
   # glm
-  if (is.null(brk_lst)) {
+  if (is.null(breaks_list)) {
     f_glm = function(tt, y) {
       m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt$train)
       pp = lapply(tt, function(t) predict(m1, t, type='response'))
@@ -1310,7 +1344,7 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
     }
   } else {
     f_glm = function(tt, y) {
-      bin_train = woebin(tt$train, y = y, breaks_list = brk_lst, print_info = FALSE)
+      bin_train = woebin(tt$train, y = y, breaks_list = breaks_list, print_info = FALSE)
       tt_woe = lapply(tt, function(t) woebin_ply(t, bin_train, print_info = FALSE))
 
       m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt_woe$train)

@@ -11,11 +11,11 @@ iv(dt, y, x = NULL, positive = "bad|1", order = TRUE)
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
+\item{x}{Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.}
 
-\item{positive}{Value of positive class, default is "bad|1".}
+\item{positive}{Value of positive class, Defaults to "bad|1".}
 
-\item{order}{Logical, default is TRUE. If it is TRUE, the output will descending order via iv.}
+\item{order}{Logical, Defaults to TRUE. If it is TRUE, the output will descending order via iv.}
 }
 \value{
 A data frame with columns for variable and info_value

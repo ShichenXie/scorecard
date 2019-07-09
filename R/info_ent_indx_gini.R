@@ -15,8 +15,8 @@
 # #'
 # #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 # #' @param y Name of y variable.
-# #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-# #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via ie.
+# #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all variables except y are counted as x variables.
+# #' @param order Logical, Defaults to TRUE. If it is TRUE, the output will descending order via ie.
 # #'
 # #' @return Information Entropy
 # # #' @details
@@ -132,8 +132,8 @@ ie_01 = function(good, bad) {
 # #'
 # #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 # #' @param y Name of y variable.
-# #' @param x Name of x variables. Default is NULL. If x is NULL, then all variables except y are counted as x variables.
-# #' @param order Logical, default is TRUE. If it is TRUE, the output will descending order via gini
+# #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all variables except y are counted as x variables.
+# #' @param order Logical, Defaults to TRUE. If it is TRUE, the output will descending order via gini
 # #'
 # #' @return gini impurity
 # # #' @details

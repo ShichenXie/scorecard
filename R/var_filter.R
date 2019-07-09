@@ -4,14 +4,14 @@
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
-#' @param iv_limit The information value of kept variables should >= iv_limit. The default is 0.02.
-#' @param missing_limit The missing rate of kept variables should <= missing_limit. The default is 0.95.
-#' @param identical_limit The identical value rate (excluding NAs) of kept variables should <= identical_limit. The default is 0.95.
-#' @param var_rm Name of force removed variables, default is NULL.
-#' @param var_kp Name of force kept variables, default is NULL.
-#' @param return_rm_reason Logical, default is FALSE.
-#' @param positive Value of positive class, default is "bad|1".
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param iv_limit The information value of kept variables should >= iv_limit. The Defaults to 0.02.
+#' @param missing_limit The missing rate of kept variables should <= missing_limit. The Defaults to 0.95.
+#' @param identical_limit The identical value rate (excluding NAs) of kept variables should <= identical_limit. The Defaults to 0.95.
+#' @param var_rm Name of force removed variables, Defaults to NULL.
+#' @param var_kp Name of force kept variables, Defaults to NULL.
+#' @param return_rm_reason Logical, Defaults to FALSE.
+#' @param positive Value of positive class, Defaults to "bad|1".
 #'
 #' @return A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if return_rm_reason == TRUE.
 #'

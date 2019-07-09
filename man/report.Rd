@@ -12,15 +12,15 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.}
+\item{x}{Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.}
 
 \item{breaks_list}{A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.}
 
-\item{special_values}{The values specified in special_values will be in separate bins. Default is NULL.}
+\item{special_values}{The values specified in special_values will be in separate bins. Defaults to NULL.}
 
-\item{seed}{A random seed to split input data frame. Default is 618. If it is NULL, input dt will not split into two datasets.}
+\item{seed}{A random seed to split input data frame. Defaults to 618. If it is NULL, input dt will not split into two datasets.}
 
-\item{save_report}{The name of xlsx file where the report is to be saved. Default is 'report'.}
+\item{save_report}{The name of xlsx file where the report is to be saved. Defaults to 'report'.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 

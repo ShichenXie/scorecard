@@ -9,7 +9,7 @@ vif(model, merge_coef = FALSE)
 \arguments{
 \item{model}{A model object.}
 
-\item{merge_coef}{Logical, whether to merge with coefficients of model summary matrix. Default is FALSE.}
+\item{merge_coef}{Logical, whether to merge with coefficients of model summary matrix. Defaults to FALSE.}
 }
 \value{
 A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.

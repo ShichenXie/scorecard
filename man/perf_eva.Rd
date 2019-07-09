@@ -14,17 +14,17 @@ perf_eva(pred, label, title = NULL, binomial_metric = c("mse", "rmse",
 
 \item{label}{A list or vector of label values.}
 
-\item{title}{The title of plot. Default is NULL.}
+\item{title}{The title of plot. Defaults to NULL.}
 
-\item{binomial_metric}{Default is c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.}
+\item{binomial_metric}{Defaults to c('mse', 'rmse', 'logloss', 'r2', 'ks', 'auc', 'gini'). If it is NULL, then no metric will calculated.}
 
-\item{confusion_matrix}{Logical, whether to create a confusion matrix. Default is TRUE.}
+\item{confusion_matrix}{Logical, whether to create a confusion matrix. Defaults to TRUE.}
 
-\item{threshold}{Confusion matrix threshold. Default is the pred on maximum F1.}
+\item{threshold}{Confusion matrix threshold. Defaults to the pred on maximum F1.}
 
-\item{show_plot}{Default is c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
+\item{show_plot}{Defaults to c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
 
-\item{positive}{Value of positive class, default is "bad|1".}
+\item{positive}{Value of positive class, Defaults to "bad|1".}
 
 \item{...}{Additional parameters.}
 }

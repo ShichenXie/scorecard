@@ -16,37 +16,37 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{y}{Name of y variable.}
 
-\item{x}{Name of x variables. Default is NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.}
+\item{x}{Name of x variables. Defaults to NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.}
 
-\item{var_skip}{Name of variables that will skip for binning. Default is NULL.}
+\item{var_skip}{Name of variables that will skip for binning. Defaults to NULL.}
 
-\item{breaks_list}{List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.}
+\item{breaks_list}{List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.}
 
-\item{special_values}{the values specified in special_values will be in separate bins. Default is NULL.}
+\item{special_values}{the values specified in special_values will be in separate bins. Defaults to NULL.}
 
-\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1. If it is 'N', each x value is a bin.}
+\item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.}
 
-\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.}
+\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.}
 
-\item{bin_num_limit}{Integer. The maximum number of binning. Default is 8.}
+\item{bin_num_limit}{Integer. The maximum number of binning. Defaults to 8.}
 
-\item{positive}{Value of positive class, default "bad|1".}
+\item{positive}{Value of positive class, defaults to "bad|1".}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.}
 
-\item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
+\item{print_step}{A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
-\item{method}{Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".}
+\item{method}{Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".}
 
-\item{save_breaks_list}{A string. The file name to save breaks_list. Default is None.}
+\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
 
-\item{ignore_const_cols}{Logical. Ignore constant columns. Default is TRUE.}
+\item{ignore_const_cols}{Logical. Ignore constant columns. Defaults to TRUE.}
 
-\item{ignore_datetime_cols}{Logical. Ignore datetime columns. Default is TRUE.}
+\item{ignore_datetime_cols}{Logical. Ignore datetime columns. Defaults to TRUE.}
 
-\item{check_cate_num}{Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Default is TRUE.}
+\item{check_cate_num}{Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.}
 
-\item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE.}
+\item{replace_blank_na}{Logical. Replace blank values with NA. Defaults to TRUE.}
 
 \item{...}{Additional parameters.}
 }

@@ -712,7 +712,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
   return(bins_breakslist)
 }
 
-# @param init_count_distr The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; default is 0.02, which means initial cut into 50 fine bins for continuous variables.
+# @param init_count_distr The minimum percentage of initial binning class number over total. Accepted range: 0.01-0.2; Defaults to 0.02, which means initial cut into 50 fine bins for continuous variables.
 
 #' WOE Binning
 #'
@@ -720,23 +720,23 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.
-#' @param var_skip Name of variables that will skip for binning. Default is NULL.
-#' @param breaks_list List of break points, default is NULL. If it is not NULL, variable binning will based on the provided breaks.
-#' @param special_values the values specified in special_values will be in separate bins. Default is NULL.
-#' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; default is 0.1. If it is 'N', each x value is a bin.
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.
+#' @param var_skip Name of variables that will skip for binning. Defaults to NULL.
+#' @param breaks_list List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.
+#' @param special_values the values specified in special_values will be in separate bins. Defaults to NULL.
+#' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.
 # 'qchisq(1-stoplimit, 1)'
-#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05.
-#' @param bin_num_limit Integer. The maximum number of binning. Default is 8.
-#' @param positive Value of positive class, default "bad|1".
-#' @param no_cores Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.
-#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
-#' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Default is "tree".
-#' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
-#' @param ignore_const_cols Logical. Ignore constant columns. Default is TRUE.
-#' @param ignore_datetime_cols Logical. Ignore datetime columns. Default is TRUE.
-#' @param check_cate_num Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Default is TRUE.
-#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE.
+#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.
+#' @param bin_num_limit Integer. The maximum number of binning. Defaults to 8.
+#' @param positive Value of positive class, defaults to "bad|1".
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.
+#' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
+#' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".
+#' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
+#' @param ignore_const_cols Logical. Ignore constant columns. Defaults to TRUE.
+#' @param ignore_datetime_cols Logical. Ignore datetime columns. Defaults to TRUE.
+#' @param check_cate_num Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.
+#' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE.
 #' @param ... Additional parameters.
 #'
 #' @return A list of data frames include binning information for each x variables.
@@ -898,9 +898,10 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   # loop on xs
   # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   # https://privefl.github.io/blog/a-guide-to-parallelism-in-r/
-  if (is.null(no_cores) || no_cores<1) {
+
+  if (!is.numeric(no_cores) || no_cores<1) {
     all_cores = detectCores(logical=F)-1
-    no_cores = ceiling(ifelse(xs_len/3 < all_cores, xs_len/3, all_cores*0.9))
+    no_cores = ceiling(ifelse(xs_len/5 < all_cores, xs_len/5, all_cores*0.9))
   }
 
   bins = list()
@@ -1030,9 +1031,9 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #'
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
-#' @param no_cores Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.
-#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
-#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.
+#' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
+#' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.
 #'
 #' @return A data frame with columns for variables converted into woe values.
@@ -1116,9 +1117,9 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   # the databc_colomun_placeholder will be remove in the result, in case dt_init is an empty dataframe
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
-  if (is.null(no_cores) || no_cores <1) {
+  if (!is.numeric(no_cores) || no_cores <1) {
     all_cores = detectCores(logical=F)-1
-    no_cores = ceiling(ifelse(xs_len/3 < all_cores, xs_len/3, all_cores*0.9))
+    no_cores = ceiling(ifelse(xs_len/5 < all_cores, xs_len/5, all_cores*0.9))
   }
 
   if (no_cores == 1) {
@@ -1240,9 +1241,9 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #'
 #' @name woebin_plot
 #' @param bins A list of data frames. Binning information generated by \code{woebin}.
-#' @param x Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.
-#' @param title String added to the plot title. Default is NULL.
-#' @param show_iv Logical. Default is TRUE, which means show information value in the plot title.
+#' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
+#' @param title String added to the plot title. Defaults to NULL.
+#' @param show_iv Logical. Defaults to TRUE, which means show information value in the plot title.
 #' @param ... Additional parameters
 #'
 #' @return A list of binning graphics.
@@ -1382,11 +1383,11 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param dt A data frame.
 #' @param y Name of y variable.
 #' @param bins A list of data frames. Binning information generated from \code{woebin}.
-#' @param adj_all_var Logical, whether to show variables have monotonic woe trends. Default is TRUE
-#' @param special_values The values specified in special_values will in separate bins. Default is NULL.
-#' @param method Optimal binning method, it should be "tree" or "chimerge". Default is "tree".
-#' @param save_breaks_list A string. The file name to save breaks_list. Default is None.
-#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05. This argument should be the same with woebin's.
+#' @param adj_all_var Logical, whether to show variables have monotonic woe trends. Defaults to TRUE
+#' @param special_values The values specified in special_values will in separate bins. Defaults to NULL.
+#' @param method Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".
+#' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
+#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.
 #' @param ... Additional parameters.
 #'
 #' @return A list of modified break points of each x variables.

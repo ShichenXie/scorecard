@@ -34,7 +34,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
-#' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
 #' @return A scorecard data frame
 #'
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
@@ -130,12 +130,12 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
-#' @param x Name of x variables. If it is NULL, then all variables in bins are used. Default is NULL.
+#' @param x Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.
 #' @param bins Binning information generated from \code{woebin} function.
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
-#' @param basepoints_eq0 Logical, default is FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.
 #' @return A scorecard data frame
@@ -221,10 +221,10 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #'
 #' @param dt A data frame, which is the rriginal dataset for training model.
 #' @param card The scorecard generated from the function \code{scorecard}.
-#' @param only_total_score  Logical, default is TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
-#' @param print_step A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
-#' @param replace_blank_na Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.
-#' @param var_kp Name of force kept variables, such as id column. Default is NULL.
+#' @param only_total_score  Logical, Defaults to TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
+#' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
+#' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
+#' @param var_kp Name of force kept variables, such as id column. Defaults to NULL.
 #'
 #' @return A data frame in score values
 #'

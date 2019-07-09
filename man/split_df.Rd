@@ -10,15 +10,15 @@ split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
 \arguments{
 \item{dt}{A data frame.}
 
-\item{y}{Name of y variable, default is NULL. The input data will split based on the predictor y, if it is provide.}
+\item{y}{Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.}
 
-\item{ratio}{A numeric value, default is 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
+\item{ratio}{A numeric value, Defaults to 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
 
-\item{seed}{A random seed, default is 618.}
+\item{seed}{A random seed, Defaults to 618.}
 
-\item{no_dfs}{Number of returned data frames. Default is 2.}
+\item{no_dfs}{Number of returned data frames. Defaults to 2.}
 
-\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will seted as 'dX'. Defaults are train and test.}
+\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will seted as 'dX'. Defaults to train and test.}
 }
 \value{
 A list of data frames

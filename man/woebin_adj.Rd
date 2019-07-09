@@ -15,15 +15,15 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
 
 \item{bins}{A list of data frames. Binning information generated from \code{woebin}.}
 
-\item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Default is TRUE}
+\item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Defaults to TRUE}
 
-\item{special_values}{The values specified in special_values will in separate bins. Default is NULL.}
+\item{special_values}{The values specified in special_values will in separate bins. Defaults to NULL.}
 
-\item{method}{Optimal binning method, it should be "tree" or "chimerge". Default is "tree".}
+\item{method}{Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".}
 
-\item{save_breaks_list}{A string. The file name to save breaks_list. Default is None.}
+\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
 
-\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; default is 0.05. This argument should be the same with woebin's.}
+\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.}
 
 \item{...}{Additional parameters.}
 }

@@ -10,13 +10,13 @@ one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
 \arguments{
 \item{dt}{A data frame.}
 
-\item{var_skip}{Name of categorical variables that will skip for one-hot encoding. Default is NULL.}
+\item{var_skip}{Name of categorical variables that will skip for one-hot encoding. Defaults to NULL.}
 
-\item{var_encode}{Name of categorical variables to be one-hot encoded, default is NULL. If it is NULL, then all categorical variables except in var_skip are counted.}
+\item{var_encode}{Name of categorical variables to be one-hot encoded, Defaults to NULL. If it is NULL, then all categorical variables except in var_skip are counted.}
 
-\item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Default is FALSE.}
+\item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Defaults to FALSE.}
 
-\item{replace_na}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Default is NULL, which means no missing values will be replaced.}
+\item{replace_na}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Defaults to NULL, which means no missing values will be replaced.}
 }
 \value{
 A data frame

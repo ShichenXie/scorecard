@@ -12,11 +12,11 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
 
 \item{bins}{Binning information generated from \code{woebin}.}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Default is 90 percet of total cpu cores.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.}
 
-\item{print_step}{A non-negative integer. Default is 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
+\item{print_step}{A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 
-\item{replace_blank_na}{Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with \code{woebin}'s.}
+\item{replace_blank_na}{Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.}
 
 \item{...}{Additional parameters.}
 }
