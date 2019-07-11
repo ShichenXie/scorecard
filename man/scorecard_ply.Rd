@@ -8,7 +8,7 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
   replace_blank_na = TRUE, var_kp = NULL)
 }
 \arguments{
-\item{dt}{A data frame, which is the rriginal dataset for training model.}
+\item{dt}{A data frame, which is the original dataset for training model.}
 
 \item{card}{The scorecard generated from the function \code{scorecard}.}
 

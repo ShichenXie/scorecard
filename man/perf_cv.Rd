@@ -23,7 +23,7 @@ perf_cv(dt, y, x = NULL, no_folds = 5, seeds = NULL,
 
 \item{positive}{Value of positive class, defaults to "bad|1".}
 
-\item{breaks_list}{List of break points, defaults to NULL. If it is NULL, then using orignial values of the input data to fitting model, otherwise converting into woe values based on training data.}
+\item{breaks_list}{List of break points, defaults to NULL. If it is NULL, then using original values of the input data to fitting model, otherwise converting into woe values based on training data.}
 
 \item{...}{Additional parameters.}
 }

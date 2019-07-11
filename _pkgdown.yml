@@ -44,6 +44,7 @@ reference:
   - title: "model performance"
     contents:
       - perf_eva
+      - perf_cv
       - perf_psi
   - title: "scorecard scaling"
     contents:

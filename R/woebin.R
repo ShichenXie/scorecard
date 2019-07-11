@@ -729,7 +729,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Defaults to 8.
 #' @param positive Value of positive class, defaults to "bad|1".
-#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
@@ -1031,7 +1031,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #'
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
-#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percet of total cpu cores.
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.

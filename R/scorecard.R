@@ -219,7 +219,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #'
 #' \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 #'
-#' @param dt A data frame, which is the rriginal dataset for training model.
+#' @param dt A data frame, which is the original dataset for training model.
 #' @param card The scorecard generated from the function \code{scorecard}.
 #' @param only_total_score  Logical, Defaults to TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.

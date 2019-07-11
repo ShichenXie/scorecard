@@ -912,8 +912,10 @@ gains_table_format = function(dt_distr) {
     good,  cum_good = cumsum(good),
     bad,   cum_bad = cumsum(bad),
     count_distr = count/sum(count),
-    badprob=bad/count, cum_badprob = cumsum(bad)/cumsum(count),
-    approval_rate = cumsum(count)/sum(count) ), by = datset]
+    badprob=bad/count,
+    approval_rate = cumsum(count)/sum(count),
+    cum_badprob = cumsum(bad)/cumsum(count)
+  ), by = datset]
 
   return(dt_distr)
 }
@@ -1263,7 +1265,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
-#' @param breaks_list List of break points, defaults to NULL. If it is NULL, then using orignial values of the input data to fitting model, otherwise converting into woe values based on training data.
+#' @param breaks_list List of break points, defaults to NULL. If it is NULL, then using original values of the input data to fitting model, otherwise converting into woe values based on training data.
 #' @param no_folds Number of folds for K-fold cross-validation. Defaults to 5.
 #' @param seeds The seeds to create multiple random splits of the input dataset into traning and validation data by using \code{split_df} function. Defaults to NULL.
 #' @param binomial_metric Defaults to ks.

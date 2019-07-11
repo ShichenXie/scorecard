@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5.999</span>
       </span>
     </div>
 
@@ -146,15 +146,15 @@
     </tr>
     <tr>
       <th>no_cores</th>
-      <td><p>Number of CPU cores for parallel computation. Defaults NULL. If no_cores is NULL, the no_cores will set as 1 if length of x variables less than 10, and will set as the number of all CPU cores if the length of x variables greater than or equal to 10.</p></td>
+      <td><p>Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.</p></td>
     </tr>
     <tr>
       <th>print_step</th>
-      <td><p>A non-negative integer. Default is 1. If print_step&gt;0, print variable names by each print_step-th iteration. If print_step=0 or no_cores&gt;1, no message is print.</p></td>
+      <td><p>A non-negative integer. Defaults to 1. If print_step&gt;0, print variable names by each print_step-th iteration. If print_step=0 or no_cores&gt;1, no message is print.</p></td>
     </tr>
     <tr>
       <th>replace_blank_na</th>
-      <td><p>Logical. Replace blank values with NA. Default is TRUE. This argument should be the same with <code>woebin</code>'s.</p></td>
+      <td><p>Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with <code>woebin</code>'s.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -188,7 +188,7 @@
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
 </div><div class='input'><span class='co'># Example II</span>
 <span class='co'># binning for germancredit dataset</span>
-<span class='no'>bins_germancredit</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'>
+<span class='no'>bins_germancredit</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='input'>
 <span class='co'># converting the values in germancredit to woe</span>
 <span class='co'># bins is a list which generated from woebin()</span>
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>

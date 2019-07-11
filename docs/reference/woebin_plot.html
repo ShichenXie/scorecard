@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5.999</span>
       </span>
     </div>
 
@@ -141,15 +141,15 @@
     </tr>
     <tr>
       <th>x</th>
-      <td><p>Name of x variables. Default is NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
+      <td><p>Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
     </tr>
     <tr>
       <th>title</th>
-      <td><p>String added to the plot title. Default is NULL.</p></td>
+      <td><p>String added to the plot title. Defaults to NULL.</p></td>
     </tr>
     <tr>
       <th>show_iv</th>
-      <td><p>Logical. Default is TRUE, which means show information value in the plot title.</p></td>
+      <td><p>Logical. Defaults to TRUE, which means show information value in the plot title.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -177,7 +177,7 @@
 <span class='no'>p1_c</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins1</span>, <span class='kw'>line_color</span><span class='kw'>=</span><span class='st'>'#FC8D59'</span>, <span class='kw'>bar_color</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'#FFFFBF'</span>, <span class='st'>'#99D594'</span>))
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>p1_c</span>)</div><div class='output co'>#&gt; $credit.amount</div><div class='img'><img src='woebin_plot-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
 </div><div class='input'><span class='co'># Example II</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>plotlist</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins</span>)
+<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='input'><span class='no'>plotlist</span> <span class='kw'>=</span> <span class='fu'>woebin_plot</span>(<span class='no'>bins</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>plotlist</span>$<span class='no'>credit.amount</span>)</div><div class='img'><img src='woebin_plot-3.png' alt='' width='700' height='433' /></div><div class='input'>
 # # save binning plot
 # for (i in 1:length(plotlist)) {

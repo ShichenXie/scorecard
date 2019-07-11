@@ -24,7 +24,7 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 
 \item{positive}{Value of positive class, default "bad|1".}
 
-\item{...}{Additional paramters.}
+\item{...}{Additional parameters.}
 }
 \description{
 \code{report} creates a scorecard modeling report and save it as a xlsx file.

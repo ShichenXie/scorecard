@@ -64,7 +64,7 @@ vif = function(model, merge_coef = FALSE) {
       coefDF = as.data.frame(coef(summary(model)))
       coefDT = data.table(variable = row.names(coefDF),Estimate=coefDF[,1],
                  data.table(coefDF[,2:4])[,lapply(.SD,function(x) round(x,4))])
-      result = merge(coefDT, result, by='variable', all.x = TRUE)
+      result = merge(coefDT, result, by='variable', all.x = TRUE, sort = FALSE)
     } else {
       warning('The summary matrix cant merge with vif.')
     }

@@ -10,7 +10,7 @@
 #' @param seed A random seed to split input data frame. Defaults to 618. If it is NULL, input dt will not split into two datasets.
 #' @param save_report The name of xlsx file where the report is to be saved. Defaults to 'report'.
 #' @param positive Value of positive class, default "bad|1".
-#' @param ... Additional paramters.
+#' @param ... Additional parameters.
 #'
 #' @examples
 #' \dontrun{
@@ -144,7 +144,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   bin_num = ifelse('bin_num' %in% names(arguments), arguments$bin_num, 10)
   bin_type = ifelse('bin_type' %in% names(arguments), arguments$bin_type, 'freq')
   gains_tbl = gains_table(score = rbindlist(score_lst), label = rbindlist(label_list), bin_num = bin_num, bin_type=bin_type)
-  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'cumulative bad probability', 'approval rate')
+  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'approval rate', 'cumulative bad probability')
 
 
   wb <- createWorkbook()
@@ -171,7 +171,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   dt_iv = iv(dat_woe_lst[[1]][,c(paste0(x,"_woe"), y),with=FALSE], y, order = FALSE)[, info_value := round(info_value, 4)]
   dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dat_lst[[1]][,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
 
-  sum_tbl = Reduce(function(x,y) merge(x,y, all=TRUE, by='variable'), list(dt_vif, dt_iv, dt_mr))
+  sum_tbl = Reduce(function(x,y) merge(x,y, all=TRUE, by='variable', sort=FALSE), list(dt_vif, dt_iv, dt_mr))
 
   writeData(wb,sheet, sprintf('Model coefficients based on %s dataset', names(dat_lst)[1]), startRow=1, startCol=1, colNames=F)
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
