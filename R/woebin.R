@@ -1172,22 +1172,31 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
 
 # required in woebin_plot
 #' @import data.table ggplot2
-plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) {
+plot_bin = function(bin, title, show_iv, line_value = 'badprob', line_color = 'blue', bar_color = NULL) {
   # global variables or functions
-  . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = NULL
+  . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = lin_val = lin_val2 = lin_val_label = NULL
 
   if ( all(is.na(bin$good)) || all(is.na(bin$bad)) ) return(NULL)
   # data
   ## y_right_max
-  y_right_max = ceiling(max(bin$badprob, na.rm=T)*10)
-  if (y_right_max %% 2 ==1) y_right_max=y_right_max+1
-  if (y_right_max - max(bin$badprob, na.rm=T)*10 <= 0.3) y_right_max = y_right_max+2
-  y_right_max = y_right_max/10
-  if (y_right_max>1 || y_right_max<=0 || is.na(y_right_max) || is.null(y_right_max)) y_right_max=1
+  if (line_value == 'badprob') {
+    y_right_max = ceiling(max(bin[[line_value]], na.rm=T)*10)
+    if (y_right_max %% 2 ==1) y_right_max=y_right_max+1
+    if (y_right_max - max(bin[[line_value]], na.rm=T)*10 <= 0.3) y_right_max = y_right_max+2
+    y_right_max = y_right_max/10
+    if (y_right_max>1 || y_right_max<=0 || is.na(y_right_max) || is.null(y_right_max)) y_right_max=1
+  } else {
+    y_right_max = max(bin[[line_value]])
+  }
+  ## y_right_min
+  y_right_min = ifelse(line_value == 'badprob', 0, min(bin[[line_value]]))
+  ## y_right_name
+  y_right_name = ifelse(line_value == 'badprob', 'Bad probability', 'woe')
 
   ## y_left_max
   y_left_max = ceiling(max(bin$count_distr, na.rm=T)*10)/10
-  if (y_left_max>1 || y_left_max<=0 || is.na(y_left_max) || is.null(y_left_max)) y_left_max=1
+  if (y_left_max>1 || y_left_max<=0 || is.na(y_left_max) || is.null(y_left_max)) y_left_max = 1
+
 
 
   ## data set
@@ -1196,14 +1205,19 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
     variable, bin, count_num=count, count_distr2=count_distr, count_distr, good=good/sum(count), bad=bad/sum(count), badprob, woe
   )][, `:=`(
     bin = ifelse(is.na(bin), "NA", bin),
-    badprob2 = badprob*(y_left_max/y_right_max),
-    badprob = round(badprob,4),
+    lin_val2 = (get(line_value)-y_right_min)*(y_left_max/(y_right_max-y_right_min)),
+    lin_val = round(get(line_value),4),
     rowid = .I
-  )][, bin := factor(bin, levels = bin)]
+  )][, `:=`(
+    bin = factor(bin, levels = bin),
+    lin_val_label = paste0(round(lin_val*100, 1), "%")
+  )][]
+  if (line_value == 'woe') dat = dat[, lin_val_label := round(lin_val, 2)]
+
+
 
   dat_melt = melt(dat, id.vars = c("variable", "bin","rowid"), measure.vars =c("good", "bad"), variable.name = "goodbad")[
-    ,goodbad:=factor(goodbad, levels=c( "bad", "good"))
-    ]
+    ,goodbad:=factor(goodbad, levels=c( "bad", "good")) ]
 
   # title
   if (!is.null(title)) title = paste0(title, "-")
@@ -1219,17 +1233,17 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
     # coord_cartesian(clip = 'off') +
     geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
     geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
-    geom_line(data=dat, aes(x = rowid, y = badprob2), colour = line_color) +
-    geom_point(data=dat, aes(x = rowid, y=badprob2), colour = line_color, shape=21, fill="white") +
-    geom_text(data=dat, aes(x = rowid, y = badprob2, label = paste0(round(badprob*100, 1), "%")), colour=line_color, vjust = -0.5) +
-    scale_y_continuous(limits = c(0,y_left_max), sec.axis = sec_axis(~./(y_left_max/y_right_max), name = "Bad probability")) +
-    labs(title = title_string, x=NULL, y="Bin count distribution", fill=NULL) +
+    geom_line(data=dat, aes(x = rowid, y = lin_val2), colour = line_color) +
+    geom_point(data=dat, aes(x = rowid, y = lin_val2), colour = line_color, shape=21, fill="white") +
+    geom_text(data=dat, aes(x = rowid, y = lin_val2, label = lin_val_label), colour = line_color, vjust = -0.5) +
+    scale_y_continuous(limits = c(0, y_left_max), sec.axis = sec_axis(~./(y_left_max/(y_right_max-y_right_min))+y_right_min, name = y_right_name)) +
+    labs(title = title_string, x=NULL, y = "Bin count distribution", fill=NULL) +
     theme_bw() +
     theme(
       legend.position="bottom", legend.direction="horizontal",
       axis.title.y.right = element_text(colour = line_color),
-      axis.text.y.right  = element_text(colour = line_color,angle=90, hjust = 0.5),
-      axis.text.y = element_text(angle=90, hjust = 0.5) )
+      axis.text.y.right  = element_text(colour = line_color, angle = 90, hjust = 0.5),
+      axis.text.y = element_text(angle = 90, hjust = 0.5) )
 
   if (!is.null(bar_color)) p_bin = p_bin + scale_fill_manual(values= bar_color)
 
@@ -1244,6 +1258,7 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param title String added to the plot title. Defaults to NULL.
 #' @param show_iv Logical. Defaults to TRUE, which means show information value in the plot title.
+#' @param line_value The value displayed as line. Accepted values are 'badprob' and 'woe'. Defaults to bad probability.
 #' @param ... Additional parameters
 #'
 #' @return A list of binning graphics.
@@ -1259,6 +1274,11 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #'
 #' p1 = woebin_plot(bins1)
 #' print(p1)
+#'
+#' # modify line value
+#' p1_w = woebin_plot(bins1, line_value = 'woe')
+#' print(p1_w)
+#'
 #' # modify colors
 #' p1_c = woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 #' print(p1_c)
@@ -1280,11 +1300,13 @@ plot_bin = function(bin, title, show_iv, line_color = 'blue', bar_color = NULL) 
 #' @import data.table ggplot2
 #' @export
 #'
-woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, ...) {
+woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'badprob', ...) {
   # global variables or functions
   variable = NULL
   xs = x
 
+  # line value
+  if (!(line_value %in% c('badprob', 'woe'))) line_value = 'badprob'
   # line bar colors
   line_color = list(...)[['line_color']]
   if (is.null(line_color)) line_color = 'blue'
@@ -1300,7 +1322,7 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, ...) {
 
   # plot export
   plotlist = list()
-  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv, line_color = line_color, bar_color = bar_color)
+  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv, line_value = line_value,  line_color = line_color, bar_color = bar_color)
 
 
   return(plotlist)
