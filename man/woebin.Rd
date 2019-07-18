@@ -9,7 +9,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
   bin_num_limit = 8, positive = "bad|1", no_cores = NULL,
   print_step = 0L, method = "tree", save_breaks_list = NULL,
   ignore_const_cols = TRUE, ignore_datetime_cols = TRUE,
-  check_cate_num = TRUE, replace_blank_na = TRUE, ...)
+  check_cate_num = TRUE, replace_blank_inf = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -46,7 +46,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{check_cate_num}{Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.}
 
-\item{replace_blank_na}{Logical. Replace blank values with NA. Defaults to TRUE.}
+\item{replace_blank_inf}{Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE.}
 
 \item{...}{Additional parameters.}
 }

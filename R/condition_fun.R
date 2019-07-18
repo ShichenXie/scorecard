@@ -63,6 +63,19 @@ rep_blank_na = function(dt) {
     dt[dt == ""] = NA
   }
 
+  is_inf_nan = sapply(dt, function(x) any(is.infinite(x)) | any(is.nan(x)))
+  if (any(is_inf_nan)) {
+    warning(sprintf('The Infinite or NaN values are replaced with -999 in the following columns:\n%s', paste(names(which(
+      is_inf_nan
+    )), collapse = ", ")))
+
+    dt[dt == Inf | dt == -Inf] = -999
+    dt = dt[, lapply(.SD, function(x) {
+      x[is.nan(x)] = -999
+      return(x)
+    })]
+  }
+
   return(dt)
 }
 

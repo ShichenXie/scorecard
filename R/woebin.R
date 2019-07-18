@@ -365,11 +365,13 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
   total_iv_all_brks = total_iv_all_breaks(initial_binning, bestbreaks, dtm_rows)
 
   # bestbreaks: total_iv == max(total_iv) & min(count_distr) >= count_distr_limit
-  bstbrk_max_iv = total_iv_all_brks[min_count_distr >= count_distr_limit][total_iv==max(total_iv)][, bstbin]
-  # add 1best break to bestbreaks
-  bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
-  bin_add_1bst = binning_add_1bst(initial_binning, bestbreaks)
+  if (total_iv_all_brks[min_count_distr >= count_distr_limit, .N > 0]) {
+    bstbrk_max_iv = total_iv_all_brks[min_count_distr >= count_distr_limit][total_iv==max(total_iv)][, bstbin]
+    # add 1best break to bestbreaks
+    bestbreaks = unique(c(bestbreaks, bstbrk_max_iv[1]))
+  }
 
+  bin_add_1bst = binning_add_1bst(initial_binning, bestbreaks)
   return(bin_add_1bst)
 }
 
@@ -736,7 +738,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param ignore_const_cols Logical. Ignore constant columns. Defaults to TRUE.
 #' @param ignore_datetime_cols Logical. Ignore datetime columns. Defaults to TRUE.
 #' @param check_cate_num Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.
-#' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE.
+#' @param replace_blank_inf Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE.
 #' @param ... Additional parameters.
 #'
 #' @return A list of data frames include binning information for each x variables.
@@ -817,7 +819,22 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
-woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8, positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL, ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_na=TRUE, ...) {
+woebin = function(dt, y, x=NULL,
+                  var_skip=NULL,
+                  breaks_list=NULL,
+                  special_values=NULL,
+                  stop_limit=0.1,
+                  count_distr_limit=0.05,
+                  bin_num_limit=8,
+                  positive="bad|1",
+                  no_cores=NULL,
+                  print_step=0L,
+                  method="tree",
+                  save_breaks_list=NULL,
+                  ignore_const_cols=TRUE,
+                  ignore_datetime_cols=TRUE,
+                  check_cate_num=TRUE,
+                  replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -856,7 +873,7 @@ woebin = function(dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values
   # check categorical columns' unique values
   if (check_cate_num) check_cateCols_uniqueValues(dt, var_skip)
   # replace black with na
-  if (replace_blank_na) dt = rep_blank_na(dt)
+  if (replace_blank_inf) dt = rep_blank_na(dt)
   # x variable names
   xs = x_variable(dt, y, x, var_skip)
   xs_len = length(xs)
@@ -1033,7 +1050,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @param bins Binning information generated from \code{woebin}.
 #' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
-#' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
+#' @param replace_blank_inf Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.
 #'
 #' @return A data frame with columns for variables converted into woe values.
@@ -1074,7 +1091,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=TRUE, ...) {
+woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -1094,7 +1111,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_na=T
   # # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace "" by NA
-  if (replace_blank_na) dt = rep_blank_na(dt)
+  if (replace_blank_inf) dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
 

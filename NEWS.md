@@ -4,6 +4,7 @@
 * added a cross validation function perf_cv
 * modified the default value for no_cores in woebin and woebin_ply function.
 * woebin_plot supports displaying woe values
+* fixed a bug when Inf or NaN exist in input data for woebin and woebin_ply function
 
 # scorecard 0.2.5
 
