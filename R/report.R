@@ -89,13 +89,15 @@
 #' }
 #'
 #' @import openxlsx
-#' @importFrom stats as.formula glm predict
+#' @importFrom stats as.formula glm predict.glm
 #' @export
 report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_report='report', positive='bad|1', ...) {
   # info_value = gvif = . = variable = bin = woe = points = NULL
-  .=bin=gvif=info_value=points=variable=woe=points = NULL
+  . = bin = gvif = info_value = points = variable = woe = points = name = NULL
 
   arguments = list(...)
+  x_name = arguments[['x_name']]
+  if (!is.null(x_name)) x_name = setDT(list(variable=x, name = x_name))
   # data list
   dat_lst = list()
   if (is.data.frame(dt)) {
@@ -126,8 +128,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   # fitting
   m = glm(as.formula(paste0(y, " ~ .")), family = "binomial",
           data = dat_woe_lst[[1]][,c(paste0(x,"_woe"),y),with=F])
-  pred_lst = lapply(dat_woe_lst, function(dat) {
-    predict(m, type='response', dat)
+  pred_lst = lapply(dat_woe_lst, function(d) {
+    predict.glm(m, newdata = d, type='response')
   })
 
   binomial_metric = c("mse", "rmse", "logloss", "r2", "ks", "auc", "gini")
@@ -155,8 +157,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   sample_info <- lapply(dat_lst, function(x) {
     data.table(`sample size` = nrow(x),
-    `feature size` = ncol(x)-1,
-    `bad rate` = sum(x[[y]])/nrow(x))
+               `feature size` = ncol(x)-1,
+               `bad rate` = sum(x[[y]])/nrow(x))
   })
 
   writeData(wb, sheet, rbindlist(sample_info, idcol = 'dataset'), startRow=1, startCol=1, colNames=T)
@@ -171,7 +173,10 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   dt_iv = iv(dat_woe_lst[[1]][,c(paste0(x,"_woe"), y),with=FALSE], y, order = FALSE)[, info_value := round(info_value, 4)]
   dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dat_lst[[1]][,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
 
-  sum_tbl = Reduce(function(x,y) merge(x,y, all=TRUE, by='variable', sort=FALSE), list(dt_vif, dt_iv, dt_mr))
+  sum_tbl = Reduce(
+    function(x,y) merge(x,y, all=TRUE, by='variable', sort=FALSE), list(dt_vif, dt_iv, dt_mr)
+  )[, variable := sub('_woe$', '', variable)]
+  if (!is.null(x_name)) sum_tbl = merge(x_name, sum_tbl, by = 'variable', sort = FALSE, all = TRUE)[c(.N, seq_len(.N-1)),]
 
   writeData(wb,sheet, sprintf('Model coefficients based on %s dataset', names(dat_lst)[1]), startRow=1, startCol=1, colNames=F)
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
@@ -206,11 +211,13 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
     di = names_dat[i]
     # title row
     writeData(wb,sheet, sprintf('graphics of %s dataset', di), startRow=1, startCol=7*(i-1)+1, colNames=F)
-    writeData(wb, sheet, sprintf('binning of %s dataset', di), startRow=1, startCol=7*length(names_dat)+1+13*(i-1), colNames=F)
+    writeData(wb, sheet, sprintf('binning of %s dataset', di), startRow=1, startCol=7*length(names_dat)+1+14*(i-1), colNames=F)
 
     # binning
-    writeData(wb,sheet, rbindlist(bins_lst[[i]]),
-startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
+    binning_df = rbindlist(bins_lst[[i]])
+    if (!is.null(x_name)) binning_df = merge(x_name, binning_df, by = 'variable', sort=FALSE, all = TRUE)
+    writeData(wb,sheet, binning_df,
+              startRow=2, startCol=7*length(names_dat)+1+14*(i-1), colNames=T)
   }
 
 
@@ -218,8 +225,9 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
   for (i in seq_along(names_dat)) {
     di = names_dat[i]
     plist = woebin_plot(bins_lst[[di]], title = di)
+
     for (j in seq_along(x)) {
-      # writeData(wb,sheet, var_exp[variable == x[j]], startCol = 1, startRow = (j-1)*15+2, rowNames = FALSE)
+      if (!is.null(x_name)) writeData(wb,sheet, x_name[variable == x[j], name], startRow = (j-1)*15+3, startCol = 7*(i-1)+1, rowNames = FALSE)
       print(plist[[j]])
       insertPlot(wb, sheet, width = 12, height = 7, xy = NULL,
                  startRow = (j-1)*15+4, startCol = 7*(i-1)+1,
@@ -243,7 +251,9 @@ startRow=2, startCol=7*length(names_dat)+1+13*(i-1), colNames=T)
 
   # add scorecard datatable
   writeData(wb,sheet, "scorecard", startCol=1, startRow=7, colNames=F)
-  writeData(wb,sheet, rbindlist(card, fill = T)[,.(variable, bin, woe, points)], startCol=1, startRow=8, colNames=T)
+  card_df = rbindlist(card, fill = T)[,.(variable, bin, woe, points)]
+  if (!is.null(x_name)) card_df = merge(x_name, card_df, by = 'variable', sort=FALSE, all = TRUE)[c(.N, seq_len(.N-1)),]
+  writeData(wb,sheet, card_df, startCol=1, startRow=8, colNames=T)
 
 
   # population stability ------

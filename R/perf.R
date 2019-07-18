@@ -1341,7 +1341,7 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
   if (is.null(breaks_list)) {
     f_glm = function(tt, y) {
       m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt$train)
-      pp = lapply(tt, function(t) predict(m1, t, type='response'))
+      pp = lapply(tt, function(t) predict.glm(m1, newdata = t, type='response'))
       return(pp)
     }
   } else {
@@ -1350,7 +1350,7 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
       tt_woe = lapply(tt, function(t) woebin_ply(t, bin_train, print_info = FALSE))
 
       m1 = glm( as.formula(sprintf('%s ~ .', y)), family = binomial(), data = tt_woe$train)
-      pp = lapply(tt_woe, function(t) predict(m1, t, type='response'))
+      pp = lapply(tt_woe, function(t) predict.glm(m1, newdata = t, type='response'))
       return(pp)
     }
   }
