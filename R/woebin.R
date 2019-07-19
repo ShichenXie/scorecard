@@ -1,7 +1,7 @@
 # woebin woebin_plot woebin_ply woebin_adj
 
 # converting vector (breaks & special_values) to data frame
-split_vec_todf = function(vec) {
+split_vec2df = function(vec) {
   value = . = bin_chr = V1 = NULL
 
   if (!is.null(vec)) data.table(
@@ -30,7 +30,7 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
   spl_val = add_missing_spl_val(dtm, breaks, spl_val)
   if (!is.null(spl_val)) {
     # special_values from vector to data frame
-    sv_df = split_vec_todf(spl_val)
+    sv_df = split_vec2df(spl_val)
 
     # dtm_sv & dtm
     dtm_sv = setDT(dtm)[value %in% sv_df$value]
@@ -49,6 +49,7 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
 
   return(list(binning_sv=binning_sv, dtm=dtm))
 }
+
 
 # check empty bins for unmeric variable
 check_empty_bins = function(dtm, binning) {
@@ -70,7 +71,6 @@ check_empty_bins = function(dtm, binning) {
   }
   return(binning)
 }
-
 # check zero in good bad, remove bins that have zeros in good or bad column
 check_zero_goodbad = function(dtm, binning, count_distr_limit = NULL) {
   brkp = good = bad = count = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = badprob = value = NULL
@@ -106,7 +106,6 @@ check_zero_goodbad = function(dtm, binning, count_distr_limit = NULL) {
   }
   return(binning)
 }
-
 # check count distri, remove bins that count_distribution rate less than count_distr_limit
 check_count_distri = function(dtm, binning, count_distr_limit) {
   count_distr = count = good = bad = brkp = merge_tolead = count_lag = count_lead = brkp2 = . = variable = bin = value = NULL
@@ -153,7 +152,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
   value = bin = . = y = variable = count = bad = good = V1 = badprob = bksv_list = bin_chr = NULL
 
   # breaks from vector to data frame
-  bk_df = split_vec_todf(breaks)
+  bk_df = split_vec2df(breaks)
 
   # dtm $ binning_sv
   dtm_binsv_list = dtm_binning_sv(dtm, breaks, spl_val)
@@ -297,6 +296,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
   return(list(binning_sv=binning_sv, initial_binning=init_bin))
 }
 
+
 # required in woebin2_tree # add 1 best break for tree-like binning
 woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestbreaks=NULL) {
   # global variables or functions
@@ -374,7 +374,6 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
   bin_add_1bst = binning_add_1bst(initial_binning, bestbreaks)
   return(bin_add_1bst)
 }
-
 # required in woebin2 # return tree-like binning
 woebin2_tree = function(
   dtm,
@@ -819,22 +818,13 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
-woebin = function(dt, y, x=NULL,
-                  var_skip=NULL,
-                  breaks_list=NULL,
-                  special_values=NULL,
-                  stop_limit=0.1,
-                  count_distr_limit=0.05,
-                  bin_num_limit=8,
-                  positive="bad|1",
-                  no_cores=NULL,
-                  print_step=0L,
-                  method="tree",
-                  save_breaks_list=NULL,
-                  ignore_const_cols=TRUE,
-                  ignore_datetime_cols=TRUE,
-                  check_cate_num=TRUE,
-                  replace_blank_inf=TRUE, ...) {
+woebin = function(
+  dt, y, x=NULL,
+  var_skip=NULL, breaks_list=NULL, special_values=NULL,
+  stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8,
+  positive="bad|1", no_cores=NULL, print_step=0L,
+  method="tree", save_breaks_list=NULL,
+  ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -925,6 +915,7 @@ woebin = function(dt, y, x=NULL,
   if (!is.null(y)) {
     ycol = dt[[y]]
   } else ycol = NA
+
   if (no_cores == 1) {
     for (i in 1:xs_len) {
       x_i = xs[i]

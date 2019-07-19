@@ -40,7 +40,10 @@
 #' @import data.table
 #' @export
 #'
-var_filter = function(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95, var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive = "bad|1") {
+var_filter = function(
+  dt, y, x = NULL,
+  iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95,
+  var_rm = NULL, var_kp = NULL, return_rm_reason = FALSE, positive = "bad|1") {
   # start time
   start_time = proc.time()
   cat('[INFO] filtering variables ... \n')
