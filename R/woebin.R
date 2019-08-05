@@ -937,8 +937,8 @@ woebin = function(
     }
 
   } else {
-    type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSOCK', 'FORK')
-    cl = makeCluster(no_cores, type = type_psock_fork)
+    # type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSOCK', 'FORK')
+    cl = makeCluster(no_cores)#, type = type_psock_fork)
     registerDoParallel(cl)
     # registerDoParallel(no_cores)
     # run
@@ -954,7 +954,7 @@ woebin = function(
           if (xs_len==1) bs = list(bs)
           setNames(bs, xs)
         }#,
-        # .export = c('dt', 'xs', 'y', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'method')
+        # .export = c('dt', 'xs', 'ycol', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'method')
       ) %dopar% {
         x_i = xs[i]
 
@@ -1143,8 +1143,8 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=
       dat = cbind(dat, woepoints_ply1(dtx, binx, x_i, woe_points=value))
     }
   } else {
-    type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSOCK', 'FORK')
-    cl = makeCluster(no_cores, type = type_psock_fork)
+    # type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSOCK', 'FORK')
+    cl = makeCluster(no_cores)#, type = type_psock_fork)
     registerDoParallel(cl)
     # registerDoParallel(no_cores)
     # run
