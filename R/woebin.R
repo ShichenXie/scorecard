@@ -496,7 +496,7 @@ woebin2_chimerge = function(
   binning_chisq = add_chisq(initial_binning)
 
   # param
-  bin_chisq_min = binning_chisq[, min(chisq, na.rm = TRUE)]
+  bin_chisq_min = binning_chisq[!is.na(chisq), min(chisq)]
   bin_count_distr_min = binning_chisq[!is.na(brkp), min((good+bad)/dtm_rows)]
   bin_nrow = binning_chisq[,.N]
   # remove brkp if chisq < chisq_limit
@@ -533,8 +533,8 @@ woebin2_chimerge = function(
     binning_chisq = add_chisq(binning_chisq)
     ## param
     bin_nrow = binning_chisq[,.N]
-    if (bin_nrow == 1) break
-    bin_chisq_min = binning_chisq[, min(chisq, na.rm = TRUE)]
+    if (bin_nrow == 1 || binning_chisq[!is.na(chisq), .N==0]) break
+    bin_chisq_min = binning_chisq[!is.na(chisq), min(chisq)]
     bin_count_distr_min = binning_chisq[!is.na(brkp), min((good+bad)/dtm_rows)]
   }
 

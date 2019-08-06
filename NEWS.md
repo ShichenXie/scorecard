@@ -5,6 +5,7 @@
 * modified the default value for no_cores in woebin and woebin_ply function.
 * woebin_plot supports displaying woe values
 * fixed a bug when Inf or NaN exist in input data for woebin and woebin_ply function
+* fixed a bug in woebin function
 
 # scorecard 0.2.5
 
