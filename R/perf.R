@@ -1267,7 +1267,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list List of break points, defaults to NULL. If it is NULL, then using original values of the input data to fitting model, otherwise converting into woe values based on training data.
 #' @param no_folds Number of folds for K-fold cross-validation. Defaults to 5.
-#' @param seeds The seeds to create multiple random splits of the input dataset into traning and validation data by using \code{split_df} function. Defaults to NULL.
+#' @param seeds The seeds to create multiple random splits of the input dataset into training and validation data by using \code{split_df} function. Defaults to NULL.
 #' @param binomial_metric Defaults to ks.
 #' @param positive Value of positive class, defaults to "bad|1".
 #' @param ... Additional parameters.

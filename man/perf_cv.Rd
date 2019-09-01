@@ -17,7 +17,7 @@ perf_cv(dt, y, x = NULL, no_folds = 5, seeds = NULL,
 
 \item{no_folds}{Number of folds for K-fold cross-validation. Defaults to 5.}
 
-\item{seeds}{The seeds to create multiple random splits of the input dataset into traning and validation data by using \code{split_df} function. Defaults to NULL.}
+\item{seeds}{The seeds to create multiple random splits of the input dataset into training and validation data by using \code{split_df} function. Defaults to NULL.}
 
 \item{binomial_metric}{Defaults to ks.}
 
