@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credit Risk Scorecard • scorecard</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Credit Risk Scorecard">
 <meta property="og:description" content="
   The `scorecard` package makes the development of credit risk scorecard 
@@ -40,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -92,6 +93,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="contents col-md-9">
 <div id="scorecard" class="section level1">
@@ -113,28 +115,28 @@
 <ul>
 <li>Install the release version of <code>scorecard</code> from <a href="https://cran.r-project.org/package=scorecard">CRAN</a> with:</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"scorecard"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"scorecard"</span>)</a></code></pre></div>
 <ul>
 <li>Install the latest version of <code>scorecard</code> from <a href="https://github.com/ShichenXie/scorecard">github</a> with:</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># install.packages("devtools")</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"shichenxie/scorecard"</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb2-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"shichenxie/scorecard"</span>)</a></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>This is a basic example which shows you how to develop a common credit risk scorecard:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Traditional Credit Scoring Using Logistic Regression</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(scorecard)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(scorecard)</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># data preparing ------</span></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># load germancredit data</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"germancredit"</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"germancredit"</span>)</a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># filter variable via missing rate, iv, identical value rate</span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8">dt_f =<span class="st"> </span><span class="kw"><a href="reference/var_filter.html">var_filter</a></span>(germancredit, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># breaking dt into train and test</span></a>
 <a class="sourceLine" id="cb3-10" data-line-number="10">dt_list =<span class="st"> </span><span class="kw"><a href="reference/split_df.html">split_df</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">ratio =</span> <span class="fl">0.6</span>, <span class="dt">seed =</span> <span class="dv">30</span>)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">label_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) x<span class="op">$</span>creditability)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">label_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) x<span class="op">$</span>creditability)</a>
 <a class="sourceLine" id="cb3-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># woe binning ------</span></a>
 <a class="sourceLine" id="cb3-14" data-line-number="14">bins =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
@@ -144,20 +146,20 @@
 <a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co">## adjust breaks interactively</span></a>
 <a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co"># breaks_adj = woebin_adj(dt_f, "creditability", bins) </span></a>
 <a class="sourceLine" id="cb3-20" data-line-number="20"><span class="co">## or specify breaks manually</span></a>
-<a class="sourceLine" id="cb3-21" data-line-number="21">breaks_adj =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
-<a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">age.in.years=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
-<a class="sourceLine" id="cb3-23" data-line-number="23">  <span class="dt">other.debtors.or.guarantors=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span>))</a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">breaks_adj =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">age.in.years=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">  <span class="dt">other.debtors.or.guarantors=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span>))</a>
 <a class="sourceLine" id="cb3-24" data-line-number="24">bins_adj =<span class="st"> </span><span class="kw"><a href="reference/woebin.html">woebin</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">breaks_list=</span>breaks_adj)</a>
 <a class="sourceLine" id="cb3-25" data-line-number="25"></a>
 <a class="sourceLine" id="cb3-26" data-line-number="26"><span class="co"># converting train and test into woe values</span></a>
-<a class="sourceLine" id="cb3-27" data-line-number="27">dt_woe_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/woebin_ply.html">woebin_ply</a></span>(x, bins_adj))</a>
+<a class="sourceLine" id="cb3-27" data-line-number="27">dt_woe_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/woebin_ply.html">woebin_ply</a></span>(x, bins_adj))</a>
 <a class="sourceLine" id="cb3-28" data-line-number="28"></a>
 <a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co"># glm ------</span></a>
-<a class="sourceLine" id="cb3-30" data-line-number="30">m1 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>( creditability <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/family">binomial</a></span>(), <span class="dt">data =</span> dt_woe_list<span class="op">$</span>train)</a>
+<a class="sourceLine" id="cb3-30" data-line-number="30">m1 =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>( creditability <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> <span class="kw"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span>(), <span class="dt">data =</span> dt_woe_list<span class="op">$</span>train)</a>
 <a class="sourceLine" id="cb3-31" data-line-number="31"><span class="co"># vif(m1, merge_coef = TRUE) # summary(m1)</span></a>
 <a class="sourceLine" id="cb3-32" data-line-number="32"><span class="co"># Select a formula-based model by AIC (or by LASSO for large dataset)</span></a>
-<a class="sourceLine" id="cb3-33" data-line-number="33">m_step =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/step">step</a></span>(m1, <span class="dt">direction=</span><span class="st">"both"</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb3-34" data-line-number="34">m2 =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/eval">eval</a></span>(m_step<span class="op">$</span>call)</a>
+<a class="sourceLine" id="cb3-33" data-line-number="33">m_step =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/step.html">step</a></span>(m1, <span class="dt">direction=</span><span class="st">"both"</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-34" data-line-number="34">m2 =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(m_step<span class="op">$</span>call)</a>
 <a class="sourceLine" id="cb3-35" data-line-number="35"><span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span></a>
 <a class="sourceLine" id="cb3-36" data-line-number="36"></a>
 <a class="sourceLine" id="cb3-37" data-line-number="37"><span class="co"># # Adjusting for oversampling (support.sas.com/kb/22/601.html)</span></a>
@@ -170,7 +172,7 @@
 <a class="sourceLine" id="cb3-44" data-line-number="44"></a>
 <a class="sourceLine" id="cb3-45" data-line-number="45"><span class="co"># performance ks &amp; roc ------</span></a>
 <a class="sourceLine" id="cb3-46" data-line-number="46"><span class="co">## predicted proability</span></a>
-<a class="sourceLine" id="cb3-47" data-line-number="47">pred_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_woe_list, <span class="cf">function</span>(x) <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(m2, x, <span class="dt">type=</span><span class="st">'response'</span>))</a>
+<a class="sourceLine" id="cb3-47" data-line-number="47">pred_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_woe_list, <span class="cf">function</span>(x) <span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(m2, x, <span class="dt">type=</span><span class="st">'response'</span>))</a>
 <a class="sourceLine" id="cb3-48" data-line-number="48"><span class="co">## performance</span></a>
 <a class="sourceLine" id="cb3-49" data-line-number="49">perf =<span class="st"> </span><span class="kw"><a href="reference/perf_eva.html">perf_eva</a></span>(<span class="dt">pred =</span> pred_list, <span class="dt">label =</span> label_list)</a>
 <a class="sourceLine" id="cb3-50" data-line-number="50"></a>
@@ -178,7 +180,7 @@
 <a class="sourceLine" id="cb3-52" data-line-number="52"><span class="co">## scorecard</span></a>
 <a class="sourceLine" id="cb3-53" data-line-number="53">card =<span class="st"> </span><span class="kw"><a href="reference/scorecard.html">scorecard</a></span>(bins_adj, m2)</a>
 <a class="sourceLine" id="cb3-54" data-line-number="54"><span class="co">## credit score</span></a>
-<a class="sourceLine" id="cb3-55" data-line-number="55">score_list =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/scorecard_ply.html">scorecard_ply</a></span>(x, card))</a>
+<a class="sourceLine" id="cb3-55" data-line-number="55">score_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/scorecard_ply.html">scorecard_ply</a></span>(x, card))</a>
 <a class="sourceLine" id="cb3-56" data-line-number="56"><span class="co">## psi</span></a>
 <a class="sourceLine" id="cb3-57" data-line-number="57"><span class="kw"><a href="reference/perf_psi.html">perf_psi</a></span>(<span class="dt">score =</span> score_list, <span class="dt">label =</span> label_list)</a></code></pre></div>
 </div>
@@ -222,17 +224,20 @@
 </div>
 </div>
 
+
       <footer><div class="copyright">
   <p>Developed by Shichen Xie.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

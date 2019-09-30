@@ -2,7 +2,7 @@
 % Please edit documentation in R/perf.R
 \name{perf_cv}
 \alias{perf_cv}
-\title{Cross validation}
+\title{Cross Validation}
 \usage{
 perf_cv(dt, y, x = NULL, no_folds = 5, seeds = NULL,
   binomial_metric = "ks", positive = "bad|1", breaks_list = NULL,

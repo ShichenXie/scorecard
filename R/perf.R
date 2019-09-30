@@ -1258,7 +1258,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 }
 
 
-#' Cross validation
+#' Cross Validation
 #'
 #' \code{perf_cv} provides cross validation on logistic regression and other binomial classification models.
 #'
