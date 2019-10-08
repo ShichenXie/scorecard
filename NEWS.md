@@ -1,3 +1,7 @@
+# scorecard 0.2.6.1
+
+* check var_kp in scorecard_ply function
+
 # scorecard 0.2.6
 
 * split_df function supports multiple data frames.
