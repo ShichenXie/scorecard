@@ -788,7 +788,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' # customizing the breakpoints of binning
 #' library(data.table)
 #' dat = rbind(
-#'   germancredit,
+#'   setDT(germancredit),
 #'   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
 #'   fill=TRUE)
 #'

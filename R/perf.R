@@ -120,7 +120,7 @@ confusionMatrix = function(dt, threshold=0.5, ...) {
   )[1, error := pred_1/sum(pred_1+pred_0)
     ][2, error := pred_0/sum(pred_1+pred_0)]
   # total row
-  cm = rbind(cm, data.frame(label = 'total', t(colSums(cm[,-1]))), fill=TRUE)
+  cm = rbind(cm, data.table(label = 'total', t(colSums(cm[,-1]))), fill=TRUE)
   cm[3, error := (cm[1,3]+cm[2,2])/sum(cm[3,2]+cm[3,3])]
   return(cm)
 }

@@ -16,7 +16,7 @@
 #'
 #' library(data.table)
 #' dat = rbind(
-#'   germancredit[, c(sample(20,3),21)],
+#'   setDT(germancredit)[, c(sample(20,3),21)],
 #'   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
 #'   fill=TRUE)
 #'
