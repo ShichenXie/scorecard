@@ -30,7 +30,7 @@ data(germancredit)
 
 library(data.table)
 dat = rbind(
-  germancredit[, c(sample(20,3),21)],
+  as.data.table(germancredit)[, c(sample(20,3),21)],
   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
   fill=TRUE)
 
