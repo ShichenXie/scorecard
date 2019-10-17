@@ -100,7 +100,7 @@ bins_germ = woebin(germancredit, y = "creditability")
 # customizing the breakpoints of binning
 library(data.table)
 dat = rbind(
-  germancredit,
+  setDT(germancredit),
   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
   fill=TRUE)
 

@@ -126,3 +126,9 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
 
   return(dt_new[])
 }
+
+
+# missing value imputation
+# feature scaling (standardization, normalization)
+# box-cox transformation
+#
