@@ -95,8 +95,8 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   # info_value = gvif = . = variable = bin = woe = points = NULL
   . = bin = gvif = info_value = points = variable = woe = points = name = NULL
 
-  arguments = list(...)
-  x_name = arguments[['x_name']]
+  kwargs = list(...)
+  x_name = kwargs[['x_name']]
   if (!is.null(x_name)) x_name = setDT(list(variable=x, name = x_name))
   # data list
   dat_lst = list()
@@ -133,18 +133,18 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   })
 
   binomial_metric = c("mse", "rmse", "logloss", "r2", "ks", "auc", "gini")
-  if ('binomial_metric' %in% names(arguments)) binomial_metric = arguments$binomial_metric
+  if ('binomial_metric' %in% names(kwargs)) binomial_metric = kwargs$binomial_metric
   m_perf = perf_eva(pred = pred_lst, label = label_list, binomial_metric=binomial_metric, confusion_matrix = FALSE, show_plot = NULL)
 
   # scaling
   card <- do.call( scorecard, args = c(
     list(bins=bins_lst[[1]], model=m),
-    arguments[intersect(c('points0', 'odds0', 'pdo', 'basepoints_eq0'), names(arguments))] ) )
+    kwargs[intersect(c('points0', 'odds0', 'pdo', 'basepoints_eq0'), names(kwargs))] ) )
   score_lst = lapply(dat_lst, function(x) scorecard_ply(x, card, print_step=0L))
 
 
-  bin_num = ifelse('bin_num' %in% names(arguments), arguments$bin_num, 10)
-  bin_type = ifelse('bin_type' %in% names(arguments), arguments$bin_type, 'freq')
+  bin_num = ifelse('bin_num' %in% names(kwargs), kwargs$bin_num, 10)
+  bin_type = ifelse('bin_type' %in% names(kwargs), kwargs$bin_type, 'freq')
   gains_tbl = gains_table(score = rbindlist(score_lst), label = rbindlist(label_list), bin_num = bin_num, bin_type=bin_type)
   gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'approval rate', 'cumulative bad probability')
 
@@ -192,7 +192,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   writeData(wb, sheet, eva_tbl, startRow=1, startCol=1, colNames=T)
 
   show_plot = c("ks","roc")
-  if ('show_plot' %in% names(arguments)) show_plot = arguments$show_plot
+  if ('show_plot' %in% names(kwargs)) show_plot = kwargs$show_plot
   perf_eva(pred = pred_lst, label = label_list, confusion_matrix = FALSE, binomial_metric = NULL, show_plot = show_plot)$pic
   Sys.sleep(2)
   plot_ncol = ceiling(sqrt(length(show_plot)))
@@ -241,9 +241,9 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   cat(sprintf("[INFO] sheet%s-scorecard\n", n))
   sheet  <- addWorksheet(wb, sheetName="scorecard")
 
-  odds0 = ifelse('odds0' %in% names(arguments), arguments$odds0, 1/19)
-  points0 = ifelse('points0' %in% names(arguments), arguments$points0, 600)
-  pdo = ifelse('pdo' %in% names(arguments), arguments$pdo, 50)
+  odds0 = ifelse('odds0' %in% names(kwargs), kwargs$odds0, 1/19)
+  points0 = ifelse('points0' %in% names(kwargs), kwargs$points0, 600)
+  pdo = ifelse('pdo' %in% names(kwargs), kwargs$pdo, 50)
 
   # add scorecard scaling rule
   writeData(wb,sheet, "scorecard scaling", startCol=1, startRow=1, colNames=F)

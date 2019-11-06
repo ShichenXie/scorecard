@@ -485,7 +485,7 @@ woebin2_chimerge = function(
     e_lag = a_lag_rowsum*a_colsum/a_sum
   )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by='bin']
 
-  return(merge(initial_binning[,count:=good+bad], chisq_df, all.x = TRUE))
+  return(merge(initial_binning[,count:=good+bad], chisq_df, all.x = TRUE, sort = FALSE))
   }
 
   # dtm_rows
@@ -518,7 +518,7 @@ woebin2_chimerge = function(
     } else if (bin_nrow > bin_num_limit) {
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
-    }
+    } else break
 
     # groupby brkp
     shift_type = ifelse(rm_brkp[1,merge_tolead], 'lead', 'lag')
@@ -831,20 +831,21 @@ woebin = function(
   # global variable
   i = NULL
   # arguments ------
+  kwargs = list(...)
   # print_info
-  print_info = list(...)[['print_info']]
+  print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
   # init_count_distr
-  min_perc_fine_bin = list(...)[['init_count_distr']]
-  init_count_distr = list(...)[['init_count_distr']]
+  min_perc_fine_bin = kwargs[['init_count_distr']]
+  init_count_distr = kwargs[['init_count_distr']]
   if (is.null(init_count_distr)) {
     init_count_distr <- ifelse(!is.null(min_perc_fine_bin), min_perc_fine_bin, 0.02)
   }
   # count_distr_limit
-  min_perc_coarse_bin = list(...)[['min_perc_coarse_bin']]
+  min_perc_coarse_bin = kwargs[['min_perc_coarse_bin']]
   if (!is.null(min_perc_coarse_bin)) count_distr_limit = min_perc_coarse_bin
   # bin_num_limit
-  max_num_bin = list(...)[['max_num_bin']]
+  max_num_bin = kwargs[['max_num_bin']]
   if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
 
 
@@ -1087,11 +1088,13 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=
   start_time = proc.time()
 
   # print info
-  print_info = list(...)[['print_info']]
+  kwargs = list(...)
+
+  print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
   if (print_info) cat('[INFO] converting into woe values ... \n')
   # value
-  value = list(...)[['value']]
+  value = kwargs[['value']]
   if (is.null(value) || !(value %in% c('woe', 'bin'))) value = 'woe'
 
   # global variables or functions
@@ -1313,12 +1316,13 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'b
   variable = NULL
   xs = x
 
+  kwargs = list(...)
   # line value
   if (!(line_value %in% c('badprob', 'woe'))) line_value = 'badprob'
   # line bar colors
-  line_color = list(...)[['line_color']]
+  line_color = kwargs[['line_color']]
   if (is.null(line_color)) line_color = 'blue'
-  bar_color = list(...)[['bar_color']]
+  bar_color = kwargs[['bar_color']]
 
   # bins # if (is.list(bins)) rbindlist(bins)
   if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
@@ -1472,8 +1476,9 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   # special_values
   special_values = check_special_values(special_values, xs_adj)
   # stop_limit
+  kwargs = list(...)
   stop_limit = 0.1
-  if ('stop_limit' %in% names(list(...))) stop_limit = list(...)[['stop_limit']]
+  if ('stop_limit' %in% names(kwargs)) stop_limit = kwargs[['stop_limit']]
     # print(stop_limit)
   stop_limit = check_stop_limit(stop_limit, xs_adj)
 
