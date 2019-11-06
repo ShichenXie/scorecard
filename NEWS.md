@@ -1,3 +1,7 @@
+# scorecard 0.2.7.1
+
+* fixed a bug in woebin using chimerge method
+
 # scorecard 0.2.7
 
 * check var_kp in scorecard_ply function
