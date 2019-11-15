@@ -20,6 +20,9 @@ navbar:
     - icon: fa-file-powerpoint-o fa-lg
       text: "slides"
       href: http://shichen.name/slide/20171115scorecard/
+    - icon: fa-money fa-lg
+      text: "donate"
+      href: http://shichen.name/donate/
     - icon: fa-github fa-lg
       text: "github"
       href: https://github.com/ShichenXie/scorecard
