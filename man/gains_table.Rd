@@ -5,7 +5,7 @@
 \title{Gains Table}
 \usage{
 gains_table(score, label, bin_num = 10, method = "freq",
-  positive = "bad|1", ...)
+  width_by = NULL, positive = "bad|1", ...)
 }
 \arguments{
 \item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}
@@ -15,6 +15,8 @@ gains_table(score, label, bin_num = 10, method = "freq",
 \item{bin_num}{Integer, the number of score bins. Defaults to 10. If it is 'max', then individual scores are used as bins.}
 
 \item{method}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.}
+
+\item{width_by}{Number, increment of the score breaks when method is set as 'width'. If it is provided the above parameter bin_num will not be used. Defaults to NULL.}
 
 \item{positive}{Value of positive class, Defaults to "bad|1".}
 

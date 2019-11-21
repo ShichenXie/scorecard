@@ -915,7 +915,8 @@ gains_table_format = function(dt_distr) {
     count_distr = count/sum(count),
     badprob=bad/count,
     approval_rate = cumsum(count)/sum(count),
-    cum_badprob = cumsum(bad)/cumsum(count)
+    cum_badprob = cumsum(bad)/cumsum(count),
+    mean_score
   ), by = datset]
 
   return(dt_distr)
@@ -928,6 +929,7 @@ gains_table_format = function(dt_distr) {
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
 #' @param bin_num Integer, the number of score bins. Defaults to 10. If it is 'max', then individual scores are used as bins.
 #' @param method The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.
+#' @param width_by Number, increment of the score breaks when method is set as 'width'. If it is provided the above parameter bin_num will not be used. Defaults to NULL.
 #' @param positive Value of positive class, Defaults to "bad|1".
 #' @param ... Additional parameters.
 #'
@@ -1007,7 +1009,7 @@ gains_table_format = function(dt_distr) {
 #' }
 #'
 #' @export
-gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1', ...) {
+gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, positive='bad|1', ...) {
   . = V1 = V2 = bad = bin = count = datset = group = NULL
 
   # arguments
@@ -1028,6 +1030,8 @@ gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1'
   bin_type = kwargs[['seed']]
   if (!is.null(bin_type)) method = bin_type
   if (!(method %in% c('freq', 'width'))) method = 'freq'
+  # width_by
+  if (!is.numeric(width_by) || width_by <= 0) width_by = NULL
 
 
 
@@ -1063,10 +1067,19 @@ gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1'
                          ][, c(-Inf, score[-1], Inf)]
 
     } else if (method == 'width') {
-      # in equal width
-      minmax = dt_sl[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
-                   ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
-      brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
+
+      if (is.null(width_by) || width_by > max(score)-min(score)) {
+        # in equal width
+        minmax = dt_sl[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
+                       ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
+
+        brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
+      } else {
+        minmax = quantile(score, c(0.02, 0.98))
+        minmax = round(minmax/width_by) * width_by
+        brkp = seq(minmax[[1]]-width_by, minmax[[2]]+width_by, by = width_by)
+      }
+
       if (is_score) brkp = round(brkp)
       brkp = c(-Inf, brkp[-c(1, length(brkp))], Inf)
     }
@@ -1075,7 +1088,7 @@ gains_table = function(score, label, bin_num=10, method='freq', positive='bad|1'
   if (return_dt_psi) return(dt_psi) # innter result usded in perf_psi function
 
   # distribution table
-  dt_distr = dt_psi[, .(count=.N, good = sum(label==0), bad = sum(label==1)), keyby = .(datset,bin)
+  dt_distr = dt_psi[, .(count=.N, good = sum(label==0), bad = sum(label==1), mean_score = mean(score)), keyby = .(datset,bin)
                   ][order(datset, -bin)]
   if (!is_score) dt_distr = dt_distr[order(datset, bin)] #is predicted probability
   # gains table

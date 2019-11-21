@@ -1,6 +1,7 @@
-# scorecard 0.2.7.1
+# scorecard 0.2.7.2
 
 * fixed a bug in woebin using chimerge method
+* gains_table supports setting of break width
 
 # scorecard 0.2.7
 
