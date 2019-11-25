@@ -27,6 +27,47 @@ NULL
 
 
 
+# download data from website
+# dt = setDT(read.table('https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data'))
+#
+# library(rvest)
+# attrs = read_html('https://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)') %>%
+#   html_nodes('p.normal') %>%
+#   html_text() %>%
+#   .[22] %>%
+#   strsplit(' *\r(\t)* *') %>%
+#   .[[1]] %>%
+#   sub('Attibute', 'Attribute', .)
+#
+# attr_no = which(grepl('^Attribute', attrs))
+#
+# attrdt = data.table(atr = attrs)[
+#   grepl('^Attribute', atr), var := atr
+# # ][which(grepl('^Attribute', atr))+1, varNam := atr
+# ][, var := var[1], by = cumsum(!is.na(var))
+# # ][, varNam := varNam[1], by = cumsum(!is.na(varNam))
+# ][, `:=`(
+#   var = paste0('V', sub('Attribute (\\d+):\\s+\\((.+)\\)', '\\1', var)),
+#   typ = sub('Attribute (\\d+):\\s+\\((.+)\\)', '\\2', var)
+# )][typ == 'qualitative']
+#
+# atrlst = lapply(split(attrdt, by = 'var'), function(x) {
+#   x[-c(1:2), .(atr)
+#   ][, `:=`(
+#     val1 = sub('^(A\\d+).+?$', '\\1', atr),
+#     val2 = sub('.*?(A\\d+) : (.+)$', '\\2', atr)
+#   )]
+# })
+#
+# varNam = attrs[attr_no+1] %>%
+#   tolower() %>%
+#   gsub('[^(a-z)]+', '.', .) %>%
+#   c(., 'creditability')
+# setnames(dt, varNam)
+
+
+
+
 # library(scorecard)
 # library(data.table)
 # data("germancredit")

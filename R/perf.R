@@ -905,7 +905,7 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
 
 
 gains_table_format = function(dt_distr) {
-  . = good = bad = bin = count = datset = NULL
+  . = good = bad = bin = count = datset = bin_avg = NULL
 
   dt_distr = dt_distr[, .(
     bin,
@@ -916,7 +916,7 @@ gains_table_format = function(dt_distr) {
     badprob=bad/count,
     approval_rate = cumsum(count)/sum(count),
     cum_badprob = cumsum(bad)/cumsum(count),
-    mean_score
+    bin_avg
   ), by = datset]
 
   return(dt_distr)
@@ -1088,7 +1088,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, p
   if (return_dt_psi) return(dt_psi) # innter result usded in perf_psi function
 
   # distribution table
-  dt_distr = dt_psi[, .(count=.N, good = sum(label==0), bad = sum(label==1), mean_score = mean(score)), keyby = .(datset,bin)
+  dt_distr = dt_psi[, .(count=.N, good = sum(label==0), bad = sum(label==1), bin_avg = mean(score)), keyby = .(datset,bin)
                   ][order(datset, -bin)]
   if (!is_score) dt_distr = dt_distr[order(datset, bin)] #is predicted probability
   # gains table
