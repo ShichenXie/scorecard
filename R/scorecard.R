@@ -71,11 +71,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
 #' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x=c("status.of.existing.checking.account", "duration.in.month", "credit.history",
-#'    "purpose", "credit.amount", "savings.account.and.bonds",
-#'    "present.employment.since", "installment.rate.in.percentage.of.disposable.income",
-#'    "personal.status.and.sex", "other.debtors.or.guarantors", "property",
-#'    "age.in.years", "other.installment.plans", "housing"))
+#'   x=sub('_woe', '', names(coef(m))[-1]))
 #'
 #' # credit score
 #' # Example I # only total score
@@ -128,10 +124,11 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 #' \code{scorecard2} creates a scorecard based on the results from \code{woebin}. It has the same function with \code{scorecard}, but without model object input.
 #'
+#' @param bins Binning information generated from \code{woebin} function.
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.
-#' @param bins Binning information generated from \code{woebin} function.
+#' @param badprob_orig Bad probability of original dataset, default to NULL. If it is provided the model will adjust for oversampling.
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
@@ -174,11 +171,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
 #' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x=c("status.of.existing.checking.account", "duration.in.month", "credit.history",
-#'    "purpose", "credit.amount", "savings.account.and.bonds",
-#'    "present.employment.since", "installment.rate.in.percentage.of.disposable.income",
-#'    "personal.status.and.sex", "other.debtors.or.guarantors", "property",
-#'    "age.in.years", "other.installment.plans", "housing"))
+#'   x= sub('_woe', '', names(coef(m))[-1]))
 #'
 #' # credit score
 #' # Example I # only total score
@@ -189,8 +182,8 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' }
 #' @import data.table
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
-  variable = NULL
+scorecard2 = function(bins, dt, y, x=NULL, badprob_orig = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
+  variable = weight = NULL
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -207,10 +200,24 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
   # dt to woe values
   dt_woe = do.call(woebin_ply, args = c(list(dt=dt, bins=bins, print_info=FALSE), list(...)))
 
+
   # model
-  model = glm(
-    as.formula(paste(y, "~ .")), family = binomial(),
-    data = dt_woe[,c(paste0(x,"_woe"),y), with=F])
+  if (!is.null(badprob_orig) && badprob_orig > 0 && badprob_orig < 1) {
+    p1 = badprob_orig # bad probability in population
+    r1 = dt[, table(get(y))/.N][['1']] # bad probability in sample dataset
+    dt_woe = dt_woe[grepl(positive, get(y)), wgts := p1/r1
+                  ][is.na(wgts), wgts := (1-p1)/(1-r1)
+                  ][,c(paste0(x,"_woe"), "wgts", y), with=F]
+
+    fmla = as.formula(sprintf('%s ~ %s', y, paste(paste0(x,"_woe"), collapse=" + ")))
+    model = glm(fmla, family = 'quasibinomial', weights = wgts, data = dt_woe)
+  } else {
+
+    model = glm(
+      as.formula(paste(y, "~ .")), family = 'binomial',
+      data = dt_woe[,c(paste0(x,"_woe"),y), with=F])
+  }
+
 
   return(scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0))
 }
@@ -262,11 +269,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
 #' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x=c("status.of.existing.checking.account", "duration.in.month", "credit.history",
-#'    "purpose", "credit.amount", "savings.account.and.bonds",
-#'    "present.employment.since", "installment.rate.in.percentage.of.disposable.income",
-#'    "personal.status.and.sex", "other.debtors.or.guarantors", "property",
-#'    "age.in.years", "other.installment.plans", "housing"))
+#'   x=sub('_woe', '', names(coef(m))[-1]))
 #'
 #' # credit score
 #' # Example I # only total score

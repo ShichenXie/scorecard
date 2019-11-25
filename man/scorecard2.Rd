@@ -4,8 +4,9 @@
 \alias{scorecard2}
 \title{Creating a Scorecard}
 \usage{
-scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
-  pdo = 50, basepoints_eq0 = FALSE, positive = "bad|1", ...)
+scorecard2(bins, dt, y, x = NULL, badprob_orig = NULL, points0 = 600,
+  odds0 = 1/19, pdo = 50, basepoints_eq0 = FALSE,
+  positive = "bad|1", ...)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}
@@ -15,6 +16,8 @@ scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
 \item{y}{Name of y variable.}
 
 \item{x}{Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.}
+
+\item{badprob_orig}{Bad probability of original dataset, default to NULL. If it is provided the model will adjust for oversampling.}
 
 \item{points0}{Target points, default 600.}
 
@@ -66,11 +69,7 @@ m = eval(m_step$call)
 # Example I # creat a scorecard
 card = scorecard(bins, m)
 card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-  x=c("status.of.existing.checking.account", "duration.in.month", "credit.history",
-   "purpose", "credit.amount", "savings.account.and.bonds",
-   "present.employment.since", "installment.rate.in.percentage.of.disposable.income",
-   "personal.status.and.sex", "other.debtors.or.guarantors", "property",
-   "age.in.years", "other.installment.plans", "housing"))
+  x= sub('_woe', '', names(coef(m))[-1]))
 
 # credit score
 # Example I # only total score
