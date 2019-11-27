@@ -4,8 +4,14 @@
 \alias{scorecard}
 \title{Creating a Scorecard}
 \usage{
-scorecard(bins, model, points0 = 600, odds0 = 1/19, pdo = 50,
-  basepoints_eq0 = FALSE)
+scorecard(
+  bins,
+  model,
+  points0 = 600,
+  odds0 = 1/19,
+  pdo = 50,
+  basepoints_eq0 = FALSE
+)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}

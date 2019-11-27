@@ -2,15 +2,24 @@
 % Please edit documentation in R/woebin.R
 \name{woebin_ply}
 \alias{woebin_ply}
-\title{WOE Transformation}
+\title{WOE/BIN Transformation}
 \usage{
-woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
-  replace_blank_inf = TRUE, ...)
+woebin_ply(
+  dt,
+  bins,
+  to = "woe",
+  no_cores = NULL,
+  print_step = 0L,
+  replace_blank_inf = TRUE,
+  ...
+)
 }
 \arguments{
 \item{dt}{A data frame.}
 
 \item{bins}{Binning information generated from \code{woebin}.}
+
+\item{to}{Converting original values to woe or bin. Defaults to woe.}
 
 \item{no_cores}{Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.}
 
@@ -24,7 +33,7 @@ woebin_ply(dt, bins, no_cores = NULL, print_step = 0L,
 A data frame with columns for variables converted into woe values.
 }
 \description{
-\code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.
+\code{woebin_ply} converts original values of input data into woe or bin based on the binning information generated from \code{woebin}.
 }
 \examples{
 # load germancredit data
@@ -36,9 +45,13 @@ dt = germancredit[, c("creditability", "credit.amount", "purpose")]
 # binning for dt
 bins = woebin(dt, y = "creditability")
 
-# converting original value to woe
+# converting to woe
 dt_woe = woebin_ply(dt, bins=bins)
 str(dt_woe)
+
+# converting to bin
+dt_bin = woebin_ply(dt, bins=bins, to = 'bin')
+str(dt_bin)
 
 \donttest{
 # Example II
@@ -53,8 +66,6 @@ germancredit_woe = woebin_ply(germancredit, bins_germancredit)
 bins_df = data.table::rbindlist(bins_germancredit)
 germancredit_woe = woebin_ply(germancredit, bins_df)
 
-# return value is bin but not woe
-germancredit_bin = woebin_ply(germancredit, bins_germancredit, value = 'bin')
 }
 
 }

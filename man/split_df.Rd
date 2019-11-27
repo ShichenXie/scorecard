@@ -4,8 +4,14 @@
 \alias{split_df}
 \title{Split a dataset}
 \usage{
-split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
-  name_dfs = c("train", "test"))
+split_df(
+  dt,
+  y = NULL,
+  ratio = c(0.7, 0.3),
+  seed = 618,
+  no_dfs = 2,
+  name_dfs = c("train", "test")
+)
 }
 \arguments{
 \item{dt}{A data frame.}

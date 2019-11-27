@@ -6,7 +6,7 @@
 #' @param var_skip Name of categorical variables that will skip for one-hot encoding. Defaults to NULL.
 #' @param var_encode Name of categorical variables to be one-hot encoded, Defaults to NULL. If it is NULL, then all categorical variables except in var_skip are counted.
 #' @param nacol_rm Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Defaults to FALSE.
-#' @param replace_na Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Defaults to NULL, which means no missing values will be replaced.
+#' @param ... Additional parameters.
 #'
 #' @return A data frame
 #'
@@ -28,22 +28,9 @@
 #' dat_onehot2 = one_hot(dat, var_skip = 'creditability', nacol_rm = TRUE)
 #' str(dat_onehot2)
 #'
-#' ## one hot and replace NAs
-#' dat_onehot3 = one_hot(dat, var_skip = 'creditability', replace_na = -1)
-#' str(dat_onehot3)
-#'
-#'
-#' # replace missing values only
-#' ## replace with -1
-#' dat_repna1 = one_hot(dat, var_skip = names(dat), replace_na = -1)
-#' ## replace with median for numeric, and mode for categorical
-#' dat_repna2 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
-#' ## replace with to mean for numeric, and mode for categorical
-#' dat_repna3 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
-#'
 #'
 #' @export
-one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, replace_na = NULL) {
+one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, ...) {
   value = variable = NULL
 
   dt = setDT(copy(dt)) # copy(setDT(dt))
@@ -86,49 +73,88 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, rep
     dt_new = cbind(dt, dcast_dt)[, (c(var_encode, 'rowid')) := NULL]
   }
 
+
+
   # replace missing values with fillna
-  if (!is.null(replace_na)) {
-    names_fillna = names(dt_new)
-    # if (!is.null(var_skip)) names_fillna = setdiff(names_fillna, var_skip)
-    dt_new = dt_new[, (names_fillna) := lapply(.SD, function(x) {
-      if (anyNA(x)) {
-        # class of x is numeric
-        xisnum = all(class(x) %in% c('numeric', 'integer'))
-
-        # fillna values
-        if (is.numeric(replace_na)) {
-          fillna = replace_na
-        } else if ( replace_na %in% c('mean', 'median')) {
-          if (xisnum) {
-            fillna = do.call(replace_na, list(x, na.rm=TRUE))
-          } else {
-            fillna = names(which.max(table(x)))
-          }
-        } else {
-          fillna = -1
-        }
-        # set fill as character if x is not numeric
-        if (!xisnum) {
-          fillna = as.character(fillna)
-        }
-
-        # replace missing values in x
-        if (is.factor(x)) {
-          # https://stackoverflow.com/questions/39126537/replace-na-in-a-factor-column
-          x = `levels<-`(addNA(x), c(levels(x), fillna))
-        } else {
-          x[is.na(x)] <- fillna
-        }
-      }
-      return(x)
-    }), .SDcols = names_fillna]
-  }
+  if (!is.null(list(...)[['replace_na']])) dat_new = replace_na(dat_new, list(...)[['replace_na']])
 
   return(dt_new[])
 }
 
 
-# missing value imputation
+
+#' @export
+replace_na.default = function(dt, repl) {
+  # fillna
+  fillna = repl
+  #
+  if (repl %in% c('mean', 'median')) {
+    if (inherits(dt, c('integer', 'numeric', 'logical'))) {
+      fillna = do.call(repl, list(dt, na.rm=TRUE))
+    } else {
+      fillna = names(which.max(table(dt)))
+    }
+  }
+  # set fill as character if dt is not numeric
+  if (inherits(dt, c('character', 'factor'))) {
+    fillna = as.character(fillna)
+  } else {
+    fillna = as.numeric(fillna)
+  }
+
+
+  # replace missing values
+  if (is.factor(dt)) {
+    # https://stackoverflow.com/questions/39126537/replace-na-in-a-factor-column
+    dt = `levels<-`(addNA(dt), c(levels(dt), fillna))
+  } else {
+    dt[is.na(dt)] <- fillna
+  }
+
+  return(dt)
+}
+
+#' @export
+replace_na.data.frame = function(dt, repl) {
+  dt = setDT(copy(dt))
+
+  cols_na = names(dt)[sapply(dt, anyNA)]
+  if (length(cols_na) > 0) {
+    dt = dt[, (cols_na) := lapply(.SD, function(x) {
+      replace_na.default(x, repl)
+    }), .SDcols = cols_na]
+  }
+
+  return(dt)
+}
+#' Replace Missing Values
+#'
+#' @param dt A data frame or vector.
+#' @param repl Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable if repl is mean or median.
+#'
+#' @examples
+#' # load germancredit data
+#' data(germancredit)
+#'
+#' library(data.table)
+#' dat = rbind(
+#'   setDT(germancredit)[, c(sample(20,3),21)],
+#'   data.table(creditability=sample(c("good","bad"),10,replace=TRUE)),
+#'   fill=TRUE)
+#'
+#' ## replace with -1
+#' dat_repna1 = replace_na(dat, repl = -1)
+#' ## replace with median for numeric, and mode for categorical
+#' dat_repna2 = replace_na(dat, repl = 'median')
+#' ## replace with mean for numeric, and mode for categorical
+#' dat_repna3 = replace_na(dat, repl = 'mean')
+#'
+#' @export
+replace_na = function(dt, repl) {
+  UseMethod('replace_na')
+}
+
+
 # feature scaling (standardization, normalization)
 # box-cox transformation
 #

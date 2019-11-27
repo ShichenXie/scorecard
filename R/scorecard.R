@@ -128,7 +128,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.
-#' @param badprob_orig Bad probability of original dataset, default to NULL. If it is provided the model will adjust for oversampling.
+#' @param badprob_pop Bad probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
@@ -182,8 +182,8 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' }
 #' @import data.table
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, badprob_orig = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
-  variable = weight = NULL
+scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
+  variable = wgts = NULL
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -202,8 +202,8 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_orig = NULL, points0=600, odd
 
 
   # model
-  if (!is.null(badprob_orig) && badprob_orig > 0 && badprob_orig < 1) {
-    p1 = badprob_orig # bad probability in population
+  if (!is.null(badprob_pop) && badprob_pop > 0 && badprob_pop < 1) {
+    p1 = badprob_pop # bad probability in population
     r1 = dt[, table(get(y))/.N][['1']] # bad probability in sample dataset
     dt_woe = dt_woe[grepl(positive, get(y)), wgts := p1/r1
                   ][is.na(wgts), wgts := (1-p1)/(1-r1)

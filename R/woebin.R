@@ -819,11 +819,9 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
 woebin = function(
-  dt, y, x=NULL,
-  var_skip=NULL, breaks_list=NULL, special_values=NULL,
+  dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL,
   stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8,
-  positive="bad|1", no_cores=NULL, print_step=0L,
-  method="tree", save_breaks_list=NULL,
+  positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL,
   ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
@@ -1034,12 +1032,13 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
   return(dtx_suffix)
 }
 
-#' WOE Transformation
+#' WOE/BIN Transformation
 #'
-#' \code{woebin_ply} converts original input data into woe values based on the binning information generated from \code{woebin}.
+#' \code{woebin_ply} converts original values of input data into woe or bin based on the binning information generated from \code{woebin}.
 #'
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
+#' @param to Converting original values to woe or bin. Defaults to woe.
 #' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param replace_blank_inf Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
@@ -1059,9 +1058,13 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' # binning for dt
 #' bins = woebin(dt, y = "creditability")
 #'
-#' # converting original value to woe
+#' # converting to woe
 #' dt_woe = woebin_ply(dt, bins=bins)
 #' str(dt_woe)
+#'
+#' # converting to bin
+#' dt_bin = woebin_ply(dt, bins=bins, to = 'bin')
+#' str(dt_bin)
 #'
 #' \donttest{
 #' # Example II
@@ -1076,14 +1079,12 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' bins_df = data.table::rbindlist(bins_germancredit)
 #' germancredit_woe = woebin_ply(germancredit, bins_df)
 #'
-#' # return value is bin but not woe
-#' germancredit_bin = woebin_ply(germancredit, bins_germancredit, value = 'bin')
 #' }
 #'
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=TRUE, ...) {
+woebin_ply = function(dt, bins, to='woe', no_cores=NULL, print_step=0L, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -1093,9 +1094,9 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=
   print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
   if (print_info) cat('[INFO] converting into woe values ... \n')
-  # value
-  value = kwargs[['value']]
-  if (is.null(value) || !(value %in% c('woe', 'bin'))) value = 'woe'
+  # to
+  if (!is.null(kwargs[['value']])) to = kwargs[['value']]
+  if (is.null(to) || !(to %in% c('woe', 'bin'))) to = 'woe'
 
   # global variables or functions
   . = V1 = bin = variable = woe = i = databc_colomun_placeholder = NULL
@@ -1143,7 +1144,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=
       binx = bins[variable==x_i]
       dtx = dt[, x_i, with=FALSE]
 
-      dat = cbind(dat, woepoints_ply1(dtx, binx, x_i, woe_points=value))
+      dat = cbind(dat, woepoints_ply1(dtx, binx, x_i, woe_points=to))
     }
   } else {
     # type_psock_fork = ifelse(Sys.info()["sysname"] == 'Windows', 'PSOCK', 'FORK')
@@ -1165,7 +1166,7 @@ woebin_ply = function(dt, bins, no_cores=NULL, print_step=0L, replace_blank_inf=
         binx = bins[variable==x_i]
         dtx = dt[, x_i, with=FALSE]
 
-        woepoints_ply1(dtx, binx, x_i, woe_points=value)
+        woepoints_ply1(dtx, binx, x_i, woe_points=to)
       }
     # finish
     stopCluster(cl)

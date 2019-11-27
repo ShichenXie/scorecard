@@ -4,9 +4,18 @@
 \alias{var_filter}
 \title{Variable Filter}
 \usage{
-var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
-  identical_limit = 0.95, var_rm = NULL, var_kp = NULL,
-  return_rm_reason = FALSE, positive = "bad|1")
+var_filter(
+  dt,
+  y,
+  x = NULL,
+  iv_limit = 0.02,
+  missing_limit = 0.95,
+  identical_limit = 0.95,
+  var_rm = NULL,
+  var_kp = NULL,
+  return_rm_reason = FALSE,
+  positive = "bad|1"
+)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}

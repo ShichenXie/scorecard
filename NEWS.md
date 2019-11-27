@@ -3,7 +3,8 @@
 * fixed a bug in woebin using chimerge method
 * gains_table supports setting of break width
 * fixed a bug in germancredit data set
-*** scorecard2 supports adjusting sampling and return predict probability
+* scorecard2 supports to adjust oversampling 
+* provides replace_na function to replace missing values
 
 # scorecard 0.2.7
 

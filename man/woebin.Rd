@@ -4,12 +4,27 @@
 \alias{woebin}
 \title{WOE Binning}
 \usage{
-woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
-  special_values = NULL, stop_limit = 0.1, count_distr_limit = 0.05,
-  bin_num_limit = 8, positive = "bad|1", no_cores = NULL,
-  print_step = 0L, method = "tree", save_breaks_list = NULL,
-  ignore_const_cols = TRUE, ignore_datetime_cols = TRUE,
-  check_cate_num = TRUE, replace_blank_inf = TRUE, ...)
+woebin(
+  dt,
+  y,
+  x = NULL,
+  var_skip = NULL,
+  breaks_list = NULL,
+  special_values = NULL,
+  stop_limit = 0.1,
+  count_distr_limit = 0.05,
+  bin_num_limit = 8,
+  positive = "bad|1",
+  no_cores = NULL,
+  print_step = 0L,
+  method = "tree",
+  save_breaks_list = NULL,
+  ignore_const_cols = TRUE,
+  ignore_datetime_cols = TRUE,
+  check_cate_num = TRUE,
+  replace_blank_inf = TRUE,
+  ...
+)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}

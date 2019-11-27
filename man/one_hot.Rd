@@ -4,8 +4,7 @@
 \alias{one_hot}
 \title{One Hot Encoding}
 \usage{
-one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
-  replace_na = NULL)
+one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -16,7 +15,7 @@ one_hot(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE,
 
 \item{nacol_rm}{Logical. One-hot encoding on categorical variable contains missing values, whether to remove the column generated to indicate the presence of NAs. Defaults to FALSE.}
 
-\item{replace_na}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable. Defaults to NULL, which means no missing values will be replaced.}
+\item{...}{Additional parameters.}
 }
 \value{
 A data frame
@@ -41,19 +40,6 @@ str(dat_onehot1)
 ## remove na columns from categorical variable
 dat_onehot2 = one_hot(dat, var_skip = 'creditability', nacol_rm = TRUE)
 str(dat_onehot2)
-
-## one hot and replace NAs
-dat_onehot3 = one_hot(dat, var_skip = 'creditability', replace_na = -1)
-str(dat_onehot3)
-
-
-# replace missing values only
-## replace with -1
-dat_repna1 = one_hot(dat, var_skip = names(dat), replace_na = -1)
-## replace with median for numeric, and mode for categorical
-dat_repna2 = one_hot(dat, var_skip = names(dat), replace_na = 'median')
-## replace with to mean for numeric, and mode for categorical
-dat_repna3 = one_hot(dat, var_skip = names(dat), replace_na = 'mean')
 
 
 }

@@ -4,8 +4,15 @@
 \alias{gains_table}
 \title{Gains Table}
 \usage{
-gains_table(score, label, bin_num = 10, method = "freq",
-  width_by = NULL, positive = "bad|1", ...)
+gains_table(
+  score,
+  label,
+  bin_num = 10,
+  method = "freq",
+  width_by = NULL,
+  positive = "bad|1",
+  ...
+)
 }
 \arguments{
 \item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}
