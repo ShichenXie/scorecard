@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross Validation — perf_cv • scorecard</title>
+<title>Replace Missing Values — replace_na • scorecard</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Cross Validation — perf_cv" />
-<meta property="og:description" content="perf_cv provides cross validation on logistic regression and other binomial classification models." />
+<meta property="og:title" content="Replace Missing Values — replace_na" />
+<meta property="og:description" content="Replace missing values with a specified value or mean/median value." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -132,86 +132,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross Validation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/perf.R'><code>R/perf.R</code></a></small>
-    <div class="hidden name"><code>perf_cv.Rd</code></div>
+    <h1>Replace Missing Values</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/one_hot.R'><code>R/one_hot.R</code></a></small>
+    <div class="hidden name"><code>replace_na.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>perf_cv</code> provides cross validation on logistic regression and other binomial classification models.</p>
+    <p>Replace missing values with a specified value or mean/median value.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>perf_cv</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>seeds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>binomial_metric</span> <span class='kw'>=</span> <span class='st'>"ks"</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>replace_na</span>(<span class='no'>dt</span>, <span class='no'>repl</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>A data frame with both x (predictor/feature) and y (response/label) variables.</p></td>
+      <td><p>A data frame or vector.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Name of y variable.</p></td>
-    </tr>
-    <tr>
-      <th>x</th>
-      <td><p>Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
-    </tr>
-    <tr>
-      <th>no_folds</th>
-      <td><p>Number of folds for K-fold cross-validation. Defaults to 5.</p></td>
-    </tr>
-    <tr>
-      <th>seeds</th>
-      <td><p>The seeds to create multiple random splits of the input dataset into training and validation data by using <code>split_df</code> function. Defaults to NULL.</p></td>
-    </tr>
-    <tr>
-      <th>binomial_metric</th>
-      <td><p>Defaults to ks.</p></td>
-    </tr>
-    <tr>
-      <th>positive</th>
-      <td><p>Value of positive class, defaults to "bad|1".</p></td>
-    </tr>
-    <tr>
-      <th>breaks_list</th>
-      <td><p>List of break points, defaults to NULL. If it is NULL, then using original values of the input data to fitting model, otherwise converting into woe values based on training data.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional parameters.</p></td>
+      <th>repl</th>
+      <td><p>Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable if repl is mean or median.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list of data frames of binomial metrics for each datasets.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
+    <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
 
-<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>)
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>)
-<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt</span>, <span class='no'>bins</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
+  <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-<span class='no'>perf1</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-
-<span class='no'>perf2</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-   <span class='kw'>seeds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>, <span class='fl'>10</span>))
-
-<span class='no'>perf3</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-   <span class='kw'>binomial_metric</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'auc'</span>))
-
-}</div></pre>
+<span class='co'>## replace with -1</span>
+<span class='no'>dat_repna1</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> -<span class='fl'>1</span>)
+<span class='co'>## replace with median for numeric, and mode for categorical</span>
+<span class='no'>dat_repna2</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
+<span class='co'>## replace with mean for numeric, and mode for categorical</span>
+<span class='no'>dat_repna3</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> <span class='st'>'mean'</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

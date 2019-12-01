@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7.2</span>
       </span>
     </div>
 
@@ -106,6 +106,13 @@
   </a>
 </li>
 <li>
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
+  </a>
+</li>
+<li>
   <a href="https://github.com/ShichenXie/scorecard">
     <span class="fa fa-github fa-lg"></span>
      
@@ -134,8 +141,9 @@
     <p><code>scorecard2</code> creates a scorecard based on the results from <code>woebin</code>. It has the same function with <code>scorecard</code>, but without model object input.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>scorecard2</span>(<span class='no'>bins</span>, <span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>, <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>,
-  <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>scorecard2</span>(<span class='no'>bins</span>, <span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>badprob_pop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>,
+  <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>,
+  <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,6 +163,10 @@
     <tr>
       <th>x</th>
       <td><p>Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.</p></td>
+    </tr>
+    <tr>
+      <th>badprob_pop</th>
+      <td><p>Bad probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.</p></td>
     </tr>
     <tr>
       <th>points0</th>
@@ -218,11 +230,7 @@
 <span class='co'># Example I # creat a scorecard</span>
 <span class='no'>card</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard.html'>scorecard</a></span>(<span class='no'>bins</span>, <span class='no'>m</span>)
 <span class='no'>card2</span> <span class='kw'>=</span> <span class='fu'>scorecard2</span>(<span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>, <span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>'creditability'</span>,
-  <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"status.of.existing.checking.account"</span>, <span class='st'>"duration.in.month"</span>, <span class='st'>"credit.history"</span>,
-   <span class='st'>"purpose"</span>, <span class='st'>"credit.amount"</span>, <span class='st'>"savings.account.and.bonds"</span>,
-   <span class='st'>"present.employment.since"</span>, <span class='st'>"installment.rate.in.percentage.of.disposable.income"</span>,
-   <span class='st'>"personal.status.and.sex"</span>, <span class='st'>"other.debtors.or.guarantors"</span>, <span class='st'>"property"</span>,
-   <span class='st'>"age.in.years"</span>, <span class='st'>"other.installment.plans"</span>, <span class='st'>"housing"</span>))
+  <span class='kw'>x</span><span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>sub</a></span>(<span class='st'>'_woe'</span>, <span class='st'>''</span>, <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='no'>m</span>))[-<span class='fl'>1</span>]))
 
 <span class='co'># credit score</span>
 <span class='co'># Example I # only total score</span>

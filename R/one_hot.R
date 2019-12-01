@@ -192,6 +192,7 @@ var_scale.data.frame = function(dt, var_skip=NULL, type='standard', ...) {
 #' Variable Scaling
 #'
 #' scaling variables using standardization or normalization
+#'
 #' @param dt a data frame or vector
 #' @param var_skip Name of variables that will skip for scaling Defaults to NULL.
 #' @param type type of scaling method, including standard or minmax.
@@ -214,7 +215,7 @@ var_scale = function(dt, var_skip=NULL, type='standard', ...) {
 }
 
 
-
+# clusterSim::data.Normalization
 # n1 - standardization ((x-mean)/sd)
 # n2 - positional standardization ((x-median)/mad)
 # n3 - unitization ((x-mean)/range)

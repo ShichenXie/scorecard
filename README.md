@@ -7,9 +7,9 @@
 
 The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification. 
 
-- data preparation (`split_df`, `one_hot`)
-- variable selection (`var_filter`, `iv`, `vif`)
+- data preparation (`split_df`, `replace_na`, `one_hot`, `var_scale`)
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
+- variable selection (`var_filter`, `iv`, `vif`)
 - performance evaluation (`perf_eva`, `perf_psi`)
 - scorecard scaling (`scorecard`, `scorecard_ply`)
 - scorecard report (`gains_table`, `report`)

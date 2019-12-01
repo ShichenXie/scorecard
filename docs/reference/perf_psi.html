@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7.2</span>
       </span>
     </div>
 
@@ -103,6 +103,13 @@
     <span class="fa fa-file-powerpoint-o fa-lg"></span>
      
     slides
+  </a>
+</li>
+<li>
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
   </a>
 </li>
 <li>
@@ -221,18 +228,18 @@
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3567.</div><div class='img'><img src='perf_psi-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_psi-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1496592 0.3868581 0.4549272 0.2887263 0.5190203 0.8311232 0.6622464
+#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
 #&gt; 
 #&gt; 
 #&gt; $confusion_matrix
 #&gt; $confusion_matrix$train
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    375    101 0.2121849
-#&gt; 2:     1     57    148 0.2780488
-#&gt; 3: total    432    249 0.2320117
+#&gt; 1:     0    346    130 0.2731092
+#&gt; 2:     1     47    158 0.2292683
+#&gt; 3: total    393    288 0.2599119
 #&gt; 
 #&gt; 
 #&gt; $pic
@@ -245,28 +252,28 @@
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3567.</div><div class='img'><img src='perf_psi-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_psi-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1496592 0.3868581 0.4549272 0.2887263 0.5190203 0.8311232 0.6622464
+#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
 #&gt; 
 #&gt; $binomial_metric$test
 #&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1724029 0.4152142 0.521678 0.1755692 0.4447368 0.7732848 0.5465695
+#&gt; 1: 0.1731937 0.4161655 0.522526 0.1717874 0.4421992 0.7714991 0.5429981
 #&gt; 
 #&gt; 
 #&gt; $confusion_matrix
 #&gt; $confusion_matrix$train
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    375    101 0.2121849
-#&gt; 2:     1     57    148 0.2780488
-#&gt; 3: total    432    249 0.2320117
+#&gt; 1:     0    346    130 0.2731092
+#&gt; 2:     1     47    158 0.2292683
+#&gt; 3: total    393    288 0.2599119
 #&gt; 
 #&gt; $confusion_matrix$test
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    174     50 0.2232143
-#&gt; 2:     1     34     61 0.3578947
-#&gt; 3: total    208    111 0.2633229
+#&gt; 1:     0    158     66 0.2946429
+#&gt; 2:     1     27     68 0.2842105
+#&gt; 3: total    185    134 0.2915361
 #&gt; 
 #&gt; 
 #&gt; $pic
@@ -282,7 +289,7 @@
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'>perf_psi</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span></div><div class='output co'>#&gt;    variable    dataset        psi
-#&gt; 1:    score train_test 0.05431346</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='perf_psi-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'><span class='co'># modify colors</span>
+#&gt; 1:    score train_test 0.05703752</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='perf_psi-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'><span class='co'># modify colors</span>
 <span class='co'># perf_psi(score = score_list, label = label_list,</span>
 <span class='co'>#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))</span>
 

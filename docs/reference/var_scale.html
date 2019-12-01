@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross Validation — perf_cv • scorecard</title>
+<title>Variable Scaling — var_scale • scorecard</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Cross Validation — perf_cv" />
-<meta property="og:description" content="perf_cv provides cross validation on logistic regression and other binomial classification models." />
+<meta property="og:title" content="Variable Scaling — var_scale" />
+<meta property="og:description" content="scaling variables using standardization or normalization" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -132,52 +132,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross Validation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/perf.R'><code>R/perf.R</code></a></small>
-    <div class="hidden name"><code>perf_cv.Rd</code></div>
+    <h1>Variable Scaling</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/one_hot.R'><code>R/one_hot.R</code></a></small>
+    <div class="hidden name"><code>var_scale.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>perf_cv</code> provides cross validation on logistic regression and other binomial classification models.</p>
+    <p>scaling variables using standardization or normalization</p>
     </div>
 
-    <pre class="usage"><span class='fu'>perf_cv</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>seeds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>binomial_metric</span> <span class='kw'>=</span> <span class='st'>"ks"</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>var_scale</span>(<span class='no'>dt</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"standard"</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>A data frame with both x (predictor/feature) and y (response/label) variables.</p></td>
+      <td><p>a data frame or vector</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Name of y variable.</p></td>
+      <th>var_skip</th>
+      <td><p>Name of variables that will skip for scaling Defaults to NULL.</p></td>
     </tr>
     <tr>
-      <th>x</th>
-      <td><p>Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.</p></td>
-    </tr>
-    <tr>
-      <th>no_folds</th>
-      <td><p>Number of folds for K-fold cross-validation. Defaults to 5.</p></td>
-    </tr>
-    <tr>
-      <th>seeds</th>
-      <td><p>The seeds to create multiple random splits of the input dataset into training and validation data by using <code>split_df</code> function. Defaults to NULL.</p></td>
-    </tr>
-    <tr>
-      <th>binomial_metric</th>
-      <td><p>Defaults to ks.</p></td>
-    </tr>
-    <tr>
-      <th>positive</th>
-      <td><p>Value of positive class, defaults to "bad|1".</p></td>
-    </tr>
-    <tr>
-      <th>breaks_list</th>
-      <td><p>List of break points, defaults to NULL. If it is NULL, then using original values of the input data to fitting model, otherwise converting into woe values based on training data.</p></td>
+      <th>type</th>
+      <td><p>type of scaling method, including standard or minmax.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -185,33 +164,21 @@
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list of data frames of binomial metrics for each datasets.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
 
-<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>)
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>)
-<span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt</span>, <span class='no'>bins</span>)
+<span class='co'># standardization</span>
+<span class='no'>dts1</span> <span class='kw'>=</span> <span class='fu'>var_scale</span>(<span class='no'>germancredit</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'standard'</span>)
 
-<span class='no'>perf1</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-
-<span class='no'>perf2</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-   <span class='kw'>seeds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>, <span class='fl'>10</span>))
-
-<span class='no'>perf3</span> <span class='kw'>=</span> <span class='fu'>perf_cv</span>(<span class='no'>dt_woe</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>no_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-   <span class='kw'>binomial_metric</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'auc'</span>))
-
-}</div></pre>
+<span class='co'># normalization/minmax</span>
+<span class='no'>dts2</span> <span class='kw'>=</span> <span class='fu'>var_scale</span>(<span class='no'>germancredit</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'minmax'</span>)
+<span class='no'>dts2</span> <span class='kw'>=</span> <span class='fu'>var_scale</span>(<span class='no'>germancredit</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'minmax'</span>, <span class='kw'>new_range</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>))</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

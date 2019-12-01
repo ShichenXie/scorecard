@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WOE Transformation — woebin_ply • scorecard</title>
+<title>WOE/BIN Transformation — woebin_ply • scorecard</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="WOE Transformation — woebin_ply" />
-<meta property="og:description" content="woebin_ply converts original input data into woe values based on the binning information generated from woebin." />
+<meta property="og:title" content="WOE/BIN Transformation — woebin_ply" />
+<meta property="og:description" content="woebin_ply converts original values of input data into woe or bin based on the binning information generated from woebin." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7.2</span>
       </span>
     </div>
 
@@ -106,6 +106,13 @@
   </a>
 </li>
 <li>
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
+  </a>
+</li>
+<li>
   <a href="https://github.com/ShichenXie/scorecard">
     <span class="fa fa-github fa-lg"></span>
      
@@ -125,16 +132,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>WOE Transformation</h1>
+    <h1>WOE/BIN Transformation</h1>
     <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/woebin.R'><code>R/woebin.R</code></a></small>
     <div class="hidden name"><code>woebin_ply.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>woebin_ply</code> converts original input data into woe values based on the binning information generated from <code>woebin</code>.</p>
+    <p><code>woebin_ply</code> converts original values of input data into woe or bin based on the binning information generated from <code>woebin</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='no'>bins</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
+    <pre class="usage"><span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='no'>bins</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='st'>"woe"</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>,
   <span class='kw'>replace_blank_inf</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -147,6 +154,10 @@
     <tr>
       <th>bins</th>
       <td><p>Binning information generated from <code>woebin</code>.</p></td>
+    </tr>
+    <tr>
+      <th>to</th>
+      <td><p>Converting original values to woe or bin. Defaults to woe.</p></td>
     </tr>
     <tr>
       <th>no_cores</th>
@@ -182,11 +193,17 @@
 
 <span class='co'># binning for dt</span>
 <span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'>
-<span class='co'># converting original value to woe</span>
+<span class='co'># converting to woe</span>
 <span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>dt_woe</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:
 #&gt;  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
 #&gt;  $ credit.amount_woe: num  0.0337 0.3905 -0.2583 0.3905 0.3905 ...
 #&gt;  $ purpose_woe      : num  -0.41 -0.41 0.28 0.28 0.28 ...
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
+<span class='co'># converting to bin</span>
+<span class='no'>dt_bin</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>dt</span>, <span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='st'>'bin'</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>dt_bin</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:
+#&gt;  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
+#&gt;  $ credit.amount_bin: chr  "[-Inf,1400)" "[4000,9200)" "[1800,4000)" "[4000,9200)" ...
+#&gt;  $ purpose_bin      : chr  "radio/television" "radio/television" "furniture/equipment%,%domestic appliances%,%business%,%repairs%,%car (new)%,%others%,%education" "furniture/equipment%,%domestic appliances%,%business%,%repairs%,%car (new)%,%others%,%education" ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
 <span class='co'># \donttest{</span>
 <span class='co'># Example II</span>
@@ -196,10 +213,9 @@
 <span class='co'># bins is a list which generated from woebin()</span>
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># bins is a data frame</span>
-<span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/data.table/man/rbindlist.html'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
+<span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_df</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
-<span class='co'># return value is bin but not woe</span>
-<span class='no'>germancredit_bin</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='st'>'bin'</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'># }
+# }
 
 </div></pre>
   </div>

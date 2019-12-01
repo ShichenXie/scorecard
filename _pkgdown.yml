@@ -32,18 +32,20 @@ reference:
     contents:
       - germancredit
       - split_df
+      - replace_na
       - one_hot
-  - title: "variable selection"
-    contents:
-      - var_filter
-      - iv
-      - vif
+      - var_scale
   - title: "woe binning"
     contents:
       - woebin
       - woebin_plot
       - woebin_adj
       - woebin_ply
+  - title: "variable selection"
+    contents:
+      - var_filter
+      - iv
+      - vif
   - title: "model performance"
     contents:
       - perf_eva
