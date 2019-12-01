@@ -12,7 +12,7 @@ replace_na(dt, repl)
 \item{repl}{Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable if repl is mean or median.}
 }
 \description{
-Replace Missing Values
+Replace missing values with a specified value or mean/median value.
 }
 \examples{
 # load germancredit data

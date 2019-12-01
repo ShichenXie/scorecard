@@ -4,19 +4,9 @@
 \alias{scorecard2}
 \title{Creating a Scorecard}
 \usage{
-scorecard2(
-  bins,
-  dt,
-  y,
-  x = NULL,
-  badprob_pop = NULL,
-  points0 = 600,
-  odds0 = 1/19,
-  pdo = 50,
-  basepoints_eq0 = FALSE,
-  positive = "bad|1",
-  ...
-)
+scorecard2(bins, dt, y, x = NULL, badprob_pop = NULL, points0 = 600,
+  odds0 = 1/19, pdo = 50, basepoints_eq0 = FALSE, positive = "bad|1",
+  ...)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}

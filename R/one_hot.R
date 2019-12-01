@@ -129,6 +129,8 @@ replace_na.data.frame = function(dt, repl) {
 }
 #' Replace Missing Values
 #'
+#' Replace missing values with a specified value or mean/median value.
+#'
 #' @param dt A data frame or vector.
 #' @param repl Replace missing values with a specified value such as -1, or the mean/median value for numeric variable and mode value for categorical variable if repl is mean or median.
 #'
@@ -155,6 +157,82 @@ replace_na = function(dt, repl) {
 }
 
 
-# feature scaling (standardization, normalization)
+#' @export
+var_scale.default = function(dt, var_skip=NULL, type='standard', ...) {
+  kwargs = list(...)
+
+  if (type == 'standard') {
+    center = TRUE
+    if ('center' %in% names(kwargs)) center = kwargs[['center']]
+    scale = TRUE
+    if ('scale' %in% names(kwargs)) scale = kwargs[['scale']]
+
+    dt_scale = as.vector(do.call('scale', list(x=dt, center=center, scale=scale)))
+  } else if (type == 'minmax') {
+    dt_scale = (dt - min(dt, na.rm=TRUE)) / diff(range(dt, na.rm=TRUE))
+    new_rng = kwargs[['new_range']]
+    if (!is.null(new_rng)) dt_scale = dt_scale*diff(new_rng) + min(new_rng)
+  } else dt_scale = dt
+  return(dt_scale)
+}
+#' @export
+var_scale.data.frame = function(dt, var_skip=NULL, type='standard', ...) {
+  dt = setDT(copy(dt))
+  cols_num = names(dt)[sapply(dt, is.numeric)]
+  cols_num = setdiff(cols_num, var_skip)
+
+  if (length(cols_num) > 0) {
+    dt = dt[, (cols_num) := lapply(.SD, function(x) {
+      do.call( 'var_scale.default', c(list(dt=x, type=type), list(...)) )
+    }), .SDcols = cols_num]
+  }
+  return(dt)
+}
+
+#' Variable Scaling
+#'
+#' scaling variables using standardization or normalization
+#' @param dt a data frame or vector
+#' @param var_skip Name of variables that will skip for scaling Defaults to NULL.
+#' @param type type of scaling method, including standard or minmax.
+#' @param ... Additional parameters.
+#'
+#' @examples
+#' data("germancredit")
+#'
+#' # standardization
+#' dts1 = var_scale(germancredit, type = 'standard')
+#'
+#' # normalization/minmax
+#' dts2 = var_scale(germancredit, type = 'minmax')
+#' dts2 = var_scale(germancredit, type = 'minmax', new_range = c(-1, 1))
+#'
+#' @export
+var_scale = function(dt, var_skip=NULL, type='standard', ...) {
+  type = match.arg(type, c('standard', 'minmax'))
+  UseMethod('var_scale')
+}
+
+
+
+# n1 - standardization ((x-mean)/sd)
+# n2 - positional standardization ((x-median)/mad)
+# n3 - unitization ((x-mean)/range)
+# n3a - positional unitization ((x-median)/range)
+# n4 - unitization with zero minimum ((x-min)/range)
+# n5 - normalization in range <-1,1> ((x-mean)/max(abs(x-mean)))
+# n5a - positional normalization in range <-1,1> ((x-median)/max(abs(x-median)))
+# n6 - quotient transformation (x/sd)
+# n6a - positional quotient transformation (x/mad)
+# n7 - quotient transformation (x/range)
+# n8 - quotient transformation (x/max)
+# n9 - quotient transformation (x/mean)
+# n9a - positional quotient transformation (x/median)
+# n10 - quotient transformation (x/sum)
+# n11 - quotient transformation (x/sqrt(SSQ))
+# n12 - normalization ((x-mean)/sqrt(sum((x-mean)^2)))
+# n12a - positional normalization ((x-median)/sqrt(sum((x-median)^2)))
+# n13 - normalization with zero being the central point ((x-midrange)/(range/2))
+
 # box-cox transformation
 #

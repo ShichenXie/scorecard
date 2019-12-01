@@ -1,5 +1,5 @@
 Package: scorecard
-Version: 0.2.7.1
+Version: 0.2.7.2
 Title: Credit Risk Scorecard
 Description: 
   The `scorecard` package makes the development of credit risk scorecard 
@@ -31,5 +31,5 @@ BugReports: https://github.com/ShichenXie/scorecard/issues
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.0.1
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, old_usage = TRUE)
 Encoding: UTF-8

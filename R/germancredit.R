@@ -71,7 +71,7 @@ NULL
 # library(scorecard)
 # library(data.table)
 # data("germancredit")
-# dat1 = check_y(germancredit, 'creditability', 'bad|1')
+# dat1 = scorecard:::check_y(germancredit, 'creditability', 'bad|1')
 #
 # dat2 = data.table(creditability=sample(0:1, 50, replace=TRUE))
 # dat = rbind(dat1, dat2, fill=TRUE)

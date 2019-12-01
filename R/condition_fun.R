@@ -133,7 +133,7 @@ check_print_step = function(print_step) {
 }
 
 # x variable
-x_variable = function(dt, y, x, var_skip=NULL) {
+x_variable = function(dt, y, x, var_skip=NULL, method = NULL) {
   x_all = setdiff(names(dt), c(y, var_skip))
 
   if (is.null(x)) x = x_all
@@ -141,6 +141,11 @@ x_variable = function(dt, y, x, var_skip=NULL) {
   if ( length(setdiff(x,x_all)) > 0 ) {
     warning(sprintf('Incorrect inputs; there are %s variables are not exist in the input data frame, which are removed from x. \n%s', length(setdiff(x, x_all)), paste(setdiff(x, x_all), collapse = ', ')) )
     x = intersect(x, x_all)
+  }
+
+  if (any(method %in% c('freq', 'width'))) {
+    x_num = setdiff(names(dt)[sapply(dt, is.numeric)], c(y, var_skip))
+    x = intersect(x, x_num)
   }
 
   return(x)

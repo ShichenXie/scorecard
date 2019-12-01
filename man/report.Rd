@@ -4,17 +4,8 @@
 \alias{report}
 \title{Scorecard Modeling Report}
 \usage{
-report(
-  dt,
-  y,
-  x,
-  breaks_list,
-  special_values = NULL,
-  seed = 618,
-  save_report = "report",
-  positive = "bad|1",
-  ...
-)
+report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
+  save_report = "report", positive = "bad|1", ...)
 }
 \arguments{
 \item{dt}{A data frame or a list of data frames that have both x (predictor/feature) and y (response/label) variables. If there are multiple data frames are provided, only the first data frame would be used for training, and the others would be used for testing/validation.}

@@ -4,16 +4,8 @@
 \alias{perf_psi}
 \title{PSI}
 \usage{
-perf_psi(
-  score,
-  label = NULL,
-  title = NULL,
-  show_plot = TRUE,
-  positive = "bad|1",
-  threshold_variable = 20,
-  var_skip = NULL,
-  ...
-)
+perf_psi(score, label = NULL, title = NULL, show_plot = TRUE,
+  positive = "bad|1", threshold_variable = 20, var_skip = NULL, ...)
 }
 \arguments{
 \item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}

@@ -4,14 +4,8 @@
 \alias{scorecard_ply}
 \title{Score Transformation}
 \usage{
-scorecard_ply(
-  dt,
-  card,
-  only_total_score = TRUE,
-  print_step = 0L,
-  replace_blank_na = TRUE,
-  var_kp = NULL
-)
+scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
+  replace_blank_na = TRUE, var_kp = NULL)
 }
 \arguments{
 \item{dt}{A data frame, which is the original dataset for training model.}

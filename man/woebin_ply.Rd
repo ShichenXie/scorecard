@@ -4,15 +4,8 @@
 \alias{woebin_ply}
 \title{WOE/BIN Transformation}
 \usage{
-woebin_ply(
-  dt,
-  bins,
-  to = "woe",
-  no_cores = NULL,
-  print_step = 0L,
-  replace_blank_inf = TRUE,
-  ...
-)
+woebin_ply(dt, bins, to = "woe", no_cores = NULL, print_step = 0L,
+  replace_blank_inf = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame.}

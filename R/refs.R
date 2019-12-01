@@ -5,7 +5,7 @@
 
 
 # - [Weight of Evidence (WoE) Introductory Overview](http://documentation.statsoft.com/StatisticaHelp.aspx?path=WeightofEvidence/WeightofEvidenceWoEIntroductoryOverview)
-
+# - [woe and iv](https://www.listendata.com/2015/03/weight-of-evidence-woe-and-information.html)
 
 # - [Adjusting the Oversampling/Undersampling in Logistic Regression](http://support.sas.com/kb/22/601.html)
 # # weight:  p1/r1 for event observations, and (1-p1)/(1-r1) for nonevent observations

@@ -830,6 +830,13 @@ woebin = function(
   i = NULL
   # arguments ------
   kwargs = list(...)
+  # method
+  method = match.arg(method, c("tree", "chimerge", 'freq', 'width'))
+  if (!(method %in% c("tree", "chimerge", 'freq', 'width'))) {
+    warning("Incorrect inputs; method should be tree or chimerge. Parameter was set to default (tree).")
+    method = "tree"
+  }
+  if (is.null(y) & !(method %in% c('freq', 'width'))) method = 'freq'
   # print_info
   print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
@@ -864,7 +871,7 @@ woebin = function(
   # replace black with na
   if (replace_blank_inf) dt = rep_blank_na(dt)
   # x variable names
-  xs = x_variable(dt, y, x, var_skip)
+  xs = x_variable(dt, y, x, var_skip, method)
   xs_len = length(xs)
   # print_step
   print_step = check_print_step(print_step)
@@ -893,12 +900,8 @@ woebin = function(
     bin_num_limit = 8
   }
 
-  # method
-  if (!(method %in% c("tree", "chimerge", 'freq', 'width'))) {
-    warning("Incorrect inputs; method should be tree or chimerge. Parameter was set to default (tree).")
-    method = "tree"
-  }
-  if (is.null(y) & !(method %in% c('freq', 'width'))) method = 'freq'
+
+
 
   # binning ------
   # loop on xs

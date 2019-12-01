@@ -4,17 +4,8 @@
 \alias{woebin_adj}
 \title{WOE Binning Adjustment}
 \usage{
-woebin_adj(
-  dt,
-  y,
-  bins,
-  adj_all_var = TRUE,
-  special_values = NULL,
-  method = "tree",
-  save_breaks_list = NULL,
-  count_distr_limit = 0.05,
-  ...
-)
+woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
+  method = "tree", save_breaks_list = NULL, count_distr_limit = 0.05, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
