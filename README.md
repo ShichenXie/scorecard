@@ -7,11 +7,11 @@
 
 The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification. 
 
-- data preparation (`split_df`, `replace_na`, `one_hot`, `var_scale`)
+- data preprocessing (`split_df`, `replace_na`, `one_hot`, `var_scale`)
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
 - variable selection (`var_filter`, `iv`, `vif`)
-- performance evaluation (`perf_eva`, `perf_psi`)
-- scorecard scaling (`scorecard`, `scorecard_ply`)
+- performance evaluation (`perf_eva`, `perf_cv`, `perf_psi`)
+- scorecard scaling (`scorecard`, `scorecard2`, `scorecard_ply`)
 - scorecard report (`gains_table`, `report`)
 
 
@@ -61,7 +61,7 @@ bins_adj = woebin(dt_f, y="creditability", breaks_list=breaks_adj)
 # converting train and test into woe values
 dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins_adj))
 
-# glm ------
+# glm / selecting variables ------
 m1 = glm( creditability ~ ., family = binomial(), data = dt_woe_list$train)
 # vif(m1, merge_coef = TRUE) # summary(m1)
 # Select a formula-based model by AIC (or by LASSO for large dataset)
@@ -69,19 +69,16 @@ m_step = step(m1, direction="both", trace = FALSE)
 m2 = eval(m_step$call)
 # vif(m2, merge_coef = TRUE) # summary(m2)
 
-# # Adjusting for oversampling (support.sas.com/kb/22/601.html)
-# library(data.table)
-# p1=0.03 # bad probability in population 
-# r1=0.3 # bad probability in sample dataset
-# dt_woe = copy(dt_woe_list$train)[, weight := ifelse(creditability==1, p1/r1, (1-p1)/(1-r1) )][]
-# fmla = as.formula(paste("creditability ~", paste(names(coef(m2))[-1], collapse="+")))
-# m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)
-
 # performance ks & roc ------
 ## predicted proability
 pred_list = lapply(dt_woe_list, function(x) predict(m2, x, type='response'))
+## Adjusting for oversampling (support.sas.com/kb/22/601.html)
+# card_prob_adj = scorecard2(bins_adj, dt=dt_list$train, y='creditability', 
+#                x=sub('_woe$','',names(coef(m2))[-1]), badprob_pop=0.03, return_prob=TRUE)
+                
 ## performance
 perf = perf_eva(pred = pred_list, label = label_list)
+# perf_adj = perf_eva(pred = card_prob_adj$prob, label = label_list$train)
 
 # score ------
 ## scorecard

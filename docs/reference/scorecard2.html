@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="Creating a Scorecard — scorecard2" />
-<meta property="og:description" content="scorecard2 creates a scorecard based on the results from woebin. It has the same function with scorecard, but without model object input." />
+<meta property="og:description" content="scorecard2 creates a scorecard based on the results from woebin. It has the same function of scorecard, but without model object input and provided adjustment for oversampling." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -138,12 +138,12 @@
     </div>
 
     <div class="ref-description">
-    <p><code>scorecard2</code> creates a scorecard based on the results from <code>woebin</code>. It has the same function with <code>scorecard</code>, but without model object input.</p>
+    <p><code>scorecard2</code> creates a scorecard based on the results from <code>woebin</code>. It has the same function of <code>scorecard</code>, but without model object input and provided adjustment for oversampling.</p>
     </div>
 
     <pre class="usage"><span class='fu'>scorecard2</span>(<span class='no'>bins</span>, <span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>badprob_pop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>,
-  <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>,
-  <span class='no'>...</span>)</pre>
+  <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>return_prob</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -182,7 +182,11 @@
     </tr>
     <tr>
       <th>basepoints_eq0</th>
-      <td><p>Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.</p></td>
+      <td><p>Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.</p></td>
+    </tr>
+    <tr>
+      <th>return_prob</th>
+      <td><p>Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.</p></td>
     </tr>
     <tr>
       <th>positive</th>
@@ -196,7 +200,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A scorecard data frame</p>
+    <p>A list of scorecard data frames</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='scorecard.html'>scorecard</a></code> <code><a href='scorecard_ply.html'>scorecard_ply</a></code></p></div>

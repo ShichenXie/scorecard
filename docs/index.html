@@ -109,11 +109,11 @@
 
 <p>The goal of <code>scorecard</code> package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification.</p>
 <ul>
-<li>data preparation (<code>split_df</code>, <code>replace_na</code>, <code>one_hot</code>, <code>var_scale</code>)</li>
+<li>data preprocessing (<code>split_df</code>, <code>replace_na</code>, <code>one_hot</code>, <code>var_scale</code>)</li>
 <li>weight of evidence (woe) binning (<code>woebin</code>, <code>woebin_plot</code>, <code>woebin_adj</code>, <code>woebin_ply</code>)</li>
 <li>variable selection (<code>var_filter</code>, <code>iv</code>, <code>vif</code>)</li>
-<li>performance evaluation (<code>perf_eva</code>, <code>perf_psi</code>)</li>
-<li>scorecard scaling (<code>scorecard</code>, <code>scorecard_ply</code>)</li>
+<li>performance evaluation (<code>perf_eva</code>, <code>perf_cv</code>, <code>perf_psi</code>)</li>
+<li>scorecard scaling (<code>scorecard</code>, <code>scorecard2</code>, <code>scorecard_ply</code>)</li>
 <li>scorecard report (<code>gains_table</code>, <code>report</code>)</li>
 </ul>
 <div id="installation" class="section level2">
@@ -161,7 +161,7 @@
 <a class="sourceLine" id="cb3-26" data-line-number="26"><span class="co"># converting train and test into woe values</span></a>
 <a class="sourceLine" id="cb3-27" data-line-number="27">dt_woe_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/woebin_ply.html">woebin_ply</a></span>(x, bins_adj))</a>
 <a class="sourceLine" id="cb3-28" data-line-number="28"></a>
-<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co"># glm ------</span></a>
+<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co"># glm / selecting variables ------</span></a>
 <a class="sourceLine" id="cb3-30" data-line-number="30">m1 =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>( creditability <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> <span class="kw"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span>(), <span class="dt">data =</span> dt_woe_list<span class="op">$</span>train)</a>
 <a class="sourceLine" id="cb3-31" data-line-number="31"><span class="co"># vif(m1, merge_coef = TRUE) # summary(m1)</span></a>
 <a class="sourceLine" id="cb3-32" data-line-number="32"><span class="co"># Select a formula-based model by AIC (or by LASSO for large dataset)</span></a>
@@ -169,27 +169,24 @@
 <a class="sourceLine" id="cb3-34" data-line-number="34">m2 =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(m_step<span class="op">$</span>call)</a>
 <a class="sourceLine" id="cb3-35" data-line-number="35"><span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span></a>
 <a class="sourceLine" id="cb3-36" data-line-number="36"></a>
-<a class="sourceLine" id="cb3-37" data-line-number="37"><span class="co"># # Adjusting for oversampling (support.sas.com/kb/22/601.html)</span></a>
-<a class="sourceLine" id="cb3-38" data-line-number="38"><span class="co"># library(data.table)</span></a>
-<a class="sourceLine" id="cb3-39" data-line-number="39"><span class="co"># p1=0.03 # bad probability in population </span></a>
-<a class="sourceLine" id="cb3-40" data-line-number="40"><span class="co"># r1=0.3 # bad probability in sample dataset</span></a>
-<a class="sourceLine" id="cb3-41" data-line-number="41"><span class="co"># dt_woe = copy(dt_woe_list$train)[, weight := ifelse(creditability==1, p1/r1, (1-p1)/(1-r1) )][]</span></a>
-<a class="sourceLine" id="cb3-42" data-line-number="42"><span class="co"># fmla = as.formula(paste("creditability ~", paste(names(coef(m2))[-1], collapse="+")))</span></a>
-<a class="sourceLine" id="cb3-43" data-line-number="43"><span class="co"># m3 = glm(fmla, family = binomial(), data = dt_woe, weights = weight)</span></a>
-<a class="sourceLine" id="cb3-44" data-line-number="44"></a>
-<a class="sourceLine" id="cb3-45" data-line-number="45"><span class="co"># performance ks &amp; roc ------</span></a>
-<a class="sourceLine" id="cb3-46" data-line-number="46"><span class="co">## predicted proability</span></a>
-<a class="sourceLine" id="cb3-47" data-line-number="47">pred_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_woe_list, <span class="cf">function</span>(x) <span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(m2, x, <span class="dt">type=</span><span class="st">'response'</span>))</a>
-<a class="sourceLine" id="cb3-48" data-line-number="48"><span class="co">## performance</span></a>
-<a class="sourceLine" id="cb3-49" data-line-number="49">perf =<span class="st"> </span><span class="kw"><a href="reference/perf_eva.html">perf_eva</a></span>(<span class="dt">pred =</span> pred_list, <span class="dt">label =</span> label_list)</a>
-<a class="sourceLine" id="cb3-50" data-line-number="50"></a>
-<a class="sourceLine" id="cb3-51" data-line-number="51"><span class="co"># score ------</span></a>
-<a class="sourceLine" id="cb3-52" data-line-number="52"><span class="co">## scorecard</span></a>
-<a class="sourceLine" id="cb3-53" data-line-number="53">card =<span class="st"> </span><span class="kw"><a href="reference/scorecard.html">scorecard</a></span>(bins_adj, m2)</a>
-<a class="sourceLine" id="cb3-54" data-line-number="54"><span class="co">## credit score</span></a>
-<a class="sourceLine" id="cb3-55" data-line-number="55">score_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/scorecard_ply.html">scorecard_ply</a></span>(x, card))</a>
-<a class="sourceLine" id="cb3-56" data-line-number="56"><span class="co">## psi</span></a>
-<a class="sourceLine" id="cb3-57" data-line-number="57"><span class="kw"><a href="reference/perf_psi.html">perf_psi</a></span>(<span class="dt">score =</span> score_list, <span class="dt">label =</span> label_list)</a></code></pre></div>
+<a class="sourceLine" id="cb3-37" data-line-number="37"><span class="co"># performance ks &amp; roc ------</span></a>
+<a class="sourceLine" id="cb3-38" data-line-number="38"><span class="co">## predicted proability</span></a>
+<a class="sourceLine" id="cb3-39" data-line-number="39">pred_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_woe_list, <span class="cf">function</span>(x) <span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(m2, x, <span class="dt">type=</span><span class="st">'response'</span>))</a>
+<a class="sourceLine" id="cb3-40" data-line-number="40"><span class="co">## Adjusting for oversampling (support.sas.com/kb/22/601.html)</span></a>
+<a class="sourceLine" id="cb3-41" data-line-number="41"><span class="co"># card_prob_adj = scorecard2(bins_adj, dt=dt_list$train, y='creditability', </span></a>
+<a class="sourceLine" id="cb3-42" data-line-number="42"><span class="co">#                x=sub('_woe$','',names(coef(m2))[-1]), badprob_pop=0.03, return_prob=TRUE)</span></a>
+<a class="sourceLine" id="cb3-43" data-line-number="43">                </a>
+<a class="sourceLine" id="cb3-44" data-line-number="44"><span class="co">## performance</span></a>
+<a class="sourceLine" id="cb3-45" data-line-number="45">perf =<span class="st"> </span><span class="kw"><a href="reference/perf_eva.html">perf_eva</a></span>(<span class="dt">pred =</span> pred_list, <span class="dt">label =</span> label_list)</a>
+<a class="sourceLine" id="cb3-46" data-line-number="46"><span class="co"># perf_adj = perf_eva(pred = card_prob_adj$prob, label = label_list$train)</span></a>
+<a class="sourceLine" id="cb3-47" data-line-number="47"></a>
+<a class="sourceLine" id="cb3-48" data-line-number="48"><span class="co"># score ------</span></a>
+<a class="sourceLine" id="cb3-49" data-line-number="49"><span class="co">## scorecard</span></a>
+<a class="sourceLine" id="cb3-50" data-line-number="50">card =<span class="st"> </span><span class="kw"><a href="reference/scorecard.html">scorecard</a></span>(bins_adj, m2)</a>
+<a class="sourceLine" id="cb3-51" data-line-number="51"><span class="co">## credit score</span></a>
+<a class="sourceLine" id="cb3-52" data-line-number="52">score_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) <span class="kw"><a href="reference/scorecard_ply.html">scorecard_ply</a></span>(x, card))</a>
+<a class="sourceLine" id="cb3-53" data-line-number="53"><span class="co">## psi</span></a>
+<a class="sourceLine" id="cb3-54" data-line-number="54"><span class="kw"><a href="reference/perf_psi.html">perf_psi</a></span>(<span class="dt">score =</span> score_list, <span class="dt">label =</span> label_list)</a></code></pre></div>
 </div>
 </div>
   </div>

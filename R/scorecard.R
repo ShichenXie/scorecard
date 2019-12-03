@@ -35,7 +35,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
-#' @return A scorecard data frame
+#' @return A list of scorecard data frames
 #'
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
 #'
@@ -122,7 +122,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 
 #' Creating a Scorecard
 #'
-#' \code{scorecard2} creates a scorecard based on the results from \code{woebin}. It has the same function with \code{scorecard}, but without model object input.
+#' \code{scorecard2} creates a scorecard based on the results from \code{woebin}. It has the same function of \code{scorecard}, but without model object input and provided adjustment for oversampling.
 #'
 #' @param bins Binning information generated from \code{woebin} function.
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
@@ -132,10 +132,11 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
-#' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param basepoints_eq0 Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param return_prob Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.
-#' @return A scorecard data frame
+#' @return A list of scorecard data frames
 #'
 #' @seealso \code{\link{scorecard}} \code{\link{scorecard_ply}}
 #'
@@ -182,7 +183,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' }
 #' @import data.table
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, positive='bad|1', ...) {
+scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, return_prob = FALSE, positive='bad|1', ...) {
   variable = wgts = NULL
 
   dt = setDT(copy(dt))
@@ -219,7 +220,12 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds
   }
 
 
-  return(scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0))
+  card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0)
+  if (return_prob) rt = list(
+    card = card,
+    prob = predict(model, dt_woe, type='response')
+  ) else rt = card
+  return(rt)
 }
 
 #' Score Transformation
