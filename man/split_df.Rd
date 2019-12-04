@@ -18,7 +18,7 @@ split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
 
 \item{no_dfs}{Number of returned data frames. Defaults to 2.}
 
-\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will seted as 'dX'. Defaults to train and test.}
+\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will setted as 'dX'. Defaults to train and test.}
 }
 \value{
 A list of data frames

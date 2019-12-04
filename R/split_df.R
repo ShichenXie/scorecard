@@ -7,7 +7,7 @@
 #' @param ratio A numeric value, Defaults to 0.7. It indicates the ratio of total rows contained in one split, must less than 1.
 #' @param seed A random seed, Defaults to 618.
 #' @param no_dfs Number of returned data frames. Defaults to 2.
-#' @param name_dfs Name of returned data frames. If its length is not equal with no_dfs, then the names will seted as 'dX'. Defaults to train and test.
+#' @param name_dfs Name of returned data frames. If its length is not equal with no_dfs, then the names will setted as 'dX'. Defaults to train and test.
 #'
 #' @return A list of data frames
 #'

@@ -1,5 +1,5 @@
 ---
-title: "Developing a Credit Scorcard"
+title: "Developing a Credit Scorecard"
 author: "shichen xie"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
