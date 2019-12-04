@@ -182,6 +182,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' score2 = scorecard_ply(germancredit, card, only_total_score = F)
 #' }
 #' @import data.table
+#' @importFrom stats predict
 #' @export
 scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, return_prob = FALSE, positive='bad|1', ...) {
   variable = wgts = NULL
