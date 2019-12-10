@@ -25,7 +25,7 @@ add_missing_spl_val = function(dtm, breaks, spl_val) {
 }
 # split dtm into bin_sv and dtm (without speical_values)
 dtm_binning_sv = function(dtm, breaks, spl_val) {
-  binning_sv = value = . = y = variable = count = good = bad = bin = NULL
+  binning_sv = value = . = y = variable = count = good = bad = bin = bin_chr = NULL
   # spl_val
   spl_val = add_missing_spl_val(dtm, breaks, spl_val)
   if (!is.null(spl_val)) {
@@ -43,7 +43,7 @@ dtm_binning_sv = function(dtm, breaks, spl_val) {
       sv_df[,value:=as.character(value)],
       all.x = TRUE, by='value'
     )[, value:=ifelse(is.na(value), "missing", as.character(value))
-    ][, .(bin=paste0(value,collapse="%,%"), count=sum(count), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
+    ][, .(bin=unique(bin_chr), count=sum(count), good=sum(good), bad=sum(bad), variable=unique(variable)), by=rowid
     ][, .(variable, bin, count, good, bad)]
   }
 
@@ -1426,6 +1426,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @param method Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.
+#' @param to Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.
 #' @param ... Additional parameters.
 #'
 #' @return A list of modified break points of each x variables.
@@ -1455,7 +1456,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit=0.05, ...) {
+woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method="tree", save_breaks_list=NULL, count_distr_limit=0.05, to='breaks_list', ...) {
   # global variables or functions
   . = V1 = badprob = badprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
@@ -1485,6 +1486,8 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   if ('stop_limit' %in% names(kwargs)) stop_limit = kwargs[['stop_limit']]
     # print(stop_limit)
   stop_limit = check_stop_limit(stop_limit, xs_adj)
+  # to
+  to = match.arg(to, c('breaks_list', 'bins_list'))
 
   # breakslist of bins
   bins_breakslist = bins_to_breaks(bins, dt)
@@ -1559,5 +1562,6 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
   breaks_list = bin_brk2txt(bins_breakslist)
   cat(breaks_list,"\n")
   if (!is.null(save_breaks_list)) save_brk_lst(breaks_list, save_breaks_list)
+  if (to == 'bins_list') breaks_list = woebin(dt, y, x = names(breaks_list), breaks_list = breaks_list, special_values = special_values, method = method, count_distr_limit = count_distr_limit, ...)
   return(breaks_list)
 }

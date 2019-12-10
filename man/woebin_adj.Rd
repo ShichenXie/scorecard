@@ -5,7 +5,8 @@
 \title{WOE Binning Adjustment}
 \usage{
 woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
-  method = "tree", save_breaks_list = NULL, count_distr_limit = 0.05, ...)
+  method = "tree", save_breaks_list = NULL, count_distr_limit = 0.05,
+  to = "breaks_list", ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -23,6 +24,8 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
 \item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
 
 \item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.}
+
+\item{to}{Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.}
 
 \item{...}{Additional parameters.}
 }

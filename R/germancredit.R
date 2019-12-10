@@ -93,6 +93,6 @@ NULL
 # breaks = c("own", "for free%,%rent%,%missing")
 # breaks = c("own", "for free%,%rent")
 #
-# dat = check_y(germancredit, 'creditability', 'bad|1')
+# dat = scorecard:::check_y(germancredit, 'creditability', 'bad|1')
 # dtm = data.table(y=dat[[y]], variable=x, value=dat[[x]])
 
