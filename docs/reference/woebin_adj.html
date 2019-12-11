@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.1</span>
       </span>
     </div>
 
@@ -142,7 +142,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>woebin_adj</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>bins</span>, <span class='kw'>adj_all_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+  <span class='kw'>to</span> <span class='kw'>=</span> <span class='st'>"breaks_list"</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,6 +179,10 @@
     <tr>
       <th>count_distr_limit</th>
       <td><p>The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.</p></td>
+    </tr>
+    <tr>
+      <th>to</th>
+      <td><p>Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.</p></td>
     </tr>
     <tr>
       <th>...</th>
