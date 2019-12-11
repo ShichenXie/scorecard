@@ -904,7 +904,7 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
 
 
 
-gains_table_format = function(dt_distr) {
+gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
   . = good = bad = bin = count = datset = bin_avg = NULL
 
   dt_distr = dt_distr[, .(
@@ -918,7 +918,7 @@ gains_table_format = function(dt_distr) {
     cum_badprob = cumsum(bad)/cumsum(count),
     bin_avg
   ), by = datset]
-
+  if (!ret_bin_avg) dt_distr = dt_distr[, bin_avg := NULL]
   return(dt_distr)
 }
 #' Gains Table
@@ -1023,6 +1023,9 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, p
   # return_dt_psi
   return_dt_psi = kwargs[['return_dt_psi']]
   if (is.null(return_dt_psi)) return_dt_psi = FALSE
+  # ret_bin_avg
+  ret_bin_avg = kwargs[['ret_bin_avg']]
+  if (is.null(ret_bin_avg)) ret_bin_avg = FALSE
 
   # bin_num
   if (bin_num != 'max' & bin_num <= 1) bin_num = 10
@@ -1092,7 +1095,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, p
                   ][order(datset, -bin)]
   if (!is_score) dt_distr = dt_distr[order(datset, bin)] #is predicted probability
   # gains table
-  dt_distr = gains_table_format(dt_distr)
+  dt_distr = gains_table_format(dt_distr, ret_bin_avg)
   return(dt_distr)
 }
 
