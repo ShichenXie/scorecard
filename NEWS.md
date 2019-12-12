@@ -1,3 +1,7 @@
+# scorecard 0.2.9
+
+* fixed a bug in perf_psi when label is null
+
 # scorecard 0.2.8.1
 
 * fixed a bug in woebin function cant handle special_values
