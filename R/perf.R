@@ -513,8 +513,9 @@ func_dat_labelpred = function(pred, label, title, positive, seed, ...) {
   for (ds in names(lst_pl2$pred)) { # ds = dataset
     lst_pred_ds = lst_pl2$pred[[ds]]
 
-    lst_label_ds = lst_pl2$label[[ds]]
-    if (is.null(lst_label_ds)) lst_label_ds[[ds]] = rep_len(NA, unique(sapply(lst_pred_ds, length)))
+    lst_label_ds = NULL
+    if (!is.null(label)) lst_label_ds = lst_pl2$label[[ds]]
+    if (is.null(lst_label_ds)) lst_label_ds[['label']] = rep_len(NA, unique(sapply(lst_pred_ds, length)))
 
     dt_lst[[ds]] = setDT(c(lst_pred_ds, lst_label_ds))
   }
