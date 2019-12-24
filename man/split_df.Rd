@@ -2,10 +2,10 @@
 % Please edit documentation in R/split_df.R
 \name{split_df}
 \alias{split_df}
-\title{Split a dataset}
+\title{Split a Data Frame}
 \usage{
-split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
-  name_dfs = c("train", "test"))
+split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618,
+  name_dfs = c("train", "test"), ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -16,15 +16,15 @@ split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618, no_dfs = 2,
 
 \item{seed}{A random seed, Defaults to 618.}
 
-\item{no_dfs}{Number of returned data frames. Defaults to 2.}
+\item{name_dfs}{Name of returned data frames. Its length should equals to the ratio's. Defaults to train and test.}
 
-\item{name_dfs}{Name of returned data frames. If its length is not equal with no_dfs, then the names will setted as 'dX'. Defaults to train and test.}
+\item{...}{Additional parameters.}
 }
 \value{
 A list of data frames
 }
 \description{
-Split a dataset into train and test
+Split a data frame into train and test
 }
 \examples{
 # load German credit data

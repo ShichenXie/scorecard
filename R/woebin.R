@@ -831,8 +831,8 @@ woebin = function(
   # arguments ------
   kwargs = list(...)
   # method
-  method = match.arg(method, c("tree", "chimerge", 'freq', 'width'))
-  if (!(method %in% c("tree", "chimerge", 'freq', 'width'))) {
+  method = try(match.arg(method, c("tree", "chimerge", 'freq', 'width')), silent = TRUE)
+  if (inherits(method, 'try-error')) {
     warning("Incorrect inputs; method should be tree or chimerge. Parameter was set to default (tree).")
     method = "tree"
   }

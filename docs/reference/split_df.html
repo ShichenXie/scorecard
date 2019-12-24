@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Split a dataset — split_df • scorecard</title>
+<title>Split a Data Frame — split_df • scorecard</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Split a dataset — split_df" />
-<meta property="og:description" content="Split a dataset into train and test" />
+<meta property="og:title" content="Split a Data Frame — split_df" />
+<meta property="og:description" content="Split a data frame into train and test" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.999</span>
       </span>
     </div>
 
@@ -132,17 +132,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Split a dataset</h1>
+    <h1>Split a Data Frame</h1>
     <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/split_df.R'><code>R/split_df.R</code></a></small>
     <div class="hidden name"><code>split_df.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Split a dataset into train and test</p>
+    <p>Split a data frame into train and test</p>
     </div>
 
-    <pre class="usage"><span class='fu'>split_df</span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.3</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>618</span>, <span class='kw'>no_dfs</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>name_dfs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"train"</span>, <span class='st'>"test"</span>))</pre>
+    <pre class="usage"><span class='fu'>split_df</span>(<span class='no'>dt</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ratio</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.3</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>618</span>,
+  <span class='kw'>name_dfs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"train"</span>, <span class='st'>"test"</span>), <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,12 +164,12 @@
       <td><p>A random seed, Defaults to 618.</p></td>
     </tr>
     <tr>
-      <th>no_dfs</th>
-      <td><p>Number of returned data frames. Defaults to 2.</p></td>
+      <th>name_dfs</th>
+      <td><p>Name of returned data frames. Its length should equals to the ratio's. Defaults to train and test.</p></td>
     </tr>
     <tr>
-      <th>name_dfs</th>
-      <td><p>Name of returned data frames. If its length is not equal with no_dfs, then the names will setted as 'dX'. Defaults to train and test.</p></td>
+      <th>...</th>
+      <td><p>Additional parameters.</p></td>
     </tr>
     </table>
 

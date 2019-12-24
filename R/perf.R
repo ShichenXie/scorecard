@@ -1339,7 +1339,8 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
   if (is.null(seeds)) {
     dts = do.call('split_df', list(
       dt = dt, y = y,
-      ratio = rep(1/no_folds, no_folds), no_dfs = no_folds,
+      ratio = rep(1/no_folds, no_folds),
+      name_dfs = as.character(seq_len(no_folds)),
       seed = seed
     ))
 

@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.999</span>
       </span>
     </div>
 
@@ -300,9 +300,9 @@
 <span class='co'># Example IV</span>
 <span class='co'># customizing the breakpoints of binning</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/data.table/man/rbindlist.html'>rbind</a></span>(
-  <span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>),
-  <span class='fu'><a href='https://rdrr.io/pkg/data.table/man/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>),
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
   <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
 <span class='no'>breaks_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
