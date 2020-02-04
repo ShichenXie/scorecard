@@ -230,8 +230,8 @@ plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
     geom_segment(data = dfks, aes(x = cumpop, y = 0, xend = cumpop, yend = ks, color=datset), linetype = "dashed") +
     geom_point(data = dfks, aes(x=cumpop, y=ks), color='red') +
     # geom_text(data = dfks, aes(x=cumpop, y=ks, label=oc, color=datset), vjust=0) +
-    annotate("text", x=0.4, y=0.7, vjust = -0.2, label="Good", colour = "gray") +
-    annotate("text", x=0.95, y=0.7, vjust = -0.2, label="Bad", colour = "gray") +
+    annotate("text", x=0.4, y=0.7, vjust = -0.2, label="Positive", colour = "gray") +
+    annotate("text", x=0.95, y=0.7, vjust = -0.2, label="Negative", colour = "gray") +
     theme_bw() +
     theme(legend.position=c(0,1),
           legend.justification=c(0,1),
@@ -242,7 +242,7 @@ plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 
   # axis, labs, theme
   pks = pks + ggtitle(paste0(title, 'K-S')) +
-    labs(x = "% of population", y = "% of total Good/Bad") +
+    labs(x = "% of population", y = "% of total Neg/Posi") +
     scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
@@ -421,7 +421,7 @@ plot_lz = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 
   # axis, labs, theme
   plz = plz + ggtitle(paste0(title, 'Lorenz')) +
-    labs(x = "% of population", y = "% of total Good/Bad") +
+    labs(x = "% of population", y = "% of total Neg/Posi") +
     scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)

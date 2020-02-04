@@ -1,3 +1,5 @@
+# http://r-pkgs.had.co.nz/tests.html
+# https://testthat.r-lib.org/
 library(scorecard)
 library(data.table)
 data("germancredit")
