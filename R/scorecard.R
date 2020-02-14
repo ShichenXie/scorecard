@@ -220,6 +220,9 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds
       data = dt_woe[,c(paste0(x,"_woe"),y), with=F])
   }
 
+  na_coef = coef(model)[is.na(coef(model))]
+  if (length(na_coef) > 0) warning(sprintf('The model coefficients for the following %s variables are NA, please remove these variables:\n%s', length(na_coef), paste(sub('_woe', '', names(na_coef)), collapse = ',')))
+
 
   card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0)
   if (return_prob) rt = list(

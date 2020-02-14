@@ -232,13 +232,15 @@
 <span class='co'># credit score, only_total_score = TRUE</span>
 <span class='no'>score_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>x</span>, <span class='no'>card</span>))
 <span class='co'># credit score, only_total_score = FALSE</span>
-<span class='no'>score_list2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>x</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span><span class='kw'>=</span><span class='fl'>FALSE</span>))
+<span class='no'>score_list2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>dt_list</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>x</span>, <span class='no'>card</span>,
+  <span class='kw'>only_total_score</span><span class='kw'>=</span><span class='fl'>FALSE</span>))
 
 
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_eva-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_eva-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
 #&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
@@ -258,11 +260,13 @@
 #&gt; 1 1 (1-1,1-1) arrange gtable[layout]
 #&gt; 2 2 (1-1,2-2) arrange gtable[layout]
 #&gt; </div><div class='input'><span class='co'>## predicted score</span>
-<span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
+<span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability,</span>
+<span class='co'>#   title = 'train')</span>
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_eva-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'>perf_eva</span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>,
+ <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'lift'</span>, <span class='st'>'gain'</span>, <span class='st'>'roc'</span>, <span class='st'>'lz'</span>, <span class='st'>'pr'</span>, <span class='st'>'f1'</span>, <span class='st'>'density'</span>))</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='perf_eva-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
 #&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
@@ -287,10 +291,16 @@
 #&gt; 
 #&gt; 
 #&gt; $pic
-#&gt; TableGrob (1 x 2) "arrange": 2 grobs
+#&gt; TableGrob (3 x 3) "arrange": 8 grobs
 #&gt;   z     cells    name           grob
 #&gt; 1 1 (1-1,1-1) arrange gtable[layout]
 #&gt; 2 2 (1-1,2-2) arrange gtable[layout]
+#&gt; 3 3 (1-1,3-3) arrange gtable[layout]
+#&gt; 4 4 (2-2,1-1) arrange gtable[layout]
+#&gt; 5 5 (2-2,2-2) arrange gtable[layout]
+#&gt; 6 6 (2-2,3-3) arrange gtable[layout]
+#&gt; 7 7 (3-3,1-1) arrange gtable[layout]
+#&gt; 8 8 (3-3,2-2) arrange gtable[layout]
 #&gt; </div><div class='input'><span class='co'>## predicted score</span>
 <span class='co'># perf_eva(score_list, label_list)</span>
 

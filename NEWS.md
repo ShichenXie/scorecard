@@ -3,6 +3,7 @@
 * fixed a bug in perf_psi when label is null
 * modified a parameter in split_df function
 * adding test files
+* added a warning message in scorecard2 function when there are na coefficients in lr model
 
 # scorecard 0.2.8.1
 

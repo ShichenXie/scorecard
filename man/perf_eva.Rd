@@ -79,19 +79,23 @@ card = scorecard(bins, m2)
 # credit score, only_total_score = TRUE
 score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
 # credit score, only_total_score = FALSE
-score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
+score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card,
+  only_total_score=FALSE))
 
 
 ###### perf_eva examples ######
 # Example I, one datset
 ## predicted p1
-perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
+perf_eva(pred = pred_list$train, label=dt_list$train$creditability,
+  title = 'train')
 ## predicted score
-# perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
+# perf_eva(pred = score_list$train, label=dt_list$train$creditability,
+#   title = 'train')
 
 # Example II, multiple datsets
 ## predicted p1
-perf_eva(pred = pred_list, label = label_list)
+perf_eva(pred = pred_list, label = label_list,
+ show_plot = c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
 ## predicted score
 # perf_eva(score_list, label_list)
 
