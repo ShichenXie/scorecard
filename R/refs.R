@@ -13,3 +13,13 @@
 
 
 # [Examining Distributional Shifts by Using Population Stability Index (PSI) for Model Validation and Diagnosis](https://www.lexjansen.com/wuss/2017/47_Final_Paper_PDF.pdf)
+
+
+# # Profiling
+# https://support.rstudio.com/hc/en-us/articles/218221837-Profiling-with-RStudio
+# library(scorecard)
+# data("germancredit")
+# library(profvis)
+# profvis({
+#   bins = woebin(germancredit, 'creditability')
+# })

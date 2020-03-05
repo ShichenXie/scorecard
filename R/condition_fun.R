@@ -59,7 +59,9 @@ rep_blank_na = function(dt) {
   dt = setDT(dt)
 
   # replace black values
-  char_cols = names(which(dt[,sapply(.SD, function(x) is.character(x) | is.factor(x))]))
+  char_cols = names(which(dt[
+    , sapply(.SD, function(x) is.character(x) | is.factor(x))
+  ]))
   if (length(char_cols)>0) {
     # columns have blank value
     blank_cols = names(which(dt[, sapply(.SD, function(x) any(stri_isempty(x))), .SD = char_cols])) # grep('^\\s*$', x)
@@ -68,7 +70,7 @@ rep_blank_na = function(dt) {
       warning(sprintf('The blank values are replaced with NAs in the following columns:\n%s', paste(blank_cols, collapse = ", ")))
 
       dt[, (blank_cols) := lapply(.SD, function(x) {
-        x[stri_isempty(x)] = NA # # grep('^\\s*$', x)
+        x[stri_isempty(x)] = NA # grep('^\\s*$', x)
         return(x)
       }), .SD = blank_cols]#[dt == ""] = NA
     }
@@ -76,7 +78,10 @@ rep_blank_na = function(dt) {
 
 
   # repalce infinite or NaN values
-  cols_inf_nan = names(which(dt[, sapply(.SD, function(x) any(is.infinite(x)) | any(is.nan(x)))]))
+  cols_inf_nan = names(which(dt[
+    , sapply(.SD, function(x) any(is.infinite(x) | is.nan(x)))
+    , .SD = setdiff(names(dt), char_cols)
+  ]))
   if (length(cols_inf_nan) > 0) {
     warning(sprintf('The Infinite or NaN values are replaced with -999 in the following columns:\n%s', paste(cols_inf_nan, collapse = ", ")))
 
