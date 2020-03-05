@@ -54,7 +54,7 @@ check_cateCols_uniqueValues = function(dt, var_skip = NULL) {
 }
 
 # replace blank by NA
-#' @importFrom stringi stri_isempty
+#' @importFrom stringi stri_isempty stri_trim_left
 rep_blank_na = function(dt) {
   dt = setDT(dt)
 
@@ -64,13 +64,13 @@ rep_blank_na = function(dt) {
   ]))
   if (length(char_cols)>0) {
     # columns have blank value
-    blank_cols = names(which(dt[, sapply(.SD, function(x) any(stri_isempty(x))), .SD = char_cols])) # grep('^\\s*$', x)
+    blank_cols = names(which(dt[, sapply(.SD, function(x) any(stri_isempty(stri_trim_left(x)))), .SD = char_cols])) # grep('^\\s*$', x)
     # repalce by NA
     if (length(blank_cols)>0) {
       warning(sprintf('The blank values are replaced with NAs in the following columns:\n%s', paste(blank_cols, collapse = ", ")))
 
       dt[, (blank_cols) := lapply(.SD, function(x) {
-        x[stri_isempty(x)] = NA # grep('^\\s*$', x)
+        x[stri_isempty(stri_trim_left(x))] = NA # grep('^\\s*$', x)
         return(x)
       }), .SD = blank_cols]#[dt == ""] = NA
     }
