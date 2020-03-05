@@ -19,7 +19,7 @@ Imports:
     data.table (>= 1.10.0), 
     ggplot2, gridExtra,
     foreach, doParallel, parallel,
-    openxlsx
+    openxlsx, stringi
 Suggests: 
     knitr,
     rmarkdown,

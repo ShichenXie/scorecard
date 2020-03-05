@@ -4,6 +4,7 @@
 * modified a parameter in split_df function
 * adding test files
 * added a warning message in scorecard2 function when there are na coefficients in lr model
+* improve the performance of rep_blank_na function
 
 # scorecard 0.2.8.1
 
