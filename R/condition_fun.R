@@ -78,18 +78,22 @@ rep_blank_na = function(dt) {
 
 
   # repalce infinite or NaN values
-  cols_inf_nan = names(which(dt[
-    , sapply(.SD, function(x) any(is.infinite(x) | is.nan(x)))
-    , .SD = setdiff(names(dt), char_cols)
-  ]))
-  if (length(cols_inf_nan) > 0) {
-    warning(sprintf('The Infinite or NaN values are replaced with -999 in the following columns:\n%s', paste(cols_inf_nan, collapse = ", ")))
+  cols_num = setdiff(names(dt), char_cols)
+  if (length(cols_num) >0) {
+    cols_inf_nan = names(which(dt[
+      , sapply(.SD, function(x) any(is.infinite(x) | is.nan(x)))
+      , .SD = cols_num
+      ]))
+    if (length(cols_inf_nan) > 0) {
+      warning(sprintf('The Infinite or NaN values are replaced with -999 in the following columns:\n%s', paste(cols_inf_nan, collapse = ", ")))
 
-    dt[, (cols_inf_nan) := lapply(.SD, function(x) {
-      x[is.nan(x) | is.infinite(x)] = -999
-      return(x)
-    }), .SD = cols_inf_nan]
+      dt[, (cols_inf_nan) := lapply(.SD, function(x) {
+        x[is.nan(x) | is.infinite(x)] = -999
+        return(x)
+      }), .SD = cols_inf_nan]
+    }
   }
+
 
   return(dt)
 }
@@ -97,9 +101,7 @@ rep_blank_na = function(dt) {
 # check y
 check_y = function(dt, y, positive="bad|1") {
   dt = setDT(dt)
-  positive = as.character(positive)
-  # dt[[y]]  = as.character(dt[[y]])
-  y1 = dt[[y]]
+  positive = unlist(strsplit(as.character(positive), '\\|'))
 
   # number of columns >= 2
   if (ncol(dt) <=1 & !is.null(ncol(dt))) stop("Incorrect inputs; dt should have at least two columns.")
@@ -108,23 +110,28 @@ check_y = function(dt, y, positive="bad|1") {
   # exist of y column
   if (!(y %in% names(dt))) stop(paste0("Incorrect inputs; there is no \"", y, "\" column in dt."))
 
+  # dt[[y]]  = as.character(dt[[y]])
+  y1 = dt[[y]]
+  y_class = class(y1)
+
   # remove rows have missing values in y
   if (anyNA(y1)) {
     warning(sprintf("There are NAs in %s. The rows with NAs in \"%s\" are removed from input data.", y, y))
     dt = dt[!is.na(y1)]
   }
 
-  # numeric to integer
-  if (class(y1) == "numeric") dt[, (y) := lapply(.SD, as.integer), .SDcols = y]
-  # factor to character
-  if (class(y1) == "factor") dt[, (y) := lapply(.SD, as.character), .SDcols = y]
+  # numeric to integer # factor to character
+  if (y_class == "numeric") {
+    dt[, (y) := lapply(.SD, as.integer), .SDcols = y]
+  } else if (y_class == "factor") {
+    dt[, (y) := lapply(.SD, as.character), .SDcols = y]
+  }
 
   # length of unique values in y
   uniqy = unique(y1)
   if (length(uniqy) == 2) {
-    if (any(grepl(positive, uniqy))) {
-      y2 = as.integer(sapply(y1, function(x) grepl(x, positive)))
-        # ifelse(grepl(positive, y1), 1L, 0L)
+    if (any(uniqy %in% positive)) {
+      y2 = as.integer(y1 %in% positive)
       if (any(y1 != y2)) {
         dt[[y]] = y2
         # warning(paste0("The positive value in \"", y, "\" was replaced by 1 and negative value by 0."))
