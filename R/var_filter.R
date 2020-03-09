@@ -78,7 +78,7 @@ var_filter = function(
   # -iv
   iv_list = iv(dt, y, x)
   # -na percentage
-  missing_rate = dt[, sapply(.SD, function(a) sum(is.na(a))/length(a)), .SDcols = x]
+  missing_rate = dt[, sapply(.SD, function(a) mean(is.na(a))), .SDcols = x] # sum(is.na(a))/length(a)
   # -element percentage
   identical_rate = dt[, sapply(.SD, function(a) {
     pt = prop.table(table(a))

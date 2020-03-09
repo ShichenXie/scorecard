@@ -1029,7 +1029,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
   # rename binx
   setnames(binx, c("bin", x_i, paste(x_i, woe_points, sep="_")))
   # merge
-  dtx_suffix = merge(setDF(dtx), setDF(binx), by=x_i, all.x = TRUE)
+  dtx_suffix = merge(dtx, binx, by=x_i, all.x = TRUE)
   dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (c("rowid", "bin", x_i)) := NULL]
 
   return(dtx_suffix)
