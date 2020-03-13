@@ -142,7 +142,7 @@
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># filter variable via missing rate, iv, identical value rate</span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8">dt_f =<span class="st"> </span><span class="kw"><a href="reference/var_filter.html">var_filter</a></span>(germancredit, <span class="dt">y=</span><span class="st">"creditability"</span>)</a>
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># breaking dt into train and test</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">dt_list =<span class="st"> </span><span class="kw"><a href="reference/split_df.html">split_df</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">ratio =</span> <span class="fl">0.6</span>, <span class="dt">seed =</span> <span class="dv">30</span>)</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">dt_list =<span class="st"> </span><span class="kw"><a href="reference/split_df.html">split_df</a></span>(dt_f, <span class="dt">y=</span><span class="st">"creditability"</span>, <span class="dt">ratio =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.6</span>, <span class="fl">0.4</span>), <span class="dt">seed =</span> <span class="dv">30</span>)</a>
 <a class="sourceLine" id="cb3-11" data-line-number="11">label_list =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(dt_list, <span class="cf">function</span>(x) x<span class="op">$</span>creditability)</a>
 <a class="sourceLine" id="cb3-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># woe binning ------</span></a>

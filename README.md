@@ -43,7 +43,7 @@ data("germancredit")
 # filter variable via missing rate, iv, identical value rate
 dt_f = var_filter(germancredit, y="creditability")
 # breaking dt into train and test
-dt_list = split_df(dt_f, y="creditability", ratio = 0.6, seed = 30)
+dt_list = split_df(dt_f, y="creditability", ratio = c(0.6, 0.4), seed = 30)
 label_list = lapply(dt_list, function(x) x$creditability)
 
 # woe binning ------

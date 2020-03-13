@@ -41,6 +41,10 @@ split_df = function(dt, y=NULL, ratio=c(0.7, 0.3), seed=618, name_dfs=c('train',
   # dt = rep_blank_na(dt)
 
   # set ratio range
+  if (length(name_dfs) == 2 & length(ratio) == 1) {
+    ratio = c(ratio, 1-ratio)
+    warning(sprintf("The ratio is set to c(%s)", paste(ratio, collapse = ', ')))
+  }
   if (!is.numeric(ratio) || sum(ratio)>1 || any(sapply(ratio, function(x) x<=0))) {
     warning("Incorrect inputs; ratio must be a numeric vector that between 0 and 1, and sum of which should not larger than 1. It was set to default values.")
     ratio = c(0.7, 0.3)
