@@ -541,7 +541,10 @@ func_dat_labelpred = function(pred, label, title, positive, seed, ...) {
 
   # check label & remove rows with missing values in pred
   dt_lst = lapply(dt_lst, function(x) {
-    if (!is.null(label)) x = check_y(x, 'label', positive)
+    if (!is.null(label)) {
+      if (length(unique(x$label)) > 5) stop('Please double check the arguments. The position of "label" have exchanged with "pred" to the second argument since version 0.2.0, in order to consistent with perf_psi.')
+      x = check_y(x, 'label', positive)
+    }
     if (anyNA(x)) {
       warning("The NAs in dataset have been removed.")
       x = x[complete.cases(copy(x)[,label:=NULL]), ]#x[!is.na(pred)]

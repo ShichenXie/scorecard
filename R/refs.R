@@ -11,6 +11,7 @@
 # # weight:  p1/r1 for event observations, and (1-p1)/(1-r1) for nonevent observations
 # # offset: log( ((1-p1)/(1-r1)) / (p1/r1))
 
+# - [Data Exploration with Weight of Evidence and Information Value in R](https://multithreaded.stitchfix.com/blog/2015/08/13/weight-of-evidence/)
 
 # [Examining Distributional Shifts by Using Population Stability Index (PSI) for Model Validation and Diagnosis](https://www.lexjansen.com/wuss/2017/47_Final_Paper_PDF.pdf)
 
