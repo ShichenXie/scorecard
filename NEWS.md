@@ -1,4 +1,4 @@
-# scorecard 0.2.8.999
+# scorecard 0.2.9
 
 * fixed a bug in perf_psi when label is null
 * modified a parameter in split_df function

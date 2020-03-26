@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -245,18 +245,18 @@
 <span class='co'># using tree method</span>
 <span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
    <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
-#&gt;         variable         bin count count_distr good bad   badprob         woe
-#&gt; 1: credit.amount [-Inf,1400)   267       0.267  185  82 0.3071161  0.03366128
-#&gt; 2: credit.amount [1400,1800)   105       0.105   87  18 0.1714286 -0.72823850
-#&gt; 3: credit.amount [1800,4000)   382       0.382  287  95 0.2486911 -0.25830746
-#&gt; 4: credit.amount [4000,9200)   196       0.196  120  76 0.3877551  0.39053946
-#&gt; 5: credit.amount [9200, Inf)    50       0.050   21  29 0.5800000  1.17007125
-#&gt;          bin_iv  total_iv breaks is_special_values
-#&gt; 1: 0.0003045545 0.1812204   1400             FALSE
-#&gt; 2: 0.0468153322 0.1812204   1800             FALSE
-#&gt; 3: 0.0241086966 0.1812204   4000             FALSE
-#&gt; 4: 0.0319870413 0.1812204   9200             FALSE
-#&gt; 5: 0.0780047502 0.1812204    Inf             FALSE
+#&gt;         variable         bin count count_distr good bad   badprob        woe
+#&gt; 1: credit.amount [-Inf,3500)   686       0.686  501 185 0.2696793 -0.1489524
+#&gt; 2: credit.amount [3500,4000)    68       0.068   58  10 0.1470588 -0.9105601
+#&gt; 3: credit.amount [4000,5000)    58       0.058   31  27 0.4655172  0.7091475
+#&gt; 4: credit.amount [5000,8000)   118       0.118   78  40 0.3389831  0.1794685
+#&gt; 5: credit.amount [8000, Inf)    70       0.070   32  38 0.5428571  1.0191481
+#&gt;         bin_iv  total_iv breaks is_special_values
+#&gt; 1: 0.014753382 0.1786996   3500             FALSE
+#&gt; 2: 0.045094403 0.1786996   4000             FALSE
+#&gt; 3: 0.032418172 0.1786996   5000             FALSE
+#&gt; 4: 0.003931214 0.1786996   8000             FALSE
+#&gt; 5: 0.082502467 0.1786996    Inf             FALSE
 #&gt; 
 #&gt; $housing
 #&gt;    variable      bin count count_distr good bad   badprob        woe     bin_iv
