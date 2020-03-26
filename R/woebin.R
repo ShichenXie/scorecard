@@ -228,13 +228,9 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
     xvalue = dtm[, value]
 
     # breaks vector & outlier
-    iq = quantile(xvalue, na.rm = TRUE)
+    iq = quantile(xvalue, probs = c(init_count_distr, 1-init_count_distr), na.rm = TRUE)
     iqr = IQR(xvalue, na.rm = TRUE)
-    if (iqr == 0) {
-      xvalue_rm_outlier = xvalue
-    } else {
-      xvalue_rm_outlier = xvalue[which(xvalue >= iq[2]-3*iqr & xvalue <= iq[4]+3*iqr)]
-    }
+    xvalue_rm_outlier = xvalue[which(xvalue >= iq[1]-3*iqr & xvalue <= iq[2]+3*iqr)]
 
     # number of initial binning
     n = trunc(1/init_count_distr)

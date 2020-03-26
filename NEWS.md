@@ -5,6 +5,7 @@
 * adding test files
 * added a warning message in scorecard2 function when there are na coefficients in lr model
 * improve the performance of rep_blank_na function
+* modified the method to create initial fine binning breaks.
 
 # scorecard 0.2.8.1
 
