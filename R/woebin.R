@@ -478,7 +478,7 @@ woebin2_chimerge = function(
     a_sum = sum(a+a_lag)), by='bin'
   ][, `:=`(
     e = (a_rowsum*a_colsum)/a_sum,
-    e_lag = a_lag_rowsum*a_colsum/a_sum
+    e_lag = prod(a_lag_rowsum, a_colsum, na.rm = TRUE) / a_sum
   )][, .(chisq=sum((a-e)^2/e + (a_lag-e_lag)^2/e_lag)), by='bin']
 
   return(merge(initial_binning[,count:=good+bad], chisq_df, all.x = TRUE, sort = FALSE))
@@ -501,15 +501,15 @@ woebin2_chimerge = function(
     bin_count_distr_min < count_distr_limit ||
     bin_nrow > bin_num_limit) {
     # brkp needs to be removed
-    if (bin_chisq_min < chisq_limit) {
-      rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
-
-    } else if (bin_count_distr_min < count_distr_limit) {
+    if (bin_count_distr_min < count_distr_limit) {
       rm_brkp = binning_chisq[,`:=`(
         count_distr = count/sum(count),
         chisq_lead = shift(chisq, type = "lead", fill = Inf)
       )][,merge_tolead := ifelse(is.na(chisq), TRUE, chisq > chisq_lead)
-       ][!is.na(brkp)][order(count_distr)][1,]
+         ][!is.na(brkp)][order(count_distr)][1,]
+
+    } else if (bin_chisq_min < chisq_limit) {
+      rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
 
     } else if (bin_nrow > bin_num_limit) {
       rm_brkp = binning_chisq[, merge_tolead := FALSE][order(chisq, count)][1,]
