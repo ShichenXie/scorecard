@@ -1,8 +1,8 @@
-library(testthat)
-library(scorecard)
+# library(testthat)
+# library(scorecard)
 # library(data.table)
 
-test_check("scorecard")
+# test_check("scorecard")
 
 # # Profiling
 # https://support.rstudio.com/hc/en-us/articles/218221837-Profiling-with-RStudio
