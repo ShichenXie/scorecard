@@ -323,9 +323,11 @@ menu2 = function(choices, title, chk_rng = TRUE) {
 brk_txt2vector = function(brk) {
   if (is.null(brk) || is.na(brk)) return(brk)
 
-  v = strsplit(brk, "(?<!\\%),(?!\\%)", perl = T)[[1]]
-  v = trimws(v)
-  v = sub('[\'\"](.+)[\'\"]', '\\1', v)
+  # v = strsplit(brk, "(?<!\\%),(?!\\%)", perl = T)[[1]]
+  # v = trimws(v)
+  # v = sub('[\'\"](.+)[\'\"]', '\\1', v)
+
+  v = eval(parse(text = sprintf('c(%s)', brk)))
 
   # dtbrk = data.table(
   #   brk = brk
