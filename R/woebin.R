@@ -249,7 +249,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
     if (len_uniq_x < 10) {
       brk = setdiff(unique(xvalue_rm_outlier), c(NA, Inf, -Inf))
     } else {
-      brk = pretty(xvalue_rm_outlier, n)
+      brk = suppressWarnings(pretty(xvalue_rm_outlier, n))
     }
     brk = sort(brk[(brk <= max(xvalue, na.rm =TRUE)) & (brk > min(xvalue, na.rm =TRUE))])
     brk = unique(c(-Inf, brk, Inf))
