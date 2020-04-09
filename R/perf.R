@@ -834,7 +834,7 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
     dt_ev_lst_plot = lapply(dt_lst, function(x) func_dat_eva(x, groupnum = groupnum))
     # plot
     plist = lapply(paste0('plot_', show_plot), function(x) do.call(x, args = list(dat_eva_lst = dt_ev_lst_plot, dt_lst=dt_lst, pm=pm_lst$all_pm, co=co, title=title, positive=positive)))
-    # return
+    # return ggpubr, cowplot and gridExtra
     rt_list[['pic']] = do.call(grid.arrange, c(plist, list(ncol=ceiling(sqrt(length(show_plot))), padding = 0)))
   }
 

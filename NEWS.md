@@ -1,4 +1,4 @@
-# scorecard 0.2.9.999
+# scorecard 0.3.0
 
 * modified the method to create initial fine binning breaks.
 * fixed the bintxt to vector function
