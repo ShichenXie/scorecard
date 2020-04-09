@@ -119,10 +119,10 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # binning
   bins_lst = lapply(dat_lst, function(dat) {
-    suppressWarnings(woebin(dat, y = y, x = x, breaks_list = breaks_list, special_values = special_values, print_info=FALSE))
+    suppressWarnings(woebin(dat, y = y, x = x, breaks_list = breaks_list, special_values = special_values, print_info=FALSE, no_cores = kwargs[['no_cores']]))
   })
   dat_woe_lst = lapply(dat_lst, function(dat) {
-    woebin_ply(dat, bins_lst[[1]], print_info=FALSE)
+    woebin_ply(dat, bins_lst[[1]], print_info=FALSE, no_cores = kwargs[['no_cores']])
   })
 
   # fitting
