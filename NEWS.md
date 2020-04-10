@@ -2,7 +2,7 @@
 
 * modified the method to create initial fine binning breaks.
 * fixed the bintxt to vector function
-* report function supports to add no_cores argument 
+* report function supports no_cores argument 
 
 # scorecard 0.2.9
 
