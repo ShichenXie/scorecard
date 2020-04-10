@@ -14,7 +14,7 @@ Description:
   Developing and Implementing Intelligent Credit Scoring.
 Authors@R: person("Shichen", "Xie", , "xie@shichen.name", c("aut", "cre"))
 Depends: 
-    R (>= 3.1.0)
+    R (>= 3.5.0)
 Imports: 
     data.table (>= 1.10.0), 
     ggplot2, gridExtra,
