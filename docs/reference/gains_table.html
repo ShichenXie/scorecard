@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Gains Table — gains_table" />
 <meta property="og:description" content="gains_table creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -221,18 +224,18 @@
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.2821.</div><div class='img'><img src='gains_table-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='gains_table-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
-#&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1510414 0.3886405 0.456417 0.2821569 0.5066305 0.8283665 0.6567329
+#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
 #&gt; 
 #&gt; 
 #&gt; $confusion_matrix
 #&gt; $confusion_matrix$train
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    340    136 0.2857143
-#&gt; 2:     1     43    162 0.2097561
-#&gt; 3: total    383    298 0.2628488
+#&gt; 1:     0    346    130 0.2731092
+#&gt; 2:     1     47    158 0.2292683
+#&gt; 3: total    393    288 0.2599119
 #&gt; 
 #&gt; 
 #&gt; $pic
@@ -245,28 +248,28 @@
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.2821.</div><div class='img'><img src='gains_table-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='gains_table-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
-#&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1510414 0.3886405 0.456417 0.2821569 0.5066305 0.8283665 0.6567329
+#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
 #&gt; 
 #&gt; $binomial_metric$test
-#&gt;          MSE      RMSE  LogLoss        R2       KS       AUC      Gini
-#&gt; 1: 0.1733613 0.4163668 0.522946 0.1709859 0.456203 0.7709586 0.5419173
+#&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
+#&gt; 1: 0.1731937 0.4161655 0.522526 0.1717874 0.4421992 0.7714991 0.5429981
 #&gt; 
 #&gt; 
 #&gt; $confusion_matrix
 #&gt; $confusion_matrix$train
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    340    136 0.2857143
-#&gt; 2:     1     43    162 0.2097561
-#&gt; 3: total    383    298 0.2628488
+#&gt; 1:     0    346    130 0.2731092
+#&gt; 2:     1     47    158 0.2292683
+#&gt; 3: total    393    288 0.2599119
 #&gt; 
 #&gt; $confusion_matrix$test
 #&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    153     71 0.3169643
-#&gt; 2:     1     25     70 0.2631579
-#&gt; 3: total    178    141 0.3009404
+#&gt; 1:     0    158     66 0.2946429
+#&gt; 2:     1     27     68 0.2842105
+#&gt; 3: total    185    134 0.2915361
 #&gt; 
 #&gt; 
 #&gt; $pic
@@ -282,7 +285,7 @@
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span></div><div class='output co'>#&gt;    variable    dataset        psi
-#&gt; 1:    score train_test 0.04270491</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='gains_table-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
+#&gt; 1:    score train_test 0.05703752</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='gains_table-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
 <span class='co'># Example II # both total and variable psi</span>
 <span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'># psi2$psi  # psi data frame</span>
@@ -299,15 +302,10 @@
 <span class='no'>g4</span> <span class='kw'>=</span> <span class='fu'>gains_table</span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'width'</span>)
 <span class='co'># }</span></div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -318,7 +316,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>

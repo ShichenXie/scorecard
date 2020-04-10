@@ -4,8 +4,10 @@
 \name{germancredit}
 \alias{germancredit}
 \title{German Credit Data}
-\format{A data frame with 21 variables
-(numeric and factors) and 1000 observations.}
+\format{
+A data frame with 21 variables
+(numeric and factors) and 1000 observations.
+}
 \source{
 \url{https://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)}
 }
