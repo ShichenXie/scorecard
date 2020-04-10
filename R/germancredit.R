@@ -10,7 +10,7 @@
 #' @usage data(germancredit)
 #' @format A data frame with 21 variables
 #' (numeric and factors) and 1000 observations.
-#' @source \url{https://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)}
+#' @source \url{http://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)}
 #' @examples
 #' # load German credit data
 #' data(germancredit)
