@@ -35,6 +35,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param digits - The number of digits after the decimal point for points calculation. Default 0.
 #' @return A list of scorecard data frames
 #'
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
@@ -82,7 +83,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' }
 #' @import data.table
 #' @export
-scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE) {
+scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0) {
   # global variables or functions
   variable = var_woe = Estimate = points = woe = NULL
 
@@ -107,13 +108,13 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
     card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = 0 )
 
     for (i in coef_dt[-1,variable]) {
-      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe + basepoints/coef_dt[,.N-1])]
+      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe + basepoints/coef_dt[,.N-1], digits)]
     }
   } else {
-    card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints) )
+    card[["basepoints"]] = data.table( variable = "basepoints", bin = NA, woe = NA, points = round(basepoints, digits) )
 
     for (i in coef_dt[-1,variable]) {
-      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe)]
+      card[[i]] = bins[variable==i][, points := round(-b*coef_dt[variable==i, Estimate]*woe, digits)]
     }
   }
 
@@ -133,6 +134,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
+#' @param digits - The number of digits after the decimal point for points calculation. Default 0.
 #' @param return_prob Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.
@@ -184,7 +186,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @importFrom stats predict
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, return_prob = FALSE, positive='bad|1', ...) {
+scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0, return_prob = FALSE, positive='bad|1', ...) {
   variable = wgts = NULL
 
   dt = setDT(copy(dt))
@@ -224,7 +226,7 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds
   if (length(na_coef) > 0) warning(sprintf('The model coefficients for the following %s variables are NA, please remove these variables:\n%s', length(na_coef), paste(sub('_woe', '', names(na_coef)), collapse = ',')))
 
 
-  card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0)
+  card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0, digits = digits)
   if (return_prob) rt = list(
     card = card,
     prob = predict(model, dt_woe, type='response')
