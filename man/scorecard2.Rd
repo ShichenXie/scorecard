@@ -5,8 +5,8 @@
 \title{Creating a Scorecard}
 \usage{
 scorecard2(bins, dt, y, x = NULL, badprob_pop = NULL, points0 = 600,
-  odds0 = 1/19, pdo = 50, basepoints_eq0 = FALSE, return_prob = FALSE,
-  positive = "bad|1", ...)
+  odds0 = 1/19, pdo = 50, basepoints_eq0 = FALSE, digits = 0,
+  return_prob = FALSE, positive = "bad|1", ...)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}
@@ -26,6 +26,8 @@ scorecard2(bins, dt, y, x = NULL, badprob_pop = NULL, points0 = 600,
 \item{pdo}{Points to Double the Odds, default 50.}
 
 \item{basepoints_eq0}{Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.}
+
+\item{digits}{The number of digits after the decimal point for points calculation. Default 0.}
 
 \item{return_prob}{Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.}
 

@@ -35,7 +35,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, Defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
-#' @param digits - The number of digits after the decimal point for points calculation. Default 0.
+#' @param digits The number of digits after the decimal point for points calculation. Default 0.
 #' @return A list of scorecard data frames
 #'
 #' @seealso \code{\link{scorecard2}} \code{\link{scorecard_ply}}
@@ -134,7 +134,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
-#' @param digits - The number of digits after the decimal point for points calculation. Default 0.
+#' @param digits The number of digits after the decimal point for points calculation. Default 0.
 #' @param return_prob Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.

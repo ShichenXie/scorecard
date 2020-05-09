@@ -1,3 +1,7 @@
+# scorecard 0.3.0.999
+
+* added a parameter in scorecard/scorecard2 function to round score
+
 # scorecard 0.3.0
 
 * modified the method to create initial fine binning breaks.
