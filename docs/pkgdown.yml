@@ -1,7 +1,7 @@
-pandoc: 2.3.1
+pandoc: 2.7.3
 pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   demo: demo.html
-last_built: 2020-05-09T14:37Z
+last_built: 2020-05-29T15:53Z
 

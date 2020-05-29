@@ -79,7 +79,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 #' }
 #' @import data.table
 #' @export
@@ -181,7 +181,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 #' }
 #' @import data.table
 #' @importFrom stats predict
@@ -288,7 +288,7 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds
 #' score1 = scorecard_ply(germancredit, card)
 #'
 #' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(germancredit, card, only_total_score = F)
+#' score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 #' }
 #' @import data.table
 #' @export
