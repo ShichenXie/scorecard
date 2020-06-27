@@ -1191,7 +1191,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=NULL, print_step=0L, replace_
 
 # required in woebin_plot
 #' @import data.table ggplot2
-plot_bin = function(bin, title, show_iv, line_value = 'badprob', line_color = 'blue', bar_color = NULL) {
+plot_bin = function(bin, title, show_iv, show_lineval = TRUE, show_barval = TRUE, line_value = 'badprob', line_color = 'blue', bar_color = NULL, ...) {
   # global variables or functions
   . = bad = badprob = badprob2 = count = count_distr = count_distr2 = count_num = good = goodbad = total_iv = value = variable = woe = lin_val = lin_val2 = lin_val_label = NULL
 
@@ -1251,10 +1251,8 @@ plot_bin = function(bin, title, show_iv, line_value = 'badprob', line_color = 'b
     # geom_text(aes(label="@shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") +
     # coord_cartesian(clip = 'off') +
     geom_bar(data=dat_melt, aes(x=bin, y=value, fill=goodbad), stat="identity") +
-    geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5) +
     geom_line(data=dat, aes(x = rowid, y = lin_val2), colour = line_color) +
     geom_point(data=dat, aes(x = rowid, y = lin_val2), colour = line_color, shape=21, fill="white") +
-    geom_text(data=dat, aes(x = rowid, y = lin_val2, label = lin_val_label), colour = line_color, vjust = -0.5) +
     scale_y_continuous(limits = c(0, y_left_max), sec.axis = sec_axis(~./(y_left_max/(y_right_max-y_right_min))+y_right_min, name = y_right_name)) +
     labs(title = title_string, x=NULL, y = "Bin count distribution", fill=NULL) +
     theme_bw() +
@@ -1263,6 +1261,9 @@ plot_bin = function(bin, title, show_iv, line_value = 'badprob', line_color = 'b
       axis.title.y.right = element_text(colour = line_color),
       axis.text.y.right  = element_text(colour = line_color, angle = 90, hjust = 0.5),
       axis.text.y = element_text(angle = 90, hjust = 0.5) )
+
+  if (show_barval) p_bin = p_bin + geom_text(data=dat, aes(x = bin, y = count_distr2, label = paste0(round(count_distr2*100, 1), "%, ", count_num) ), vjust = 0.5)
+  if (show_lineval) p_bin = p_bin + geom_text(data=dat, aes(x = rowid, y = lin_val2, label = lin_val_label), colour = line_color, vjust = -0.5)
 
   if (!is.null(bar_color)) p_bin = p_bin + scale_fill_manual(values= bar_color)
 
@@ -1302,6 +1303,14 @@ plot_bin = function(bin, title, show_iv, line_value = 'badprob', line_color = 'b
 #' p1_c = woebin_plot(bins1, line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 #' print(p1_c)
 #'
+#' # show iv, line value, bar value
+#' p1_iv = woebin_plot(bins1, show_iv = FALSE)
+#' print(p1_iv)
+#' p1_lineval = woebin_plot(bins1, show_lineval = FALSE)
+#' print(p1_lineval)
+#' p1_barval  = woebin_plot(bins1, show_barval = FALSE)
+#' print(p1_barval)
+#'
 #' \donttest{
 #' # Example II
 #' bins = woebin(germancredit, y="creditability")
@@ -1324,13 +1333,13 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'b
   variable = NULL
   xs = x
 
-  kwargs = list(...)
+  # kwargs = list(...)
   # line value
   if (!(line_value %in% c('badprob', 'woe'))) line_value = 'badprob'
   # line bar colors
-  line_color = kwargs[['line_color']]
-  if (is.null(line_color)) line_color = 'blue'
-  bar_color = kwargs[['bar_color']]
+  # line_color = kwargs[['line_color']]
+  # if (is.null(line_color)) line_color = 'blue'
+  # bar_color = kwargs[['bar_color']]
 
   # bins # if (is.list(bins)) rbindlist(bins)
   if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
@@ -1342,7 +1351,7 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'b
 
   # plot export
   plotlist = list()
-  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv, line_value = line_value,  line_color = line_color, bar_color = bar_color)
+  for (i in xs) plotlist[[i]] = plot_bin(bins[variable==i], title, show_iv, line_value = line_value, ...)
 
 
   return(plotlist)
