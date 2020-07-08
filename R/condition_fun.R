@@ -20,7 +20,7 @@ check_const_cols = function(dt) {
   # constant columns
   const_cols = names(which(dt[,sapply(.SD, function(x) length(unique(x))==1)]))
   if (length(const_cols) > 0) {
-    warning( sprintf('There are %s constant columns are removed from input dataset,\n%s', length(const_cols), paste0(const_cols, collapse=', ')) )
+    warning( sprintf('There were %s constant columns removed from input dataset,\n%s', length(const_cols), paste0(const_cols, collapse=', ')) )
     dt = dt[, (const_cols) := NULL]
   }
   return(dt)
@@ -31,7 +31,7 @@ check_datetime_cols = function(dt) {
   # datatime columns
   datetime_cols = names(which(dt[,sapply(.SD, isdatetime)]))
   if (length(datetime_cols) > 0) {
-    warning( sprintf('There are %s date/time columns are removed from input dataset,\n%s', length(datetime_cols), paste0(datetime_cols, collapse=', ')) )
+    warning( sprintf('There were %s date/time columns removed from input dataset,\n%s', length(datetime_cols), paste0(datetime_cols, collapse=', ')) )
     dt = dt[,(datetime_cols) := NULL]
   }
   return(dt)
@@ -48,7 +48,7 @@ check_cateCols_uniqueValues = function(dt, var_skip = NULL) {
     cateCols_uniVal50 = names(which(dt[, sapply(.SD, function(x) length(unique(x)) > 50), .SDcols = cate_cols]))
     # double check
     if (length(cateCols_uniVal50) > 0) {
-      if (menu(c('yes','no'), title = sprintf('There are %s categorical columns have more than 50 unique values, which might cause the binning process slow. Please double check the following columns:\n%s \n\nContinue the binning process?', length(cateCols_uniVal50), paste0(cateCols_uniVal50, collapse = ", "))) == 2 ) stop()
+      if (menu(c('yes','no'), title = sprintf('There are %s categorical columns that have more than 50 unique values, which might cause the binning process to be slow. Please double check the following columns:\n%s \n\nContinue the binning process?', length(cateCols_uniVal50), paste0(cateCols_uniVal50, collapse = ", "))) == 2 ) stop()
     }
   }
 }
@@ -163,7 +163,7 @@ x_variable = function(dt, y, x, var_skip=NULL, method = NULL) {
   if (is.null(x)) x = x_all
 
   if ( length(setdiff(x,x_all)) > 0 ) {
-    warning(sprintf('Incorrect inputs; there are %s variables are not exist in the input data frame, which are removed from x. \n%s', length(setdiff(x, x_all)), paste(setdiff(x, x_all), collapse = ', ')) )
+    warning(sprintf('Incorrect inputs; there are %s variables that do not exist in the input data frame, which are removed from x. \n%s', length(setdiff(x, x_all)), paste(setdiff(x, x_all), collapse = ', ')) )
     x = intersect(x, x_all)
   }
 
@@ -199,12 +199,12 @@ check_breaks_list = function(breaks_list, xs) {
 
         names_bl_x = setdiff(xs_breakslist, xs)
         if (length(names_bl_x) > 0) {
-          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in breaks_list donot exist in x."))
+          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in breaks_list do not exist in x."))
         }
 
         names_x_bl = setdiff(xs, xs_breakslist)
         if (length(names_x_bl) >0) {
-          warning("There are ",length(names_x_bl)," x variables that donot specified in breaks_list are using optimal binning.")
+          warning("There are ",length(names_x_bl)," x variables that are not specified in breaks_list, and instead are using optimal binning.")
         }
       }
     }
@@ -233,12 +233,12 @@ check_special_values = function(special_values, xs) {
 
         names_bl_x = setdiff(xs_sv, xs)
         if (length(names_bl_x) > 0) {
-          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in special_values donot exist in x."))
+          warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in special_values do not exist in x."))
         }
 
         names_x_bl = setdiff(xs, xs_sv)
         if (length(names_x_bl) >0) {
-          warning("There are ",length(names_x_bl)," x variables that donot specified in special_values donot have special values.")
+          warning("There are ",length(names_x_bl)," x variables that have special values but are not specified in special_values.")
         }
       }
 
