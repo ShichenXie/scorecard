@@ -236,10 +236,10 @@ check_special_values = function(special_values, xs) {
           warning(paste0("Incorrect inputs; the variables \n", paste0(names_bl_x, collapse = ","), "\n specified in special_values do not exist in x."))
         }
 
-        names_x_bl = setdiff(xs, xs_sv)
-        if (length(names_x_bl) >0) {
-          warning("There are ",length(names_x_bl)," x variables that have special values but are not specified in special_values.")
-        }
+        # names_x_bl = setdiff(xs, xs_sv)
+        # if (length(names_x_bl) >0) {
+        #   warning("There are ",length(names_x_bl)," x variables that are not specified in special_values.")
+        # }
       }
 
     } else {

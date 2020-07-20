@@ -1,6 +1,6 @@
 ---
 title: "Developing a Credit Scorecard"
-author: "shichen xie"
+author: "Shichen Xie, Michael Thomas"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Traditional Credit Scoring Using Logistic Regression
+## Traditional Credit Scoring Using Logistic Regression
 
 After installing scorecard via instructions in the [README](https://github.com/ShichenXie/scorecard#Installation) section, load the package into your environment.
 
@@ -24,7 +24,7 @@ After installing scorecard via instructions in the [README](https://github.com/S
 library(scorecard)
 ```
 
-## Data Preparation
+### Data Preparation
 
 Let's use the *germancredit* dataset for the purposes of this demonstration.
 
@@ -33,13 +33,13 @@ data("germancredit")
 str(germancredit)
 ```
 
-The `var_filter` function drops column variables that don't meet minimal thresholds for missingness rate, information value (IV), or identical value rate. 
+The `var_filter` function drops column variables that don't meet the thresholds for missing rate (> 95% by default), information value (IV) (< 0.02 by default), or identical value rate (> 95% by default). 
 
 ```{r}
 dt_f <- var_filter(germancredit, y = "creditability")
 ```
 
-## Split Data into Train / Test Sets
+### Split Data into Train / Test Sets
 
 When building scorecard models, a subset of the observations should be held out from the data used to train the model (similar to most other traditional modeling approaches), and instead be apportioned to the *test* set. We can perform this sampling to create the *train* and *test* datasets using the `split_df` function.
 
@@ -48,7 +48,7 @@ dt_list <- split_df(dt_f, y = "creditability", ratio = c(0.6, 0.4), seed = 30)
 label_list <- lapply(dt_list, function(x) x$creditability)
 ```
 
-## Weight-of-Evidence (WoE) binning
+### Weight-of-Evidence (WoE) binning
 
 Weight-of-Evidence binning is a technique for binning both continuous and categorical independent variables in a way that provides the most robust bifurcation of the data against the dependent variable. This technique can be easily executed across all independent variables using the `woebin` function.
 
@@ -80,7 +80,7 @@ Once your WoE bins are established for all desired independent variables, apply 
 dt_woe_list <- lapply(dt_list, function(x) woebin_ply(x, bins_adj))
 ```
 
-## Logistic Regression Example
+### Logistic Regression Example
 
 Logistic regression can often be leveraged effectively to assist in building the scorecards.
 
@@ -112,9 +112,9 @@ If oversampling is a concern, the following code chunk could be uncommented and 
 # m3 <- glm(fmla, family = binomial(), data = dt_woe, weights = weight)
 ```
 
-## Evaluating Model Performance Using KS & ROC
+### Evaluating Model Performance Using KS & ROC
 
-The `perf_eva` function provides model accuracy statistics and plots.
+The `perf_eva` function provides model accuracy statistics (such as mse, rmse, logloss, r2, ks, auc, gini) and plots (such as ks, lift, gain, roc, lz, pr, f1, density).
 
 ```{r}
 # First, get probabalistic predictions
@@ -123,9 +123,9 @@ pred_list <- lapply(dt_woe_list, function(x) predict(m2, x, type = 'response'))
 perf <- perf_eva(pred = pred_list, label = label_list)
 ```
 
-## Create Scorecard
+### Create Scorecard
 
-Once the model has been selected, scorecards can be created via the `scorecard` function. Note that the default cutoff score is 600. See `?scorecard` for more information on the function and its arguments.
+Once the model has been selected, scorecards can be created via the `scorecard` function. Note that the default target points is 600, target odds is 1/19 and points to double the odds is 50. See `?scorecard` for more information on the function and its arguments.
 
 The scorecard can then be applied to the original data using the `scorecard_ply` function. Lastly, a chart encompassing Population Stability Index (PSI) statistics can be rendered via the `perf_psi` function.
 
