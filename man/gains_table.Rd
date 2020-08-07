@@ -5,7 +5,7 @@
 \title{Gains Table}
 \usage{
 gains_table(score, label, bin_num = 10, method = "freq", width_by = NULL,
-  positive = "bad|1", ...)
+  breaks_by = NULL, positive = "bad|1", ...)
 }
 \arguments{
 \item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}
@@ -17,6 +17,8 @@ gains_table(score, label, bin_num = 10, method = "freq", width_by = NULL,
 \item{method}{The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.}
 
 \item{width_by}{Number, increment of the score breaks when method is set as 'width'. If it is provided the above parameter bin_num will not be used. Defaults to NULL.}
+
+\item{breaks_by}{The name of data set to create breakpoints. Defaults to the first data set. Or numeric values to set breakpoints manually.}
 
 \item{positive}{Value of positive class, Defaults to "bad|1".}
 

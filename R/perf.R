@@ -938,6 +938,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 #' @param bin_num Integer, the number of score bins. Defaults to 10. If it is 'max', then individual scores are used as bins.
 #' @param method The score is binning by equal frequency or equal width. Accepted values are 'freq' and 'width'. Defaults to 'freq'.
 #' @param width_by Number, increment of the score breaks when method is set as 'width'. If it is provided the above parameter bin_num will not be used. Defaults to NULL.
+#' @param breaks_by The name of data set to create breakpoints. Defaults to the first data set. Or numeric values to set breakpoints manually.
 #' @param positive Value of positive class, Defaults to "bad|1".
 #' @param ... Additional parameters.
 #'
@@ -1017,7 +1018,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 #' }
 #'
 #' @export
-gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, positive='bad|1', ...) {
+gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, breaks_by=NULL, positive='bad|1', ...) {
   . = V1 = V2 = bad = bin = count = datset = group = NULL
 
   # arguments
@@ -1070,31 +1071,51 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, p
     # in each value
     dt_psi = copy(dt_sl)[, bin := factor(score)]
   } else {
+    # set breakpoints manually.
+    if (inherits(breaks_by, 'numeric')) {
+      breaks_by = breaks_by[between(breaks_by, dt_sl[, min(score)], dt_sl[, max(score)])]
+      if (length(breaks_by)) breaks_by = NULL
+      brkp = breaks_by
+    }
+
+    # set breakpoints basedon dataset specified
+    if (is.null(breaks_by) | inherits(breaks_by, 'character')) {
+    # the name of dataset to create breakpoints, defaults to the name of 1st dataset
+    if (is.null(breaks_by)) breaks_by = dt_sl[1,datset]
+    breaks_by = intersect(breaks_by, dt_sl[, unique(datset)])
+    if (length(breaks_by) == 1) breaks_by = dt_sl[1,datset]
+
+    # the dataset of score/label to create breakpoints
+    dt_sl_brkp = dt_sl[datset %in% breaks_by]
+    # create breakpoints by method freq/width
     if (method == 'freq') {
       # in equal frequency
-      brkp = copy(dt_sl)[order(score)
+      brkp = copy(dt_sl_brkp)[order(score)
                          ][, group := ceiling(.I/(.N/bin_num))
                          ][, .(score = score[1]), by = group
-                         ][, c(-Inf, score[-1], Inf)]
+                         ][, score[-1]]
 
     } else if (method == 'width') {
-
+      # in equal width
       if (is.null(width_by) || width_by > max(score)-min(score)) {
         # in equal width
-        minmax = dt_sl[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
+        minmax = dt_sl_brkp[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
                        ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
 
         brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
       } else {
-        minmax = quantile(score, c(0.02, 0.98))
+        minmax = dt_sl_brkp[, quantile(score, c(0.02, 0.98))]
         minmax = round(minmax/width_by) * width_by
         brkp = seq(minmax[[1]]-width_by, minmax[[2]]+width_by, by = width_by)
       }
 
       if (is_score) brkp = round(brkp)
-      brkp = c(-Inf, brkp[-c(1, length(brkp))], Inf)
+      brkp = brkp[-c(1, length(brkp))]
     }
-    dt_psi = dt_sl[, bin := cut(score, unique(brkp), right = FALSE, dig.lab = 10, ordered_result = F)]
+    }
+
+    brkp = unique(c(-Inf, brkp, Inf))
+    dt_psi = dt_sl[, bin := cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
   }
   if (return_dt_psi) return(dt_psi) # innter result usded in perf_psi function
 
@@ -1220,6 +1241,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
 
   seed = kwargs[['seed']]
   if (is.null(seed)) seed = 618
+  breaks_by = kwargs[['breaks_by']]
 
   return_distr_dat = kwargs[['return_distr_dat']]
   if (is.null(return_distr_dat)) return_distr_dat = FALSE
@@ -1249,7 +1271,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
     sn_is_totalscore = dt_sn[,length(unique(score)) > threshold_variable]
     bin_num <- ifelse(sn_is_totalscore, 10, 'max')
 
-    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, method=method, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn)
+    dt_psi = gains_table(score=NULL, label=NULL, bin_num=10, method=method, positive = positive, return_dt_psi=TRUE, dt_sl=dt_sn, breaks_by = breaks_by)
 
 
     # return list

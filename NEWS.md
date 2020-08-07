@@ -1,7 +1,8 @@
 # scorecard 0.3.0.999
 
 * added a parameter in scorecard/scorecard2 function to round score
-* added paramerters show_varval/show_lineval in woebin_plot function to show bar value or line value
+* added parameters show_varval/show_lineval in woebin_plot function to show bar value or line value
+* added a parameter breaks_by in perf_psi/gains_table function to identify the data set to create breakpoints.
 
 # scorecard 0.3.0
 
