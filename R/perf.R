@@ -1083,7 +1083,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
     # the name of dataset to create breakpoints, defaults to the name of 1st dataset
     if (is.null(breaks_by)) breaks_by = dt_sl[1,datset]
     breaks_by = intersect(breaks_by, dt_sl[, unique(datset)])
-    if (length(breaks_by) == 1) breaks_by = dt_sl[1,datset]
+    if (length(breaks_by) == 0) breaks_by = dt_sl[1,datset]
 
     # the dataset of score/label to create breakpoints
     dt_sl_brkp = dt_sl[datset %in% breaks_by]
@@ -1113,7 +1113,6 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
       brkp = brkp[-c(1, length(brkp))]
     }
     }
-
     brkp = unique(c(-Inf, brkp, Inf))
     dt_psi = dt_sl[, bin := cut(score, brkp, right = FALSE, dig.lab = 10, ordered_result = F)]
   }
