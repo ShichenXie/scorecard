@@ -145,7 +145,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>gains_table</span>(<span class='no'>score</span>, <span class='no'>label</span>, <span class='kw'>bin_num</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"freq"</span>, <span class='kw'>width_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>breaks_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,6 +169,10 @@
     <tr>
       <th>width_by</th>
       <td><p>Number, increment of the score breaks when method is set as 'width'. If it is provided the above parameter bin_num will not be used. Defaults to NULL.</p></td>
+    </tr>
+    <tr>
+      <th>breaks_by</th>
+      <td><p>The name of data set to create breakpoints. Defaults to the first data set. Or numeric values to set breakpoints manually.</p></td>
     </tr>
     <tr>
       <th>positive</th>
@@ -285,7 +289,7 @@
 <span class='co'># Example I # only total psi</span>
 <span class='no'>psi1</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='no'>psi1</span>$<span class='no'>psi</span>  <span class='co'># psi data frame</span></div><div class='output co'>#&gt;    variable    dataset        psi
-#&gt; 1:    score train_test 0.05703752</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='gains_table-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
+#&gt; 1:    score train_test 0.03371411</div><div class='input'><span class='no'>psi1</span>$<span class='no'>pic</span>  <span class='co'># pic of score distribution</span></div><div class='output co'>#&gt; $score</div><div class='img'><img src='gains_table-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'>
 <span class='co'># Example II # both total and variable psi</span>
 <span class='no'>psi2</span> <span class='kw'>=</span> <span class='fu'><a href='perf_psi.html'>perf_psi</a></span>(<span class='kw'>score</span> <span class='kw'>=</span> <span class='no'>score_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)
 <span class='co'># psi2$psi  # psi data frame</span>

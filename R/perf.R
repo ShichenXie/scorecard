@@ -1074,7 +1074,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
     # set breakpoints manually.
     if (inherits(breaks_by, 'numeric')) {
       breaks_by = breaks_by[between(breaks_by, dt_sl[, min(score)], dt_sl[, max(score)])]
-      if (length(breaks_by)) breaks_by = NULL
+      if (length(breaks_by)==0) breaks_by = NULL
       brkp = breaks_by
     }
 
