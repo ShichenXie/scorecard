@@ -85,7 +85,7 @@ cutoff_ks = function(dt_ev) {
 
   dt_ev[, ks := abs(TN/totN - FN/totP)
         ][ks == max(ks, na.rm = TRUE)
-          ][,.(cumpop, pred, ks)]
+          ][,.(cumpop, pred, ks)][1]
 }
 # roc
 cutoff_roc = function(dt_ev) {
