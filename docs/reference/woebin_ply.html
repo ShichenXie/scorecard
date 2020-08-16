@@ -216,7 +216,7 @@
 <span class='co'># bins is a list which generated from woebin()</span>
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_germancredit</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># bins is a data frame</span>
-<span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/data.table/man/rbindlist.html'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
+<span class='no'>bins_df</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='no'>bins_germancredit</span>)
 <span class='no'>germancredit_woe</span> <span class='kw'>=</span> <span class='fu'>woebin_ply</span>(<span class='no'>germancredit</span>, <span class='no'>bins_df</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 # }
 

@@ -228,18 +228,10 @@
 <span class='co'>###### perf_eva examples ######</span>
 <span class='co'># Example I, one datset</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='gains_table-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>$<span class='no'>train</span>, <span class='kw'>label</span><span class='kw'>=</span><span class='no'>dt_list</span>$<span class='no'>train</span>$<span class='no'>creditability</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>'train'</span>)</div><div class='img'><img src='gains_table-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
 #&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
-#&gt; 
-#&gt; 
-#&gt; $confusion_matrix
-#&gt; $confusion_matrix$train
-#&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    346    130 0.2731092
-#&gt; 2:     1     47    158 0.2292683
-#&gt; 3: total    393    288 0.2599119
 #&gt; 
 #&gt; 
 #&gt; $pic
@@ -252,7 +244,7 @@
 
 <span class='co'># Example II, multiple datsets</span>
 <span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='output co'>#&gt; [INFO] The threshold of confusion matrix is 0.3019.</div><div class='img'><img src='gains_table-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
+<span class='fu'><a href='perf_eva.html'>perf_eva</a></span>(<span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>pred_list</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>label_list</span>)</div><div class='img'><img src='gains_table-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
 #&gt; $binomial_metric$train
 #&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
 #&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
@@ -260,20 +252,6 @@
 #&gt; $binomial_metric$test
 #&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
 #&gt; 1: 0.1731937 0.4161655 0.522526 0.1717874 0.4421992 0.7714991 0.5429981
-#&gt; 
-#&gt; 
-#&gt; $confusion_matrix
-#&gt; $confusion_matrix$train
-#&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    346    130 0.2731092
-#&gt; 2:     1     47    158 0.2292683
-#&gt; 3: total    393    288 0.2599119
-#&gt; 
-#&gt; $confusion_matrix$test
-#&gt;    label pred_0 pred_1     error
-#&gt; 1:     0    158     66 0.2946429
-#&gt; 2:     1     27     68 0.2842105
-#&gt; 3: total    185    134 0.2915361
 #&gt; 
 #&gt; 
 #&gt; $pic

@@ -5,8 +5,9 @@
 \title{Binomial Metrics}
 \usage{
 perf_eva(pred, label, title = NULL, binomial_metric = c("mse", "rmse",
-  "logloss", "r2", "ks", "auc", "gini"), confusion_matrix = TRUE,
-  threshold = NULL, show_plot = c("ks", "roc"), positive = "bad|1", ...)
+  "logloss", "r2", "ks", "auc", "gini"), confusion_matrix = FALSE,
+  threshold = NULL, show_plot = c("ks", "lift"), pred_desc = TRUE,
+  positive = "bad|1", ...)
 }
 \arguments{
 \item{pred}{A list or vector of predicted probability or score.}
@@ -23,7 +24,9 @@ perf_eva(pred, label, title = NULL, binomial_metric = c("mse", "rmse",
 
 \item{show_plot}{Defaults to c('ks', 'roc'). Accepted values including c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density').}
 
-\item{positive}{Value of positive class, Defaults to "bad|1".}
+\item{pred_desc}{whether to sort the argument of pred in descending order. Defaults to TRUE.}
+
+\item{positive}{Value of positive class. Defaults to "bad|1".}
 
 \item{...}{Additional parameters.}
 }

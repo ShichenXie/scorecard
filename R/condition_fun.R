@@ -4,7 +4,7 @@
 ceiling2 = function(x) {
   x_sci = format(x, scientific = TRUE, digits=2)
   z = ceiling(as.numeric(substr(x_sci, 1, 3)))
-  e = substr(x_sci, 4, nchar(x_sci))
+  e = sub('.+(e.+)$', '\\1', x_sci)
   as.numeric(paste0(z, e))
 }
 
