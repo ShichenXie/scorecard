@@ -1,7 +1,8 @@
+# based on Debian OS
 FROM rocker/verse:latest
 # MAINTAINER Shichen Xie <xie@shichen.name>
 
-RUN R -e "install.packages(c('scorecard', 'h2o', 'xgboost'), type="binary", repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')"
+RUN R --quiet -e "install.packages(c('scorecard', 'h2o', 'xgboost'), repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')"
 
 # docker build -t shichenxie/scorecard .
 # docker run --rm -p 8787:8787 -e PASSWORD=pwd shichenxie/scorecard
