@@ -1,4 +1,4 @@
-# scorecard 0.3.0.999
+# scorecard 0.3.1
 
 * added a parameter in scorecard/scorecard2 function to round score
 * added parameters show_varval/show_lineval in woebin_plot function to show bar value or line value
