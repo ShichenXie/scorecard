@@ -1,7 +1,6 @@
 ---
 title: "Developing a Credit Scorecard"
 author: "Shichen Xie, Michael Thomas"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Developing a Credit Scorcard}
@@ -9,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -20,7 +19,7 @@ knitr::opts_chunk$set(
 
 After installing scorecard via instructions in the [README](https://github.com/ShichenXie/scorecard#Installation) section, load the package into your environment.
 
-```{r}
+```{r setup}
 library(scorecard)
 ```
 
@@ -116,7 +115,7 @@ If oversampling is a concern, the following code chunk could be uncommented and 
 
 The `perf_eva` function provides model accuracy statistics (such as mse, rmse, logloss, r2, ks, auc, gini) and plots (such as ks, lift, gain, roc, lz, pr, f1, density).
 
-```{r}
+```{r, fig.width=6, fig.asp=0.6}
 # First, get probabalistic predictions
 pred_list <- lapply(dt_woe_list, function(x) predict(m2, x, type = 'response'))
 # Then evaluate model accuracy  
@@ -129,7 +128,7 @@ Once the model has been selected, scorecards can be created via the `scorecard` 
 
 The scorecard can then be applied to the original data using the `scorecard_ply` function. Lastly, a chart encompassing Population Stability Index (PSI) statistics can be rendered via the `perf_psi` function.
 
-```{r}
+```{r, fig.width=6, fig.asp=0.6}
 # Build the card
 card <- scorecard(bins_adj, m2)
 # Obtain Credit Scores

@@ -26,7 +26,7 @@ Suggests:
     pkgdown,
     testthat
 License: MIT + file LICENSE
-URL: https://github.com/ShichenXie/scorecard
+URL: https://github.com/ShichenXie/scorecard, http://shichen.name/scorecard
 BugReports: https://github.com/ShichenXie/scorecard/issues
 LazyData: true
 VignetteBuilder: knitr
