@@ -3,7 +3,7 @@ title: "Developing a Credit Scorecard"
 author: "Shichen Xie, Michael Thomas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Developing a Credit Scorcard}
+  %\VignetteIndexEntry{Developing a Credit Scorecard}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
