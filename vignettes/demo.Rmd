@@ -27,14 +27,14 @@ library(scorecard)
 
 Let's use the *germancredit* dataset for the purposes of this demonstration.
 
-```{r}
+```{r load data}
 data("germancredit")
 str(germancredit)
 ```
 
 The `var_filter` function drops column variables that don't meet the thresholds for missing rate (> 95% by default), information value (IV) (< 0.02 by default), or identical value rate (> 95% by default). 
 
-```{r}
+```{r variable filter}
 dt_f <- var_filter(germancredit, y = "creditability")
 ```
 
@@ -42,7 +42,7 @@ dt_f <- var_filter(germancredit, y = "creditability")
 
 When building scorecard models, a subset of the observations should be held out from the data used to train the model (similar to most other traditional modeling approaches), and instead be apportioned to the *test* set. We can perform this sampling to create the *train* and *test* datasets using the `split_df` function.
 
-```{r}
+```{r dataframe split}
 dt_list <- split_df(dt_f, y = "creditability", ratio = c(0.6, 0.4), seed = 30)
 label_list <- lapply(dt_list, function(x) x$creditability)
 ```
@@ -51,7 +51,7 @@ label_list <- lapply(dt_list, function(x) x$creditability)
 
 Weight-of-Evidence binning is a technique for binning both continuous and categorical independent variables in a way that provides the most robust bifurcation of the data against the dependent variable. This technique can be easily executed across all independent variables using the `woebin` function.
 
-```{r}
+```{r woe binning}
 bins <- woebin(dt_f, y = "creditability")
 # woebin_plot(bins)
 ```
@@ -64,7 +64,7 @@ The user can also adjust bin breaks interactively by using the `woebin_adj` func
 
 Furthermore, the user can set the bin breaks manually via the `breaks_list = list()` argument in the `woebin` function. Note the use of *%,%* as a separator to create a single bin from two classes in a categorical independent variable.
 
-```{r}
+```{r binning adjust}
 breaks_adj <- list(
   age.in.years = c(26, 35, 40),
   other.debtors.or.guarantors = c("none", "co-applicant%,%guarantor")
@@ -75,7 +75,7 @@ bins_adj <- woebin(dt_f, y = "creditability", breaks_list = breaks_adj)
 
 Once your WoE bins are established for all desired independent variables, apply the binning logic to the training and test datasets.
 
-```{r}
+```{r woe transformation}
 dt_woe_list <- lapply(dt_list, function(x) woebin_ply(x, bins_adj))
 ```
 
@@ -83,7 +83,7 @@ dt_woe_list <- lapply(dt_list, function(x) woebin_ply(x, bins_adj))
 
 Logistic regression can often be leveraged effectively to assist in building the scorecards.
 
-```{r}
+```{r logistic regression}
 m1 <- glm( creditability ~ ., family = binomial(), data = dt_woe_list$train)
 
 # vif(m1, merge_coef = TRUE) # summary(m1)
@@ -115,7 +115,7 @@ If oversampling is a concern, the following code chunk could be uncommented and 
 
 The `perf_eva` function provides model accuracy statistics (such as mse, rmse, logloss, r2, ks, auc, gini) and plots (such as ks, lift, gain, roc, lz, pr, f1, density).
 
-```{r, fig.width=6, fig.asp=0.6}
+```{r proba prediction, fig.width=6, fig.asp=0.6}
 # First, get probabalistic predictions
 pred_list <- lapply(dt_woe_list, function(x) predict(m2, x, type = 'response'))
 # Then evaluate model accuracy  
@@ -128,7 +128,7 @@ Once the model has been selected, scorecards can be created via the `scorecard` 
 
 The scorecard can then be applied to the original data using the `scorecard_ply` function. Lastly, a chart encompassing Population Stability Index (PSI) statistics can be rendered via the `perf_psi` function.
 
-```{r, fig.width=6, fig.asp=0.6}
+```{r scorecard, fig.width=6, fig.asp=0.6}
 # Build the card
 card <- scorecard(bins_adj, m2)
 # Obtain Credit Scores
