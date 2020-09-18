@@ -160,9 +160,11 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
                `feature size` = ncol(x)-1,
                `bad rate` = sum(x[[y]])/nrow(x))
   })
+  dt_dtinfo = rbindlist(sample_info, idcol = 'dataset')
+  dt_xdea = var_dea(rbindlist(dat_lst))
 
-  writeData(wb, sheet, rbindlist(sample_info, idcol = 'dataset'), startRow=1, startCol=1, colNames=T)
-
+  writeData(wb, sheet, dt_dtinfo, startRow=1, startCol=1, colNames=T)
+  writeData(wb, sheet, dt_xdea, startRow=nrow(dt_dtinfo)+4, startCol=1, colNames=T)
 
   # model coefficients ------
   n = n+1
@@ -171,10 +173,10 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   dt_vif = vif(m, merge_coef = TRUE)[, gvif := round(gvif, 4)]
   dt_iv = iv(dat_woe_lst[[1]][,c(paste0(x,"_woe"), y),with=FALSE], y, order = FALSE)[, info_value := round(info_value, 4)]
-  dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dat_lst[[1]][,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
+  # dt_mr = data.table(variable=paste0(x,'_woe'), missing_rate=dat_lst[[1]][,x,with=FALSE][, sapply(.SD, function(x) sum(is.na(x))/.N)])
 
   sum_tbl = Reduce(
-    function(x,y) merge(x,y, all=TRUE, by='variable', sort=FALSE), list(dt_vif, dt_iv, dt_mr)
+    function(x,y) merge(x,y, all.x=TRUE, by='variable', sort=FALSE), list(dt_vif, dt_iv, copy(dt_xdea)[, variable := paste0(variable, '_woe')])
   )[, variable := sub('_woe$', '', variable)]
   if (!is.null(x_name)) sum_tbl = merge(x_name, sum_tbl, by = 'variable', sort = FALSE, all = TRUE)[c(.N, seq_len(.N-1)),]
 
