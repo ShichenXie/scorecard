@@ -161,7 +161,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
                `bad rate` = sum(x[[y]])/nrow(x))
   })
   dt_dtinfo = rbindlist(sample_info, idcol = 'dataset')
-  dt_xdea = var_dea(rbindlist(dat_lst))
+  dt_xdea = var_describe(rbindlist(dat_lst))
 
   writeData(wb, sheet, dt_dtinfo, startRow=1, startCol=1, colNames=T)
   writeData(wb, sheet, dt_xdea, startRow=nrow(dt_dtinfo)+4, startCol=1, colNames=T)
