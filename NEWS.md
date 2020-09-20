@@ -1,6 +1,6 @@
 # scorecard 0.3.1.999
 
-* added a functon var_describe that provide statistic parameters for data exploratory data analysis.
+* added a functon describe that provide statistic parameters for data exploratory data analysis.
 
 # scorecard 0.3.1
 

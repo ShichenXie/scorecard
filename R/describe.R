@@ -10,12 +10,12 @@
 #' @examples
 #' data("germancredit")
 #'
-#' eda = var_describe(germancredit)
+#' eda = describe(germancredit)
 #'
 #' @importFrom stats sd
 #' @export
 #'
-var_describe = function(dt) {
+describe = function(dt) {
   dt = setDT(copy(dt))
 
   sum_dt =
