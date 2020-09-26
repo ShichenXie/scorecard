@@ -11,6 +11,7 @@
 #' data("germancredit")
 #'
 #' eda = describe(germancredit)
+#' eda
 #'
 #' @importFrom stats sd
 #' @export

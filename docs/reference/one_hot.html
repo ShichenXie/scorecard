@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
     <p>One-hot encoding on categorical variables and replace missing values.  It is not needed when creating a standard scorecard model, but required in models that without doing woe transformation.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>one_hot</span>(<span class='no'>dt</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_encode</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>one_hot</span>(<span class='kw'>dt</span>, var_skip = <span class='kw'>NULL</span>, var_encode = <span class='kw'>NULL</span>, nacol_rm = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -177,18 +177,19 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
-  <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
+<span class='kw'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='kw'>germancredit</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(creditability=<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,replace=<span class='fl'>TRUE</span>)),
+  fill=<span class='fl'>TRUE</span>)
 
 <span class='co'># one hot encoding</span>
 <span class='co'>## keep na columns from categorical variable</span>
-<span class='no'>dat_onehot1</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>) <span class='co'># default</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>dat_onehot1</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  13 variables:
+<span class='kw'>dat_onehot1</span> <span class='op'>=</span> <span class='fu'>one_hot</span>(<span class='kw'>dat</span>, var_skip = <span class='st'>'creditability'</span>, nacol_rm = <span class='fl'>FALSE</span>) <span class='co'># default</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>dat_onehot1</span>)
+</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  13 variables:
 #&gt;  $ creditability                                              : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
 #&gt;  $ housing_NA                                                 : int  0 0 0 0 0 0 0 0 0 0 ...
 #&gt;  $ housing_for free                                           : int  0 0 0 1 1 1 0 0 0 0 ...
@@ -203,8 +204,9 @@
 #&gt;  $ telephone_none                                             : int  0 1 1 1 1 0 1 0 1 1 ...
 #&gt;  $ telephone_yes, registered under the customers name         : int  1 0 0 0 0 1 0 1 0 0 ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'><span class='co'>## remove na columns from categorical variable</span>
-<span class='no'>dat_onehot2</span> <span class='kw'>=</span> <span class='fu'>one_hot</span>(<span class='no'>dat</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>nacol_rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>dat_onehot2</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  10 variables:
+<span class='kw'>dat_onehot2</span> <span class='op'>=</span> <span class='fu'>one_hot</span>(<span class='kw'>dat</span>, var_skip = <span class='st'>'creditability'</span>, nacol_rm = <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>dat_onehot2</span>)
+</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1010 obs. of  10 variables:
 #&gt;  $ creditability                                              : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...
 #&gt;  $ housing_for free                                           : int  0 0 0 1 1 1 0 0 0 0 ...
 #&gt;  $ housing_own                                                : int  1 1 1 0 0 0 1 0 1 1 ...
@@ -233,7 +235,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

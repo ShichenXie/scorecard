@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Split a Data Frame — split_df • scorecard</title>
+<title>Variable Describe — describe • scorecard</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Split a Data Frame — split_df" />
-<meta property="og:description" content="Split a data frame into train and test" />
+<meta property="og:title" content="Variable Describe — describe" />
+<meta property="og:description" content="This function provides descriptive statistic for exploratory data analysis." />
 
 
 
@@ -135,17 +135,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Split a Data Frame</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/split_df.R'><code>R/split_df.R</code></a></small>
-    <div class="hidden name"><code>split_df.Rd</code></div>
+    <h1>Variable Describe</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/R/describe.R'><code>R/describe.R</code></a></small>
+    <div class="hidden name"><code>describe.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Split a data frame into train and test</p>
+    <p>This function provides descriptive statistic for exploratory data analysis.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>split_df</span>(<span class='kw'>dt</span>, y = <span class='kw'>NULL</span>, ratio = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.3</span>), seed = <span class='fl'>618</span>,
-  name_dfs = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"train"</span>, <span class='st'>"test"</span>), <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>describe</span>(<span class='kw'>dt</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,59 +153,83 @@
       <th>dt</th>
       <td><p>A data frame.</p></td>
     </tr>
-    <tr>
-      <th>y</th>
-      <td><p>Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.</p></td>
-    </tr>
-    <tr>
-      <th>ratio</th>
-      <td><p>A numeric value, Defaults to 0.7. It indicates the ratio of total rows contained in one split, must less than 1.</p></td>
-    </tr>
-    <tr>
-      <th>seed</th>
-      <td><p>A random seed, Defaults to 618.</p></td>
-    </tr>
-    <tr>
-      <th>name_dfs</th>
-      <td><p>Name of returned data frames. Its length should equals to the ratio's. Defaults to train and test.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional parameters.</p></td>
-    </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list of data frames</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
 
-<span class='co'># Example I</span>
-<span class='kw'>dt_list</span> <span class='op'>=</span> <span class='fu'>split_df</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>)
-<span class='kw'>train</span> <span class='op'>=</span> <span class='kw'>dt_list</span>[[<span class='fl'>1</span>]]
-<span class='kw'>test</span> <span class='op'>=</span> <span class='kw'>dt_list</span>[[<span class='fl'>2</span>]]
-
-<span class='co'># dimensions of train and test datasets</span>
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>dt_list</span>, <span class='kw'>dim</span>)
-</div><div class='output co'>#&gt; $train
-#&gt; [1] 681  21
-#&gt; 
-#&gt; $test
-#&gt; [1] 319  21
-#&gt; </div><div class='input'>
-
-<span class='co'># Example II</span>
-<span class='kw'>dt_list2</span> <span class='op'>=</span> <span class='fu'>split_df</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>, ratio = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.5</span>, <span class='fl'>0.2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>dt_list2</span>, <span class='kw'>dim</span>)
-</div><div class='output co'>#&gt; $train
-#&gt; [1] 491  21
-#&gt; 
-#&gt; $test
-#&gt; [1] 211  21
-#&gt; </div><div class='input'>
+<span class='kw'>eda</span> <span class='op'>=</span> <span class='fu'>describe</span>(<span class='kw'>germancredit</span>)
+<span class='kw'>eda</span>
+</div><div class='output co'>#&gt;                                                     variable     class count
+#&gt;  1:                      status.of.existing.checking.account    factor  1000
+#&gt;  2:                                        duration.in.month   numeric  1000
+#&gt;  3:                                           credit.history    factor  1000
+#&gt;  4:                                                  purpose character  1000
+#&gt;  5:                                            credit.amount   numeric  1000
+#&gt;  6:                                savings.account.and.bonds    factor  1000
+#&gt;  7:                                 present.employment.since    factor  1000
+#&gt;  8:      installment.rate.in.percentage.of.disposable.income   numeric  1000
+#&gt;  9:                                  personal.status.and.sex    factor  1000
+#&gt; 10:                              other.debtors.or.guarantors    factor  1000
+#&gt; 11:                                  present.residence.since   numeric  1000
+#&gt; 12:                                                 property    factor  1000
+#&gt; 13:                                             age.in.years   numeric  1000
+#&gt; 14:                                  other.installment.plans    factor  1000
+#&gt; 15:                                                  housing    factor  1000
+#&gt; 16:                  number.of.existing.credits.at.this.bank   numeric  1000
+#&gt; 17:                                                      job    factor  1000
+#&gt; 18: number.of.people.being.liable.to.provide.maintenance.for   numeric  1000
+#&gt; 19:                                                telephone    factor  1000
+#&gt; 20:                                           foreign.worker    factor  1000
+#&gt; 21:                                            creditability    factor  1000
+#&gt;                                                     variable     class count
+#&gt;     unique_count missing_count missing_rate     mean        sd min    p25
+#&gt;  1:            4             0            0       NA        NA  NA     NA
+#&gt;  2:           33             0            0   20.903   12.0588   4   12.0
+#&gt;  3:            5             0            0       NA        NA  NA     NA
+#&gt;  4:           10             0            0       NA        NA  NA     NA
+#&gt;  5:          921             0            0 3271.258 2822.7369 250 1365.5
+#&gt;  6:            5             0            0       NA        NA  NA     NA
+#&gt;  7:            5             0            0       NA        NA  NA     NA
+#&gt;  8:            4             0            0    2.973    1.1187   1    2.0
+#&gt;  9:            4             0            0       NA        NA  NA     NA
+#&gt; 10:            3             0            0       NA        NA  NA     NA
+#&gt; 11:            4             0            0    2.845    1.1037   1    2.0
+#&gt; 12:            4             0            0       NA        NA  NA     NA
+#&gt; 13:           53             0            0   35.546   11.3755  19   27.0
+#&gt; 14:            3             0            0       NA        NA  NA     NA
+#&gt; 15:            3             0            0       NA        NA  NA     NA
+#&gt; 16:            4             0            0    1.407    0.5777   1    1.0
+#&gt; 17:            4             0            0       NA        NA  NA     NA
+#&gt; 18:            2             0            0    1.155    0.3621   1    1.0
+#&gt; 19:            2             0            0       NA        NA  NA     NA
+#&gt; 20:            2             0            0       NA        NA  NA     NA
+#&gt; 21:            2             0            0       NA        NA  NA     NA
+#&gt;     unique_count missing_count missing_rate     mean        sd min    p25
+#&gt;        p50     p75   max
+#&gt;  1:     NA      NA    NA
+#&gt;  2:   18.0   24.00    72
+#&gt;  3:     NA      NA    NA
+#&gt;  4:     NA      NA    NA
+#&gt;  5: 2319.5 3972.25 18424
+#&gt;  6:     NA      NA    NA
+#&gt;  7:     NA      NA    NA
+#&gt;  8:    3.0    4.00     4
+#&gt;  9:     NA      NA    NA
+#&gt; 10:     NA      NA    NA
+#&gt; 11:    3.0    4.00     4
+#&gt; 12:     NA      NA    NA
+#&gt; 13:   33.0   42.00    75
+#&gt; 14:     NA      NA    NA
+#&gt; 15:     NA      NA    NA
+#&gt; 16:    1.0    2.00     4
+#&gt; 17:     NA      NA    NA
+#&gt; 18:    1.0    1.00     2
+#&gt; 19:     NA      NA    NA
+#&gt; 20:     NA      NA    NA
+#&gt; 21:     NA      NA    NA
+#&gt;        p50     p75   max</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

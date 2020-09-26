@@ -16,5 +16,6 @@ This function provides descriptive statistic for exploratory data analysis.
 data("germancredit")
 
 eda = describe(germancredit)
+eda
 
 }

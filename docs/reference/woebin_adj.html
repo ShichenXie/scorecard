@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,9 +144,9 @@
     <p><code>woebin_adj</code> interactively adjust the binning breaks.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_adj</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>bins</span>, <span class='kw'>adj_all_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-  <span class='kw'>to</span> <span class='kw'>=</span> <span class='st'>"breaks_list"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin_adj</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, <span class='kw'>bins</span>, adj_all_var = <span class='fl'>TRUE</span>, special_values = <span class='kw'>NULL</span>,
+  method = <span class='st'>"tree"</span>, save_breaks_list = <span class='kw'>NULL</span>, count_distr_limit = <span class='fl'>0.05</span>,
+  to = <span class='st'>"breaks_list"</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -201,23 +201,25 @@
     <div class='dont-index'><p><code><a href='woebin.html'>woebin</a></code>, <code><a href='woebin_ply.html'>woebin_ply</a></code>, <code><a href='woebin_plot.html'>woebin_plot</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'># Load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
 <span class='co'># Example I</span>
-<span class='no'>dt</span> <span class='kw'>=</span> <span class='no'>germancredit</span>[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"creditability"</span>, <span class='st'>"age.in.years"</span>, <span class='st'>"credit.amount"</span>)]
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-<span class='no'>breaks_adj</span> <span class='kw'>=</span> <span class='fu'>woebin_adj</span>(<span class='no'>dt</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='no'>bins</span>)
-<span class='no'>bins_final</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-                    <span class='kw'>breaks_list</span><span class='kw'>=</span><span class='no'>breaks_adj</span>)
+<span class='kw'>dt</span> <span class='op'>=</span> <span class='kw'>germancredit</span>[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"creditability"</span>, <span class='st'>"age.in.years"</span>, <span class='st'>"credit.amount"</span>)]
+<span class='kw'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>dt</span>, y=<span class='st'>"creditability"</span>)
+<span class='kw'>breaks_adj</span> <span class='op'>=</span> <span class='fu'>woebin_adj</span>(<span class='kw'>dt</span>, y=<span class='st'>"creditability"</span>, <span class='kw'>bins</span>)
+<span class='kw'>bins_final</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>dt</span>, y=<span class='st'>"creditability"</span>,
+                    breaks_list=<span class='kw'>breaks_adj</span>)
 
 <span class='co'># Example II</span>
-<span class='no'>binsII</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>)
-<span class='no'>breaks_adjII</span> <span class='kw'>=</span> <span class='fu'>woebin_adj</span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>, <span class='no'>binsII</span>)
-<span class='no'>bins_finalII</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-                    <span class='kw'>breaks_list</span><span class='kw'>=</span><span class='no'>breaks_adjII</span>)
-}</div></pre>
+<span class='kw'>binsII</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>)
+<span class='kw'>breaks_adjII</span> <span class='op'>=</span> <span class='fu'>woebin_adj</span>(<span class='kw'>germancredit</span>, <span class='st'>"creditability"</span>, <span class='kw'>binsII</span>)
+<span class='kw'>bins_finalII</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>,
+                    breaks_list=<span class='kw'>breaks_adjII</span>)
+}
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -233,7 +235,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

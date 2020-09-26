@@ -74,7 +74,7 @@ See source link below for detailed information." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -148,7 +148,7 @@ a set of attributes as good or bad credit risks.
 See source link below for detailed information.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)</pre>
 
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
@@ -161,10 +161,11 @@ See source link below for detailed information.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
 <span class='co'># structure of germancredit</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>germancredit</span>)</div><div class='output co'>#&gt; 'data.frame':	1000 obs. of  21 variables:
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>germancredit</span>)
+</div><div class='output co'>#&gt; 'data.frame':	1000 obs. of  21 variables:
 #&gt;  $ status.of.existing.checking.account                     : Factor w/ 4 levels "... &lt; 0 DM","0 &lt;= ... &lt; 200 DM",..: 1 2 4 1 1 4 4 2 4 2 ...
 #&gt;  $ duration.in.month                                       : num  6 48 12 42 24 36 24 36 12 30 ...
 #&gt;  $ credit.history                                          : Factor w/ 5 levels "no credits taken/ all credits paid back duly",..: 5 3 5 3 4 3 3 3 3 5 ...
@@ -186,8 +187,8 @@ See source link below for detailed information.</p>
 #&gt;  $ telephone                                               : Factor w/ 2 levels "none","yes, registered under the customers name": 2 1 1 1 1 2 1 2 1 1 ...
 #&gt;  $ foreign.worker                                          : Factor w/ 2 levels "yes","no": 1 1 1 1 1 1 1 1 1 1 ...
 #&gt;  $ creditability                                           : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</div><div class='input'>
-# summary of germancredit
-# lapply(germancredit, summary)
+<span class='co'># summary of germancredit</span>
+<span class='co'># lapply(germancredit, summary)</span>
 
 </div></pre>
   </div>
@@ -205,7 +206,7 @@ See source link below for detailed information.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

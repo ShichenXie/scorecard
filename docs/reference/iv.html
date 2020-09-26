@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
     <p>This function calculates information value (IV) for multiple x variables. It treats each unique value in x variables as a group. If there is a zero number of y class, it will be replaced by 0.99 to make sure woe/iv is calculable.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>iv</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>order</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>iv</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, x = <span class='kw'>NULL</span>, positive = <span class='st'>"bad|1"</span>, order = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,12 +190,13 @@ The relationship between information value and predictive power is as follows:</
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
 <span class='co'># information values</span>
-<span class='no'>info_value</span> <span class='kw'>=</span> <span class='fu'>iv</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)
+<span class='kw'>info_value</span> <span class='op'>=</span> <span class='fu'>iv</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>info_value</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	20 obs. of  2 variables:
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>info_value</span>)
+</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	20 obs. of  2 variables:
 #&gt;  $ variable  : chr  "status.of.existing.checking.account" "duration.in.month" "credit.history" "age.in.years" ...
 #&gt;  $ info_value: num  0.666 0.335 0.293 0.26 0.196 ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
@@ -215,7 +216,7 @@ The relationship between information value and predictive power is as follows:</
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

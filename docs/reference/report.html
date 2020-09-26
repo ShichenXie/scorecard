@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,8 +144,8 @@
     <p><code>report</code> creates a scorecard modeling report and save it as a xlsx file.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>report</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>618</span>,
-  <span class='kw'>save_report</span> <span class='kw'>=</span> <span class='st'>"report"</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>report</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, <span class='kw'>x</span>, <span class='kw'>breaks_list</span>, special_values = <span class='kw'>NULL</span>, seed = <span class='fl'>618</span>,
+  save_report = <span class='st'>"report"</span>, positive = <span class='st'>"bad|1"</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,11 +190,11 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
 
-<span class='no'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>
-<span class='no'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+<span class='kw'>y</span> <span class='op'>=</span> <span class='st'>'creditability'</span>
+<span class='kw'>x</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
   <span class='st'>"status.of.existing.checking.account"</span>,
   <span class='st'>"duration.in.month"</span>,
   <span class='st'>"credit.history"</span>,
@@ -210,60 +210,62 @@
   <span class='st'>"housing"</span>
 )
 
-<span class='no'>special_values</span><span class='kw'>=</span><span class='kw'>NULL</span>
-<span class='no'>breaks_list</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
- <span class='kw'>status.of.existing.checking.account</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"... &lt; 0 DM%,%0 &lt;= ... &lt; 200 DM"</span>,
+<span class='kw'>special_values</span><span class='op'>=</span><span class='kw'>NULL</span>
+<span class='kw'>breaks_list</span><span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+ status.of.existing.checking.account=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"... &lt; 0 DM%,%0 &lt;= ... &lt; 200 DM"</span>,
    <span class='st'>"... &gt;= 200 DM / salary assignments for at least 1 year"</span>, <span class='st'>"no checking account"</span>),
- <span class='kw'>duration.in.month</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>8</span>, <span class='fl'>16</span>, <span class='fl'>34</span>, <span class='fl'>44</span>),
- <span class='kw'>credit.history</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+ duration.in.month=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>8</span>, <span class='fl'>16</span>, <span class='fl'>34</span>, <span class='fl'>44</span>),
+ credit.history=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
    <span class='st'>"no credits taken/ all credits paid back duly%,%all credits at this bank paid back duly"</span>,
    <span class='st'>"existing credits paid back duly till now"</span>, <span class='st'>"delay in paying off in the past"</span>,
    <span class='st'>"critical account/ other credits existing (not at this bank)"</span>),
- <span class='kw'>purpose</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"retraining%,%car (used)"</span>, <span class='st'>"radio/television"</span>,
+ purpose=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"retraining%,%car (used)"</span>, <span class='st'>"radio/television"</span>,
    <span class='st'>"furniture/equipment%,%domestic appliances%,%business%,%repairs"</span>,
    <span class='st'>"car (new)%,%others%,%education"</span>),
- <span class='kw'>credit.amount</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1400</span>, <span class='fl'>1800</span>, <span class='fl'>4000</span>, <span class='fl'>9200</span>),
- <span class='kw'>savings.account.and.bonds</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"... &lt; 100 DM"</span>, <span class='st'>"100 &lt;= ... &lt; 500 DM"</span>,
+ credit.amount=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1400</span>, <span class='fl'>1800</span>, <span class='fl'>4000</span>, <span class='fl'>9200</span>),
+ savings.account.and.bonds=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"... &lt; 100 DM"</span>, <span class='st'>"100 &lt;= ... &lt; 500 DM"</span>,
    <span class='st'>"500 &lt;= ... &lt; 1000 DM%,%... &gt;= 1000 DM%,%unknown/ no savings account"</span>),
- <span class='kw'>present.employment.since</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"unemployed%,%... &lt; 1 year"</span>, <span class='st'>"1 &lt;= ... &lt; 4 years"</span>,
+ present.employment.since=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"unemployed%,%... &lt; 1 year"</span>, <span class='st'>"1 &lt;= ... &lt; 4 years"</span>,
    <span class='st'>"4 &lt;= ... &lt; 7 years"</span>, <span class='st'>"... &gt;= 7 years"</span>),
- <span class='kw'>installment.rate.in.percentage.of.disposable.income</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>),
- <span class='kw'>personal.status.and.sex</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male : divorced/separated"</span>, <span class='st'>"female : divorced/separated/married"</span>,
+ installment.rate.in.percentage.of.disposable.income=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>),
+ personal.status.and.sex=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male : divorced/separated"</span>, <span class='st'>"female : divorced/separated/married"</span>,
    <span class='st'>"male : single"</span>, <span class='st'>"male : married/widowed"</span>),
- <span class='kw'>property</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"real estate"</span>, <span class='st'>"building society savings agreement/ life insurance"</span>,
+ property=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"real estate"</span>, <span class='st'>"building society savings agreement/ life insurance"</span>,
    <span class='st'>"car or other, not in attribute Savings account/bonds"</span>, <span class='st'>"unknown / no property"</span>),
- <span class='kw'>age.in.years</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>26</span>, <span class='fl'>28</span>, <span class='fl'>35</span>, <span class='fl'>37</span>),
- <span class='kw'>other.installment.plans</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"bank%,%stores"</span>, <span class='st'>"none"</span>),
- <span class='kw'>housing</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rent"</span>, <span class='st'>"own"</span>, <span class='st'>"for free"</span>)
+ age.in.years=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>26</span>, <span class='fl'>28</span>, <span class='fl'>35</span>, <span class='fl'>37</span>),
+ other.installment.plans=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"bank%,%stores"</span>, <span class='st'>"none"</span>),
+ housing=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rent"</span>, <span class='st'>"own"</span>, <span class='st'>"for free"</span>)
  )
 
 <span class='co'># Example I</span>
 <span class='co'># input dt is a data frame</span>
 <span class='co'># split input data frame into two</span>
-<span class='fu'>report</span>(<span class='no'>germancredit</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='fl'>618</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report1'</span>,
-  <span class='kw'>show_plot</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'lift'</span>, <span class='st'>'gain'</span>, <span class='st'>'roc'</span>, <span class='st'>'lz'</span>, <span class='st'>'pr'</span>, <span class='st'>'f1'</span>, <span class='st'>'density'</span>))
+<span class='fu'>report</span>(<span class='kw'>germancredit</span>, <span class='kw'>y</span>, <span class='kw'>x</span>, <span class='kw'>breaks_list</span>, <span class='kw'>special_values</span>, seed=<span class='fl'>618</span>, save_report=<span class='st'>'report1'</span>,
+  show_plot = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'lift'</span>, <span class='st'>'gain'</span>, <span class='st'>'roc'</span>, <span class='st'>'lz'</span>, <span class='st'>'pr'</span>, <span class='st'>'f1'</span>, <span class='st'>'density'</span>))
 
 <span class='co'># donot split input data</span>
-<span class='fu'>report</span>(<span class='no'>germancredit</span>, <span class='no'>y</span>, <span class='no'>x</span>, <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report2'</span>)
+<span class='fu'>report</span>(<span class='kw'>germancredit</span>, <span class='kw'>y</span>, <span class='kw'>x</span>, <span class='kw'>breaks_list</span>, <span class='kw'>special_values</span>, seed=<span class='kw'>NULL</span>, save_report=<span class='st'>'report2'</span>)
 
 <span class='co'># Example II</span>
 <span class='co'># input dt is a list</span>
 <span class='co'># only one dataset</span>
-<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>), <span class='no'>y</span>, <span class='no'>x</span>,
-  <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report3'</span>)
+<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(dt=<span class='kw'>germancredit</span>), <span class='kw'>y</span>, <span class='kw'>x</span>,
+  <span class='kw'>breaks_list</span>, <span class='kw'>special_values</span>, seed=<span class='kw'>NULL</span>, save_report=<span class='st'>'report3'</span>)
 
 <span class='co'># multiple datasets</span>
-<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>dt1</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
-            <span class='kw'>dt2</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='no'>y</span>, <span class='no'>x</span>,
- <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report4'</span>)
+<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(dt1=<span class='kw'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            dt2=<span class='kw'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='kw'>y</span>, <span class='kw'>x</span>,
+ <span class='kw'>breaks_list</span>, <span class='kw'>special_values</span>, seed=<span class='kw'>NULL</span>, save_report=<span class='st'>'report4'</span>)
 
 <span class='co'># multiple datasets</span>
-<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>dt1</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
-            <span class='kw'>dt2</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
-            <span class='kw'>dt3</span><span class='kw'>=</span><span class='no'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='no'>y</span>, <span class='no'>x</span>,
- <span class='no'>breaks_list</span>, <span class='no'>special_values</span>, <span class='kw'>seed</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>save_report</span><span class='kw'>=</span><span class='st'>'report5'</span>)
+<span class='fu'>report</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(dt1=<span class='kw'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            dt2=<span class='kw'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)],
+            dt3=<span class='kw'>germancredit</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>,<span class='fl'>500</span>)]), <span class='kw'>y</span>, <span class='kw'>x</span>,
+ <span class='kw'>breaks_list</span>, <span class='kw'>special_values</span>, seed=<span class='kw'>NULL</span>, save_report=<span class='st'>'report5'</span>)
 
-}</div></pre>
+}
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -279,7 +281,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

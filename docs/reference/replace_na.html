@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
     <p>Replace missing values with a specified value or mean/median value.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>replace_na</span>(<span class='no'>dt</span>, <span class='no'>repl</span>)</pre>
+    <pre class="usage"><span class='fu'>replace_na</span>(<span class='kw'>dt</span>, <span class='kw'>repl</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,20 +162,22 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
-  <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
+<span class='kw'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='kw'>germancredit</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>20</span>,<span class='fl'>3</span>),<span class='fl'>21</span>)],
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(creditability=<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,replace=<span class='fl'>TRUE</span>)),
+  fill=<span class='fl'>TRUE</span>)
 
 <span class='co'>## replace with -1</span>
-<span class='no'>dat_repna1</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> -<span class='fl'>1</span>)
+<span class='kw'>dat_repna1</span> <span class='op'>=</span> <span class='fu'>replace_na</span>(<span class='kw'>dat</span>, repl = <span class='op'>-</span><span class='fl'>1</span>)
 <span class='co'>## replace with median for numeric, and mode for categorical</span>
-<span class='no'>dat_repna2</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> <span class='st'>'median'</span>)
+<span class='kw'>dat_repna2</span> <span class='op'>=</span> <span class='fu'>replace_na</span>(<span class='kw'>dat</span>, repl = <span class='st'>'median'</span>)
 <span class='co'>## replace with mean for numeric, and mode for categorical</span>
-<span class='no'>dat_repna3</span> <span class='kw'>=</span> <span class='fu'>replace_na</span>(<span class='no'>dat</span>, <span class='kw'>repl</span> <span class='kw'>=</span> <span class='st'>'mean'</span>)</div></pre>
+<span class='kw'>dat_repna3</span> <span class='op'>=</span> <span class='fu'>replace_na</span>(<span class='kw'>dat</span>, repl = <span class='st'>'mean'</span>)
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -191,7 +193,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

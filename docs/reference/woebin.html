@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,12 +144,12 @@
     <p><code>woebin</code> generates optimal binning for numerical, factor and categorical variables using methods including tree-like segmentation or chi-square merge. <code>woebin</code> can also customizing breakpoints if the <code>breaks_list</code> was provided. The default <code>woe</code> is defined as ln(Bad_i/Good_i). If you prefer ln(Good_i/Bad_i), please set the argument <code>positive</code> as negative value, such as '0' or 'good'. If there is a zero frequency class when calculating woe, the zero will replaced by 0.99 to make the woe calculable.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>woebin</span>(<span class='no'>dt</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>special_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>count_distr_limit</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-  <span class='kw'>bin_num_limit</span> <span class='kw'>=</span> <span class='fl'>8</span>, <span class='kw'>positive</span> <span class='kw'>=</span> <span class='st'>"bad|1"</span>, <span class='kw'>no_cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"tree"</span>, <span class='kw'>save_breaks_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>ignore_const_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ignore_datetime_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>check_cate_num</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>replace_blank_inf</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>woebin</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, x = <span class='kw'>NULL</span>, var_skip = <span class='kw'>NULL</span>, breaks_list = <span class='kw'>NULL</span>,
+  special_values = <span class='kw'>NULL</span>, stop_limit = <span class='fl'>0.1</span>, count_distr_limit = <span class='fl'>0.05</span>,
+  bin_num_limit = <span class='fl'>8</span>, positive = <span class='st'>"bad|1"</span>, no_cores = <span class='kw'>NULL</span>,
+  print_step = <span class='fl'>0L</span>, method = <span class='st'>"tree"</span>, save_breaks_list = <span class='kw'>NULL</span>,
+  ignore_const_cols = <span class='fl'>TRUE</span>, ignore_datetime_cols = <span class='fl'>TRUE</span>,
+  check_cate_num = <span class='fl'>TRUE</span>, replace_blank_inf = <span class='fl'>TRUE</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -241,13 +241,15 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load germancredit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
 <span class='co'># Example I</span>
 <span class='co'># binning of two variables in germancredit dataset</span>
 <span class='co'># using tree method</span>
-<span class='no'>bins2_tree</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"tree"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>bins2_tree</span></div><div class='output co'>#&gt; $credit.amount
+<span class='kw'>bins2_tree</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>,
+   x=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), method=<span class='st'>"tree"</span>)
+</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='kw'>bins2_tree</span>
+</div><div class='output co'>#&gt; $credit.amount
 #&gt;         variable         bin count count_distr good bad   badprob         woe
 #&gt; 1: credit.amount [-Inf,1400)   267       0.267  185  82 0.3071161  0.03366128
 #&gt; 2: credit.amount [1400,1800)   105       0.105   87  18 0.1714286 -0.72823850
@@ -271,63 +273,65 @@
 #&gt; 2: 0.08329343      own             FALSE
 #&gt; 3: 0.08329343 for free             FALSE
 #&gt; </div><div class='input'>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'># using chimerge method</span>
-<span class='no'>bins2_chi</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"chimerge"</span>)
+<span class='kw'>bins2_chi</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>,
+   x=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), method=<span class='st'>"chimerge"</span>)
 
 <span class='co'># binning in equal freq/width # only supports numerical variables</span>
-<span class='no'>numeric_cols</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"duration.in.month"</span>, <span class='st'>"credit.amount"</span>,
+<span class='kw'>numeric_cols</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"duration.in.month"</span>, <span class='st'>"credit.amount"</span>,
   <span class='st'>"installment.rate.in.percentage.of.disposable.income"</span>, <span class='st'>"present.residence.since"</span>,
   <span class='st'>"age.in.years"</span>, <span class='st'>"number.of.existing.credits.at.this.bank"</span>,
   <span class='st'>"number.of.people.being.liable.to.provide.maintenance.for"</span>)
-<span class='no'>bins_freq</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"freq"</span>)
-<span class='no'>bins_width</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"width"</span>)
+<span class='kw'>bins_freq</span>  <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>, x=<span class='kw'>numeric_cols</span>, method=<span class='st'>"freq"</span>)
+<span class='kw'>bins_width</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>, x=<span class='kw'>numeric_cols</span>, method=<span class='st'>"width"</span>)
 
 <span class='co'># y can be NULL if no label column in dataset</span>
-<span class='no'>bins_freq_noy</span>  <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='no'>numeric_cols</span>)
+<span class='kw'>bins_freq_noy</span>  <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='kw'>NULL</span>, x=<span class='kw'>numeric_cols</span>)
 
 <span class='co'># Example II</span>
 <span class='co'># setting of stop_limit</span>
 <span class='co'># stop_limit = 0.1 (by default)</span>
-<span class='no'>bins_x1</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>'foreign.worker'</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>)
+<span class='kw'>bins_x1</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y = <span class='st'>'creditability'</span>, x = <span class='st'>'foreign.worker'</span>, stop_limit = <span class='fl'>0.1</span>)
 <span class='co'># stop_limit = 'N', each x value is a bin</span>
-<span class='no'>bins_x1_N</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>'creditability'</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>'foreign.worker'</span>, <span class='kw'>stop_limit</span> <span class='kw'>=</span> <span class='st'>'N'</span>)
+<span class='kw'>bins_x1_N</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y = <span class='st'>'creditability'</span>, x = <span class='st'>'foreign.worker'</span>, stop_limit = <span class='st'>'N'</span>)
 
 <span class='co'># Example III</span>
 <span class='co'># binning of the germancredit dataset</span>
-<span class='no'>bins_germ</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"creditability"</span>)
+<span class='kw'>bins_germ</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>)
 <span class='co'># converting bins_germ into a data frame</span>
 <span class='co'># bins_germ_df = data.table::rbindlist(bins_germ)</span>
 
 <span class='co'># Example IV</span>
 <span class='co'># customizing the breakpoints of binning</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>germancredit</span>),
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>creditability</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,<span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)),
-  <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
+<span class='kw'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span>(
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='kw'>germancredit</span>),
+  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(creditability=<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"good"</span>,<span class='st'>"bad"</span>),<span class='fl'>10</span>,replace=<span class='fl'>TRUE</span>)),
+  fill=<span class='fl'>TRUE</span>)
 
-<span class='no'>breaks_list</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-  <span class='kw'>age.in.years</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>26</span>, <span class='fl'>35</span>, <span class='fl'>37</span>, <span class='st'>"Inf%,%missing"</span>),
-  <span class='kw'>housing</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"own"</span>, <span class='st'>"for free%,%rent"</span>)
+<span class='kw'>breaks_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+  age.in.years = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>26</span>, <span class='fl'>35</span>, <span class='fl'>37</span>, <span class='st'>"Inf%,%missing"</span>),
+  housing = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"own"</span>, <span class='st'>"for free%,%rent"</span>)
 )
 
-<span class='no'>special_values</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-  <span class='kw'>credit.amount</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2600</span>, <span class='fl'>9960</span>, <span class='st'>"6850%,%missing"</span>),
-  <span class='kw'>purpose</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"education"</span>, <span class='st'>"others%,%missing"</span>)
+<span class='kw'>special_values</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+  credit.amount = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2600</span>, <span class='fl'>9960</span>, <span class='st'>"6850%,%missing"</span>),
+  purpose = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"education"</span>, <span class='st'>"others%,%missing"</span>)
 )
 
-<span class='no'>bins_cus_brk</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>dat</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-  <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"age.in.years"</span>,<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>,<span class='st'>"purpose"</span>),
-  <span class='kw'>breaks_list</span><span class='kw'>=</span><span class='no'>breaks_list</span>, <span class='kw'>special_values</span><span class='kw'>=</span><span class='no'>special_values</span>)
+<span class='kw'>bins_cus_brk</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>dat</span>, y=<span class='st'>"creditability"</span>,
+  x=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"age.in.years"</span>,<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>,<span class='st'>"purpose"</span>),
+  breaks_list=<span class='kw'>breaks_list</span>, special_values=<span class='kw'>special_values</span>)
 
 <span class='co'># Example V</span>
 <span class='co'># save breaks_list as a R file</span>
-<span class='no'>bins2</span> <span class='kw'>=</span> <span class='fu'>woebin</span>(<span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"creditability"</span>,
-   <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), <span class='kw'>save_breaks_list</span><span class='kw'>=</span><span class='st'>'breaks_list'</span>)
+<span class='kw'>bins2</span> <span class='op'>=</span> <span class='fu'>woebin</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>,
+   x=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"credit.amount"</span>,<span class='st'>"housing"</span>), save_breaks_list=<span class='st'>'breaks_list'</span>)
 
-}</div></pre>
+}
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -343,7 +347,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

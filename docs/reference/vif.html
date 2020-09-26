@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
     <p><code>vif</code> calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vif</span>(<span class='no'>model</span>, <span class='kw'>merge_coef</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>vif</span>(<span class='kw'>model</span>, merge_coef = <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,26 +167,30 @@
     <div class='dont-index'><p><a href='https://cran.r-project.org/package=car'>https://cran.r-project.org/package=car</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>germancredit</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
 
 <span class='co'># Example I</span>
-<span class='no'>fit1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='no'>creditability</span>~ <span class='no'>age.in.years</span> + <span class='no'>credit.amount</span> +
-  <span class='no'>present.residence.since</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>germancredit</span>)
-<span class='fu'>vif</span>(<span class='no'>fit1</span>)</div><div class='output co'>#&gt;                   variable     gvif
+<span class='kw'>fit1</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>creditability</span><span class='op'>~</span> <span class='kw'>age.in.years</span> <span class='op'>+</span> <span class='kw'>credit.amount</span> <span class='op'>+</span>
+  <span class='kw'>present.residence.since</span>, family = <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), data = <span class='kw'>germancredit</span>)
+<span class='fu'>vif</span>(<span class='kw'>fit1</span>)
+</div><div class='output co'>#&gt;                   variable     gvif
 #&gt; 1:            age.in.years 1.068963
 #&gt; 2:           credit.amount 1.006434
-#&gt; 3: present.residence.since 1.063583</div><div class='input'><span class='fu'>vif</span>(<span class='no'>fit1</span>, <span class='kw'>merge_coef</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;                   variable      Estimate Std. Error z value Pr(&gt;|z|)     gvif
+#&gt; 3: present.residence.since 1.063583</div><div class='input'><span class='fu'>vif</span>(<span class='kw'>fit1</span>, merge_coef=<span class='fl'>TRUE</span>)
+</div><div class='output co'>#&gt;                   variable      Estimate Std. Error z value Pr(&gt;|z|)     gvif
 #&gt; 1:             (Intercept)  0.6360894980     0.2774  2.2927   0.0219       NA
 #&gt; 2:            age.in.years  0.0215127873     0.0068  3.1789   0.0015 1.068963
 #&gt; 3:           credit.amount -0.0001159332     0.0000 -4.8739   0.0000 1.006434
 #&gt; 4: present.residence.since -0.0514901312     0.0658 -0.7831   0.4336 1.063583</div><div class='input'>
 <span class='co'># Example II</span>
-<span class='no'>fit2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='no'>creditability</span>~ <span class='no'>status.of.existing.checking.account</span> +
-  <span class='no'>credit.history</span> + <span class='no'>credit.amount</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>germancredit</span>)
-<span class='fu'>vif</span>(<span class='no'>fit2</span>)</div><div class='output co'>#&gt;                               variable     gvif df gvif^(1/(2*df))
+<span class='kw'>fit2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>creditability</span><span class='op'>~</span> <span class='kw'>status.of.existing.checking.account</span> <span class='op'>+</span>
+  <span class='kw'>credit.history</span> <span class='op'>+</span> <span class='kw'>credit.amount</span>, family = <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), data = <span class='kw'>germancredit</span>)
+<span class='fu'>vif</span>(<span class='kw'>fit2</span>)
+</div><div class='output co'>#&gt;                               variable     gvif df gvif^(1/(2*df))
 #&gt; 1: status.of.existing.checking.account 1.054607  3        1.008901
 #&gt; 2:                      credit.history 1.061760  4        1.007519
-#&gt; 3:                       credit.amount 1.049244  1        1.024326</div><div class='input'><span class='fu'>vif</span>(<span class='no'>fit2</span>, <span class='kw'>merge_coef</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: The summary matrix cant merge with vif.</span></div><div class='output co'>#&gt;                               variable     gvif df gvif^(1/(2*df))
+#&gt; 3:                       credit.amount 1.049244  1        1.024326</div><div class='input'><span class='fu'>vif</span>(<span class='kw'>fit2</span>, merge_coef=<span class='fl'>TRUE</span>)
+</div><div class='output co'>#&gt; <span class='warning'>Warning: The summary matrix cant merge with vif.</span></div><div class='output co'>#&gt;                               variable     gvif df gvif^(1/(2*df))
 #&gt; 1: status.of.existing.checking.account 1.054607  3        1.008901
 #&gt; 2:                      credit.history 1.061760  4        1.007519
 #&gt; 3:                       credit.amount 1.049244  1        1.024326</div><div class='input'>
@@ -207,7 +211,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
       </span>
     </div>
 
@@ -144,8 +144,8 @@
     <p><code>scorecard</code> creates a scorecard based on the results from <code>woebin</code> and <code>glm</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>scorecard</span>(<span class='no'>bins</span>, <span class='no'>model</span>, <span class='kw'>points0</span> <span class='kw'>=</span> <span class='fl'>600</span>, <span class='kw'>odds0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>19</span>, <span class='kw'>pdo</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-  <span class='kw'>basepoints_eq0</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>digits</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>scorecard</span>(<span class='kw'>bins</span>, <span class='kw'>model</span>, points0 = <span class='fl'>600</span>, odds0 = <span class='fl'>1</span><span class='op'>/</span><span class='fl'>19</span>, pdo = <span class='fl'>50</span>,
+  basepoints_eq0 = <span class='fl'>FALSE</span>, digits = <span class='fl'>0</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,16 +193,19 @@
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
 
 <span class='co'># filter variable via missing rate, iv, identical value rate</span>
-<span class='no'>dt_sel</span> <span class='kw'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='no'>germancredit</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
+<span class='kw'>dt_sel</span> <span class='op'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='kw'>germancredit</span>, <span class='st'>"creditability"</span>)
+</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
 <span class='co'># woe binning ------</span>
-<span class='no'>bins</span> <span class='kw'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='no'>dt_sel</span>, <span class='st'>"creditability"</span>)</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='no'>dt_woe</span> <span class='kw'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='no'>dt_sel</span>, <span class='no'>bins</span>)</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
+<span class='kw'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>dt_sel</span>, <span class='st'>"creditability"</span>)
+</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='kw'>dt_woe</span> <span class='op'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='kw'>dt_sel</span>, <span class='kw'>bins</span>)
+</div><div class='output co'>#&gt; [INFO] converting into woe values ... </div><div class='input'>
 <span class='co'># glm ------</span>
-<span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='no'>creditability</span> ~ <span class='no'>.</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dt_woe</span>)
+<span class='kw'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>creditability</span> <span class='op'>~</span> <span class='kw'>.</span>, family = <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>(), data = <span class='kw'>dt_woe</span>)
 <span class='co'># summary(m)</span>
 
 <span class='co'># Select a formula-based model by AIC</span>
-<span class='no'>m_step</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/step.html'>step</a></span>(<span class='no'>m</span>, <span class='kw'>direction</span><span class='kw'>=</span><span class='st'>"both"</span>, <span class='kw'>trace</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-<span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/eval.html'>eval</a></span>(<span class='no'>m_step</span>$<span class='no'>call</span>)
+<span class='kw'>m_step</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/step.html'>step</a></span>(<span class='kw'>m</span>, direction=<span class='st'>"both"</span>, trace=<span class='fl'>FALSE</span>)
+<span class='kw'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/eval.html'>eval</a></span>(<span class='kw'>m_step</span><span class='op'>$</span><span class='kw'>call</span>)
 <span class='co'># summary(m)</span>
 
 <span class='co'># predicted proability</span>
@@ -214,17 +217,18 @@
 
 <span class='co'># scorecard</span>
 <span class='co'># Example I # creat a scorecard</span>
-<span class='no'>card</span> <span class='kw'>=</span> <span class='fu'>scorecard</span>(<span class='no'>bins</span>, <span class='no'>m</span>)
-<span class='no'>card2</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard2.html'>scorecard2</a></span>(<span class='kw'>bins</span><span class='kw'>=</span><span class='no'>bins</span>, <span class='kw'>dt</span><span class='kw'>=</span><span class='no'>germancredit</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>'creditability'</span>,
-  <span class='kw'>x</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>sub</a></span>(<span class='st'>'_woe'</span>, <span class='st'>''</span>, <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='no'>m</span>))[-<span class='fl'>1</span>]))
+<span class='kw'>card</span> <span class='op'>=</span> <span class='fu'>scorecard</span>(<span class='kw'>bins</span>, <span class='kw'>m</span>)
+<span class='kw'>card2</span> <span class='op'>=</span> <span class='fu'><a href='scorecard2.html'>scorecard2</a></span>(bins=<span class='kw'>bins</span>, dt=<span class='kw'>germancredit</span>, y=<span class='st'>'creditability'</span>,
+  x=<span class='fu'><a href='https://rdrr.io/r/base/grep.html'>sub</a></span>(<span class='st'>'_woe'</span>, <span class='st'>''</span>, <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='kw'>m</span>))[<span class='op'>-</span><span class='fl'>1</span>]))
 
 <span class='co'># credit score</span>
 <span class='co'># Example I # only total score</span>
-<span class='no'>score1</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>germancredit</span>, <span class='no'>card</span>)
+<span class='kw'>score1</span> <span class='op'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='kw'>germancredit</span>, <span class='kw'>card</span>)
 
 <span class='co'># Example II # credit score for both total and each variable</span>
-<span class='no'>score2</span> <span class='kw'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='no'>germancredit</span>, <span class='no'>card</span>, <span class='kw'>only_total_score</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='co'># }</span></div></pre>
+<span class='kw'>score2</span> <span class='op'>=</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span>(<span class='kw'>germancredit</span>, <span class='kw'>card</span>, only_total_score = <span class='fl'>FALSE</span>)
+<span class='co'># }</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -240,7 +244,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
