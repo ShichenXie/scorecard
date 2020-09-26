@@ -22,6 +22,7 @@ describe = function(dt) {
     data.table(
       variable = names(dt),
       class = dt[, sapply(.SD, class)],
+      count = dt[, .N],
       unique_count = dt[, sapply(.SD, function(x) uniqueN(x, na.rm = TRUE) )],
       missing_count = dt[, sapply(.SD, function(x) sum(is.na(x)) )],
       missing_rate = dt[, sapply(.SD, function(x) mean(is.na(x)) )]
