@@ -6,7 +6,7 @@
 [![](http://cranlogs.r-pkg.org/badges/scorecard)](https://cran.r-project.org/package=scorecard)
 
 
-The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binomial classification. 
+The goal of `scorecard` package is to make the development of the traditional credit risk scorecard model easier and efficient by providing functions for some common tasks that summarized in below. This package can also used in the development of machine learning models on binary classification. 
 
 - data preprocessing (`split_df`, `replace_na`, `one_hot`, `var_scale`)
 - weight of evidence (woe) binning (`woebin`, `woebin_plot`, `woebin_adj`, `woebin_ply`)
