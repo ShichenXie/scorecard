@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Split a Data Frame — split_df" />
-<meta property="og:description" content="Split a data frame into train and test" />
+<meta property="og:description" content="Split a data frame into multiple data sets according to the specified ratios." />
 
 
 
@@ -141,11 +141,11 @@
     </div>
 
     <div class="ref-description">
-    <p>Split a data frame into train and test</p>
+    <p>Split a data frame into multiple data sets according to the specified ratios.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>split_df</span>(<span class='kw'>dt</span>, y = <span class='kw'>NULL</span>, ratio = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.3</span>), seed = <span class='fl'>618</span>,
-  name_dfs = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"train"</span>, <span class='st'>"test"</span>), <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>split_df</span><span class='op'>(</span><span class='va'>dt</span>, y <span class='op'>=</span> <span class='cn'>NULL</span>, ratios <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.7</span>, <span class='fl'>0.3</span><span class='op'>)</span>, name_dfs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"train"</span>,
+  <span class='st'>"test"</span><span class='op'>)</span>, seed <span class='op'>=</span> <span class='fl'>618</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,16 +159,16 @@
       <td><p>Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.</p></td>
     </tr>
     <tr>
-      <th>ratio</th>
-      <td><p>A numeric value, Defaults to 0.7. It indicates the ratio of total rows contained in one split, must less than 1.</p></td>
+      <th>ratios</th>
+      <td><p>A numeric vector indicating the ratio of total rows contained in each split, defaults to c(0.7, 0.3).</p></td>
+    </tr>
+    <tr>
+      <th>name_dfs</th>
+      <td><p>Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.</p></td>
     </tr>
     <tr>
       <th>seed</th>
       <td><p>A random seed, Defaults to 618.</p></td>
-    </tr>
-    <tr>
-      <th>name_dfs</th>
-      <td><p>Name of returned data frames. Its length should equals to the ratio's. Defaults to train and test.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -182,15 +182,13 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>
 
 <span class='co'># Example I</span>
-<span class='kw'>dt_list</span> <span class='op'>=</span> <span class='fu'>split_df</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>)
-<span class='kw'>train</span> <span class='op'>=</span> <span class='kw'>dt_list</span>[[<span class='fl'>1</span>]]
-<span class='kw'>test</span> <span class='op'>=</span> <span class='kw'>dt_list</span>[[<span class='fl'>2</span>]]
+<span class='va'>dt_list</span> <span class='op'>=</span> <span class='fu'>split_df</span><span class='op'>(</span><span class='va'>germancredit</span>, y<span class='op'>=</span><span class='st'>"creditability"</span><span class='op'>)</span>
 
-<span class='co'># dimensions of train and test datasets</span>
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>dt_list</span>, <span class='kw'>dim</span>)
+<span class='co'># dimensions of each split data sets</span>
+<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='va'>dim</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; $train
 #&gt; [1] 681  21
 #&gt; 
@@ -199,12 +197,17 @@
 #&gt; </div><div class='input'>
 
 <span class='co'># Example II</span>
-<span class='kw'>dt_list2</span> <span class='op'>=</span> <span class='fu'>split_df</span>(<span class='kw'>germancredit</span>, y=<span class='st'>"creditability"</span>, ratio = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.5</span>, <span class='fl'>0.2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>dt_list2</span>, <span class='kw'>dim</span>)
+<span class='va'>dt_list2</span> <span class='op'>=</span> <span class='fu'>split_df</span><span class='op'>(</span><span class='va'>germancredit</span>, y<span class='op'>=</span><span class='st'>"creditability"</span>,
+  ratios <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.5</span>, <span class='fl'>0.3</span>, <span class='fl'>0.2</span><span class='op'>)</span>,
+  name_dfs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'train'</span>, <span class='st'>'test'</span>, <span class='st'>'valid'</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list2</span>, <span class='va'>dim</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; $train
 #&gt; [1] 491  21
 #&gt; 
 #&gt; $test
+#&gt; [1] 298  21
+#&gt; 
+#&gt; $valid
 #&gt; [1] 211  21
 #&gt; </div><div class='input'>
 </div></pre>

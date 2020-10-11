@@ -144,9 +144,9 @@
     <p>This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>var_filter</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, x = <span class='kw'>NULL</span>, iv_limit = <span class='fl'>0.02</span>, missing_limit = <span class='fl'>0.95</span>,
-  identical_limit = <span class='fl'>0.95</span>, var_rm = <span class='kw'>NULL</span>, var_kp = <span class='kw'>NULL</span>,
-  return_rm_reason = <span class='fl'>FALSE</span>, positive = <span class='st'>"bad|1"</span>)</pre>
+    <pre class="usage"><span class='fu'>var_filter</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='cn'>NULL</span>, iv_limit <span class='op'>=</span> <span class='fl'>0.02</span>, missing_limit <span class='op'>=</span> <span class='fl'>0.95</span>,
+  identical_limit <span class='op'>=</span> <span class='fl'>0.95</span>, var_rm <span class='op'>=</span> <span class='cn'>NULL</span>, var_kp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  return_rm_reason <span class='op'>=</span> <span class='cn'>FALSE</span>, positive <span class='op'>=</span> <span class='st'>"bad|1"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -199,22 +199,22 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>germancredit</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>
 
 <span class='co'># variable filter</span>
-<span class='kw'>dt_sel</span> <span class='op'>=</span> <span class='fu'>var_filter</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>)
-</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span>(<span class='kw'>dt_sel</span>)
+<span class='va'>dt_sel</span> <span class='op'>=</span> <span class='fu'>var_filter</span><span class='op'>(</span><span class='va'>germancredit</span>, y <span class='op'>=</span> <span class='st'>"creditability"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>dt_sel</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 1000   14</div><div class='input'>
 <span class='co'># return the reason of varaible removed</span>
-<span class='kw'>dt_sel2</span> <span class='op'>=</span> <span class='fu'>var_filter</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>, return_rm_reason = <span class='fl'>TRUE</span>)
-</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>dt_sel2</span>, <span class='kw'>dim</span>)
+<span class='va'>dt_sel2</span> <span class='op'>=</span> <span class='fu'>var_filter</span><span class='op'>(</span><span class='va'>germancredit</span>, y <span class='op'>=</span> <span class='st'>"creditability"</span>, return_rm_reason <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_sel2</span>, <span class='va'>dim</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; $dt
 #&gt; [1] 1000   14
 #&gt; 
 #&gt; $rm
 #&gt; [1] 20  5
 #&gt; </div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>dt_sel2</span><span class='op'>$</span><span class='kw'>dt</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>dt_sel2</span><span class='op'>$</span><span class='va'>dt</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	1000 obs. of  14 variables:
 #&gt;  $ status.of.existing.checking.account                : Factor w/ 4 levels "... &lt; 0 DM","0 &lt;= ... &lt; 200 DM",..: 1 2 4 1 1 4 4 2 4 2 ...
 #&gt;  $ duration.in.month                                  : num  6 48 12 42 24 36 24 36 12 30 ...
@@ -230,7 +230,7 @@
 #&gt;  $ other.installment.plans                            : Factor w/ 3 levels "bank","stores",..: 3 3 3 3 3 3 3 3 3 3 ...
 #&gt;  $ housing                                            : Factor w/ 3 levels "rent","own","for free": 2 2 2 3 3 3 2 1 2 2 ...
 #&gt;  $ creditability                                      : int  0 1 0 0 1 0 0 0 0 1 ...
-#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>dt_sel2</span><span class='op'>$</span><span class='kw'>rm</span>)
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>dt_sel2</span><span class='op'>$</span><span class='va'>rm</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	20 obs. of  5 variables:
 #&gt;  $ variable      : chr  "foreign.worker" "job" "number.of.existing.credits.at.this.bank" "number.of.people.being.liable.to.provide.maintenance.for" ...
 #&gt;  $ rm_reason     : chr  "identical rate &gt; 0.95" "iv &lt; 0.02" "iv &lt; 0.02" "iv &lt; 0.02" ...
@@ -239,11 +239,11 @@
 #&gt;  $ identical_rate: num  0.963 0.63 0.633 0.845 0.548 0.413 0.596 0.051 0.003 0.53 ...
 #&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
 <span class='co'># keep columns manually, such as rowid</span>
-<span class='kw'>germancredit</span><span class='op'>$</span><span class='kw'>rowid</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/row.names.html'>row.names</a></span>(<span class='kw'>germancredit</span>)
-<span class='kw'>dt_sel3</span> <span class='op'>=</span> <span class='fu'>var_filter</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>, var_kp = <span class='st'>'rowid'</span>)
+<span class='va'>germancredit</span><span class='op'>$</span><span class='va'>rowid</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/row.names.html'>row.names</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>
+<span class='va'>dt_sel3</span> <span class='op'>=</span> <span class='fu'>var_filter</span><span class='op'>(</span><span class='va'>germancredit</span>, y <span class='op'>=</span> <span class='st'>"creditability"</span>, var_kp <span class='op'>=</span> <span class='st'>'rowid'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
 <span class='co'># remove columns manually</span>
-<span class='kw'>dt_sel4</span> <span class='op'>=</span> <span class='fu'>var_filter</span>(<span class='kw'>germancredit</span>, y = <span class='st'>"creditability"</span>, var_rm = <span class='st'>'rowid'</span>)
+<span class='va'>dt_sel4</span> <span class='op'>=</span> <span class='fu'>var_filter</span><span class='op'>(</span><span class='va'>germancredit</span>, y <span class='op'>=</span> <span class='st'>"creditability"</span>, var_rm <span class='op'>=</span> <span class='st'>'rowid'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'>
 </div></pre>
   </div>

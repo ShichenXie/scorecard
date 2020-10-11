@@ -110,71 +110,62 @@
 <a href="#traditional-credit-scoring-using-logistic-regression" class="anchor"></a>Traditional Credit Scoring Using Logistic Regression</h2>
 <p>After installing scorecard via instructions in the <a href="https://github.com/ShichenXie/scorecard#Installation">README</a> section, load the package into your environment.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/ShichenXie/scorecard">scorecard</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ShichenXie/scorecard">scorecard</a></span><span class="op">)</span></pre></div>
 <div id="data-preparation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-preparation" class="anchor"></a>Data Preparation</h3>
 <p>Let’s use the <em>germancredit</em> dataset for the purposes of this demonstration.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"germancredit"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw">germancredit</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"germancredit"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></pre></div>
 <p>The <code>var_filter</code> function drops column variables that don’t meet the thresholds for missing rate (&gt; 95% by default), information value (IV) (&lt; 0.02 by default), or identical value rate (&gt; 95% by default).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">dt_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_filter.html">var_filter</a></span>(<span class="kw">germancredit</span>, y = <span class="st">"creditability"</span>)
-</pre></div>
+<span class="va">dt_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_filter.html">var_filter</a></span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">"creditability"</span><span class="op">)</span></pre></div>
 </div>
 <div id="split-data-into-train-test-sets" class="section level3">
 <h3 class="hasAnchor">
 <a href="#split-data-into-train-test-sets" class="anchor"></a>Split Data into Train / Test Sets</h3>
 <p>When building scorecard models, a subset of the observations should be held out from the data used to train the model (similar to most other traditional modeling approaches), and instead be apportioned to the <em>test</em> set. We can perform this sampling to create the <em>train</em> and <em>test</em> datasets using the <code>split_df</code> function.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">dt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_df.html">split_df</a></span>(<span class="kw">dt_f</span>, y = <span class="st">"creditability"</span>, ratio = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.6</span>, <span class="fl">0.4</span>), seed = <span class="fl">30</span>)
-<span class="kw">label_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw">dt_list</span>, <span class="fu">function</span>(<span class="kw">x</span>) <span class="kw">x</span><span class="op">$</span><span class="kw">creditability</span>)
-</pre></div>
+<span class="va">dt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_df.html">split_df</a></span><span class="op">(</span><span class="va">dt_f</span>, y <span class="op">=</span> <span class="st">"creditability"</span>, ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
+<span class="va">label_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">creditability</span><span class="op">)</span></pre></div>
 </div>
 <div id="weight-of-evidence-woe-binning" class="section level3">
 <h3 class="hasAnchor">
 <a href="#weight-of-evidence-woe-binning" class="anchor"></a>Weight-of-Evidence (WoE) binning</h3>
 <p>Weight-of-Evidence binning is a technique for binning both continuous and categorical independent variables in a way that provides the most robust bifurcation of the data against the dependent variable. This technique can be easily executed across all independent variables using the <code>woebin</code> function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="kw">bins</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/woebin.html">woebin</a></span>(<span class="kw">dt_f</span>, y = <span class="st">"creditability"</span>)
-<span class="co"># woebin_plot(bins)</span>
-</pre></div>
+<span class="va">bins</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_f</span>, y <span class="op">=</span> <span class="st">"creditability"</span><span class="op">)</span>
+<span class="co"># woebin_plot(bins)</span></pre></div>
 <p>The user can also adjust bin breaks interactively by using the <code>woebin_adj</code> function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="co"># breaks_adj &lt;- woebin_adj(dt_f, y = "creditability", bins = bins)</span>
-</pre></div>
+<span class="co"># breaks_adj &lt;- woebin_adj(dt_f, y = "creditability", bins = bins)</span></pre></div>
 <p>Furthermore, the user can set the bin breaks manually via the <code>breaks_list = list()</code> argument in the <code>woebin</code> function. Note the use of <em>%,%</em> as a separator to create a single bin from two classes in a categorical independent variable.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="kw">breaks_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-  age.in.years = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">26</span>, <span class="fl">35</span>, <span class="fl">40</span>),
-  other.debtors.or.guarantors = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span>)
-)
+<span class="va">breaks_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+  age.in.years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">35</span>, <span class="fl">40</span><span class="op">)</span>,
+  other.debtors.or.guarantors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"co-applicant%,%guarantor"</span><span class="op">)</span>
+<span class="op">)</span>
 
-<span class="kw">bins_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/woebin.html">woebin</a></span>(<span class="kw">dt_f</span>, y = <span class="st">"creditability"</span>, breaks_list = <span class="kw">breaks_adj</span>)
-</pre></div>
+<span class="va">bins_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_f</span>, y <span class="op">=</span> <span class="st">"creditability"</span>, breaks_list <span class="op">=</span> <span class="va">breaks_adj</span><span class="op">)</span></pre></div>
 <p>Once your WoE bins are established for all desired independent variables, apply the binning logic to the training and test datasets.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">dt_woe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw">dt_list</span>, <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu"><a href="../reference/woebin_ply.html">woebin_ply</a></span>(<span class="kw">x</span>, <span class="kw">bins_adj</span>))
-</pre></div>
+<span class="va">dt_woe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="../reference/woebin_ply.html">woebin_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">bins_adj</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 <div id="logistic-regression-example" class="section level3">
 <h3 class="hasAnchor">
 <a href="#logistic-regression-example" class="anchor"></a>Logistic Regression Example</h3>
 <p>Logistic regression can often be leveraged effectively to assist in building the scorecards.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>( <span class="kw">creditability</span> <span class="op">~</span> <span class="kw">.</span>, family = <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span>(), data = <span class="kw">dt_woe_list</span><span class="op">$</span><span class="kw">train</span>)
+<span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span> <span class="va">creditability</span> <span class="op">~</span> <span class="va">.</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dt_woe_list</span><span class="op">$</span><span class="va">train</span><span class="op">)</span>
 
 <span class="co"># vif(m1, merge_coef = TRUE) # summary(m1)</span>
 
 <span class="co"># Select a formula-based model by AIC (or by LASSO for large dataset)</span>
-<span class="kw">m_step</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html">step</a></span>(<span class="kw">m1</span>, direction = <span class="st">"both"</span>, trace = <span class="fl">FALSE</span>)
-<span class="kw">m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="kw">m_step</span><span class="op">$</span><span class="kw">call</span>)
+<span class="va">m_step</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html">step</a></span><span class="op">(</span><span class="va">m1</span>, direction <span class="op">=</span> <span class="st">"both"</span>, trace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="va">m_step</span><span class="op">$</span><span class="va">call</span><span class="op">)</span>
 
-<span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span>
-</pre></div>
+<span class="co"># vif(m2, merge_coef = TRUE) # summary(m2)</span></pre></div>
 <p>If oversampling is a concern, the following code chunk could be uncommented and run to help adjust for this issue.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="co"># Read documentation on handling oversampling (support.sas.com/kb/22/601.html)</span>
@@ -187,8 +178,7 @@
 <span class="co"># dt_woe &lt;- copy(dt_woe_list$train)[, weight := ifelse(creditability == 1, p1/r1, (1-p1)/(1-r1) )][]</span>
 
 <span class="co"># fmla &lt;- as.formula(paste("creditability ~", paste(names(coef(m2))[-1], collapse = "+")))</span>
-<span class="co"># m3 &lt;- glm(fmla, family = binomial(), data = dt_woe, weights = weight)</span>
-</pre></div>
+<span class="co"># m3 &lt;- glm(fmla, family = binomial(), data = dt_woe, weights = weight)</span></pre></div>
 </div>
 <div id="evaluating-model-performance-using-ks-roc" class="section level3">
 <h3 class="hasAnchor">
@@ -196,10 +186,9 @@
 <p>The <code>perf_eva</code> function provides model accuracy statistics (such as mse, rmse, logloss, r2, ks, auc, gini) and plots (such as ks, lift, gain, roc, lz, pr, f1, density).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit">
 <span class="co"># First, get probabalistic predictions</span>
-<span class="kw">pred_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw">dt_woe_list</span>, <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">m2</span>, <span class="kw">x</span>, type = <span class="st">'response'</span>))
+<span class="va">pred_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dt_woe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">m2</span>, <span class="va">x</span>, type <span class="op">=</span> <span class="st">'response'</span><span class="op">)</span><span class="op">)</span>
 <span class="co"># Then evaluate model accuracy  </span>
-<span class="kw">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perf_eva.html">perf_eva</a></span>(pred = <span class="kw">pred_list</span>, label = <span class="kw">label_list</span>)
-</pre></div>
+<span class="va">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perf_eva.html">perf_eva</a></span><span class="op">(</span>pred <span class="op">=</span> <span class="va">pred_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></pre></div>
 </div>
 <div id="create-scorecard" class="section level3">
 <h3 class="hasAnchor">
@@ -208,12 +197,11 @@
 <p>The scorecard can then be applied to the original data using the <code>scorecard_ply</code> function. Lastly, a chart encompassing Population Stability Index (PSI) statistics can be rendered via the <code>perf_psi</code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="co"># Build the card</span>
-<span class="kw">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scorecard.html">scorecard</a></span>(<span class="kw">bins_adj</span>, <span class="kw">m2</span>)
+<span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scorecard.html">scorecard</a></span><span class="op">(</span><span class="va">bins_adj</span>, <span class="va">m2</span><span class="op">)</span>
 <span class="co"># Obtain Credit Scores</span>
-<span class="kw">score_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw">dt_list</span>, <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu"><a href="../reference/scorecard_ply.html">scorecard_ply</a></span>(<span class="kw">x</span>, <span class="kw">card</span>))
+<span class="va">score_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="../reference/scorecard_ply.html">scorecard_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">card</span><span class="op">)</span><span class="op">)</span>
 <span class="co"># Analyze the PSI</span>
-<span class="fu"><a href="../reference/perf_psi.html">perf_psi</a></span>(score = <span class="kw">score_list</span>, label = <span class="kw">label_list</span>)
-</pre></div>
+<span class="fu"><a href="../reference/perf_psi.html">perf_psi</a></span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></pre></div>
 </div>
 </div>
   </div>

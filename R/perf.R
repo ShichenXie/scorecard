@@ -72,7 +72,7 @@ ks = function(dt_ev, ...) {
 ## Lift
 lift = function(dt_ev, threshold = 0.5, ...) {
   precision = totP = totN = cumpop = NULL
-  # badrate of rejected sample / of overalll
+  # posrate of rejected sample / of overalll
   # threshold: approval rate
   dt_ev[, lift := precision/(totP/(totP+totN))][][cumpop >= 1-threshold,][1,lift]
 }
@@ -140,10 +140,10 @@ confusionMatrix = function(dt, threshold=0.5, ...) {
 #
 # The function perf_plot has renamed as perf_eva.
 #
-# @param label Label values, such as 0s and 1s, 0 represent for good and 1 for bad.
+# @param label Label values, such as 0s and 1s, 0 represent for negative and 1 for positive.
 # @param pred Predicted probability values.
 # @param title Title of plot, default "train".
-# @param groupnum The group number when calculating bad probability, default NULL.
+# @param groupnum The group number when calculating positive probability, default NULL.
 # @param type Types of performance plot, such as "ks", "lift", "roc", "pr". Default c("ks", "roc").
 # @param show_plot Logical value, default TRUE. It means whether to show plot.
 # @param seed An integer. The specify seed is used for random sorting data, default: 186.
@@ -183,7 +183,7 @@ plot_density = function(dt_lst, title=NULL, positive, ...) {
   # coord for label_string
   coord_label = max_density_by_datset_label[
     , .(pred=mean(pred), dens=mean(dens)), by=label
-  ][, label_str := ifelse(grepl(positive, label), 'Posi', 'Neg')]
+  ][, label_str := ifelse(grepl(positive, label), 'Pos', 'Neg')]
 
   # plot
   pdens = ggplot(data = dt_df) +
@@ -212,14 +212,14 @@ plot_density = function(dt_lst, title=NULL, positive, ...) {
 }
 
 plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
-  . = datset = KS = metrics = pred_threshold = coord = maxks = oc = pred = cumpop = cumgood = cumbad = nN = nP = NULL
+  . = datset = KS = metrics = pred_threshold = coord = maxks = oc = pred = cumpop = cumneg = cumpos = nN = nP = NULL
 
   # data for ks plot
   dt_ks = lapply(dat_eva_lst, function(x) {
     TN = totN = FN = totP = NULL
     x = x[, .(
-      cumpop, pred, cumgood = cumsum(nN)/totN, cumbad = cumsum(nP)/totP
-    )][, ks := abs(cumgood - cumbad)]
+      cumpop, pred, cumneg = cumsum(nN)/totN, cumpos = cumsum(nP)/totP
+    )][, ks := abs(cumneg - cumpos)]
     x = rbind(x, data.table(cumpop=0), fill=TRUE)
     x[is.na(x)] <- 0
     return(x[order(cumpop)])
@@ -236,19 +236,19 @@ plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 
   x_posi = 0.4
   x_neg = 0.95
-  if (dt_ks[, mean(cumbad) < mean(cumgood)]) {
+  if (dt_ks[, mean(cumpos) < mean(cumneg)]) {
     x_neg = 0.4
     x_posi = 0.95
   }
   # plot
   pks = ggplot(data = dt_ks, aes(x=cumpop)) +
-    geom_line(aes(y=cumgood, color=datset), linetype='dotted') +
-    geom_line(aes(y=cumbad, color=datset), linetype='dotted') +
+    geom_line(aes(y=cumneg, color=datset), linetype='dotted') +
+    geom_line(aes(y=cumpos, color=datset), linetype='dotted') +
     geom_line(aes(y=ks, color=datset)) +
     geom_segment(data = dfks, aes(x = cumpop, y = 0, xend = cumpop, yend = ks, color=datset), linetype = "dashed") +
     geom_point(data = dfks, aes(x=cumpop, y=ks), color='red') +
     # geom_text(data = dfks, aes(x=cumpop, y=ks, label=oc, color=datset), vjust=0) +
-    annotate("text", x=x_posi, y=0.7, vjust = -0.2, label="Posi", colour = "gray") +
+    annotate("text", x=x_posi, y=0.7, vjust = -0.2, label="Pos", colour = "gray") +
     annotate("text", x=x_neg, y=0.7, vjust = -0.2, label="Neg", colour = "gray") +
     theme_bw() +
     theme(legend.position=c(0,1),
@@ -260,7 +260,7 @@ plot_ks = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 
   # axis, labs, theme
   pks = pks + ggtitle(paste0(title, 'K-S')) +
-    labs(x = "% of population", y = "% of total Neg/Posi") +
+    labs(x = "% of population", y = "% of total Neg/Pos") +
     scale_y_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     scale_x_continuous(labels=fmt_dcimals, breaks=number_ticks(5)) +
     coord_fixed(xlim = c(0,1), ylim = c(0,1), expand = FALSE)
@@ -421,11 +421,11 @@ plot_pr = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 }
 
 plot_lz = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
-  FN = nP = totP = . = datset = Gini = cumpop = cumbadrate = NULL
+  FN = nP = totP = . = datset = Gini = cumpop = cumposrate = NULL
 
   dt_lz = lapply(dat_eva_lst, function(x) {
-    x = x[, .(cumpop, cumbadrate = cumsum(nP)/totP)]
-    x = rbind(x, data.table(cumpop=0, cumbadrate=0), fill=TRUE)
+    x = x[, .(cumpop, cumposrate = cumsum(nP)/totP)]
+    x = rbind(x, data.table(cumpop=0, cumposrate=0), fill=TRUE)
     return(x[order(cumpop)])
   })
   dt_lz = merge(
@@ -435,10 +435,10 @@ plot_lz = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
 
   # plot
   plz = ggplot(dt_lz, aes(x=cumpop)) +
-    geom_line(aes(y=cumbadrate, color=datset)) +
+    geom_line(aes(y=cumposrate, color=datset)) +
     geom_line(aes(y=cumpop), linetype = "dashed", colour="gray") +
     # geom_segment(aes(x=0, y=0, xend=1, yend=1), linetype = "dashed", colour="red") +
-    geom_ribbon(aes(ymin=cumpop, ymax=cumbadrate, fill=datset), alpha=0.1) +
+    geom_ribbon(aes(ymin=cumpop, ymax=cumposrate, fill=datset), alpha=0.1) +
     theme_bw() +
     theme(legend.position=c(0,1),
           legend.justification=c(0,1),
@@ -597,8 +597,8 @@ func_dat_eva = function(dt, groupnum=NULL, pred_desc=FALSE, ...) {
   # totP, total Positive
   # totN, total Negative
 
-  # FN, False Negative; cumsum of positive, cumbad
-  # TN, True Negative;  cumsum of negative, cumgood
+  # FN, False Negative; cumsum of positive, cumpos
+  # TN, True Negative;  cumsum of negative, cumneg
 
   # TP, True Positive;  totP-FN
   # FP, False Positive; totN-TN
@@ -926,15 +926,15 @@ psi_metric = function(dt_sn, names_datset) {
 
 # psi plot
 psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = NULL) {
-  . = label = N = bad = badprob = distr = bin = midbin = bin1 = bin2 = datset = badprob2 = NULL
+  . = label = N = pos = posprob = distr = bin = midbin = bin1 = bin2 = datset = posprob2 = NULL
 
   # plot title
   title = paste0(ifelse(is.null(title), sn, title), " PSI: ", round(psi_sn, 4))
 
   distr_prob =
-    dt_psi[, .(.N, bad = sum(label==1)), keyby = c('datset','bin')
-       ][, `:=`(distr = N/sum(N), badprob = bad/N), by = 'datset'
-       ][, `:=`(badprob2 = badprob*max(distr)), by = "datset"
+    dt_psi[, .(.N, pos = sum(label==1)), keyby = c('datset','bin')
+       ][, `:=`(distr = N/sum(N), posprob = pos/N), by = 'datset'
+       ][, `:=`(posprob2 = posprob*max(distr)), by = "datset"
        ][, `:=`(
          bin1 = as.numeric(sub("\\[(.+),(.+)\\)", "\\1", bin)),
          bin2 = as.numeric(sub("\\[(.+),(.+)\\)", "\\2", bin))
@@ -944,10 +944,10 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
   p_score_distr =
     ggplot(distr_prob) +
     geom_bar(aes(x=bin, y=distr, fill=datset), stat="identity", position="dodge", na.rm=TRUE) +
-    geom_line(aes(x=bin, y=badprob2, group=datset, linetype=datset), colour= line_color, na.rm=TRUE) +
-    geom_point(aes(x=bin, y=badprob2), colour= line_color, shape=21, fill="white", na.rm=TRUE) +
+    geom_line(aes(x=bin, y=posprob2, group=datset, linetype=datset), colour= line_color, na.rm=TRUE) +
+    geom_point(aes(x=bin, y=posprob2), colour= line_color, shape=21, fill="white", na.rm=TRUE) +
     guides(fill=guide_legend(title="Distribution"), colour=guide_legend(title="Probability"), linetype=guide_legend(title="Probability")) +
-    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Bad probability")) +
+    scale_y_continuous(expand = c(0, 0), sec.axis = sec_axis(~./max(distr_prob$distr), name = "Positive probability")) +
     ggtitle(title) +
     labs(x=NULL, y="Score distribution") +
     # geom_text(aes(label="@http://shichen.name/scorecard", x=Inf, y=Inf), vjust = -1, hjust = 1, color = "#F0F0F0") +
@@ -970,17 +970,17 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
 
 
 gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
-  . = good = bad = bin = count = datset = bin_avg = NULL
+  . = neg = pos = bin = count = datset = bin_avg = NULL
 
   dt_distr = dt_distr[, .(
     bin,
     count, cum_count = cumsum(count),
-    good,  cum_good = cumsum(good),
-    bad,   cum_bad = cumsum(bad),
+    neg,  cum_neg = cumsum(neg),
+    pos,   cum_pos = cumsum(pos),
     count_distr = count/sum(count),
-    badprob=bad/count,
+    posprob=pos/count,
     approval_rate = cumsum(count)/sum(count),
-    cum_badprob = cumsum(bad)/cumsum(count),
+    cum_posprob = cumsum(pos)/cumsum(count),
     bin_avg
   ), by = datset]
   if (!ret_bin_avg) dt_distr = dt_distr[, bin_avg := NULL]
@@ -988,7 +988,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 }
 #' Gains Table
 #'
-#' \code{gains_table} creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+#' \code{gains_table} creates a data frame including distribution of total, negative, positive, positive rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
@@ -1076,7 +1076,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 #'
 #' @export
 gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, breaks_by=NULL, positive='bad|1', ...) {
-  . = V1 = V2 = bad = bin = count = datset = group = NULL
+  . = V1 = V2 = pos = bin = count = datset = group = NULL
 
   # arguments
   kwargs = list(...)
@@ -1176,7 +1176,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
   if (return_dt_psi) return(dt_psi) # innter result usded in perf_psi function
 
   # distribution table
-  dt_distr = dt_psi[, .(count=.N, good = sum(label==0), bad = sum(label==1), bin_avg = mean(score)), keyby = .(datset,bin)
+  dt_distr = dt_psi[, .(count=.N, neg = sum(label==0), pos = sum(label==1), bin_avg = mean(score)), keyby = .(datset,bin)
                   ][order(datset, -bin)]
   if (!is_score) dt_distr = dt_distr[order(datset, bin)] #is predicted probability
   # gains table
@@ -1185,12 +1185,12 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
 }
 
 # @param method Whether in equal frequency or width when preparing dataset to calculates psi. Defaults to 'width'.
-# @param return_distr_dat Logical. Defaults to FALSE. Whether to return a list of data frames including distribution of total, good, bad cases by score bins in both equal width and equal frequency. This table is also named gains table.
+# @param return_distr_dat Logical. Defaults to FALSE. Whether to return a list of data frames including distribution of total, negative, positive cases by score bins in both equal width and equal frequency. This table is also named gains table.
 # @param bin_num Integer. Defaults to 10. The number of score bins in distribution tables.
 
 #' PSI
 #'
-#' \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and bad rate trends.
+#' \code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and positive rate trends.
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Defaults to NULL.

@@ -4,19 +4,19 @@
 \alias{split_df}
 \title{Split a Data Frame}
 \usage{
-split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618,
-  name_dfs = c("train", "test"), ...)
+split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
+  "test"), seed = 618, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
 
 \item{y}{Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.}
 
-\item{ratio}{A numeric value, Defaults to 0.7. It indicates the ratio of total rows contained in one split, must less than 1.}
+\item{ratios}{A numeric vector indicating the ratio of total rows contained in each split, defaults to c(0.7, 0.3).}
+
+\item{name_dfs}{Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.}
 
 \item{seed}{A random seed, Defaults to 618.}
-
-\item{name_dfs}{Name of returned data frames. Its length should equals to the ratio's. Defaults to train and test.}
 
 \item{...}{Additional parameters.}
 }
@@ -24,7 +24,7 @@ split_df(dt, y = NULL, ratio = c(0.7, 0.3), seed = 618,
 A list of data frames
 }
 \description{
-Split a data frame into train and test
+Split a data frame into multiple data sets according to the specified ratios.
 }
 \examples{
 # load German credit data
@@ -32,15 +32,15 @@ data(germancredit)
 
 # Example I
 dt_list = split_df(germancredit, y="creditability")
-train = dt_list[[1]]
-test = dt_list[[2]]
 
-# dimensions of train and test datasets
+# dimensions of each split data sets
 lapply(dt_list, dim)
 
 
 # Example II
-dt_list2 = split_df(germancredit, y="creditability", ratio = c(0.5, 0.2))
+dt_list2 = split_df(germancredit, y="creditability",
+  ratios = c(0.5, 0.3, 0.2),
+  name_dfs = c('train', 'test', 'valid'))
 lapply(dt_list2, dim)
 
 }

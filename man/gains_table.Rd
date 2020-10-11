@@ -28,7 +28,7 @@ gains_table(score, label, bin_num = 10, method = "freq", width_by = NULL,
 A data frame
 }
 \description{
-\code{gains_table} creates a data frame including distribution of total, good, bad, bad rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+\code{gains_table} creates a data frame including distribution of total, negative, positive, positive rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
 }
 \examples{
 \donttest{

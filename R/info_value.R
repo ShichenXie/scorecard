@@ -10,7 +10,7 @@
 #'
 #' @return A data frame with columns for variable and info_value
 #'
-#' @details IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}
+#' @details IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionPositive_{i} - DistributionNegative_{i})*\ln(\frac{DistributionPositive_{i}}{DistributionNegative_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionPositive_{i}}{DistributionNegative_{i}}).}
 #' The relationship between information value and predictive power is as follows:
 #' \tabular{rr}{
 #' Information Value \tab Predictive Power \cr
@@ -65,90 +65,90 @@ iv = function(dt, y, x=NULL, positive="bad|1", order=TRUE) {
 }
 #' @import data.table
 iv_xy = function(x, y) {
-  . = DistrBad = DistrGood = bad = good = NULL
+  . = Distrpos = Distrneg = pos = neg = NULL
 
   data.table(x=x, y=y)[
-    , .(good = sum(y==0), bad = sum(y==1)), keyby="x"
-    ][, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad")# replace 0 by 0.99 in good/bad columns
+    , .(neg = sum(y==0), pos = sum(y==1)), keyby="x"
+    ][, (c("neg", "pos")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("neg", "pos")# replace 0 by 0.99 in neg/pos columns
     ][, `:=`(
-      DistrGood = good/sum(good), DistrBad = bad/sum(bad)
-   )][, sum((DistrBad-DistrGood)*log(DistrBad/DistrGood)) ]
+      Distrneg = neg/sum(neg), Distrpos = pos/sum(pos)
+   )][, sum((Distrpos-Distrneg)*log(Distrpos/Distrneg)) ]
 
 }
 
 
 # #' Information Value
 # #'
-# #' calculating IV of total based on good and bad vectors
+# #' calculating IV of total based on neg and pos vectors
 # #'
-# #' @param good vector of good numbers
-# #' @param bad vector of bad numbers
+# #' @param neg vector of neg numbers
+# #' @param pos vector of pos numbers
 # #'
 # #' @examples
-# #' # iv_01(good, bad)
+# #' # iv_01(neg, pos)
 # #' dtm = melt(dt, id = 'creditability')[, .(
-# #' good = sum(creditability=="good"), bad = sum(creditability=="bad")
+# #' neg = sum(creditability=="neg"), pos = sum(creditability=="pos")
 # #' ), keyby = c("variable", "value")]
 # #'
-# #' dtm[, .(iv = lapply(.SD, iv_01, bad)), by="variable", .SDcols# ="good"]
+# #' dtm[, .(iv = lapply(.SD, iv_01, pos)), by="variable", .SDcols# ="neg"]
 # #'
 # #' @import data.table
 #' @import data.table
 #'
-iv_01 = function(good, bad) {
+iv_01 = function(neg, pos) {
   # global variables
-  DistrBad = DistrGood = miv = NULL
+  Distrpos = Distrneg = miv = NULL
 
   data.table(
-    good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
-  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
+    neg = neg, pos = pos
+  )[, (c("neg", "pos")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("neg", "pos") # replace 0 by 0.99 in neg/pos column
+  ][, `:=`(Distrneg = neg/sum(neg), Distrpos = pos/sum(pos) )
+  ][, miv := (Distrpos-Distrneg)*log(Distrpos/Distrneg)
   ][, sum(miv)]
 
 }
 
 # #' miv_01
 # #'
-# #' calculating IV of each bin based on good and bad vectors
+# #' calculating IV of each bin based on neg and pos vectors
 # #'
-# #' @param good vector of good numbers
-# #' @param bad vector of bad numbers
+# #' @param neg vector of neg numbers
+# #' @param pos vector of pos numbers
 # #'
 # #' @import data.table
 # #'
 #' @import data.table
 #'
-miv_01 = function(good, bad) {
+miv_01 = function(neg, pos) {
   # global variables
-  DistrBad = DistrGood = miv = NULL
+  Distrpos = Distrneg = miv = NULL
 
   data.table(
-    good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
-  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, miv := (DistrBad-DistrGood)*log(DistrBad/DistrGood)
+    neg = neg, pos = pos
+  )[, (c("neg", "pos")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("neg", "pos") # replace 0 by 0.99 in neg/pos column
+  ][, `:=`(Distrneg = neg/sum(neg), Distrpos = pos/sum(pos) )
+  ][, miv := (Distrpos-Distrneg)*log(Distrpos/Distrneg)
   ][, miv]
 }
 
 # #' woe_01
 # #'
-# #' calculating WOE of each bin based on good and bad vectors
+# #' calculating WOE of each bin based on neg and pos vectors
 # #'
-# #' @param good vector of good numbers
-# #' @param bad vector of bad numbers
+# #' @param neg vector of neg numbers
+# #' @param pos vector of pos numbers
 # #'
 # #' @import data.table
 #' @import data.table
 #'
-woe_01 = function(good, bad) {
+woe_01 = function(neg, pos) {
   # global variables
-  DistrBad = DistrGood = woe = NULL
+  Distrpos = Distrneg = woe = NULL
 
   data.table(
-    good = good, bad = bad
-  )[, (c("good", "bad")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("good", "bad") # replace 0 by 0.99 in good/bad column
-  ][, `:=`(DistrGood = good/sum(good), DistrBad = bad/sum(bad) )
-  ][, woe := log(DistrBad/DistrGood)
+    neg = neg, pos = pos
+  )[, (c("neg", "pos")) := lapply(.SD, function(x) ifelse(x==0, 0.99, x)), .SDcols = c("neg", "pos") # replace 0 by 0.99 in neg/pos column
+  ][, `:=`(Distrneg = neg/sum(neg), Distrpos = pos/sum(pos) )
+  ][, woe := log(Distrpos/Distrneg)
   ][, woe]
 }

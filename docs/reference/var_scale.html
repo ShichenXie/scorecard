@@ -144,7 +144,7 @@
     <p>scaling variables using standardization or normalization</p>
     </div>
 
-    <pre class="usage"><span class='fu'>var_scale</span>(<span class='kw'>dt</span>, var_skip = <span class='kw'>NULL</span>, type = <span class='st'>"standard"</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>var_scale</span><span class='op'>(</span><span class='va'>dt</span>, var_skip <span class='op'>=</span> <span class='cn'>NULL</span>, type <span class='op'>=</span> <span class='st'>"standard"</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,14 +169,14 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span>
 
 <span class='co'># standardization</span>
-<span class='kw'>dts1</span> <span class='op'>=</span> <span class='fu'>var_scale</span>(<span class='kw'>germancredit</span>, type = <span class='st'>'standard'</span>)
+<span class='va'>dts1</span> <span class='op'>=</span> <span class='fu'>var_scale</span><span class='op'>(</span><span class='va'>germancredit</span>, type <span class='op'>=</span> <span class='st'>'standard'</span><span class='op'>)</span>
 
 <span class='co'># normalization/minmax</span>
-<span class='kw'>dts2</span> <span class='op'>=</span> <span class='fu'>var_scale</span>(<span class='kw'>germancredit</span>, type = <span class='st'>'minmax'</span>)
-<span class='kw'>dts2</span> <span class='op'>=</span> <span class='fu'>var_scale</span>(<span class='kw'>germancredit</span>, type = <span class='st'>'minmax'</span>, new_range = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span>))
+<span class='va'>dts2</span> <span class='op'>=</span> <span class='fu'>var_scale</span><span class='op'>(</span><span class='va'>germancredit</span>, type <span class='op'>=</span> <span class='st'>'minmax'</span><span class='op'>)</span>
+<span class='va'>dts2</span> <span class='op'>=</span> <span class='fu'>var_scale</span><span class='op'>(</span><span class='va'>germancredit</span>, type <span class='op'>=</span> <span class='st'>'minmax'</span>, new_range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 
 </div></pre>
   </div>

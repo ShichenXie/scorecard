@@ -11,7 +11,7 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
   # p(y=1) = 1/(1+exp(-z)),
       # z = beta0+beta1*x1+...+betar*xr = beta*x
   ##==> z = log(p/(1-p)),
-      # odds = p/(1-p) # bad/good <==>
+      # odds = p/(1-p) # positive/negative <==>
       # p = odds/1+odds
   ##==> z = log(odds)
   ##==> score = a - b*log(odds)
@@ -129,7 +129,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.
-#' @param badprob_pop Bad probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.
+#' @param posprob_pop Positive probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
@@ -186,10 +186,15 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @import data.table
 #' @importFrom stats predict
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0, return_prob = FALSE, positive='bad|1', ...) {
+scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0, return_prob = FALSE, positive='bad|1', ...) {
   variable = wgts = NULL
 
   dt = setDT(copy(dt))
+
+  kwargs = list(...)
+  badprob_pop = kwargs[['kwargs']]
+  if (!is.null(badprob_pop)) posprob_pop = badprob_pop
+
   # bins # if (is.list(bins)) rbindlist(bins)
   if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
   bins = setDT(bins)
@@ -206,9 +211,9 @@ scorecard2 = function(bins, dt, y, x=NULL, badprob_pop = NULL, points0=600, odds
 
 
   # model
-  if (!is.null(badprob_pop) && badprob_pop > 0 && badprob_pop < 1) {
-    p1 = badprob_pop # bad probability in population
-    r1 = dt[, table(get(y))/.N][['1']] # bad probability in sample dataset
+  if (!is.null(posprob_pop) && posprob_pop > 0 && posprob_pop < 1) {
+    p1 = posprob_pop # positive probability in population
+    r1 = dt[, table(get(y))/.N][['1']] # positive probability in sample dataset
     dt_woe = dt_woe[grepl(positive, get(y)), wgts := p1/r1
                   ][is.na(wgts), wgts := (1-p1)/(1-r1)
                   ][,c(paste0(x,"_woe"), "wgts", y), with=F]

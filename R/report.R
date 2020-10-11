@@ -146,7 +146,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   bin_num = ifelse('bin_num' %in% names(kwargs), kwargs$bin_num, 10)
   bin_type = ifelse('bin_type' %in% names(kwargs), kwargs$bin_type, 'freq')
   gains_tbl = gains_table(score = rbindlist(score_lst), label = rbindlist(label_list), bin_num = bin_num, bin_type=bin_type)
-  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'good', 'cumulative good', 'bad', 'cumulative bad', 'count distribution', 'bad probability', 'approval rate', 'cumulative bad probability')
+  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'negative', 'cumulative negative', 'positive', 'cumulative positive', 'count distribution', 'positive probability', 'approval rate', 'cumulative positive probability')
 
 
   wb <- createWorkbook()
@@ -158,7 +158,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   sample_info <- lapply(dat_lst, function(x) {
     data.table(`sample size` = nrow(x),
                `feature size` = ncol(x)-1,
-               `bad rate` = sum(x[[y]])/nrow(x))
+               `positive rate` = sum(x[[y]])/nrow(x))
   })
   dt_dtinfo = rbindlist(sample_info, idcol = 'dataset')
   dt_xdea = describe(rbindlist(dat_lst))
@@ -193,7 +193,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   eva_tbl = rbindlist(m_perf$binomial_metric, idcol = 'dataset')
   writeData(wb, sheet, eva_tbl, startRow=1, startCol=1, colNames=T)
 
-  show_plot = c("ks","roc")
+  show_plot = c("ks","lift")
   if ('show_plot' %in% names(kwargs)) show_plot = kwargs$show_plot
   perf_eva(pred = pred_lst, label = label_list, confusion_matrix = FALSE, binomial_metric = NULL, show_plot = show_plot)$pic
   Sys.sleep(2)

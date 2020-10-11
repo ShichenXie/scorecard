@@ -1,6 +1,7 @@
 # scorecard 0.3.1.999
 
 * added a functon describe that provide statistic parameters for data exploratory data analysis.
+* replace good/bad with neg/pos.
 
 # scorecard 0.3.1
 

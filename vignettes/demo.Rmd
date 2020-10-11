@@ -43,7 +43,7 @@ dt_f <- var_filter(germancredit, y = "creditability")
 When building scorecard models, a subset of the observations should be held out from the data used to train the model (similar to most other traditional modeling approaches), and instead be apportioned to the *test* set. We can perform this sampling to create the *train* and *test* datasets using the `split_df` function.
 
 ```r
-dt_list <- split_df(dt_f, y = "creditability", ratio = c(0.6, 0.4), seed = 30)
+dt_list <- split_df(dt_f, y = "creditability", ratios = c(0.6, 0.4), seed = 30)
 label_list <- lapply(dt_list, function(x) x$creditability)
 ```
 

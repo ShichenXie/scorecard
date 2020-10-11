@@ -24,7 +24,7 @@ A data frame with columns for variable and info_value
 This function calculates information value (IV) for multiple x variables. It treats each unique value in x variables as a group. If there is a zero number of y class, it will be replaced by 0.99 to make sure woe/iv is calculable.
 }
 \details{
-IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionBad_{i} - DistributionGood_{i})*\ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionBad_{i}}{DistributionGood_{i}}).}
+IV is a very useful concept for variable selection while developing credit scorecards. The formula for information value is shown below: \deqn{IV = \sum(DistributionPositive_{i} - DistributionNegative_{i})*\ln(\frac{DistributionPositive_{i}}{DistributionNegative_{i}}).} The log component in information value is defined as weight of evidence (WOE), which is shown as \deqn{WeightofEvidence = \ln(\frac{DistributionPositive_{i}}{DistributionNegative_{i}}).}
 The relationship between information value and predictive power is as follows:
 \tabular{rr}{
 Information Value \tab Predictive Power \cr

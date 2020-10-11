@@ -144,8 +144,8 @@
     <p><code>perf_cv</code> provides cross validation on logistic regression and other binomial classification models.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>perf_cv</span>(<span class='kw'>dt</span>, <span class='kw'>y</span>, x = <span class='kw'>NULL</span>, no_folds = <span class='fl'>5</span>, seeds = <span class='kw'>NULL</span>,
-  binomial_metric = <span class='st'>"ks"</span>, positive = <span class='st'>"bad|1"</span>, breaks_list = <span class='kw'>NULL</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>perf_cv</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='cn'>NULL</span>, no_folds <span class='op'>=</span> <span class='fl'>5</span>, seeds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  binomial_metric <span class='op'>=</span> <span class='st'>"ks"</span>, positive <span class='op'>=</span> <span class='st'>"bad|1"</span>, breaks_list <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,22 +193,22 @@
     <p>A list of data frames of binomial metrics for each datasets.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"germancredit"</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span>
 
-<span class='kw'>dt</span> <span class='op'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span>(<span class='kw'>germancredit</span>, y = <span class='st'>'creditability'</span>)
-<span class='kw'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span>(<span class='kw'>dt</span>, y = <span class='st'>'creditability'</span>)
-<span class='kw'>dt_woe</span> <span class='op'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span>(<span class='kw'>dt</span>, <span class='kw'>bins</span>)
+<span class='va'>dt</span> <span class='op'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span><span class='op'>(</span><span class='va'>germancredit</span>, y <span class='op'>=</span> <span class='st'>'creditability'</span><span class='op'>)</span>
+<span class='va'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span><span class='op'>(</span><span class='va'>dt</span>, y <span class='op'>=</span> <span class='st'>'creditability'</span><span class='op'>)</span>
+<span class='va'>dt_woe</span> <span class='op'>=</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>bins</span><span class='op'>)</span>
 
-<span class='kw'>perf1</span> <span class='op'>=</span> <span class='fu'>perf_cv</span>(<span class='kw'>dt_woe</span>, y = <span class='st'>'creditability'</span>, no_folds = <span class='fl'>5</span>)
+<span class='va'>perf1</span> <span class='op'>=</span> <span class='fu'>perf_cv</span><span class='op'>(</span><span class='va'>dt_woe</span>, y <span class='op'>=</span> <span class='st'>'creditability'</span>, no_folds <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
 
-<span class='kw'>perf2</span> <span class='op'>=</span> <span class='fu'>perf_cv</span>(<span class='kw'>dt_woe</span>, y = <span class='st'>'creditability'</span>, no_folds = <span class='fl'>5</span>,
-   seeds = <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1000</span>, <span class='fl'>10</span>))
+<span class='va'>perf2</span> <span class='op'>=</span> <span class='fu'>perf_cv</span><span class='op'>(</span><span class='va'>dt_woe</span>, y <span class='op'>=</span> <span class='st'>'creditability'</span>, no_folds <span class='op'>=</span> <span class='fl'>5</span>,
+   seeds <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='kw'>perf3</span> <span class='op'>=</span> <span class='fu'>perf_cv</span>(<span class='kw'>dt_woe</span>, y = <span class='st'>'creditability'</span>, no_folds = <span class='fl'>5</span>,
-   binomial_metric = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'ks'</span>, <span class='st'>'auc'</span>))
+<span class='va'>perf3</span> <span class='op'>=</span> <span class='fu'>perf_cv</span><span class='op'>(</span><span class='va'>dt_woe</span>, y <span class='op'>=</span> <span class='st'>'creditability'</span>, no_folds <span class='op'>=</span> <span class='fl'>5</span>,
+   binomial_metric <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'ks'</span>, <span class='st'>'auc'</span><span class='op'>)</span><span class='op'>)</span>
 
-}
+<span class='op'>}</span>
 
 </div></pre>
   </div>

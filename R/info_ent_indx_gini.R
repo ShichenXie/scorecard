@@ -88,29 +88,29 @@ ie_xy = function(x=NULL, y) {
 
 # #' Information Entropy
 # #'
-# #' calculating ie of total based on good and bad vectors
+# #' calculating ie of total based on neg and pos vectors
 # #'
-# #' @param good vector of good numbers
-# #' @param bad vector of bad numbers
+# #' @param neg vector of neg numbers
+# #' @param pos vector of pos numbers
 # #'
 # #' @examples
-# #' # ie_01(good, bad)
+# #' # ie_01(neg, pos)
 # #' dtm = melt(dt, id = 'creditability')[, .(
-# #' good = sum(creditability=="good"), bad = sum(creditability=="bad")
+# #' neg = sum(creditability=="neg"), pos = sum(creditability=="pos")
 # #' ), keyby = c("variable", "value")]
 # #'
-# #' dtm[, .(ie = lapply(.SD, ie_01, bad)), by="variable", .SDcols# ="good"]
+# #' dtm[, .(ie = lapply(.SD, ie_01, pos)), by="variable", .SDcols# ="neg"]
 # #'
 # #' @import data.table
 #' @import data.table
 #'
-ie_01 = function(good, bad) {
+ie_01 = function(neg, pos) {
   # global variables
   . =bin_ie =count =count_distr =p0 =p1 =NULL
 
   data.table(
-    good = good, bad = bad
-  )[, .(p0=good/(good+bad), p1=bad/(good+bad), count=good+bad)
+    neg = neg, pos = pos
+  )[, .(p0=neg/(neg+pos), p1=pos/(neg+pos), count=neg+pos)
   ][, `:=`(
     bin_ie = -(p0*log2(p0) + p1*log2(p1)),
     count_distr = count/sum(count)
@@ -202,13 +202,13 @@ ig_xy = function(x, y) {
 
 
 #' @import data.table
-ig_01 = function(good, bad) {
+ig_01 = function(neg, pos) {
   # global variables
   . =bin_ig =count =count_distr =p0 =p1 =NULL
 
   data.table(
-    good = good, bad = bad
-  )[, .(p0=good/(good+bad), p1=bad/(good+bad), count=good+bad)
+    neg = neg, pos = pos
+  )[, .(p0=neg/(neg+pos), p1=pos/(neg+pos), count=neg+pos)
     ][, `:=`(
       bin_ig = 1-(p0^2 + p1^2),
       count_distr = count/sum(count)
