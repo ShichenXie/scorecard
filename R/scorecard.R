@@ -54,19 +54,10 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #'
 #' # glm ------
 #' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-#' # summary(m)
 #'
 #' # Select a formula-based model by AIC
 #' m_step = step(m, direction="both", trace=FALSE)
 #' m = eval(m_step$call)
-#' # summary(m)
-#'
-#' # predicted proability
-#' # dt_pred = predict(m, type='response', dt_woe)
-#'
-#' # performace
-#' # ks & roc plot
-#' # perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # scorecard
 #' # Example I # creat a scorecard
@@ -156,19 +147,10 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #'
 #' # glm ------
 #' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-#' # summary(m)
 #'
 #' # Select a formula-based model by AIC
 #' m_step = step(m, direction="both", trace=FALSE)
 #' m = eval(m_step$call)
-#' # summary(m)
-#'
-#' # predicted proability
-#' # dt_pred = predict(m, type='response', dt_woe)
-#'
-#' # performace
-#' # ks & roc plot
-#' # perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # scorecard
 #' # Example I # creat a scorecard
@@ -268,19 +250,10 @@ scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds
 #'
 #' # glm ------
 #' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-#' # summary(m)
 #'
 #' # Select a formula-based model by AIC
 #' m_step = step(m, direction="both", trace=FALSE)
 #' m = eval(m_step$call)
-#' # summary(m)
-#'
-#' # predicted proability
-#' # dt_pred = predict(m, type='response', dt_woe)
-#'
-#' # performace
-#' # ks & roc plot
-#' # perf_eva(dt_woe$creditability, dt_pred)
 #'
 #' # scorecard
 #' # Example I # creat a scorecard

@@ -88,7 +88,8 @@ rep_blank_na = function(dt) {
       warning(sprintf('The Infinite or NaN values are replaced with -999 in the following columns:\n%s', paste(cols_inf_nan, collapse = ", ")))
 
       dt[, (cols_inf_nan) := lapply(.SD, function(x) {
-        x[is.nan(x) | is.infinite(x)] = -999
+        x[is.nan(x)] = NA
+        x[is.infinite(x)] = -999
         return(x)
       }), .SD = cols_inf_nan]
     }
