@@ -620,7 +620,7 @@ binning_format = function(binning) {
     binning = rbind(binning[bin=="missing"], binning[bin != "missing"])
   }
 
-  return(binning)
+  return(binning[])
 }
 
 # woebin2

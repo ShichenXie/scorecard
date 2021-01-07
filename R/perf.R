@@ -984,7 +984,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
     bin_avg
   ), by = datset]
   if (!ret_bin_avg) dt_distr = dt_distr[, bin_avg := NULL]
-  return(dt_distr)
+  return(dt_distr[])
 }
 #' Gains Table
 #'
