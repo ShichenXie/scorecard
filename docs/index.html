@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -72,21 +72,21 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="http://shichen.name/slide/20171115scorecard/">
-    <span class="fa fa-file-powerpoint-o fa-lg"></span>
+    <span class="fas fa-file-powerpoint-o fa-lg"></span>
      
     slides
   </a>
 </li>
 <li>
   <a href="http://shichen.name/donate/">
-    <span class="fa fa-money fa-lg"></span>
+    <span class="fas fa-money fa-lg"></span>
      
     donate
   </a>
 </li>
 <li>
   <a href="https://github.com/ShichenXie/scorecard">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
     github
   </a>
@@ -122,21 +122,21 @@
 <ul>
 <li>Install the release version of <code>scorecard</code> from <a href="https://cran.r-project.org/package=scorecard">CRAN</a> with:</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"scorecard"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"scorecard"</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>Install the latest version of <code>scorecard</code> from <a href="https://github.com/ShichenXie/scorecard">github</a> with:</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"shichenxie/scorecard"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"shichenxie/scorecard"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>This is a basic example which shows you how to develop a common credit risk scorecard:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co"># Traditional Credit Scoring Using Logistic Regression</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Traditional Credit Scoring Using Logistic Regression</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ShichenXie/scorecard">scorecard</a></span><span class="op">)</span>
 
 <span class="co"># data preparing ------</span>
@@ -189,7 +189,7 @@
 <span class="co">## credit score</span>
 <span class="va">score_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="reference/scorecard_ply.html">scorecard_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">card</span><span class="op">)</span><span class="op">)</span>
 <span class="co">## psi</span>
-<span class="fu"><a href="reference/perf_psi.html">perf_psi</a></span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="reference/perf_psi.html">perf_psi</a></span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
   </div>

@@ -1,6 +1,6 @@
-# scorecard 0.3.1.999
+# scorecard 0.3.2
 
-* added a functon `describe` that provide statistic parameters for data exploratory data analysis.
+* added a functon `describe` that calculatess statistic parameters for exploratory data analysis.
 * replace good/bad with neg/pos.
 * replace NaN with NA if it exists in the input data.
 * addd [] after the returned DataTable in gains_table and woebin function in order to directly display the datatable when printing.
