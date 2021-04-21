@@ -1,3 +1,7 @@
+# scorecard 0.3.2.999
+
+* the perf_psi function modified the results from psi to csi for variables.
+
 # scorecard 0.3.2
 
 * added a functon `describe` that calculatess statistic parameters for exploratory data analysis.

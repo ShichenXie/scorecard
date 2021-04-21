@@ -8,9 +8,9 @@ perf_psi(score, label = NULL, title = NULL, show_plot = TRUE,
   positive = "bad|1", threshold_variable = 20, var_skip = NULL, ...)
 }
 \arguments{
-\item{score}{A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).}
+\item{score}{A list of credit score for actual and expected data samples. For example, score = list(expect = scoreE, actual = scoreA).}
 
-\item{label}{A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Defaults to NULL.}
+\item{label}{A list of label value for actual and expected data samples. For example, label = list(expect = labelE, actual = labelA). Defaults to NULL.}
 
 \item{title}{Title of plot, Defaults to NULL.}
 
@@ -28,10 +28,12 @@ perf_psi(score, label = NULL, title = NULL, show_plot = TRUE,
 A data frame of psi and graphics of credit score distribution
 }
 \description{
-\code{perf_psi} calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and positive rate trends.
+\code{perf_psi} calculates population stability index (PSI) for total credit score and Characteristic Stability Index (CSI) for variables. It can also creates graphics to display score distribution and positive rate trends.
 }
 \details{
 The population stability index (PSI) formula is displayed below: \deqn{PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).} The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.
+
+Characteristic Stability Index (CSI) formula is displayed below: \deqn{CSI = \sum((Actual\% - Expected\%)*score).}
 }
 \examples{
 \donttest{
