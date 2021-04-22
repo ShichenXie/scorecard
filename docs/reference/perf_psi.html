@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="PSI — perf_psi" />
-<meta property="og:description" content="perf_psi calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and positive rate trends." />
+<meta property="og:description" content="perf_psi calculates population stability index (PSI) for total credit score and Characteristic Stability Index (CSI) for variables. It can also creates graphics to display score distribution and positive rate trends." />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2.999</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@
     </div>
 
     <div class="ref-description">
-    <p><code>perf_psi</code> calculates population stability index (PSI) for both total credit score and variables. It can also creates graphics to display score distribution and positive rate trends.</p>
+    <p><code>perf_psi</code> calculates population stability index (PSI) for total credit score and Characteristic Stability Index (CSI) for variables. It can also creates graphics to display score distribution and positive rate trends.</p>
     </div>
 
     <pre class="usage"><span class='fu'>perf_psi</span><span class='op'>(</span><span class='va'>score</span>, label <span class='op'>=</span> <span class='cn'>NULL</span>, title <span class='op'>=</span> <span class='cn'>NULL</span>, show_plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -152,11 +152,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>score</th>
-      <td><p>A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).</p></td>
+      <td><p>A list of credit score for actual and expected data samples. For example, score = list(expect = scoreE, actual = scoreA).</p></td>
     </tr>
     <tr>
       <th>label</th>
-      <td><p>A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE). Defaults to NULL.</p></td>
+      <td><p>A list of label value for actual and expected data samples. For example, label = list(expect = labelE, actual = labelA). Defaults to NULL.</p></td>
     </tr>
     <tr>
       <th>title</th>
@@ -190,6 +190,7 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The population stability index (PSI) formula is displayed below: $$PSI = \sum((Actual\% - Expected\%)*(\ln(\frac{Actual\%}{Expected\%}))).$$ The rule of thumb for the PSI is as follows: Less than 0.1 inference insignificant change, no action required; 0.1 - 0.25 inference some minor change, check other scorecard monitoring metrics; Greater than 0.25 inference major shift in population, need to delve deeper.</p>
+<p>Characteristic Stability Index (CSI) formula is displayed below: $$CSI = \sum((Actual\% - Expected\%)*score).$$</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='perf_eva.html'>perf_eva</a></code> <code><a href='gains_table.html'>gains_table</a></code></p></div>
