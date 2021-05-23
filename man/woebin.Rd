@@ -125,10 +125,10 @@ bins2 = woebin(germancredit, y="creditability",
 
 # Example VI
 # setting bin closed on the right
-options(bin_cut_right = TRUE)
+options(bin_close_right = TRUE)
 binsRight = woebin(germancredit, y = 'creditability', x = 'age.in.years')
 # setting bin close on the left, the default setting
-options(bin_cut_right = FALSE)
+options(bin_close_right = FALSE)
 }
 
 }

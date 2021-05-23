@@ -1,7 +1,7 @@
 # scorecard 0.3.2.999
 
 * the perf_psi function modified the results from psi to csi for variables.
-* add options to set the bins' closed side, such as options(bin_cut_right = TRUE) will set the bins closed on the right
+* add options to set the bins' closed side, such as options(bin_close_right = TRUE) will set the bins closed on the right
 
 # scorecard 0.3.2
 
