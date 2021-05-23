@@ -349,3 +349,34 @@ brk_txt2vector = function(brk) {
 
   return(v)
 }
+
+getoption_cutright = function() {
+  cut_right = getOption('bin_cut_right')
+  if (is.null(cut_right)) cut_right = FALSE
+  return(cut_right)
+}
+binpatttern_isbin = function() {
+  pstr = '\\['
+  if (getoption_cutright()) pstr = '\\('
+  return(pstr)
+}
+binpattern_left_brkp = function() {
+  pstr = "^\\[(.*),.+"
+  if (getoption_cutright()) pstr = "^\\((.*),.+"
+  return(pstr)
+}
+binpattern_leftright_brkp = function() {
+  pstr = "^\\[(.*), *(.*)\\)"
+  if (getoption_cutright()) pstr = "^\\((.*), *(.*)\\]"
+  return(pstr)
+}
+binpattern_leftrightbrkp_missing = function() {
+  pstr = "^\\[(.*), *(.*)\\)((%,%missing)*)"
+  if (getoption_cutright()) pstr = "^\\((.*), *(.*)\\]((%,%missing)*)"
+  return(pstr)
+}
+binpattern_multibin = function() {
+  pstr = "^(\\[.+?,).+,(.+?\\))$"
+  if (getoption_cutright()) pstr = "^(\\(.+?,).+,(.+?\\])$"
+  return(pstr)
+}

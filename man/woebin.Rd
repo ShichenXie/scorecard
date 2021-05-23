@@ -123,6 +123,12 @@ bins_cus_brk = woebin(dat, y="creditability",
 bins2 = woebin(germancredit, y="creditability",
    x=c("credit.amount","housing"), save_breaks_list='breaks_list')
 
+# Example VI
+# setting bin closed on the right
+options(bin_cut_right = TRUE)
+binsRight = woebin(germancredit, y = 'creditability', x = 'age.in.years')
+# setting bin close on the left, the default setting
+options(bin_cut_right = FALSE)
 }
 
 }

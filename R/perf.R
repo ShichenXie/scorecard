@@ -794,7 +794,7 @@ pf_cutoffs = function(dt_ev_lst, pred_desc = FALSE) {
 #' psi1$pic  # pic of score distribution
 #'
 #' # Example II # both total and variable psi
-#' psi2 = perf_psi(score = score_list, label = label_list)
+#' psi2 = perf_psi(score = score_list2, label = label_list)
 #' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
@@ -901,12 +901,10 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
 
 # psi ------
 # PSI function
-psi_metric = function(dt_sn, names_datset, is_totalscore=TRUE) {
-  A=E=logAE=bin_psi=NULL
+psicsi_metric = function(dt_sn, names_datset, is_totalscore=TRUE) {
+  A=E=logAE=bin_psi=bin= AE = bin_PSI = NULL
   # psi = sum((Actual% - Expected%)*ln(Actual%/Expected%))
-
   # dat = copy(dat)[,y:=NULL][complete.cases(dat),]
-  AE = bin_PSI = NULL
 
   # data frame of bin, actual, expected
   dt_bae = dcast(
@@ -944,8 +942,8 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
        ][, `:=`(distr = N/sum(N), posprob = pos/N), by = 'datset'
        ][, `:=`(posprob2 = posprob*max(distr)), by = "datset"
        ][, `:=`(
-         bin1 = as.numeric(sub("\\[(.+),(.+)\\)", "\\1", bin)),
-         bin2 = as.numeric(sub("\\[(.+),(.+)\\)", "\\2", bin))
+         bin1 = as.numeric(sub(binpattern_leftright_brkp(), "\\1", bin)),
+         bin2 = as.numeric(sub(binpattern_leftright_brkp(), "\\2", bin))
       )][, midbin := (bin1+bin2)/2 ][]
 
   # plot
@@ -1067,7 +1065,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 #' psi1$pic  # pic of score distribution
 #'
 #' # Example II # both total and variable psi
-#' psi2 = perf_psi(score = score_list, label = label_list)
+#' psi2 = perf_psi(score = score_list2, label = label_list)
 #' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
@@ -1277,7 +1275,7 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
 #' #          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 #'
 #' # Example II # both total and variable psi
-#' psi2 = perf_psi(score = score_list, label = label_list)
+#' psi2 = perf_psi(score = score_list2, label = label_list)
 #' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
@@ -1345,7 +1343,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
     for (i in names_datset[-1]) {
       # population stability index
       names_dts = c(names_datset[1], i)
-      psi_sn = psi_metric(dt_psi[datset %in% names_dts], names_dts, is_totalscore = sn_is_totalscore)
+      psi_sn = psicsi_metric(dt_psi[datset %in% names_dts], names_dts, is_totalscore = sn_is_totalscore)
       dt_psi_sn = data.table(psi = psi_sn)
       if (!sn_is_totalscore) dt_psi_sn = data.table(csi = psi_sn)
       temp_psi[[paste0(names_dts, collapse = '_')]] = dt_psi_sn

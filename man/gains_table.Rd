@@ -87,7 +87,7 @@ psi1$psi  # psi data frame
 psi1$pic  # pic of score distribution
 
 # Example II # both total and variable psi
-psi2 = perf_psi(score = score_list, label = label_list)
+psi2 = perf_psi(score = score_list2, label = label_list)
 # psi2$psi  # psi data frame
 # psi2$pic  # pic of score distribution
 

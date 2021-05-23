@@ -9,5 +9,5 @@
 - [Credit Scoring](https://www.worldprogramming.com/blog/credit_scoring_development_pt1)
 - [Case Study for a Credit Scorecard Analysis](https://cn.mathworks.com/help/finance/case-study-for-a-credit-scorecard-analysis.html?requestedDomain=www.mathworks.com&requestedDomain=true#zmw57dd0e33220)
 
-                                               - [Examining Distributional Shifts by Using Population Stability Index (PSI) for Model Validation and Diagnosis](https://www.lexjansen.com/wuss/2017/47_Final_Paper_PDF.pdf)
-                                               - [Adjusting the Oversampling/Undersampling in Logistic Regression](http://support.sas.com/kb/22/601.html)
+- [Examining Distributional Shifts by Using Population Stability Index (PSI) for Model Validation and Diagnosis](https://www.lexjansen.com/wuss/2017/47_Final_Paper_PDF.pdf)
+- [Adjusting the Oversampling/Undersampling in Logistic Regression](http://support.sas.com/kb/22/601.html)

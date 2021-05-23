@@ -95,7 +95,7 @@ psi1$pic  # pic of score distribution
 #          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))
 
 # Example II # both total and variable psi
-psi2 = perf_psi(score = score_list, label = label_list)
+psi2 = perf_psi(score = score_list2, label = label_list)
 # psi2$psi  # psi data frame
 # psi2$pic  # pic of score distribution
 
