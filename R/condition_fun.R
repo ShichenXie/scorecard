@@ -380,3 +380,10 @@ binpattern_multibin = function() {
   if (getoption_cutright()) pstr = "^(\\(.+?,).+,(.+?\\])$"
   return(pstr)
 }
+
+get_brkp_bin = function(bin) {
+  x = '\\1'
+  if (getoption_cutright()) x = '\\2'
+  as.numeric(sub(binpattern_leftright_brkp(), x, bin))
+}
+
