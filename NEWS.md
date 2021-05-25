@@ -1,11 +1,11 @@
 # scorecard 0.3.2.999
 
 * the perf_psi function modified the results from psi to csi for variables.
-* add options to set the bins' closed side, such as options(bin_close_right = TRUE) will set the bins closed on the right
+* add the global argument `options(scorecard.bin_close_right  = TRUE)` to set the bins closed on the right.
 
 # scorecard 0.3.2
 
-* added a functon `describe` that calculatess statistic parameters for exploratory data analysis.
+* added a function `describe` that calculatess statistic parameters for exploratory data analysis.
 * replace good/bad with neg/pos.
 * replace NaN with NA if it exists in the input data.
 * addd [] after the returned DataTable in gains_table and woebin function in order to directly display the datatable when printing.

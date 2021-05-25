@@ -351,7 +351,7 @@ brk_txt2vector = function(brk) {
 }
 
 getoption_cutright = function() {
-  cut_right = getOption('bin_close_right')
+  cut_right = getOption('scorecard.bin_close_right ')
   if (is.null(cut_right)) cut_right = FALSE
   return(cut_right)
 }
