@@ -163,8 +163,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 
   # binning
   if (is.numeric(dtm[,value])) {
-    bstbrks = setdiff(unique(bk_df$value), c(NA, Inf, -Inf))
-    bstbrks = brk_numx_init(bstbrks, dtm$value)
+    bstbrks = brk_numx_init(unique(bk_df$value), dtm$value)
 
     binning = dtm[
       , bin := cut(value, bstbrks, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)

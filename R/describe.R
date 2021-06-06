@@ -17,6 +17,7 @@
 #' @export
 #'
 describe = function(dt) {
+  `NA's` = NULL
   dt = setDT(copy(dt))
 
   sum_dt =
