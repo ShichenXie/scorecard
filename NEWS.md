@@ -2,6 +2,7 @@
 
 * the perf_psi function modified the results from psi to csi for variables.
 * add the global argument `options(scorecard.bin_close_right  = TRUE)` to set the bins closed on the right.
+* fixed a bug in describe function.
 
 # scorecard 0.3.2
 

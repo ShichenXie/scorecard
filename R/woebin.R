@@ -64,8 +64,8 @@ check_empty_bins = function(dtm, binning) {
     bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
     binning = dtm[
       , bin := cut(value, bstbrks, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
-    ][, .(neg = sum(y==0), pos = sum(y==1), variable=unique(variable)) , by = .(bin)
-    ][order(bin)]
+    ][, .(count=.N, neg = sum(y==0), pos = sum(y==1), variable=unique(variable)) , keyby = .(bin)
+    ]
 
     # warning( paste0("The break points are modified into \'", paste0(breaks_list$right, collapse = ", "), "\'. There are empty bins based on the provided break points." ) )
   }
@@ -163,7 +163,8 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
 
   # binning
   if (is.numeric(dtm[,value])) {
-    bstbrks = c(-Inf, setdiff(unique(bk_df$value), c(NA, Inf, -Inf)), Inf)
+    bstbrks = setdiff(unique(bk_df$value), c(NA, Inf, -Inf))
+    bstbrks = brk_numx_init(bstbrks, dtm$value)
 
     binning = dtm[
       , bin := cut(value, bstbrks, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
@@ -239,7 +240,6 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
     xrng = quantile(xvalue, probs = c(prob_down, prob_up), na.rm = TRUE)
     xvalue_rm_outlier = xvalue[which(xvalue >= xrng[1]-3*iqr & xvalue <= xrng[2]+3*iqr)]
 
-
     # number of initial binning
     n = trunc(1/init_count_distr)
     len_uniq_x = length(setdiff(unique(xvalue_rm_outlier), c(NA,Inf,-Inf)))
@@ -251,8 +251,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
     } else {
       brk = suppressWarnings(pretty(xvalue_rm_outlier, n))
     }
-    brk = sort(brk[(brk < max(xvalue, na.rm =TRUE)) & (brk > min(xvalue, na.rm =TRUE))])
-    brk = unique(c(-Inf, brk, Inf))
+    brk = brk_numx_init(brk, xvalue)
     if (anyNA(xvalue)) brk = c(brk, NA)
 
     # initial binning datatable
@@ -567,24 +566,29 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
 
 
   # breaks
-  if (bin_num_limit >= dtm[, length(unique(value))] ) {
+  unique_xvalue = dtm[, unique(value)]
+  if (bin_num_limit >= length(unique_xvalue) ) {
     # in each value
-    brkp = dtm[order(value)][, unique(value)]
-    brkp = c(-Inf, brkp[-1], Inf)
+    brkp = unique_xvalue
+
   } else {
     if (method == 'freq') {
       brkp = copy(dtm)[order(value)
-                      ][, group := ceiling(.I/(.N/bin_num_limit))
-                      ][, .(value=value[1]), by = group
-                      ][, c(-Inf, value[-1], Inf)]
+                      ][, group := ceiling(.I/(.N/bin_num_limit))]
+      if (getoption_cutright()) {
+        brkp = brkp[, .(value=value[.N]), by = group]
+      } else {
+        brkp = brkp[, .(value=value[1]), by = group]
+      }
 
     } else if (method == 'width') {
-      minmax = dtm[, .(maxv = max(value), minv = min(value))]
-      brkp = seq(minmax[,minv], minmax[,maxv], length.out = bin_num_limit+1)
-      brkp = c(-Inf, brkp[-c(1, length(brkp))], Inf)
+      brkp = seq(min(unique_xvalue, na.rm = TRUE), max(unique_xvalue, na.rm = TRUE), length.out = bin_num_limit+1)
+      brkp = brkp[-c(1, length(brkp))]
 
     }
   }
+  brkp = brk_numx_init(brkp, unique_xvalue)
+
   binning_equal = dtm[, bin := cut(value, unique(brkp), right = getoption_cutright(), dig.lab = 10, ordered_result = F)
               ][, .(neg = sum(y==0), pos = sum(y==1), count = .N), keyby = .(variable, bin)
               ][, `:=`(brkp = get_brkp_bin(bin), posprob = pos/(neg+pos))

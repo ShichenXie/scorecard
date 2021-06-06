@@ -38,8 +38,8 @@ describe = function(dt) {
   dtnum = dt[, xnum, with = FALSE]
   sum_dtnum = as.data.table(do.call(rbind, lapply(dtnum, summary)))[, `:=`(
     variable = xnum,
-    sd = dtnum[,sapply(.SD, sd)]
-  )]
+    sd = dtnum[,sapply(.SD, function(x) sd(x, na.rm = TRUE))]
+  )][, `NA's` := NULL]
   setnames(sum_dtnum, c('min', 'p25', 'p50', 'mean', 'p75', 'max', 'variable', 'sd'))
   sum_dtnum = sum_dtnum[,c('variable', 'mean', 'sd', 'min', 'p25', 'p50', 'p75', 'max'), with = FALSE]
 

@@ -349,6 +349,18 @@ brk_txt2vector = function(brk) {
 
   return(v)
 }
+brk_numx_init = function(brk, xvalue) {
+  xval = unique(xvalue)
+
+  if (getoption_cutright()) {
+    brk=sort(brk[(brk< max(xval, na.rm=TRUE)) & (brk>=min(xval, na.rm=TRUE))])
+  } else {
+    brk=sort(brk[(brk<=max(xval, na.rm=TRUE)) & (brk> min(xval, na.rm=TRUE))])
+  }
+
+  brk = unique(c(-Inf, brk, Inf))
+  return(brk)
+}
 
 getoption_cutright = function() {
   cut_right = getOption('scorecard.bin_close_right')
