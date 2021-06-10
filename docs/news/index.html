@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
       </span>
     </div>
 
@@ -138,13 +138,14 @@
       <small>Source: <a href='https://github.com/ShichenXie/scorecard/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="scorecard-032999" class="section level1">
-<h1 class="page-header" data-toc-text="0.3.2.999">
-<a href="#scorecard-032999" class="anchor"></a>scorecard 0.3.2.999<small> Unreleased </small>
+    <div id="scorecard-033" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.3">
+<a href="#scorecard-033" class="anchor"></a>scorecard 0.3.3<small> Unreleased </small>
 </h1>
 <ul>
 <li>the perf_psi function modified the results from psi to csi for variables.</li>
-<li>add options to set the bins’ closed side, such as options(bin_cut_right = TRUE) will set the bins closed on the right</li>
+<li>add the global argument <code><a href="https://rdrr.io/r/base/options.html">options(scorecard.bin_close_right  = TRUE)</a></code> to set the bins closed on the right.</li>
+<li>fixed a bug in describe function.</li>
 </ul>
 </div>
     <div id="scorecard-032" class="section level1">
@@ -152,7 +153,7 @@
 <a href="#scorecard-032" class="anchor"></a>scorecard 0.3.2<small> 2021-03-14 </small>
 </h1>
 <ul>
-<li>added a functon <code>describe</code> that calculatess statistic parameters for exploratory data analysis.</li>
+<li>added a function <code>describe</code> that calculatess statistic parameters for exploratory data analysis.</li>
 <li>replace good/bad with neg/pos.</li>
 <li>replace NaN with NA if it exists in the input data.</li>
 <li>addd [] after the returned DataTable in gains_table and woebin function in order to directly display the datatable when printing.</li>

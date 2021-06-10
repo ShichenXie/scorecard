@@ -1,4 +1,4 @@
-# scorecard 0.3.2.999
+# scorecard 0.3.3
 
 * the perf_psi function modified the results from psi to csi for variables.
 * add the global argument `options(scorecard.bin_close_right  = TRUE)` to set the bins closed on the right.
