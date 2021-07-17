@@ -13,9 +13,15 @@ describe(dt)
 This function provides descriptive statistic for exploratory data analysis.
 }
 \examples{
-data("germancredit")
+library(data.table)
 
-eda = describe(germancredit)
+data("germancredit")
+dat = rbind(
+  setDT(germancredit),
+  data.table(creditability=sample(c("good","bad"),100,replace=TRUE)),
+  fill=TRUE)
+
+eda = describe(dat)
 eda
 
 }

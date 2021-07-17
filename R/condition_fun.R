@@ -350,6 +350,7 @@ brk_txt2vector = function(brk) {
   return(v)
 }
 brk_numx_init = function(brk, xvalue) {
+  brk = as.numeric(brk)
   brk = setdiff(unique(brk), c(NA, Inf, -Inf))
   xval = unique(xvalue)
 

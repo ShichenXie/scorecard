@@ -189,11 +189,12 @@ plot_density = function(dt_lst, title=NULL, positive, ...) {
   pdens = ggplot(data = dt_df) +
     # geom_histogram(aes(x=pred)) +
     # geom_density(aes(x=pred), linetype='dotted') +
-    geom_density(aes(x=pred, color=datset, linetype=label), fill='gray', alpha=0.1) +
+    geom_density(aes(x=pred, #y=..scaled..,
+                     color=datset, linetype=label), fill='gray', alpha=0.1) +
     geom_text(data = coord_label, aes(x=pred, y=dens, label=label_str)) +
     # geom_vline(xintercept = threshold, linetype='dotted') +
     # geom_text(aes(label='cut-off', x=threshold, y = 0), vjust=0) +
-    guides(linetype=FALSE, color=guide_legend(title=NULL)) +
+    guides(linetype="none", color=guide_legend(title=NULL)) +
     theme_bw() +
     theme(legend.position=c(1,1),
           legend.justification=c(1,1),
