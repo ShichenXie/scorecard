@@ -42,7 +42,8 @@ describe = function(dt) {
   sum_dtnum = as.data.table(do.call(rbind, lapply(dtnum, summary)))[, `:=`(
     variable = xnum,
     sd = dtnum[,sapply(.SD, function(x) sd(x, na.rm = TRUE))]
-  )][, `NA's` := NULL]
+  )]
+  if (anyNA(dtnum)) sum_dtnum = sum_dtnum[, `NA's` := NULL]
   setnames(sum_dtnum, c('min', 'p25', 'p50', 'mean', 'p75', 'max', 'variable', 'sd'))
   sum_dtnum = sum_dtnum[,c('variable', 'min', 'p25', 'p50', 'p75', 'max', 'mean', 'sd'), with = FALSE][, cov := sd/mean]
 
