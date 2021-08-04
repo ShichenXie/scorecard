@@ -119,10 +119,10 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # binning
   bins_lst = lapply(dat_lst, function(dat) {
-    suppressWarnings(woebin(dat, y = y, x = x, breaks_list = breaks_list, special_values = special_values, print_info=FALSE, no_cores = kwargs[['no_cores']]))
+    suppressWarnings(woebin(dat, y = y, x = x, breaks_list = breaks_list, special_values = special_values, print_info=FALSE, ...))
   })
   dat_woe_lst = lapply(dat_lst, function(dat) {
-    woebin_ply(dat, bins_lst[[1]], print_info=FALSE, no_cores = kwargs[['no_cores']])
+    woebin_ply(dat, bins_lst[[1]], print_info=FALSE, ...)
   })
 
   # fitting
@@ -226,7 +226,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   # plots
   for (i in seq_along(names_dat)) {
     di = names_dat[i]
-    plist = woebin_plot(bins_lst[[di]], title = di)
+    plist = woebin_plot(bins_lst[[di]], title = di, ...)
 
     for (j in seq_along(x)) {
       if (!is.null(x_name)) writeData(wb,sheet, x_name[variable == x[j], name], startRow = (j-1)*15+3, startCol = 7*(i-1)+1, rowNames = FALSE)

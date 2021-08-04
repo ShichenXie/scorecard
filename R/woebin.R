@@ -63,7 +63,7 @@ check_empty_bins = function(dtm, binning) {
   if (!setequal(breaks_list$left, breaks_list$right)) {
     bstbrks = unique(c(-Inf, unique(breaks_list$right), Inf))
     binning = dtm[
-      , bin := cut(value, bstbrks, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
+      , bin := cut(value, bstbrks, right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE)
     ][, .(count=.N, neg = sum(y==0), pos = sum(y==1), variable=unique(variable)) , keyby = .(bin)
     ]
 
@@ -166,7 +166,7 @@ woebin2_breaks = function(dtm, breaks, spl_val) {
     bstbrks = brk_numx_init(unique(bk_df$value), dtm$value)
 
     binning = dtm[
-      , bin := cut(value, bstbrks, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
+      , bin := cut(value, bstbrks, right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE)
     ][, .(count = .N, neg = sum(y==0), pos = sum(y==1), variable=unique(variable)) , by = .(bin)
     ][order(bin)]
     # check empty bins
@@ -255,7 +255,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val) {
 
     # initial binning datatable
     init_bin = dtm[
-      , bin := cut(value, brk, right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
+      , bin := cut(value, brk, right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE)
     ][, .(neg = sum(y==0), pos = sum(y==1), variable=unique(variable)) , by = bin
     ][order(bin)]
     # check empty bins
@@ -318,7 +318,7 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
 
       # best break datatable
       init_bin_all_breaks = init_bin_all_breaks[
-        , paste0("bstbin",i) := cut(brkp, c(-Inf, bestbreaks_i, Inf), right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE) ]
+        , paste0("bstbin",i) := cut(brkp, c(-Inf, bestbreaks_i, Inf), right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE) ]
     }
 
     # best break dt
@@ -339,7 +339,7 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
 
     if ( is.numeric(dtm[,value]) ) {
       binning_1bst_brk = initial_binning[
-        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
+        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE)
         ][, .(variable=unique(variable), bin=unique(bstbin), neg = sum(neg), pos = sum(pos)) , by = bstbin
           ]
 
@@ -348,7 +348,7 @@ woebin2_tree_add_1brkp = function(dtm, initial_binning, count_distr_limit, bestb
       bestbreaks = setdiff(bestbreaks, min(initial_binning[,brkp]))
 
       binning_1bst_brk = initial_binning[
-        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE)
+        , bstbin := cut(brkp, c(-Inf, bestbreaks, Inf), right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE)
         ][, .(variable=unique(variable), bin = paste0(bin, collapse = "%,%"), neg = sum(neg), pos = sum(pos)), by = bstbin ]
     }
 
@@ -574,7 +574,7 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
     if (method == 'freq') {
       brkp = copy(dtm)[order(value)
                       ][, group := ceiling(.I/(.N/bin_num_limit))]
-      if (getoption_cutright()) {
+      if (getarg('bin_close_right')) {
         brkp = brkp[, .(value=value[.N]), by = group]
       } else {
         brkp = brkp[, .(value=value[1]), by = group]
@@ -588,7 +588,7 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
   }
   brkp = brk_numx_init(brkp, unique_xvalue)
 
-  binning_equal = dtm[, bin := cut(value, unique(brkp), right = getoption_cutright(), dig.lab = 10, ordered_result = F)
+  binning_equal = dtm[, bin := cut(value, unique(brkp), right = getarg('bin_close_right'), dig.lab = 10, ordered_result = F)
               ][, .(neg = sum(y==0), pos = sum(y==1), count = .N), keyby = .(variable, bin)
               ][, `:=`(brkp = get_brkp_bin(bin), posprob = pos/(neg+pos))
               ][, .(variable, bin, brkp, count, neg, pos, posprob)]
@@ -1029,7 +1029,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
     dtx[[x_i]] = ifelse(
       dtx[[x_i]] %in% binx_sv$V1,
       dtx[[x_i]],
-      as.character(cut(dtx[[x_i]], unique(c(-Inf, binx_other[bin != "missing", get_brkp_bin(V1)], Inf)), right = getoption_cutright(), dig.lab = 10, ordered_result = FALSE))
+      as.character(cut(dtx[[x_i]], unique(c(-Inf, binx_other[bin != "missing", get_brkp_bin(V1)], Inf)), right = getarg('bin_close_right'), dig.lab = 10, ordered_result = FALSE))
     )
 
   }
@@ -1369,7 +1369,7 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'p
 
 
 # print basic information in woebin_adj
-woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist) {
+woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist, ...) {
   x_i = xs_adj[i]
   xs_len = length(xs_adj)
   variable = x_breaks = NULL
@@ -1400,12 +1400,12 @@ woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist) 
   brklst = list()
   brklst[x_i] = list(brk_txt2vector(breaks_bin))
 
-  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE))
+  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE), ...)
   print(plist[[1]])
 
 }
 # plot adjusted binning in woebin_adj
-woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
+woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, ...) {
   bin_adj = brk_lst = spc_val = NULL
 
   brk_lst[x_i] = list(brk_txt2vector(breaks))
@@ -1415,7 +1415,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method) {
   # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
 
   # eval(parse(text = text_woebin))
-  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method)
+  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method, ...)
 
 
   ## print adjust breaks
@@ -1544,7 +1544,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
     sv_i = special_values[[x_i]]
 
     # basic information of x_i variable ------
-    woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist)
+    woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist, ...)
 
     # adjusting breaks ------
     adj_brk = menu2(choices = c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
@@ -1560,7 +1560,7 @@ woebin_adj = function(dt, y, bins, adj_all_var=TRUE, special_values=NULL, method
           breaks = NULL
         }
 
-        breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stp_lmt, sv_i, method=method), silent = TRUE)
+        breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stp_lmt, sv_i, method=method, ...), silent = TRUE)
       } else { # adj_brk == 'save'
         save_name = ifelse(is.null(save_breaks_list), 'brk_lst', save_breaks_list)
         save_brk_lst(bin_brk2txt(bins_breakslist), save_name)

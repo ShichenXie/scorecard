@@ -1,3 +1,9 @@
+# scorecard 0.3.4
+
+* fixed multiple bugs in functions, such as woebin_adj and describe.
+* the functions of woebin_adj and report support the arguments that used in woebin and woebin_plot.
+
+
 # scorecard 0.3.3
 
 * the perf_psi function modified the results from psi to csi for variables.

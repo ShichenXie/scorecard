@@ -354,7 +354,7 @@ brk_numx_init = function(brk, xvalue) {
   brk = setdiff(unique(brk), c(NA, Inf, -Inf))
   xval = unique(xvalue)
 
-  if (getoption_cutright()) {
+  if (getarg('bin_close_right')) {
     brk=sort(brk[(brk< max(xval, na.rm=TRUE)) & (brk>=min(xval, na.rm=TRUE))])
   } else {
     brk=sort(brk[(brk<=max(xval, na.rm=TRUE)) & (brk> min(xval, na.rm=TRUE))])
@@ -364,40 +364,51 @@ brk_numx_init = function(brk, xvalue) {
   return(brk)
 }
 
-getoption_cutright = function() {
-  cut_right = getOption('scorecard.bin_close_right')
-  if (is.null(cut_right)) cut_right = FALSE
-  return(cut_right)
+# getoption_cutright = function() {
+#   cut_right = getOption('scorecard.bin_close_right')
+#   if (is.null(cut_right)) cut_right = FALSE
+#   return(cut_right)
+# }
+args_default = function() {list(
+  bin_close_right = FALSE
+)}
+getarg = function(arg, kwargs = NULL) {
+  arg_val = getOption(sprintf('scorecard.%s', arg))
+  if (is.null(arg_val)) arg_val = kwargs[[arg]]
+  if (is.null(arg_val)) arg_val = args_default()[[arg]]
+  return(arg_val)
 }
+
+
 binpatttern_isbin = function() {
   pstr = '\\['
-  if (getoption_cutright()) pstr = '\\('
+  if (getarg('bin_close_right')) pstr = '\\('
   return(pstr)
 }
 binpattern_left_brkp = function() {
   pstr = "^\\[(.*),.+"
-  if (getoption_cutright()) pstr = "^\\((.*),.+"
+  if (getarg('bin_close_right')) pstr = "^\\((.*),.+"
   return(pstr)
 }
 binpattern_leftright_brkp = function() {
   pstr = "^\\[(.*), *(.*)\\)"
-  if (getoption_cutright()) pstr = "^\\((.*), *(.*)\\]"
+  if (getarg('bin_close_right')) pstr = "^\\((.*), *(.*)\\]"
   return(pstr)
 }
 binpattern_leftrightbrkp_missing = function() {
   pstr = "^\\[(.*), *(.*)\\)((%,%missing)*)"
-  if (getoption_cutright()) pstr = "^\\((.*), *(.*)\\]((%,%missing)*)"
+  if (getarg('bin_close_right')) pstr = "^\\((.*), *(.*)\\]((%,%missing)*)"
   return(pstr)
 }
 binpattern_multibin = function() {
   pstr = "^(\\[.+?,).+,(.+?\\))$"
-  if (getoption_cutright()) pstr = "^(\\(.+?,).+,(.+?\\])$"
+  if (getarg('bin_close_right')) pstr = "^(\\(.+?,).+,(.+?\\])$"
   return(pstr)
 }
 
 get_brkp_bin = function(bin) {
   x = '\\1'
-  if (getoption_cutright()) x = '\\2'
+  if (getarg('bin_close_right')) x = '\\2'
   as.numeric(sub(binpattern_leftright_brkp(), x, bin))
 }
 

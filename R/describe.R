@@ -23,7 +23,7 @@
 #' @export
 #'
 describe = function(dt) {
-  `NA's` = NULL
+  `NA's` = cv = NULL
   dt = setDT(copy(dt))
 
   sum_dt =
@@ -45,10 +45,10 @@ describe = function(dt) {
   )]
   if (anyNA(dtnum)) sum_dtnum = sum_dtnum[, `NA's` := NULL]
   setnames(sum_dtnum, c('min', 'p25', 'p50', 'mean', 'p75', 'max', 'variable', 'sd'))
-  sum_dtnum = sum_dtnum[,c('variable', 'min', 'p25', 'p50', 'p75', 'max', 'mean', 'sd'), with = FALSE][, cov := sd/mean]
+  sum_dtnum = sum_dtnum[,c('variable', 'min', 'p25', 'p50', 'p75', 'max', 'mean', 'sd'), with = FALSE][, cv := sd/mean]
 
 
-  xround = c('identical_rate', 'missing_rate', 'mean', 'sd', 'cov')
+  xround = c('identical_rate', 'missing_rate', 'mean', 'sd', 'cv')
   vardesc = merge(
     sum_dt, sum_dtnum,
     by = 'variable', all = TRUE, sort = FALSE
