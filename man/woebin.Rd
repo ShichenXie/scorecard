@@ -6,10 +6,10 @@
 \usage{
 woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
   special_values = NULL, stop_limit = 0.1, count_distr_limit = 0.05,
-  bin_num_limit = 8, positive = "bad|1", no_cores = NULL,
-  print_step = 0L, method = "tree", save_breaks_list = NULL,
-  ignore_const_cols = TRUE, ignore_datetime_cols = TRUE,
-  check_cate_num = TRUE, replace_blank_inf = TRUE, ...)
+  bin_num_limit = 8, positive = "bad|1", no_cores = 2, print_step = 0L,
+  method = "tree", save_breaks_list = NULL, ignore_const_cols = TRUE,
+  ignore_datetime_cols = TRUE, check_cate_num = TRUE,
+  replace_blank_inf = TRUE, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -32,7 +32,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{positive}{Value of positive class, defaults to "bad|1".}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.}
 
 \item{print_step}{A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 

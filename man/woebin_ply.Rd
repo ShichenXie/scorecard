@@ -4,7 +4,7 @@
 \alias{woebin_ply}
 \title{WOE/BIN Transformation}
 \usage{
-woebin_ply(dt, bins, to = "woe", no_cores = NULL, print_step = 0L,
+woebin_ply(dt, bins, to = "woe", no_cores = 2, print_step = 0L,
   replace_blank_inf = TRUE, ...)
 }
 \arguments{
@@ -14,7 +14,7 @@ woebin_ply(dt, bins, to = "woe", no_cores = NULL, print_step = 0L,
 
 \item{to}{Converting original values to woe or bin. Defaults to woe.}
 
-\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.}
+\item{no_cores}{Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.}
 
 \item{print_step}{A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.}
 

@@ -1,3 +1,7 @@
+# scorecard 0.3.5
+
+* set the default number of cores to 2 in woebin and woebin_ply function.
+
 # scorecard 0.3.4
 
 * fixed multiple bugs in functions, such as woebin_adj and describe.

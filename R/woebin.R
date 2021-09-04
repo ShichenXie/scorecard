@@ -737,7 +737,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.
 #' @param bin_num_limit Integer. The maximum number of binning. Defaults to 8.
 #' @param positive Value of positive class, defaults to "bad|1".
-#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param method Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".
 #' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
@@ -834,7 +834,7 @@ bins_to_breaks = function(bins, dt, to_string=FALSE, save_name=NULL) {
 woebin = function(
   dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL,
   stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8,
-  positive="bad|1", no_cores=NULL, print_step=0L, method="tree", save_breaks_list=NULL,
+  positive="bad|1", no_cores=2, print_step=0L, method="tree", save_breaks_list=NULL,
   ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
@@ -920,11 +920,7 @@ woebin = function(
   # loop on xs
   # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   # https://privefl.github.io/blog/a-guide-to-parallelism-in-r/
-
-  if (is.null(no_cores) || !is.numeric(no_cores) || no_cores<1) {
-    all_cores = detectCores(logical=F)-1
-    no_cores = ceiling(ifelse(xs_len/5 < all_cores, xs_len/5, all_cores*0.9))
-  }
+  no_cores = check_no_cores(no_cores)
 
   bins = list()
   if (!is.null(y)) {
@@ -1055,7 +1051,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @param dt A data frame.
 #' @param bins Binning information generated from \code{woebin}.
 #' @param to Converting original values to woe or bin. Defaults to woe.
-#' @param no_cores Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.
+#' @param no_cores Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0 or no_cores>1, no message is print.
 #' @param replace_blank_inf Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
 #' @param ... Additional parameters.
@@ -1100,7 +1096,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points) {
 #' @import data.table
 #' @export
 #'
-woebin_ply = function(dt, bins, to='woe', no_cores=NULL, print_step=0L, replace_blank_inf=TRUE, ...) {
+woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_blank_inf=TRUE, ...) {
   # start time
   start_time = proc.time()
 
@@ -1145,10 +1141,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=NULL, print_step=0L, replace_
   # the databc_colomun_placeholder will be remove in the result, in case dt_init is an empty dataframe
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
-  if (is.null(no_cores) || !is.numeric(no_cores) || no_cores <1) {
-    all_cores = detectCores(logical=F)-1
-    no_cores = ceiling(ifelse(xs_len/5 < all_cores, xs_len/5, all_cores*0.9))
-  }
+  no_cores = check_no_cores(no_cores)
 
   if (no_cores == 1) {
     dat = dt_init
