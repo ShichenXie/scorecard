@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -146,10 +146,10 @@
 
     <pre class="usage"><span class='fu'>woebin</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='cn'>NULL</span>, var_skip <span class='op'>=</span> <span class='cn'>NULL</span>, breaks_list <span class='op'>=</span> <span class='cn'>NULL</span>,
   special_values <span class='op'>=</span> <span class='cn'>NULL</span>, stop_limit <span class='op'>=</span> <span class='fl'>0.1</span>, count_distr_limit <span class='op'>=</span> <span class='fl'>0.05</span>,
-  bin_num_limit <span class='op'>=</span> <span class='fl'>8</span>, positive <span class='op'>=</span> <span class='st'>"bad|1"</span>, no_cores <span class='op'>=</span> <span class='cn'>NULL</span>,
-  print_step <span class='op'>=</span> <span class='fl'>0L</span>, method <span class='op'>=</span> <span class='st'>"tree"</span>, save_breaks_list <span class='op'>=</span> <span class='cn'>NULL</span>,
-  ignore_const_cols <span class='op'>=</span> <span class='cn'>TRUE</span>, ignore_datetime_cols <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  check_cate_num <span class='op'>=</span> <span class='cn'>TRUE</span>, replace_blank_inf <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+  bin_num_limit <span class='op'>=</span> <span class='fl'>8</span>, positive <span class='op'>=</span> <span class='st'>"bad|1"</span>, no_cores <span class='op'>=</span> <span class='fl'>2</span>, print_step <span class='op'>=</span> <span class='fl'>0L</span>,
+  method <span class='op'>=</span> <span class='st'>"tree"</span>, save_breaks_list <span class='op'>=</span> <span class='cn'>NULL</span>, ignore_const_cols <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  ignore_datetime_cols <span class='op'>=</span> <span class='cn'>TRUE</span>, check_cate_num <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  replace_blank_inf <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -196,7 +196,7 @@
     </tr>
     <tr>
       <th>no_cores</th>
-      <td><p>Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.</p></td>
+      <td><p>Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.</p></td>
     </tr>
     <tr>
       <th>print_step</th>

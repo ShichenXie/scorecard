@@ -575,9 +575,9 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
       brkp = copy(dtm)[order(value)
                       ][, group := ceiling(.I/(.N/bin_num_limit))]
       if (getarg('bin_close_right')) {
-        brkp = brkp[, .(value=value[.N]), by = group]
+        brkp = brkp[, .(value = value[.N]), by = group][,value]
       } else {
-        brkp = brkp[, .(value=value[1]), by = group]
+        brkp = brkp[, .(value = value[ 1]), by = group][,value]
       }
 
     } else if (method == 'width') {

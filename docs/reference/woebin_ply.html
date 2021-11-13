@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
     <p><code>woebin_ply</code> converts original values of input data into woe or bin based on the binning information generated from <code>woebin</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>woebin_ply</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>bins</span>, to <span class='op'>=</span> <span class='st'>"woe"</span>, no_cores <span class='op'>=</span> <span class='cn'>NULL</span>, print_step <span class='op'>=</span> <span class='fl'>0L</span>,
+    <pre class="usage"><span class='fu'>woebin_ply</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>bins</span>, to <span class='op'>=</span> <span class='st'>"woe"</span>, no_cores <span class='op'>=</span> <span class='fl'>2</span>, print_step <span class='op'>=</span> <span class='fl'>0L</span>,
   replace_blank_inf <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -164,7 +164,7 @@
     </tr>
     <tr>
       <th>no_cores</th>
-      <td><p>Number of CPU cores for parallel computation. Defaults to 90 percent of total cpu cores.</p></td>
+      <td><p>Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.</p></td>
     </tr>
     <tr>
       <th>print_step</th>
