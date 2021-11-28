@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.6</span>
       </span>
     </div>
 
@@ -157,86 +157,87 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span>
-<span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span><span class='op'>(</span>
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>,
-  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span><span class='op'>(</span>creditability<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"good"</span>,<span class='st'>"bad"</span><span class='op'>)</span>,<span class='fl'>100</span>,replace<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>,
-  fill<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='va'>eda</span> <span class='op'>=</span> <span class='fu'>describe</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span>
-<span class='va'>eda</span>
-</div><div class='output co'>#&gt;                                                     variable     class count
-#&gt;  1:                      status.of.existing.checking.account    factor  1100
-#&gt;  2:                                        duration.in.month   numeric  1100
-#&gt;  3:                                           credit.history    factor  1100
-#&gt;  4:                                                  purpose character  1100
-#&gt;  5:                                            credit.amount   numeric  1100
-#&gt;  6:                                savings.account.and.bonds    factor  1100
-#&gt;  7:                                 present.employment.since    factor  1100
-#&gt;  8:      installment.rate.in.percentage.of.disposable.income   numeric  1100
-#&gt;  9:                                  personal.status.and.sex    factor  1100
-#&gt; 10:                              other.debtors.or.guarantors    factor  1100
-#&gt; 11:                                  present.residence.since   numeric  1100
-#&gt; 12:                                                 property    factor  1100
-#&gt; 13:                                             age.in.years   numeric  1100
-#&gt; 14:                                  other.installment.plans    factor  1100
-#&gt; 15:                                                  housing    factor  1100
-#&gt; 16:                  number.of.existing.credits.at.this.bank   numeric  1100
-#&gt; 17:                                                      job    factor  1100
-#&gt; 18: number.of.people.being.liable.to.provide.maintenance.for   numeric  1100
-#&gt; 19:                                                telephone    factor  1100
-#&gt; 20:                                           foreign.worker    factor  1100
-#&gt; 21:                                            creditability    factor  1100
-#&gt;                                                     variable     class count
-#&gt;     missing_rate unique_count identical_rate min    p25    p50     p75   max
-#&gt;  1:       0.0909            4         0.3940  NA     NA     NA      NA    NA
-#&gt;  2:       0.0909           33         0.1840   4   12.0   18.0   24.00    72
-#&gt;  3:       0.0909            5         0.5300  NA     NA     NA      NA    NA
-#&gt;  4:       0.0909           10         0.2800  NA     NA     NA      NA    NA
-#&gt;  5:       0.0909          921         0.0030 250 1365.5 2319.5 3972.25 18424
-#&gt;  6:       0.0909            5         0.6030  NA     NA     NA      NA    NA
-#&gt;  7:       0.0909            5         0.3390  NA     NA     NA      NA    NA
-#&gt;  8:       0.0909            4         0.4760   1    2.0    3.0    4.00     4
-#&gt;  9:       0.0909            4         0.5480  NA     NA     NA      NA    NA
-#&gt; 10:       0.0909            3         0.9070  NA     NA     NA      NA    NA
-#&gt; 11:       0.0909            4         0.4130   1    2.0    3.0    4.00     4
-#&gt; 12:       0.0909            4         0.3320  NA     NA     NA      NA    NA
-#&gt; 13:       0.0909           53         0.0510  19   27.0   33.0   42.00    75
-#&gt; 14:       0.0909            3         0.8140  NA     NA     NA      NA    NA
-#&gt; 15:       0.0909            3         0.7130  NA     NA     NA      NA    NA
-#&gt; 16:       0.0909            4         0.6330   1    1.0    1.0    2.00     4
-#&gt; 17:       0.0909            4         0.6300  NA     NA     NA      NA    NA
-#&gt; 18:       0.0909            2         0.8450   1    1.0    1.0    1.00     2
-#&gt; 19:       0.0909            2         0.5960  NA     NA     NA      NA    NA
-#&gt; 20:       0.0909            2         0.9630  NA     NA     NA      NA    NA
-#&gt; 21:       0.0000            2         0.6827  NA     NA     NA      NA    NA
-#&gt;     missing_rate unique_count identical_rate min    p25    p50     p75   max
-#&gt;         mean        sd     cv
-#&gt;  1:       NA        NA     NA
-#&gt;  2:   20.903   12.0588 0.5769
-#&gt;  3:       NA        NA     NA
-#&gt;  4:       NA        NA     NA
-#&gt;  5: 3271.258 2822.7369 0.8629
-#&gt;  6:       NA        NA     NA
-#&gt;  7:       NA        NA     NA
-#&gt;  8:    2.973    1.1187 0.3763
-#&gt;  9:       NA        NA     NA
-#&gt; 10:       NA        NA     NA
-#&gt; 11:    2.845    1.1037 0.3880
-#&gt; 12:       NA        NA     NA
-#&gt; 13:   35.546   11.3755 0.3200
-#&gt; 14:       NA        NA     NA
-#&gt; 15:       NA        NA     NA
-#&gt; 16:    1.407    0.5777 0.4106
-#&gt; 17:       NA        NA     NA
-#&gt; 18:    1.155    0.3621 0.3135
-#&gt; 19:       NA        NA     NA
-#&gt; 20:       NA        NA     NA
-#&gt; 21:       NA        NA     NA
-#&gt;         mean        sd     cv</div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbind</a></span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>,</span>
+<span class='r-in'>  <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span><span class='op'>(</span>creditability<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"good"</span>,<span class='st'>"bad"</span><span class='op'>)</span>,<span class='fl'>100</span>,replace<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>  fill<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>eda</span> <span class='op'>=</span> <span class='fu'>describe</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>eda</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                     variable     class count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:                      status.of.existing.checking.account    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:                                        duration.in.month   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:                                           credit.history    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:                                                  purpose character  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:                                            credit.amount   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:                                savings.account.and.bonds    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:                                 present.employment.since    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:      installment.rate.in.percentage.of.disposable.income   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:                                  personal.status.and.sex    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:                              other.debtors.or.guarantors    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:                                  present.residence.since   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:                                                 property    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:                                             age.in.years   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:                                  other.installment.plans    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:                                                  housing    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:                  number.of.existing.credits.at.this.bank   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:                                                      job    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18: number.of.people.being.liable.to.provide.maintenance.for   numeric  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:                                                telephone    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:                                           foreign.worker    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:                                            creditability    factor  1100</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                     variable     class count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     missing_rate unique_count identical_rate min    p25    p50     p75   max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:       0.0909            4         0.3940  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:       0.0909           33         0.1840   4   12.0   18.0   24.00    72</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:       0.0909            5         0.5300  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:       0.0909           10         0.2800  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:       0.0909          921         0.0030 250 1365.5 2319.5 3972.25 18424</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:       0.0909            5         0.6030  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:       0.0909            5         0.3390  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:       0.0909            4         0.4760   1    2.0    3.0    4.00     4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:       0.0909            4         0.5480  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:       0.0909            3         0.9070  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:       0.0909            4         0.4130   1    2.0    3.0    4.00     4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:       0.0909            4         0.3320  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:       0.0909           53         0.0510  19   27.0   33.0   42.00    75</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:       0.0909            3         0.8140  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:       0.0909            3         0.7130  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:       0.0909            4         0.6330   1    1.0    1.0    2.00     4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:       0.0909            4         0.6300  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:       0.0909            2         0.8450   1    1.0    1.0    1.00     2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:       0.0909            2         0.5960  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:       0.0909            2         0.9630  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:       0.0000            2         0.6827  NA     NA     NA      NA    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     missing_rate unique_count identical_rate min    p25    p50     p75   max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         mean        sd     cv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:   20.903   12.0588 0.5769</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5: 3271.258 2822.7369 0.8629</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:    2.973    1.1187 0.3763</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:    2.845    1.1037 0.3880</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:   35.546   11.3755 0.3200</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:    1.407    0.5777 0.4106</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:    1.155    0.3621 0.3135</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:       NA        NA     NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         mean        sd     cv</span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

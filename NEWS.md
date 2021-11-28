@@ -1,4 +1,4 @@
-# scorecard 0.3.5.999
+# scorecard 0.3.6
 
 * fixed multiple bugs 
 * added test files

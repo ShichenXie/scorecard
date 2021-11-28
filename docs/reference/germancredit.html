@@ -74,7 +74,7 @@ See source link below for detailed information." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.6</span>
       </span>
     </div>
 
@@ -160,37 +160,38 @@ See source link below for detailed information.</p>
     <p><a href='http://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)'>http://archive.ics.uci.edu/ml/datasets/Statlog+(German+Credit+Data)</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># load German credit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>
-
-<span class='co'># structure of germancredit</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 'data.frame':	1000 obs. of  21 variables:
-#&gt;  $ status.of.existing.checking.account                     : Factor w/ 4 levels "... &lt; 0 DM","0 &lt;= ... &lt; 200 DM",..: 1 2 4 1 1 4 4 2 4 2 ...
-#&gt;  $ duration.in.month                                       : num  6 48 12 42 24 36 24 36 12 30 ...
-#&gt;  $ credit.history                                          : Factor w/ 5 levels "no credits taken/ all credits paid back duly",..: 5 3 5 3 4 3 3 3 3 5 ...
-#&gt;  $ purpose                                                 : chr  "radio/television" "radio/television" "education" "furniture/equipment" ...
-#&gt;  $ credit.amount                                           : num  1169 5951 2096 7882 4870 ...
-#&gt;  $ savings.account.and.bonds                               : Factor w/ 5 levels "... &lt; 100 DM",..: 5 1 1 1 1 5 3 1 4 1 ...
-#&gt;  $ present.employment.since                                : Factor w/ 5 levels "unemployed","... &lt; 1 year",..: 5 3 4 4 3 3 5 3 4 1 ...
-#&gt;  $ installment.rate.in.percentage.of.disposable.income     : num  4 2 2 2 3 2 3 2 2 4 ...
-#&gt;  $ personal.status.and.sex                                 : Factor w/ 5 levels "male : divorced/separated",..: 1 1 1 1 1 1 1 1 1 1 ...
-#&gt;  $ other.debtors.or.guarantors                             : Factor w/ 3 levels "none","co-applicant",..: 1 1 1 3 1 1 1 1 1 1 ...
-#&gt;  $ present.residence.since                                 : num  4 2 3 4 4 4 4 2 4 2 ...
-#&gt;  $ property                                                : Factor w/ 4 levels "real estate",..: 1 1 1 2 4 4 2 3 1 3 ...
-#&gt;  $ age.in.years                                            : num  67 22 49 45 53 35 53 35 61 28 ...
-#&gt;  $ other.installment.plans                                 : Factor w/ 3 levels "bank","stores",..: 3 3 3 3 3 3 3 3 3 3 ...
-#&gt;  $ housing                                                 : Factor w/ 3 levels "rent","own","for free": 2 2 2 3 3 3 2 1 2 2 ...
-#&gt;  $ number.of.existing.credits.at.this.bank                 : num  2 1 1 1 2 1 1 1 1 2 ...
-#&gt;  $ job                                                     : Factor w/ 4 levels "unemployed/ unskilled - non-resident",..: 3 3 2 3 3 2 3 4 2 4 ...
-#&gt;  $ number.of.people.being.liable.to.provide.maintenance.for: num  1 1 2 2 2 2 1 1 1 1 ...
-#&gt;  $ telephone                                               : Factor w/ 2 levels "none","yes, registered under the customers name": 2 1 1 1 1 2 1 2 1 1 ...
-#&gt;  $ foreign.worker                                          : Factor w/ 2 levels "yes","no": 1 1 1 1 1 1 1 1 1 1 ...
-#&gt;  $ creditability                                           : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</div><div class='input'>
-<span class='co'># summary of germancredit</span>
-<span class='co'># lapply(germancredit, summary)</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># load German credit data</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># structure of germancredit</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>germancredit</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 'data.frame':	1000 obs. of  21 variables:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ status.of.existing.checking.account                     : Factor w/ 4 levels "... &lt; 0 DM","0 &lt;= ... &lt; 200 DM",..: 1 2 4 1 1 4 4 2 4 2 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ duration.in.month                                       : num  6 48 12 42 24 36 24 36 12 30 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ credit.history                                          : Factor w/ 5 levels "no credits taken/ all credits paid back duly",..: 5 3 5 3 4 3 3 3 3 5 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ purpose                                                 : chr  "radio/television" "radio/television" "education" "furniture/equipment" ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ credit.amount                                           : num  1169 5951 2096 7882 4870 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ savings.account.and.bonds                               : Factor w/ 5 levels "... &lt; 100 DM",..: 5 1 1 1 1 5 3 1 4 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ present.employment.since                                : Factor w/ 5 levels "unemployed","... &lt; 1 year",..: 5 3 4 4 3 3 5 3 4 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ installment.rate.in.percentage.of.disposable.income     : num  4 2 2 2 3 2 3 2 2 4 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ personal.status.and.sex                                 : Factor w/ 5 levels "male : divorced/separated",..: 1 1 1 1 1 1 1 1 1 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ other.debtors.or.guarantors                             : Factor w/ 3 levels "none","co-applicant",..: 1 1 1 3 1 1 1 1 1 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ present.residence.since                                 : num  4 2 3 4 4 4 4 2 4 2 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ property                                                : Factor w/ 4 levels "real estate",..: 1 1 1 2 4 4 2 3 1 3 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ age.in.years                                            : num  67 22 49 45 53 35 53 35 61 28 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ other.installment.plans                                 : Factor w/ 3 levels "bank","stores",..: 3 3 3 3 3 3 3 3 3 3 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ housing                                                 : Factor w/ 3 levels "rent","own","for free": 2 2 2 3 3 3 2 1 2 2 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ number.of.existing.credits.at.this.bank                 : num  2 1 1 1 2 1 1 1 1 2 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ job                                                     : Factor w/ 4 levels "unemployed/ unskilled - non-resident",..: 3 3 2 3 3 2 3 4 2 4 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ number.of.people.being.liable.to.provide.maintenance.for: num  1 1 2 2 2 2 1 1 1 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ telephone                                               : Factor w/ 2 levels "none","yes, registered under the customers name": 2 1 1 1 1 2 1 2 1 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ foreign.worker                                          : Factor w/ 2 levels "yes","no": 1 1 1 1 1 1 1 1 1 1 ...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ creditability                                           : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># summary of germancredit</span></span>
+<span class='r-in'><span class='co'># lapply(germancredit, summary)</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

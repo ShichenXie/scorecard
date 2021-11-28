@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.6</span>
       </span>
     </div>
 
@@ -196,108 +196,119 @@
     <div class='dont-index'><p><code><a href='perf_eva.html'>perf_eva</a></code> <code><a href='gains_table.html'>gains_table</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='co'># data preparing ------</span>
-<span class='co'># load germancredit data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span>
-<span class='co'># filter variable via missing rate, iv, identical value rate</span>
-<span class='va'>dt_f</span> <span class='op'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span><span class='op'>(</span><span class='va'>germancredit</span>, <span class='st'>"creditability"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [INFO] filtering variables ... </div><div class='input'><span class='co'># breaking dt into train and test</span>
-<span class='va'>dt_list</span> <span class='op'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span><span class='op'>(</span><span class='va'>dt_f</span>, <span class='st'>"creditability"</span><span class='op'>)</span>
-<span class='va'>label_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>creditability</span><span class='op'>)</span>
-
-<span class='co'># woe binning ------</span>
-<span class='va'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span><span class='op'>(</span><span class='va'>dt_list</span><span class='op'>$</span><span class='va'>train</span>, <span class='st'>"creditability"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [INFO] creating woe binning ... </div><div class='input'><span class='co'># converting train and test into woe values</span>
-<span class='va'>dt_woe_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>bins</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [INFO] converting into woe values ... 
-#&gt; [INFO] converting into woe values ... </div><div class='input'>
-<span class='co'># glm ------</span>
-<span class='va'>m1</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>creditability</span> <span class='op'>~</span> <span class='va'>.</span>, family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span><span class='op'>(</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>dt_woe_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>)</span>
-<span class='co'># vif(m1, merge_coef = TRUE)</span>
-<span class='co'># Select a formula-based model by AIC</span>
-<span class='va'>m_step</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/step.html'>step</a></span><span class='op'>(</span><span class='va'>m1</span>, direction<span class='op'>=</span><span class='st'>"both"</span>, trace<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>m2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/eval.html'>eval</a></span><span class='op'>(</span><span class='va'>m_step</span><span class='op'>$</span><span class='va'>call</span><span class='op'>)</span>
-<span class='co'># vif(m2, merge_coef = TRUE)</span>
-
-<span class='co'># predicted proability</span>
-<span class='va'>pred_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_woe_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>m2</span>, type <span class='op'>=</span> <span class='st'>'response'</span>, <span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># scorecard ------</span>
-<span class='va'>card</span> <span class='op'>=</span> <span class='fu'><a href='scorecard.html'>scorecard</a></span><span class='op'>(</span><span class='va'>bins</span>, <span class='va'>m2</span><span class='op'>)</span>
-
-<span class='co'># credit score, only_total_score = TRUE</span>
-<span class='va'>score_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>card</span><span class='op'>)</span><span class='op'>)</span>
-<span class='co'># credit score, only_total_score = FALSE</span>
-<span class='va'>score_list2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>card</span>, only_total_score<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
-
-
-<span class='co'>###### perf_eva examples ######</span>
-<span class='co'># Example I, one datset</span>
-<span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span><span class='op'>(</span>pred <span class='op'>=</span> <span class='va'>pred_list</span><span class='op'>$</span><span class='va'>train</span>, label<span class='op'>=</span><span class='va'>dt_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>$</span><span class='va'>creditability</span>, title <span class='op'>=</span> <span class='st'>'train'</span><span class='op'>)</span>
-</div><div class='img'><img src='perf_psi-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
-#&gt; $binomial_metric$train
-#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
-#&gt; 
-#&gt; 
-#&gt; $pic
-#&gt; TableGrob (1 x 2) "arrange": 2 grobs
-#&gt;   z     cells    name           grob
-#&gt; 1 1 (1-1,1-1) arrange gtable[layout]
-#&gt; 2 2 (1-1,2-2) arrange gtable[layout]
-#&gt; </div><div class='input'><span class='co'>## predicted score</span>
-<span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span>
-
-<span class='co'># Example II, multiple datsets</span>
-<span class='co'>## predicted p1</span>
-<span class='fu'><a href='perf_eva.html'>perf_eva</a></span><span class='op'>(</span>pred <span class='op'>=</span> <span class='va'>pred_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span>
-</div><div class='img'><img src='perf_psi-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; $binomial_metric
-#&gt; $binomial_metric$train
-#&gt;          MSE      RMSE   LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946
-#&gt; 
-#&gt; $binomial_metric$test
-#&gt;          MSE      RMSE  LogLoss        R2        KS       AUC      Gini
-#&gt; 1: 0.1731937 0.4161655 0.522526 0.1717874 0.4421992 0.7714991 0.5429981
-#&gt; 
-#&gt; 
-#&gt; $pic
-#&gt; TableGrob (1 x 2) "arrange": 2 grobs
-#&gt;   z     cells    name           grob
-#&gt; 1 1 (1-1,1-1) arrange gtable[layout]
-#&gt; 2 2 (1-1,2-2) arrange gtable[layout]
-#&gt; </div><div class='input'><span class='co'>## predicted score</span>
-<span class='co'># perf_eva(score_list, label_list)</span>
-
-
-<span class='co'>###### perf_psi examples ######</span>
-<span class='co'># Example I # only total psi</span>
-<span class='va'>psi1</span> <span class='op'>=</span> <span class='fu'>perf_psi</span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span>
-<span class='va'>psi1</span><span class='op'>$</span><span class='va'>psi</span>  <span class='co'># psi data frame</span>
-</div><div class='output co'>#&gt;    variable    dataset        psi
-#&gt; 1:    score train_test 0.03371411</div><div class='input'><span class='va'>psi1</span><span class='op'>$</span><span class='va'>pic</span>  <span class='co'># pic of score distribution</span>
-</div><div class='output co'>#&gt; $score</div><div class='img'><img src='perf_psi-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div><div class='input'><span class='co'># modify colors</span>
-<span class='co'># perf_psi(score = score_list, label = label_list,</span>
-<span class='co'>#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))</span>
-
-<span class='co'># Example II # both total and variable psi</span>
-<span class='va'>psi2</span> <span class='op'>=</span> <span class='fu'>perf_psi</span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list2</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span>
-<span class='co'># psi2$psi  # psi data frame</span>
-<span class='co'># psi2$pic  # pic of score distribution</span>
-
-
-<span class='co'>###### gains_table examples ######</span>
-<span class='co'># Example I, input score and label can be a list or a vector</span>
-<span class='va'>g1</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span><span class='op'>$</span><span class='va'>train</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>)</span>
-<span class='va'>g2</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span>
-
-<span class='co'># Example II, specify the bins number and type</span>
-<span class='va'>g3</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span>, bin_num <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>
-<span class='va'>g4</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span>, method <span class='op'>=</span> <span class='st'>'width'</span><span class='op'>)</span>
-<span class='co'># }</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='co'># data preparing ------</span></span>
+<span class='r-in'><span class='co'># load germancredit data</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"germancredit"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># filter variable via missing rate, iv, identical value rate</span></span>
+<span class='r-in'><span class='va'>dt_f</span> <span class='op'>=</span> <span class='fu'><a href='var_filter.html'>var_filter</a></span><span class='op'>(</span><span class='va'>germancredit</span>, <span class='st'>"creditability"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [INFO] filtering variables ... </span>
+<span class='r-in'><span class='co'># breaking dt into train and test</span></span>
+<span class='r-in'><span class='va'>dt_list</span> <span class='op'>=</span> <span class='fu'><a href='split_df.html'>split_df</a></span><span class='op'>(</span><span class='va'>dt_f</span>, <span class='st'>"creditability"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>label_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>creditability</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># woe binning ------</span></span>
+<span class='r-in'><span class='va'>bins</span> <span class='op'>=</span> <span class='fu'><a href='woebin.html'>woebin</a></span><span class='op'>(</span><span class='va'>dt_list</span><span class='op'>$</span><span class='va'>train</span>, <span class='st'>"creditability"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [INFO] creating woe binning ... </span>
+<span class='r-in'><span class='co'># converting train and test into woe values</span></span>
+<span class='r-in'><span class='va'>dt_woe_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='woebin_ply.html'>woebin_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>bins</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [INFO] converting into woe values ... </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [INFO] converting into woe values ... </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># glm ------</span></span>
+<span class='r-in'><span class='va'>m1</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>creditability</span> <span class='op'>~</span> <span class='va'>.</span>, family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span><span class='op'>(</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>dt_woe_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># vif(m1, merge_coef = TRUE)</span></span>
+<span class='r-in'><span class='co'># Select a formula-based model by AIC</span></span>
+<span class='r-in'><span class='va'>m_step</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/step.html'>step</a></span><span class='op'>(</span><span class='va'>m1</span>, direction<span class='op'>=</span><span class='st'>"both"</span>, trace<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>m2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/eval.html'>eval</a></span><span class='op'>(</span><span class='va'>m_step</span><span class='op'>$</span><span class='va'>call</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># vif(m2, merge_coef = TRUE)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># predicted proability</span></span>
+<span class='r-in'><span class='va'>pred_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_woe_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>m2</span>, type <span class='op'>=</span> <span class='st'>'response'</span>, <span class='va'>x</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># scorecard ------</span></span>
+<span class='r-in'><span class='va'>card</span> <span class='op'>=</span> <span class='fu'><a href='scorecard.html'>scorecard</a></span><span class='op'>(</span><span class='va'>bins</span>, <span class='va'>m2</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># credit score, only_total_score = TRUE</span></span>
+<span class='r-in'><span class='va'>score_list</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>card</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># credit score, only_total_score = FALSE</span></span>
+<span class='r-in'><span class='va'>score_list2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>dt_list</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='scorecard_ply.html'>scorecard_ply</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>card</span>, only_total_score<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>###### perf_eva examples ######</span></span>
+<span class='r-in'><span class='co'># Example I, one datset</span></span>
+<span class='r-in'><span class='co'>## predicted p1</span></span>
+<span class='r-in'><span class='fu'><a href='perf_eva.html'>perf_eva</a></span><span class='op'>(</span>pred <span class='op'>=</span> <span class='va'>pred_list</span><span class='op'>$</span><span class='va'>train</span>, label<span class='op'>=</span><span class='va'>dt_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>$</span><span class='va'>creditability</span>, title <span class='op'>=</span> <span class='st'>'train'</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='perf_psi-1.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $binomial_metric</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $binomial_metric$train</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          MSE      RMSE   LogLoss        R2        KS       AUC      Gini</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $pic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> TableGrob (1 x 2) "arrange": 2 grobs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   z     cells    name           grob</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 1 (1-1,1-1) arrange gtable[layout]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 2 (1-1,2-2) arrange gtable[layout]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'>## predicted score</span></span>
+<span class='r-in'><span class='co'># perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example II, multiple datsets</span></span>
+<span class='r-in'><span class='co'>## predicted p1</span></span>
+<span class='r-in'><span class='fu'><a href='perf_eva.html'>perf_eva</a></span><span class='op'>(</span>pred <span class='op'>=</span> <span class='va'>pred_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='perf_psi-2.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $binomial_metric</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $binomial_metric$train</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          MSE      RMSE   LogLoss        R2        KS       AUC      Gini</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 0.1519266 0.3897776 0.4578621 0.2779502 0.5003279 0.8267473 0.6534946</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $binomial_metric$test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          MSE      RMSE  LogLoss        R2        KS       AUC      Gini</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 0.1731937 0.4161655 0.522526 0.1717874 0.4421992 0.7714991 0.5429981</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $pic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> TableGrob (1 x 2) "arrange": 2 grobs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   z     cells    name           grob</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 1 (1-1,1-1) arrange gtable[layout]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 2 (1-1,2-2) arrange gtable[layout]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'>## predicted score</span></span>
+<span class='r-in'><span class='co'># perf_eva(score_list, label_list)</span></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>###### perf_psi examples ######</span></span>
+<span class='r-in'><span class='co'># Example I # only total psi</span></span>
+<span class='r-in'><span class='va'>psi1</span> <span class='op'>=</span> <span class='fu'>perf_psi</span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>psi1</span><span class='op'>$</span><span class='va'>psi</span>  <span class='co'># psi data frame</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    variable    dataset        psi</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:    score train_test 0.03371411</span>
+<span class='r-in'><span class='va'>psi1</span><span class='op'>$</span><span class='va'>pic</span>  <span class='co'># pic of score distribution</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $score</span>
+<span class='r-plt img'><img src='perf_psi-3.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'># modify colors</span></span>
+<span class='r-in'><span class='co'># perf_psi(score = score_list, label = label_list,</span></span>
+<span class='r-in'><span class='co'>#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example II # both total and variable psi</span></span>
+<span class='r-in'><span class='va'>psi2</span> <span class='op'>=</span> <span class='fu'>perf_psi</span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list2</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># psi2$psi  # psi data frame</span></span>
+<span class='r-in'><span class='co'># psi2$pic  # pic of score distribution</span></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>###### gains_table examples ######</span></span>
+<span class='r-in'><span class='co'># Example I, input score and label can be a list or a vector</span></span>
+<span class='r-in'><span class='va'>g1</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span><span class='op'>$</span><span class='va'>train</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>$</span><span class='va'>train</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>g2</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example II, specify the bins number and type</span></span>
+<span class='r-in'><span class='va'>g3</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span>, bin_num <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>g4</span> <span class='op'>=</span> <span class='fu'><a href='gains_table.html'>gains_table</a></span><span class='op'>(</span>score <span class='op'>=</span> <span class='va'>score_list</span>, label <span class='op'>=</span> <span class='va'>label_list</span>, method <span class='op'>=</span> <span class='st'>'width'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># }</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
