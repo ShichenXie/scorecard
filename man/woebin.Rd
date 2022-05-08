@@ -127,6 +127,7 @@ bins2 = woebin(germancredit, y="creditability",
 # setting bin closed on the right
 options(scorecard.bin_close_right = TRUE)
 binsRight = woebin(germancredit, y = 'creditability', x = 'age.in.years')
+binsRight
 # setting bin close on the left, the default setting
 options(scorecard.bin_close_right = FALSE)
 }

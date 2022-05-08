@@ -48,8 +48,9 @@ m = eval(m_step$call)
 # scorecard
 # Example I # creat a scorecard
 card = scorecard(bins, m)
-card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-  x=sub('_woe', '', names(coef(m))[-1]))
+
+xnames = sub('_woe', '', names(coef(m))[-1])
+card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
 
 # credit score
 # Example I # only total score

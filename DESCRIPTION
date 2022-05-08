@@ -1,5 +1,5 @@
 Package: scorecard
-Version: 0.3.6
+Version: 0.3.6.999
 Title: Credit Risk Scorecard
 Description: 
   The `scorecard` package makes the development of credit risk scorecard 

@@ -288,7 +288,7 @@ check_no_cores = function(no_cores) {
 
   if (is.null(no_cores) || !is.numeric(no_cores) || no_cores <1) {
     no_cores = ceiling(all_cores*0.9)
-  } else if (no_cores > all_cores+1) {
+  } else if (no_cores >= all_cores+1) {
     no_cores = all_cores
   }
 
@@ -377,51 +377,68 @@ brk_numx_init = function(brk, xvalue) {
   return(brk)
 }
 
-# getoption_cutright = function() {
-#   cut_right = getOption('scorecard.bin_close_right')
-#   if (is.null(cut_right)) cut_right = FALSE
-#   return(cut_right)
-# }
-args_default = function() {list(
-  bin_close_right = FALSE
-)}
-getarg = function(arg, kwargs = NULL) {
-  arg_val = getOption(sprintf('scorecard.%s', arg))
-  if (is.null(arg_val)) arg_val = kwargs[[arg]]
-  if (is.null(arg_val)) arg_val = args_default()[[arg]]
+
+getarg = function(arg, ...) {
+  x = paste0('scorecard.', arg)
+  kwargs = list(...)
+
+  arg_val = kwargs[[arg]]
+  if (is.null(arg_val)) arg_val = getOption(x)
+
   return(arg_val)
 }
 
+binpattern = function(type, bin_close_right = NULL) {
+  bin_close_right = getarg('bin_close_right', bin_close_right=bin_close_right)
 
-binpatttern_isbin = function() {
-  pstr = '\\['
-  if (getarg('bin_close_right')) pstr = '\\('
-  return(pstr)
-}
-binpattern_left_brkp = function() {
-  pstr = "^\\[(.*),.+"
-  if (getarg('bin_close_right')) pstr = "^\\((.*),.+"
-  return(pstr)
-}
-binpattern_leftright_brkp = function() {
-  pstr = "^\\[(.*), *(.*)\\)"
-  if (getarg('bin_close_right')) pstr = "^\\((.*), *(.*)\\]"
-  return(pstr)
-}
-binpattern_leftrightbrkp_missing = function() {
-  pstr = "^\\[(.*), *(.*)\\)((%,%missing)*)"
-  if (getarg('bin_close_right')) pstr = "^\\((.*), *(.*)\\]((%,%missing)*)"
-  return(pstr)
-}
-binpattern_multibin = function() {
-  pstr = "^(\\[.+?,).+,(.+?\\))$"
-  if (getarg('bin_close_right')) pstr = "^(\\(.+?,).+,(.+?\\])$"
-  return(pstr)
+  pstr_left = list(
+    isbin = '\\[',
+    left_brkp = "^\\[(.*),.+",
+    leftright_brkp = "^\\[(.*), *(.*)\\)",
+    leftrightbrkp_missing = "^\\[(.*), *(.*)\\)((%,%missing)*)",
+    multibin = "^(\\[.+?,).+,(.+?\\))$"
+  )
+
+  pstr_right = list(
+    isbin = '\\(',
+    left_brkp = "^\\((.*),.+",
+    leftright_brkp = "^\\((.*), *(.*)\\]",
+    leftrightbrkp_missing = "^\\((.*), *(.*)\\]((%,%missing)*)",
+    multibin = "^(\\(.+?,).+,(.+?\\])$"
+  )
+
+  if (bin_close_right) {
+    pstr_right[[type]]
+  } else {
+    pstr_left[[type]]
+  }
 }
 
-get_brkp_bin = function(bin) {
+
+get_brkp_bin = function(bin, bin_close_right=NULL) {
+  bin_close_right = getarg('bin_close_right', bin_close_right=bin_close_right)
+
   x = '\\1'
-  if (getarg('bin_close_right')) x = '\\2'
-  as.numeric(sub(binpattern_leftright_brkp(), x, bin))
+  if (bin_close_right) x = '\\2'
+  as.numeric(sub(binpattern('leftright_brkp',bin_close_right), x, bin))
 }
 
+# bin close right
+get_bcr_bin = function(bins) {
+  . = bcr = bin = NULL
+  if (inherits(bins, 'list')) bins = rbindlist(bins, fill=TRUE)
+  bins[,.(bin)
+  ][(grepl('\\[', bin) & grepl('\\)', bin)) | (grepl('\\(', bin) & grepl('\\]', bin))
+  ][][grepl('\\[', bin), bcr := !grepl('^\\[', bin)
+  ][][!is.na(bcr)
+  ][, unique(bcr)]
+}
+check_bcr = function(bins) {
+  bcr = get_bcr_bin(bins)
+  bin_close_right = getarg('bin_close_right')
+  if (length(bcr) == 1 && (bcr %in% c(TRUE, FALSE)) && bin_close_right != bcr) {
+    bin_close_right = bcr
+    warning(sprintf("The option bin_close_right was set to %s. Resetting by options(scorecard.bin_close_right = %s).\n", bcr, bcr))
+  }
+  return(bin_close_right)
+}

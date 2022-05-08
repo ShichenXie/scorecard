@@ -62,8 +62,9 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 #' # scorecard
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x=sub('_woe', '', names(coef(m))[-1]))
+#'
+#' xnames = sub('_woe', '', names(coef(m))[-1])
+#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
 #'
 #' # credit score
 #' # Example I # only total score
@@ -155,8 +156,9 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' # scorecard
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x= sub('_woe', '', names(coef(m))[-1]))
+#'
+#' xnames = sub('_woe', '', names(coef(m))[-1])
+#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
 #'
 #' # credit score
 #' # Example I # only total score
@@ -214,10 +216,14 @@ scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds
 
 
   card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0, digits = digits)
-  if (return_prob) rt = list(
-    card = card,
-    prob = predict(model, dt_woe, type='response')
-  ) else rt = card
+  if (return_prob) {
+    rt = list(
+      card = card,
+      prob = predict(model, dt_woe, type='response')
+    )
+  } else {
+    rt = card
+  }
   return(rt)
 }
 
@@ -258,8 +264,9 @@ scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds
 #' # scorecard
 #' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability',
-#'   x=sub('_woe', '', names(coef(m))[-1]))
+#'
+#' xnames = sub('_woe', '', names(coef(m))[-1])
+#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
 #'
 #' # credit score
 #' # Example I # only total score
@@ -283,6 +290,9 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   if (replace_blank_na) dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
+  # bin_close_right
+  bin_close_right = check_bcr(card)
+
 
   # card # if (is.list(card)) rbindlist(card)
   if (inherits(card, 'list') && all(sapply(card, is.data.frame))) {card = rbindlist(card, fill = TRUE)}
@@ -306,7 +316,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
     cardx = card[variable==x_i]
     dtx = dt[, x_i, with=FALSE]
 
-    dat = cbind(dat, woepoints_ply1(dtx, cardx, x_i, woe_points="points"))
+    dat = cbind(dat, woepoints_ply1(dtx, cardx, x_i, woe_points="points", bin_close_right=bin_close_right))
   }
 
 

@@ -932,7 +932,7 @@ psicsi_metric = function(dt_sn, names_datset, is_totalscore=TRUE) {
 }
 
 # psi plot
-psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = NULL) {
+psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = NULL, bin_close_right) {
   . = label = N = pos = posprob = distr = bin = midbin = bin1 = bin2 = datset = posprob2 = NULL
 
   # plot title
@@ -943,8 +943,8 @@ psi_plot = function(dt_psi, psi_sn, title, sn, line_color = 'blue', bar_color = 
        ][, `:=`(distr = N/sum(N), posprob = pos/N), by = 'datset'
        ][, `:=`(posprob2 = posprob*max(distr)), by = "datset"
        ][, `:=`(
-         bin1 = as.numeric(sub(binpattern_leftright_brkp(), "\\1", bin)),
-         bin2 = as.numeric(sub(binpattern_leftright_brkp(), "\\2", bin))
+         bin1 = as.numeric(sub(binpattern('leftright_brkp', bin_close_right), "\\1", bin)),
+         bin2 = as.numeric(sub(binpattern('leftright_brkp', bin_close_right), "\\2", bin))
       )][, midbin := (bin1+bin2)/2 ][]
 
   # plot
@@ -1301,8 +1301,10 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
   kwargs = list(...)
   bin_type = kwargs[['bin_type']]
   method   = kwargs[['method']]
+  bin_close_right = kwargs[['bin_close_right']]
   if (!is.null(bin_type)) method = bin_type
   if (is.null(method) || !(method %in% c('freq', 'width'))) method='width'
+  if (is.null(bin_close_right)) bin_close_right = getarg('bin_close_right')
 
   seed = kwargs[['seed']]
   if (is.null(seed)) seed = 618
@@ -1354,7 +1356,7 @@ perf_psi = function(score, label=NULL, title=NULL, show_plot=TRUE, positive="bad
       if (show_plot) {
         temp_pic = psi_plot(
           dt_psi[datset %in% names_dts], psi_sn, title, sn,
-          line_color = line_color, bar_color = bar_color)
+          line_color = line_color, bar_color = bar_color, bin_close_right = bin_close_right)
         if (length(names_datset) > 2) {
           rt[['pic']][[sn]][[paste0(names_dts, collapse = '_')]] = temp_pic
         } else {

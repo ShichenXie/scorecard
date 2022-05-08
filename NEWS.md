@@ -1,3 +1,7 @@
+# scorecard 0.3.6.999
+
+* modified the example codes in the scorecard, scorecard2, scorecard_ply functions
+
 # scorecard 0.3.6
 
 * fixed multiple bugs 
