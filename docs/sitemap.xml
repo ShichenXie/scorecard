@@ -1,45 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://shichen.name/scorecard/index.html</loc>
+    <loc>/404.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/germancredit.html</loc>
+    <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/iv.html</loc>
+    <loc>/LICENSE.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/perf_eva.html</loc>
+    <loc>/articles/demo.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/perf_psi.html</loc>
+    <loc>/articles/index.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/scorecard.html</loc>
+    <loc>/authors.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/scorecard_ply.html</loc>
+    <loc>/index.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/split_df.html</loc>
+    <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/var_filter.html</loc>
+    <loc>/reference/describe.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/woebin.html</loc>
+    <loc>/reference/gains_table.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/woebin_adj.html</loc>
+    <loc>/reference/germancredit.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/woebin_plot.html</loc>
+    <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/reference/woebin_ply.html</loc>
+    <loc>/reference/iv.html</loc>
   </url>
   <url>
-    <loc>http://shichen.name/scorecard/articles/demo.html</loc>
+    <loc>/reference/one_hot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/perf_cv.html</loc>
+  </url>
+  <url>
+    <loc>/reference/perf_eva.html</loc>
+  </url>
+  <url>
+    <loc>/reference/perf_psi.html</loc>
+  </url>
+  <url>
+    <loc>/reference/replace_na.html</loc>
+  </url>
+  <url>
+    <loc>/reference/report.html</loc>
+  </url>
+  <url>
+    <loc>/reference/scorecard.html</loc>
+  </url>
+  <url>
+    <loc>/reference/scorecard2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/scorecard_ply.html</loc>
+  </url>
+  <url>
+    <loc>/reference/split_df.html</loc>
+  </url>
+  <url>
+    <loc>/reference/var_filter.html</loc>
+  </url>
+  <url>
+    <loc>/reference/var_scale.html</loc>
+  </url>
+  <url>
+    <loc>/reference/vif.html</loc>
+  </url>
+  <url>
+    <loc>/reference/woebin.html</loc>
+  </url>
+  <url>
+    <loc>/reference/woebin_adj.html</loc>
+  </url>
+  <url>
+    <loc>/reference/woebin_plot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/woebin_ply.html</loc>
   </url>
 </urlset>
