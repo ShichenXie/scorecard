@@ -1,3 +1,7 @@
+# scorecard 0.3.7.999
+
+# fixed a bug in woebin function when breaks_list is provided.
+
 # scorecard 0.3.7
 
 * modified the example codes in the scorecard, scorecard2, scorecard_ply functions

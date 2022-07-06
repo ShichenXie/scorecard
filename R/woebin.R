@@ -678,7 +678,8 @@ woebin2 = function(
   }
   binning = binning[, is_sv := is_sv == 'binning_sv']
 
-  return(binning_format(binning, bin_close_right=bin_close_right))
+  binning = binning_format(binning, bin_close_right=bin_close_right)
+  return(binning)
 }
 
 # convert bins to breaks_list
