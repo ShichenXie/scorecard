@@ -362,12 +362,12 @@ brk_txt2vector = function(brk) {
 
   return(v)
 }
-brk_numx_init = function(brk, xvalue) {
+brk_numx_init = function(brk, xvalue, bin_close_right) {
   brk = as.numeric(brk)
   brk = setdiff(unique(brk), c(NA, Inf, -Inf))
   xval = unique(xvalue)
 
-  if (getarg('bin_close_right')) {
+  if (isTRUE(bin_close_right)) {
     brk=sort(brk[(brk< max(xval, na.rm=TRUE)) & (brk>=min(xval, na.rm=TRUE))])
   } else {
     brk=sort(brk[(brk<=max(xval, na.rm=TRUE)) & (brk> min(xval, na.rm=TRUE))])

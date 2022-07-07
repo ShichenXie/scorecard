@@ -164,7 +164,7 @@ woebin2_breaks = function(dtm, breaks, spl_val, bin_close_right ) {
 
   # binning
   if (is.numeric(dtm[,value])) {
-    bstbrks = brk_numx_init(unique(bk_df$value), dtm$value)
+    bstbrks = brk_numx_init(unique(bk_df$value), dtm$value, bin_close_right)
 
     binning = dtm[
       , bin := cut(value, bstbrks, right = bin_close_right, dig.lab = 10, ordered_result = FALSE)
@@ -251,7 +251,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val, bin_close_ri
     } else {
       brk = suppressWarnings(pretty(xvalue_rm_outlier, n))
     }
-    brk = brk_numx_init(brk, xvalue)
+    brk = brk_numx_init(brk, xvalue, bin_close_right)
     if (anyNA(xvalue)) brk = c(brk, NA)
 
     # initial binning datatable
@@ -588,7 +588,7 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
 
     }
   }
-  brkp = brk_numx_init(brkp, unique_xvalue)
+  brkp = brk_numx_init(brkp, unique_xvalue, bin_close_right)
 
   binning_equal = dtm[, bin := cut(value, unique(brkp), right = bin_close_right, dig.lab = 10, ordered_result = F)
               ][, .(neg = sum(y==0), pos = sum(y==1), count = .N), keyby = .(variable, bin)
@@ -880,7 +880,7 @@ woebin = function(
   if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
   # bin_close_right
   bin_close_right = getarg('bin_close_right')
-  if (!is.null(breaks_list)) cat(sprintf("[INFO] The option bin_close_right was set to %s. Resetting by options(scorecard.bin_close_right = %s).\n", bin_close_right, bin_close_right))
+  if (!is.null(breaks_list)) cat(sprintf("[INFO] The option bin_close_right was set to %s.\n", bin_close_right, bin_close_right))
 
   # set dt as data.table
   dt = setDT(copy(dt))  #copy(setDT(dt))
