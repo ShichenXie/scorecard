@@ -1,3 +1,4 @@
+
 # coefficients in scorecard
 ab = function(points0=600, odds0=1/19, pdo=50) {
   # sigmoid function
@@ -25,6 +26,15 @@ ab = function(points0=600, odds0=1/19, pdo=50) {
 
   return(list(a=a, b=b))
 }
+
+# p to score
+p2score = function(p, points0=600, odds0=1/19, pdo=50) {
+  aabb = ab(points0, odds0, pdo)
+
+  s = aabb$a - aabb$b * log(p/(1-p))
+  return(s)
+}
+
 #' Creating a Scorecard
 #'
 #' \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.
