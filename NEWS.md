@@ -1,6 +1,6 @@
 # scorecard 0.3.8
 
-# fixed a bug in woebin function when breaks_list is provided.
+* fixed a bug in woebin function when breaks_list is provided.
 
 # scorecard 0.3.7
 
