@@ -880,7 +880,7 @@ woebin = function(
   if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
   # bin_close_right
   bin_close_right = getarg('bin_close_right')
-  if (!is.null(breaks_list)) cat(sprintf("[INFO] The option bin_close_right was set to %s.\n", bin_close_right, bin_close_right))
+  if (print_info & !is.null(breaks_list)) cat(sprintf("[INFO] The option bin_close_right was set to %s.\n", bin_close_right))
 
   # set dt as data.table
   dt = setDT(copy(dt))  #copy(setDT(dt))
@@ -929,7 +929,7 @@ woebin = function(
   # loop on xs
   # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
   # https://privefl.github.io/blog/a-guide-to-parallelism-in-r/
-  no_cores = check_no_cores(no_cores)
+  no_cores = check_no_cores(no_cores, xs_len)
 
   bins = list()
   if (!is.null(y)) {

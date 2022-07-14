@@ -283,10 +283,16 @@ check_stop_limit = function(stop_limit, xs) {
 }
 
 # check number of cpu cores
-check_no_cores = function(no_cores) {
+check_no_cores = function(no_cores, xs_len=10) {
   all_cores = detectCores(logical=F)-1
 
-  if (is.null(no_cores) || !is.numeric(no_cores) || no_cores <1) {
+  if (is.null(no_cores)) {
+    if (xs_len < 10) {
+      no_cores = 1
+    } else {
+      no_cores = ceiling(all_cores*0.9)
+    }
+  } else if (!is.numeric(no_cores) || no_cores <1) {
     no_cores = ceiling(all_cores*0.9)
   } else if (no_cores >= all_cores+1) {
     no_cores = all_cores

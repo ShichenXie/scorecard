@@ -96,8 +96,16 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   . = bin = gvif = info_value = points = variable = woe = points = name = NULL
 
   kwargs = list(...)
+  # x name
   x_name = kwargs[['x_name']]
-  if (!is.null(x_name)) x_name = setDT(list(variable=x, name = x_name))
+  if (!is.null(x_name)) {
+    if (inherits(x_name, 'character')) {
+      x_name = setDT(list(variable=x, name = x_name))
+    } else if (inherits(x_name, 'data.frame')) {
+      x_name = setDT(x_name)[x, on='variable']
+    }
+  }
+
   # data list
   dat_lst = list()
   if (is.data.frame(dt)) {
@@ -106,7 +114,6 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
     } else {
       dat_lst = split_df(dt, y, seed = seed)
     }
-
   } else if ((inherits(dt, 'list') & all(sapply(dt, is.data.frame)))) {
     dat_lst = lapply(dt, setDT)
   } else {
