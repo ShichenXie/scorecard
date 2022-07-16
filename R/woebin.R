@@ -1438,7 +1438,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
   cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
 
   # print bin_adj
-  print(woebin_plot(bin_adj)[[1]])
+  print(woebin_plot(bin_adj, ...)[[1]])
 
   # # breaks
   # if (breaks == "" || is.null(breaks))
