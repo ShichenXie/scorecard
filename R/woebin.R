@@ -967,22 +967,21 @@ woebin = function(
     bins <-
       foreach(
         i = seq_len(xs_len),
-        .combine = list,
-        .final = function(bs) {
-          if (xs_len==1) bs = list(bs)
-          setNames(bs, xs)
-        },
+        .combine = 'rbind',
+        # .final = function(bs) {
+        #   if (xs_len==1) bs = list(bs)
+        #   setNames(bs, xs)
+        # },
         .inorder = FALSE,
         .multicombine = TRUE,
         # .maxcombine = xs_len+1,
-        .errorhandling = "pass"#,
+        .errorhandling = "remove"#,
         # .packages	= 'data.table',
         # .verbose = TRUE
         # .export = c('dt', 'xs', 'ycol', 'breaks_list', 'special_values', 'init_count_distr', 'count_distr_limit', 'stop_limit', 'bin_num_limit', 'bin_close_right', 'method')
       ) %dopar% {
         x_i = xs[i]
         dtm = data.table(y=ycol, variable=x_i, value=dt[[x_i]])
-
         # woebining on one variable
         try(do.call('woebin2', args = list(
           dtm              = dtm,
@@ -999,10 +998,13 @@ woebin = function(
     # finish
     stopCluster(cl)
     # stopImplicitCluster()
+    bins = split(bins, by = 'variable')
+
   }
 
   # check errors in binning
-  error_variables = names(bins)[which(sapply(bins, function(x) inherits(x, 'try-error')))]
+  bins = bins[! sapply(bins, function(x) inherits(x, 'try-error'))]
+  error_variables = setdiff(xs, names(bins))
   if (length(error_variables) > 0) {
     warning(sprintf('The following columns are removed from binning results due to errors:\n%s', paste0(error_variables, collapse=', ')))
     bins = bins[setdiff(names(bins), error_variables)]

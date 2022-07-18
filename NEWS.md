@@ -1,6 +1,6 @@
 # scorecard 0.3.8.1
 
-* fixed a few bugs
+* fixed a bug in woebin function.
 
 # scorecard 0.3.8
 
