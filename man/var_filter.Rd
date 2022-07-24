@@ -6,7 +6,7 @@
 \usage{
 var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
   identical_limit = 0.95, var_rm = NULL, var_kp = NULL,
-  return_rm_reason = FALSE, positive = "bad|1")
+  var_rm_reason = FALSE, positive = "bad|1", ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -25,12 +25,14 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 
 \item{var_kp}{Name of force kept variables, Defaults to NULL.}
 
-\item{return_rm_reason}{Logical, Defaults to FALSE.}
+\item{var_rm_reason}{Logical, Defaults to FALSE.}
 
 \item{positive}{Value of positive class, Defaults to "bad|1".}
+
+\item{...}{Additional parameters.}
 }
 \value{
-A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if return_rm_reason == TRUE.
+A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if var_rm_reason is TRUE.
 }
 \description{
 This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.
@@ -44,7 +46,7 @@ dt_sel = var_filter(germancredit, y = "creditability")
 dim(dt_sel)
 
 # return the reason of varaible removed
-dt_sel2 = var_filter(germancredit, y = "creditability", return_rm_reason = TRUE)
+dt_sel2 = var_filter(germancredit, y = "creditability", var_rm_reason = TRUE)
 lapply(dt_sel2, dim)
 
 str(dt_sel2$dt)

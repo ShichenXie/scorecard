@@ -1,6 +1,7 @@
-# scorecard 0.3.8.1
+# scorecard 0.3.9
 
 * fixed a bug in woebin function.
+* the var_filter function supports to filter variable via step and vif.
 
 # scorecard 0.3.8
 
