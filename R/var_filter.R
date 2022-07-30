@@ -108,8 +108,10 @@ var_filter = function(
     lrx_filter2 =  var_filter_vif(dt[, c(x_selected,y), with=F], y = y, x = x_selected)
     x_selected = lrx_filter2$xkp
 
-    lrx_rm = lapply(c(lrx_filter1$xrm, lrx_filter2$xrm), function(x) data.table(variable = x)) |>
-      rbindlist(idcol = 'rm_reason')
+    lrx_rm = rbindlist(
+      lapply(c(lrx_filter1$xrm, lrx_filter2$xrm), function(x) data.table(variable = x)),
+      idcol = 'rm_reason'
+    )
   }
 
   # add kept variable

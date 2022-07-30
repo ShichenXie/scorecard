@@ -1,3 +1,7 @@
+# scorecard 0.3.9.999
+
+* remove the |> operator to support R < 4.1. 
+
 # scorecard 0.3.9
 
 * fixed a bug in woebin function.
