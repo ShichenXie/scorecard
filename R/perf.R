@@ -282,7 +282,7 @@ plot_lift = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
   max_lift = dt_lift[, ceiling(max(lift,na.rm = TRUE))]
 
   legend_xposition = 0
-  if (dt_lift[cumpop<0.1,mean(lift, na.rm = TRUE)] > dt_lift[cumpop>0.9,mean(lift, na.rm = TRUE)]) legend_xposition = 1
+  if (dt_lift[cumpop<0.5,mean(lift, na.rm = TRUE)] > dt_lift[cumpop>0.5,mean(lift, na.rm = TRUE)]) legend_xposition = 1
   # plotting
   plift = ggplot(data = dt_lift, aes(x=cumpop, color = datset)) +
     geom_line(aes(y = lift), na.rm = TRUE) +
