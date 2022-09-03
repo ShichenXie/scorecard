@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9.999</span>
       </span>
     </div>
 
@@ -81,37 +81,58 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">bins</span>, adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>, special_values <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="st">"tree"</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>, count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>,
-  to <span class="op">=</span> <span class="st">"breaks_list"</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">bins</span>, adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>, special_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"tree"</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>, count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  to <span class="op">=</span> <span class="st">"breaks_list"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>A data frame.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>Name of y variable.</p></dd>
+
+
 <dt>bins</dt>
 <dd><p>A list of data frames. Binning information generated from <code>woebin</code>.</p></dd>
+
+
 <dt>adj_all_var</dt>
 <dd><p>Logical, whether to show variables have monotonic woe trends. Defaults to TRUE</p></dd>
+
+
 <dt>special_values</dt>
 <dd><p>The values specified in special_values will in separate bins. Defaults to NULL.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".</p></dd>
+
+
 <dt>save_breaks_list</dt>
 <dd><p>A string. The file name to save breaks_list. Defaults to None.</p></dd>
+
+
 <dt>count_distr_limit</dt>
 <dd><p>The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of modified break points of each x variables.</p>
+    
+
+<p>A list of modified break points of each x variables.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -120,24 +141,24 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Load German credit data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example I</span></span>
-<span class="r-in"><span class="va">dt</span> <span class="op">=</span> <span class="va">germancredit</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"creditability"</span>, <span class="st">"age.in.years"</span>, <span class="st">"credit.amount"</span><span class="op">)</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">breaks_adj</span> <span class="op">=</span> <span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span>, <span class="va">bins</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bins_final</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">                    breaks_list<span class="op">=</span><span class="va">breaks_adj</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II</span></span>
-<span class="r-in"><span class="va">binsII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">breaks_adjII</span> <span class="op">=</span> <span class="fu">woebin_adj</span><span class="op">(</span><span class="va">germancredit</span>, <span class="st">"creditability"</span>, <span class="va">binsII</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bins_finalII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">                    breaks_list<span class="op">=</span><span class="va">breaks_adjII</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Load German credit data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example I</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">=</span> <span class="va">germancredit</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"creditability"</span>, <span class="st">"age.in.years"</span>, <span class="st">"credit.amount"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">breaks_adj</span> <span class="op">=</span> <span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span>, <span class="va">bins</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bins_final</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>                    breaks_list<span class="op">=</span><span class="va">breaks_adj</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II</span></span></span>
+<span class="r-in"><span><span class="va">binsII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">breaks_adjII</span> <span class="op">=</span> <span class="fu">woebin_adj</span><span class="op">(</span><span class="va">germancredit</span>, <span class="st">"creditability"</span>, <span class="va">binsII</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bins_finalII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>                    breaks_list<span class="op">=</span><span class="va">breaks_adjII</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -152,7 +173,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

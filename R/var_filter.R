@@ -1,3 +1,37 @@
+dat_rm_reason = function(rmlst, var_rm = NULL, var_kp = NULL, lims = NULL) {
+  . = rm_reason = value = variable = NULL
+
+  # lims = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95, coef = 0, vif = 3, p = 0.05)
+  dtlims = suppressWarnings(melt(setDT(lims), variable.name = 'rm_reason'))[
+    , value := as.character(value)
+  ][rm_reason %in% c('missing_rate', 'identical_rate', 'vif', 'p'), value := paste0('>', value)
+  ][rm_reason == 'coef', value := paste('<=', value)
+  ][rm_reason == 'info_value', value := paste0('<', value) ]
+
+  # force removed variable
+  if (!is.null(var_rm)) rmlst$force_removed = data.table(variable=var_rm)
+
+  # variable remove reason
+  rmdt = merge(
+    rbindlist(rmlst, idcol = 'rm_reason'),
+    dtlims, by = 'rm_reason', all.x = TRUE
+  )[!is.na(value) & !is.na(rm_reason), rm_reason := paste0(rm_reason, value)
+  ][, .(rm_reason = paste0(rm_reason, collapse = ', ')), by = 'variable']
+
+  # force kept variable
+  if (!is.null(var_kp)) rmdt = rmdt[!(variable %in% var_kp)]
+
+  return(rmdt)
+}
+
+arglst_update = function(arglst, arglst0) {
+  for (n in names(arglst)) {
+    arglst0[[n]] = arglst[[n]]
+  }
+  arglst = arglst0
+  return(arglst)
+}
+
 #' Variable Filter
 #'
 #' This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.
@@ -5,9 +39,12 @@
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
-#' @param iv_limit The information value of kept variables should >= iv_limit. The Defaults to 0.02.
-#' @param missing_limit The missing rate of kept variables should <= missing_limit. The Defaults to 0.95.
-#' @param identical_limit The identical value rate (excluding NAs) of kept variables should <= identical_limit. The Defaults to 0.95.
+#' @param lims A list of variable filters' thresholds.
+#' \itemize{
+#'   \item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
+#'   \item \code{missing_rate} The missing rate of kept variables should <= 0.95 by defaults.
+#'   \item \code{identical_rate} The identical value rate (excluding NAs) of kept variables should <= 0.95 by defaults.
+#' }
 #' @param var_rm Name of force removed variables, Defaults to NULL.
 #' @param var_kp Name of force kept variables, Defaults to NULL.
 #' @param var_rm_reason Logical, Defaults to FALSE.
@@ -43,18 +80,26 @@
 #'
 var_filter = function(
   dt, y, x = NULL,
-  iv_limit = 0.02, missing_limit = 0.95, identical_limit = 0.95,
+  lims = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95),
   var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ... ) {
   # start time
   start_time = proc.time()
-  cat('[INFO] filtering variables ... \n')
+  cat('[INFO] filtering variables via info_value, missing_rate, identical_rate ... \n')
 
   # no visible binding for global variable
-  . = info_value = variable = rt = rm_reason = NULL
+  . = info_value = variable = rm_reason = NULL
 
   kwargs = list(...)
+  # return_rm_reason param
   return_rm_reason = kwargs$return_rm_reason
   if (!is.null(return_rm_reason)) var_rm_reason = return_rm_reason
+  # lims param
+  if (is.numeric(kwargs$iv_limit)) lims$info_value = kwargs$iv_limit
+  if (is.numeric(kwargs$missing_limit)) lims$missing_rate = kwargs$missing_limit
+  if (is.numeric(kwargs$identical_limit)) lims$identical_rate = kwargs$identical_limit
+  # lims
+  lims = arglst_update(lims, arglst0 = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95))
+
   # set dt as data.table
   dt = setDT(copy(dt)) # copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
@@ -66,12 +111,13 @@ var_filter = function(
   # dt = rep_blank_na(dt)
   # x variable names
   x = x_variable(dt,y,x)
+  x_kp = x
 
   # force removed variables
-  if (!is.null(var_rm))  x = setdiff(x, var_rm)
+  if (!is.null(var_rm))  x_kp = setdiff(x_kp, var_rm)
   # check force kept variables
   if (!is.null(var_kp)) {
-    var_kp2 = intersect(var_kp, x)
+    var_kp2 = intersect(var_kp, x_kp)
     len_diff = length(var_kp) - length(var_kp2)
     if (len_diff > 0) {
       warning("Incorrect inputs; there are ", len_diff, " var_kp variables are not exist in input data, which are removed from var_kp. \n", setdiff(var_kp, var_kp2))
@@ -80,15 +126,15 @@ var_filter = function(
   }
 
   # -iv
-  iv_list = iv(dt, y, x)
+  iv_list = iv(dt, y, x_kp)
   # -na percentage
-  missing_rate = dt[, sapply(.SD, function(a) mean(is.na(a))), .SDcols = x] # sum(is.na(a))/length(a)
+  missing_rate = dt[, sapply(.SD, function(a) mean(is.na(a))), .SDcols = x_kp] # sum(is.na(a))/length(a)
   # -element percentage
   identical_rate = dt[, sapply(.SD, function(a) {
     pt = prop.table(table(a))
     max_rate = ifelse(length(pt) == 0, Inf, max(pt, na.rm = TRUE))
     return(max_rate)
-  } ), .SDcols = x]
+  } ), .SDcols = x_kp]
 
   # datatable  iv na ele
   dt_var_selector =
@@ -97,64 +143,30 @@ var_filter = function(
 
   # remove missing_rate>95 | identical_rate>0.95 | iv<0.02
   # variable datatable selected
-  dt_var_sel = dt_var_selector[info_value >= iv_limit & missing_rate <= missing_limit & identical_rate <= identical_limit]
-  x_selected = dt_var_sel[, as.character(variable)]
-
-  # filter variables via step and vif
-  lrx_rm = NULL
-  if ( isTRUE(kwargs$lr) ) {
-    lrx_filter1 = var_filter_step(dt[, c(x_selected,y), with=F], y = y, x = x_selected)
-    x_selected = lrx_filter1$xkp
-    lrx_filter2 =  var_filter_vif(dt[, c(x_selected,y), with=F], y = y, x = x_selected)
-    x_selected = lrx_filter2$xkp
-
-    lrx_rm = rbindlist(
-      lapply(c(lrx_filter1$xrm, lrx_filter2$xrm), function(x) data.table(variable = x)),
-      idcol = 'rm_reason'
-    )
-  }
+  dt_var_sel = dt_var_selector[info_value >= lims$info_value & missing_rate <= lims$missing_rate & identical_rate <= lims$identical_rate]
+  x_kp = dt_var_sel[, as.character(variable)]
 
   # add kept variable
-  if (!is.null(var_kp))  x_selected = unique(c(x_selected, var_kp))
-  rtdt = dt[, c(x_selected, y), with=FALSE ]
+  if (!is.null(var_kp))  x_kp = unique(c(x_kp, var_kp))
+  rtdt = dt[, c(x_kp, y), with=FALSE ]
 
   # variable removed reason
   if (var_rm_reason) {
-    # variable datatable deleted
-    dt_var_rm = dt_var_selector[
-      info_value < iv_limit | missing_rate > missing_limit | identical_rate > identical_limit
-    ][, `:=`(
-      info_value = ifelse(info_value < iv_limit, paste0("iv < ", iv_limit), ""),
-      missing_rate = ifelse(missing_rate > missing_limit, paste0("miss rate > ",missing_limit), ""),
-      identical_rate = ifelse(identical_rate > identical_limit, paste0("identical rate > ", identical_limit), "")
-    )]
+    rmlst = list(
+      info_value = dt_var_selector[info_value < lims$info_value, .(variable)],
+      missing_rate = dt_var_selector[missing_rate > lims$missing_rate, .(variable)],
+      identical_rate = dt_var_selector[identical_rate > lims$identical_rate, .(variable)]
+    )
+    dtrm = dat_rm_reason(rmlst = rmlst, var_rm = var_rm, var_kp = var_kp, lims = lims)
 
-    dt_rm_reason = melt(
-      dt_var_rm, id.vars = "variable", variable.name="var", value.name="rm_reason", variable.factor=TRUE
-    )[rm_reason != ""][
-      ,.(rm_reason=paste0(rm_reason, collapse=",")), by="variable"]
-
-    # force removed or kept variable
-    if (!is.null(var_rm)) {
-      dt_rm_reason = rbind(
-        dt_rm_reason,
-        data.table(variable=var_rm, rm_reason="force remove")
-      )
-    }
-    if (!is.null(var_kp)) {
-      dt_rm_reason = dt_rm_reason[!(variable %in% var_kp)]
-    }
-    # removed variable via step/vif
-    dt_rm_reason = rbind(dt_rm_reason, lrx_rm)
     fcols = c('info_value', 'missing_rate', 'identical_rate')
-    dt_rm_reason = merge(
-      dt_rm_reason, dt_var_selector, all.y = TRUE
+    rtrm = merge(
+      dtrm, dt_var_selector, all.y = TRUE
     )[order(rm_reason)
-    ][, (fcols) := lapply(.SD, function(x) round(x, 4)), .SDcols = fcols]
+    ][, (fcols) := lapply(.SD, function(x) round(x, 4)), .SDcols = fcols][]
 
     # return
-    rt$dt = rtdt
-    rt$rm = dt_rm_reason
+    rt = list(dt = rtdt, rm = rtrm)
   } else {
     rt = rtdt
   }
@@ -162,15 +174,60 @@ var_filter = function(
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt),ncol(dt),sec_to_hms(rs[3]), ncol(dt)-length(x_selected)-1),"\n")
+  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(x_kp)),"\n")
 
   return(rt)
 }
 
 
 
+# Variable Filter via lr
+var_filter2 = function(
+    dt, y, x=NULL,
+    lims = list(coef = 0, vif = 3, p = 0.05),
+    var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ...) {
+
+  # lims
+  lims = arglst_update(lims, arglst0 = list(coef = 0, vif = 3, p = 0.05))
+
+  # dt
+  dt = setDT(copy(dt))
+  if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
+  # check y
+  dt = check_y(dt, y, positive)
+
+  # step
+  x_kp = x_variable(dt,y,x)
+  if (!is.null(var_rm))  x_kp = setdiff(x_kp, var_rm)
+  dt2 = dt[, c(x_kp, y), with=FALSE ]
+  lrx_filter1 = var_filter_step(dt2, y = y, x = x_kp)
+
+  # vif
+  x_kp = lrx_filter1$xkp
+  dt2 = dt[, c(x_kp, y), with=FALSE ]
+  lrx_filter2 =  var_filter_vif(dt2, y = y, x = x_kp, lims = lims)
+
+  # dat returned
+  x_kp = lrx_filter2$xkp
+  if (!is.null(var_kp))  x_kp = unique(c(x_kp, var_kp))
+  rtdt = dt[, c(x_kp, y), with=FALSE ]
+
+  # var removed reason
+  if (isTRUE(var_rm_reason)) {
+    rtrm = dat_rm_reason(rmlst = c(lrx_filter1$xrm, lrx_filter2$xrm), var_rm = var_rm, var_kp = var_kp, lims = lims)
+    rt = list(dt = rtdt, rm = rtrm)
+  } else {
+    rt = rtdt
+  }
+
+  return(rt)
+}
+
 #' @importFrom stats step
 var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
+  start_time = proc.time()
+  cat('[INFO] filtering via step ... \n')
+
   dt = setDT(copy(dt))
   if (is.null(x)) x = setdiff(names(dt), y)
   dtxy = dt[, c(x, y), with = FALSE]
@@ -186,12 +243,21 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   }
 
   xkp_step = names(coef(m2))[-1]
-  xrm_step = setdiff(x, xkp_step)
-  return(list(xkp = xkp_step, xrm = list(step = xrm_step)))
+  xrm_step = list(step = data.table(variable = setdiff(x, xkp_step)))
+
+  # running time
+  rs = proc.time() - start_time
+  # hms
+  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp_step)),"\n")
+
+  return(list(xkp = xkp_step, xrm = xrm_step))
 }
 
 
-var_filter_vif = function(dt, y, x=NULL, coef_limit = 0, vif_limit = 3, p_limit = 0.05, show_vif=FALSE) {
+var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, vif = 3, p = 0.05), show_vif=FALSE) {
+  start_time = proc.time()
+  cat('[INFO] filtering via coef, vif, p ... \n')
+
   Estimate = variable = gvif = NULL
 
   dt = setDT(copy(dt))
@@ -201,10 +267,11 @@ var_filter_vif = function(dt, y, x=NULL, coef_limit = 0, vif_limit = 3, p_limit 
   m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
   df_vif = vif(m1, merge_coef = TRUE)
 
+  x_kp = x
   # coefficients
-  while (df_vif[-1][Estimate < coef_limit, .N>0]) {
-    x = setdiff(x, df_vif[-1][Estimate < 0,][order(-gvif)][1,variable])
-    dtxy = dt[, c(x, y), with = FALSE]
+  while (df_vif[-1][Estimate <= lims$coef, .N>0]) {
+    x_kp = setdiff(x_kp, df_vif[-1][Estimate <= lims$coef,][order(-gvif)][1,variable])
+    dtxy = dt[, c(x_kp, y), with = FALSE]
 
     m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
     df_vif = vif(m1, merge_coef = TRUE)
@@ -213,31 +280,37 @@ var_filter_vif = function(dt, y, x=NULL, coef_limit = 0, vif_limit = 3, p_limit 
   xrm_coef = setdiff(x, xkp_coef)
 
   # vif
-  x = xkp_coef
-  while (df_vif[gvif >= vif_limit, .N>0]) {
-    x = setdiff(x, df_vif[-1][gvif == max(gvif), variable])
-    dtxy = dt[, c(x, y), with = FALSE]
+  x_kp = xkp_coef
+  while (df_vif[gvif > lims$vif, .N>0]) {
+    x_kp = setdiff(x_kp, df_vif[-1][gvif == max(gvif), variable])
+    dtxy = dt[, c(x_kp, y), with = FALSE]
 
     m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
     df_vif = vif(m1, merge_coef = TRUE)
   }
   xkp_vif = names(coef(m1))[-1]
-  xrm_vif = setdiff(x, xkp_vif)
+  xrm_vif = setdiff(xkp_coef, xkp_vif)
 
   # p
-  x = xkp_vif
-  while (df_vif[get("Pr(>|z|)") >= p_limit, .N>0]) {
-    x = setdiff(x, df_vif[-1][ get("Pr(>|z|)") == max(df_vif[-1][["Pr(>|z|)"]]), variable])
-    dtxy = dt[, c(x, y), with = FALSE]
+  x_kp = xkp_vif
+  while (df_vif[get("Pr(>|z|)") > lims$p, .N>0]) {
+    x_kp = setdiff(x_kp, df_vif[-1][ get("Pr(>|z|)") == max(df_vif[-1][["Pr(>|z|)"]]), variable])
+    dtxy = dt[, c(x_kp, y), with = FALSE]
 
     m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
     df_vif = vif(m1, merge_coef = TRUE)
   }
   xkp_p = names(coef(m1))[-1]
-  xrm_p = setdiff(x, xkp_p)
+  xrm_p = setdiff(xkp_vif, xkp_p)
 
   if (show_vif) print(df_vif)
-  xrm = list(coef = xrm_coef, vif = xrm_vif, p = xrm_p)
+  xrm = list(coef = data.table(variable = xrm_coef), vif = data.table(variable = xrm_vif), p = data.table(variable = xrm_p))
+
+  # running time
+  rs = proc.time() - start_time
+  # hms
+  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp_p)),"\n")
+
   return(list(xkp = xkp_p, xrm = xrm))
 }
 

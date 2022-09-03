@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9.999</span>
       </span>
     </div>
 
@@ -81,58 +81,97 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">woebin</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, x <span class="op">=</span> <span class="cn">NULL</span>, var_skip <span class="op">=</span> <span class="cn">NULL</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>,
-  special_values <span class="op">=</span> <span class="cn">NULL</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span>, count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>,
-  bin_num_limit <span class="op">=</span> <span class="fl">8</span>, positive <span class="op">=</span> <span class="st">"bad|1"</span>, no_cores <span class="op">=</span> <span class="fl">2</span>, print_step <span class="op">=</span> <span class="fl">0L</span>,
-  method <span class="op">=</span> <span class="st">"tree"</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>, ignore_const_cols <span class="op">=</span> <span class="cn">TRUE</span>,
-  ignore_datetime_cols <span class="op">=</span> <span class="cn">TRUE</span>, check_cate_num <span class="op">=</span> <span class="cn">TRUE</span>,
-  replace_blank_inf <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, x <span class="op">=</span> <span class="cn">NULL</span>, var_skip <span class="op">=</span> <span class="cn">NULL</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  special_values <span class="op">=</span> <span class="cn">NULL</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span>, count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  bin_num_limit <span class="op">=</span> <span class="fl">8</span>, positive <span class="op">=</span> <span class="st">"bad|1"</span>, no_cores <span class="op">=</span> <span class="fl">2</span>, print_step <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"tree"</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>, ignore_const_cols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ignore_datetime_cols <span class="op">=</span> <span class="cn">TRUE</span>, check_cate_num <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  replace_blank_inf <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>A data frame with both x (predictor/feature) and y (response/label) variables.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>Name of y variable.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>Name of x variables. Defaults to NULL. If x is NULL, then all columns except y and var_skip are counted as x variables.</p></dd>
+
+
 <dt>var_skip</dt>
 <dd><p>Name of variables that will skip for binning. Defaults to NULL.</p></dd>
+
+
 <dt>breaks_list</dt>
 <dd><p>List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.</p></dd>
+
+
 <dt>special_values</dt>
 <dd><p>the values specified in special_values will be in separate bins. Defaults to NULL.</p></dd>
+
+
 <dt>stop_limit</dt>
 <dd><p>Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.</p></dd>
+
+
 <dt>count_distr_limit</dt>
 <dd><p>The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.</p></dd>
+
+
 <dt>bin_num_limit</dt>
 <dd><p>Integer. The maximum number of binning. Defaults to 8.</p></dd>
+
+
 <dt>positive</dt>
 <dd><p>Value of positive class, defaults to "bad|1".</p></dd>
+
+
 <dt>no_cores</dt>
 <dd><p>Number of CPU cores for parallel computation. Defaults to 2, if it sets to NULL then 90 percent of total cpu cores will be used.</p></dd>
+
+
 <dt>print_step</dt>
 <dd><p>A non-negative integer. Defaults to 1. If print_step&gt;0, print variable names by each print_step-th iteration. If print_step=0 or no_cores&gt;1, no message is print.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".</p></dd>
+
+
 <dt>save_breaks_list</dt>
 <dd><p>A string. The file name to save breaks_list. Defaults to None.</p></dd>
+
+
 <dt>ignore_const_cols</dt>
 <dd><p>Logical. Ignore constant columns. Defaults to TRUE.</p></dd>
+
+
 <dt>ignore_datetime_cols</dt>
 <dd><p>Logical. Ignore datetime columns. Defaults to TRUE.</p></dd>
+
+
 <dt>check_cate_num</dt>
 <dd><p>Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.</p></dd>
+
+
 <dt>replace_blank_inf</dt>
 <dd><p>Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of data frames include binning information for each x variables.</p>
+    
+
+<p>A list of data frames include binning information for each x variables.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -141,16 +180,16 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># load germancredit data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example I</span></span>
-<span class="r-in"><span class="co"># binning of two variables in germancredit dataset</span></span>
-<span class="r-in"><span class="co"># using tree method</span></span>
-<span class="r-in"><span class="va">bins2_tree</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"tree"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load germancredit data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example I</span></span></span>
+<span class="r-in"><span><span class="co"># binning of two variables in germancredit dataset</span></span></span>
+<span class="r-in"><span><span class="co"># using tree method</span></span></span>
+<span class="r-in"><span><span class="va">bins2_tree</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"tree"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] creating woe binning ... </span>
-<span class="r-in"><span class="va">bins2_tree</span></span>
+<span class="r-in"><span><span class="va">bins2_tree</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $credit.amount</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         variable         bin count count_distr neg pos   posprob         woe</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: credit.amount [-Inf,1400)   267       0.267 185  82 0.3071161  0.03366128</span>
@@ -175,72 +214,72 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 0.08329343      own             FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.08329343 for free             FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># using chimerge method</span></span>
-<span class="r-in"><span class="va">bins2_chi</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"chimerge"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># binning in equal freq/width # only supports numerical variables</span></span>
-<span class="r-in"><span class="va">numeric_cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"duration.in.month"</span>, <span class="st">"credit.amount"</span>,</span>
-<span class="r-in">  <span class="st">"installment.rate.in.percentage.of.disposable.income"</span>, <span class="st">"present.residence.since"</span>,</span>
-<span class="r-in">  <span class="st">"age.in.years"</span>, <span class="st">"number.of.existing.credits.at.this.bank"</span>,</span>
-<span class="r-in">  <span class="st">"number.of.people.being.liable.to.provide.maintenance.for"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bins_freq</span>  <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, x<span class="op">=</span><span class="va">numeric_cols</span>, method<span class="op">=</span><span class="st">"freq"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bins_width</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, x<span class="op">=</span><span class="va">numeric_cols</span>, method<span class="op">=</span><span class="st">"width"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># y can be NULL if no label column in dataset</span></span>
-<span class="r-in"><span class="va">bins_freq_noy</span>  <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="cn">NULL</span>, x<span class="op">=</span><span class="va">numeric_cols</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II</span></span>
-<span class="r-in"><span class="co"># setting of stop_limit</span></span>
-<span class="r-in"><span class="co"># stop_limit = 0.1 (by default)</span></span>
-<span class="r-in"><span class="va">bins_x1</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'foreign.worker'</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># stop_limit = 'N', each x value is a bin</span></span>
-<span class="r-in"><span class="va">bins_x1_N</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'foreign.worker'</span>, stop_limit <span class="op">=</span> <span class="st">'N'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example III</span></span>
-<span class="r-in"><span class="co"># binning of the germancredit dataset</span></span>
-<span class="r-in"><span class="va">bins_germ</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">"creditability"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># converting bins_germ into a data frame</span></span>
-<span class="r-in"><span class="co"># bins_germ_df = data.table::rbindlist(bins_germ)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example IV</span></span>
-<span class="r-in"><span class="co"># customizing the breakpoints of binning</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>creditability<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"good"</span>,<span class="st">"bad"</span><span class="op">)</span>,<span class="fl">10</span>,replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">  fill<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">breaks_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  age.in.years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">35</span>, <span class="fl">37</span>, <span class="st">"Inf%,%missing"</span><span class="op">)</span>,</span>
-<span class="r-in">  housing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"own"</span>, <span class="st">"for free%,%rent"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">special_values</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  credit.amount <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2600</span>, <span class="fl">9960</span>, <span class="st">"6850%,%missing"</span><span class="op">)</span>,</span>
-<span class="r-in">  purpose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"education"</span>, <span class="st">"others%,%missing"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">bins_cus_brk</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">dat</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">  x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age.in.years"</span>,<span class="st">"credit.amount"</span>,<span class="st">"housing"</span>,<span class="st">"purpose"</span><span class="op">)</span>,</span>
-<span class="r-in">  breaks_list<span class="op">=</span><span class="va">breaks_list</span>, special_values<span class="op">=</span><span class="va">special_values</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example V</span></span>
-<span class="r-in"><span class="co"># save breaks_list as a R file</span></span>
-<span class="r-in"><span class="va">bins2</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, save_breaks_list<span class="op">=</span><span class="st">'breaks_list'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example VI</span></span>
-<span class="r-in"><span class="co"># setting bin closed on the right</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>scorecard.bin_close_right <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">binsRight</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'age.in.years'</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">binsRight</span></span>
-<span class="r-in"><span class="co"># setting bin close on the left, the default setting</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>scorecard.bin_close_right <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># using chimerge method</span></span></span>
+<span class="r-in"><span><span class="va">bins2_chi</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"chimerge"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># binning in equal freq/width # only supports numerical variables</span></span></span>
+<span class="r-in"><span><span class="va">numeric_cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"duration.in.month"</span>, <span class="st">"credit.amount"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"installment.rate.in.percentage.of.disposable.income"</span>, <span class="st">"present.residence.since"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"age.in.years"</span>, <span class="st">"number.of.existing.credits.at.this.bank"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"number.of.people.being.liable.to.provide.maintenance.for"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bins_freq</span>  <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, x<span class="op">=</span><span class="va">numeric_cols</span>, method<span class="op">=</span><span class="st">"freq"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bins_width</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, x<span class="op">=</span><span class="va">numeric_cols</span>, method<span class="op">=</span><span class="st">"width"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># y can be NULL if no label column in dataset</span></span></span>
+<span class="r-in"><span><span class="va">bins_freq_noy</span>  <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="cn">NULL</span>, x<span class="op">=</span><span class="va">numeric_cols</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II</span></span></span>
+<span class="r-in"><span><span class="co"># setting of stop_limit</span></span></span>
+<span class="r-in"><span><span class="co"># stop_limit = 0.1 (by default)</span></span></span>
+<span class="r-in"><span><span class="va">bins_x1</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'foreign.worker'</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># stop_limit = 'N', each x value is a bin</span></span></span>
+<span class="r-in"><span><span class="va">bins_x1_N</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'foreign.worker'</span>, stop_limit <span class="op">=</span> <span class="st">'N'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example III</span></span></span>
+<span class="r-in"><span><span class="co"># binning of the germancredit dataset</span></span></span>
+<span class="r-in"><span><span class="va">bins_germ</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">"creditability"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># converting bins_germ into a data frame</span></span></span>
+<span class="r-in"><span><span class="co"># bins_germ_df = data.table::rbindlist(bins_germ)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example IV</span></span></span>
+<span class="r-in"><span><span class="co"># customizing the breakpoints of binning</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>creditability<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"good"</span>,<span class="st">"bad"</span><span class="op">)</span>,<span class="fl">10</span>,replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fill<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">breaks_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  age.in.years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">35</span>, <span class="fl">37</span>, <span class="st">"Inf%,%missing"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  housing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"own"</span>, <span class="st">"for free%,%rent"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">special_values</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  credit.amount <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2600</span>, <span class="fl">9960</span>, <span class="st">"6850%,%missing"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  purpose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"education"</span>, <span class="st">"others%,%missing"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">bins_cus_brk</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">dat</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>  x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age.in.years"</span>,<span class="st">"credit.amount"</span>,<span class="st">"housing"</span>,<span class="st">"purpose"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  breaks_list<span class="op">=</span><span class="va">breaks_list</span>, special_values<span class="op">=</span><span class="va">special_values</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example V</span></span></span>
+<span class="r-in"><span><span class="co"># save breaks_list as a R file</span></span></span>
+<span class="r-in"><span><span class="va">bins2</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, save_breaks_list<span class="op">=</span><span class="st">'breaks_list'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example VI</span></span></span>
+<span class="r-in"><span><span class="co"># setting bin closed on the right</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>scorecard.bin_close_right <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">binsRight</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y <span class="op">=</span> <span class="st">'creditability'</span>, x <span class="op">=</span> <span class="st">'age.in.years'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">binsRight</span></span></span>
+<span class="r-in"><span><span class="co"># setting bin close on the left, the default setting</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>scorecard.bin_close_right <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -255,7 +294,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

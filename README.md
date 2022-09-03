@@ -89,5 +89,9 @@ score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
 ## psi
 perf_psi(score = score_list, label = label_list)
 
+# make cutoff decisions -----
+## gains table
+gtbl = gains_table(score = unlist(score_list), label = unlist(label_list))
+
 ```
 

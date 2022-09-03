@@ -27,7 +27,7 @@ bins_adj = woebin(dt_list$train, y="creditability", breaks_list=breaks_adj)
 dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins_adj))
 
 # variable filter 2: missing rate, iv, identical value rate, step and vif ------
-dt_f2 = var_filter(dt_woe_list$train, y="creditability", var_rm_reason = TRUE, lr = TRUE)
+dt_f2 = scorecard:::var_filter2(dt_woe_list$train, y="creditability", var_rm_reason = TRUE)
 # dt_f2$rm
 
 # glm
@@ -57,7 +57,7 @@ perf_psi(score = score_list, label = label_list)
 gtbl = gains_table(score_list, label_list, bin_num = 10)
 library(ggplot2)
 ggplot(data = gtbl) +
-  geom_line(aes(x = approval_rate, y = cum_posprob, color = datset)) +
-  labs(x = 'Approval Rate', y = 'Cumulative Positive Probability')
+  geom_line(aes(x = rejected_rate, y = cum_posprob, color = datset)) +
+  labs(x = 'Rejected Rate', y = 'Cumulative Positive Probability')
 
 

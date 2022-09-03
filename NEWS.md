@@ -1,6 +1,7 @@
 # scorecard 0.3.9.999
 
 * remove the |> operator to support R < 4.1. 
+* modified var_filter function.
 
 # scorecard 0.3.9
 

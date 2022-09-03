@@ -4,8 +4,8 @@
 \alias{var_filter}
 \title{Variable Filter}
 \usage{
-var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
-  identical_limit = 0.95, var_rm = NULL, var_kp = NULL,
+var_filter(dt, y, x = NULL, lims = list(info_value = 0.02, missing_rate =
+  0.95, identical_rate = 0.95), var_rm = NULL, var_kp = NULL,
   var_rm_reason = FALSE, positive = "bad|1", ...)
 }
 \arguments{
@@ -15,11 +15,12 @@ var_filter(dt, y, x = NULL, iv_limit = 0.02, missing_limit = 0.95,
 
 \item{x}{Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.}
 
-\item{iv_limit}{The information value of kept variables should >= iv_limit. The Defaults to 0.02.}
-
-\item{missing_limit}{The missing rate of kept variables should <= missing_limit. The Defaults to 0.95.}
-
-\item{identical_limit}{The identical value rate (excluding NAs) of kept variables should <= identical_limit. The Defaults to 0.95.}
+\item{lims}{A list of variable filters' thresholds.
+\itemize{
+\item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
+\item \code{missing_rate} The missing rate of kept variables should <= 0.95 by defaults.
+\item \code{identical_rate} The identical value rate (excluding NAs) of kept variables should <= 0.95 by defaults.
+}}
 
 \item{var_rm}{Name of force removed variables, Defaults to NULL.}
 

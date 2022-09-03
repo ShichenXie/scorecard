@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9.999</span>
       </span>
     </div>
 
@@ -81,28 +81,41 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">dt</span>, <span class="va">card</span>, only_total_score <span class="op">=</span> <span class="cn">TRUE</span>, print_step <span class="op">=</span> <span class="fl">0L</span>,
-  replace_blank_na <span class="op">=</span> <span class="cn">TRUE</span>, var_kp <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">dt</span>, <span class="va">card</span>, only_total_score <span class="op">=</span> <span class="cn">TRUE</span>, print_step <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  replace_blank_na <span class="op">=</span> <span class="cn">TRUE</span>, var_kp <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>A data frame, which is the original dataset for training model.</p></dd>
+
+
 <dt>card</dt>
 <dd><p>The scorecard generated from the function <code>scorecard</code>.</p></dd>
+
+
 <dt>only_total_score</dt>
 <dd><p>Logical, Defaults to TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.</p></dd>
+
+
 <dt>print_step</dt>
 <dd><p>A non-negative integer. Defaults to 1. If print_step&gt;0, print variable names by each print_step-th iteration. If print_step=0, no message is print.</p></dd>
+
+
 <dt>replace_blank_na</dt>
 <dd><p>Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with <code>woebin</code>'s.</p></dd>
+
+
 <dt>var_kp</dt>
 <dd><p>Name of force kept variables, such as id column. Defaults to NULL.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame in score values</p>
+    
+
+<p>A data frame in score values</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -111,41 +124,41 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># load germancredit data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"germancredit"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># filter variable via missing rate, iv, identical value rate</span></span>
-<span class="r-in"><span class="va">dt_sel</span> <span class="op">=</span> <span class="fu"><a href="var_filter.html">var_filter</a></span><span class="op">(</span><span class="va">germancredit</span>, <span class="st">"creditability"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] filtering variables ... </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># woe binning ------</span></span>
-<span class="r-in"><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_sel</span>, <span class="st">"creditability"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># load germancredit data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"germancredit"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># filter variable via missing rate, iv, identical value rate</span></span></span>
+<span class="r-in"><span><span class="va">dt_sel</span> <span class="op">=</span> <span class="fu"><a href="var_filter.html">var_filter</a></span><span class="op">(</span><span class="va">germancredit</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] filtering variables via info_value, missing_rate, identical_rate ... </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># woe binning ------</span></span></span>
+<span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_sel</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] creating woe binning ... </span>
-<span class="r-in"><span class="va">dt_woe</span> <span class="op">=</span> <span class="fu"><a href="woebin_ply.html">woebin_ply</a></span><span class="op">(</span><span class="va">dt_sel</span>, <span class="va">bins</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">dt_woe</span> <span class="op">=</span> <span class="fu"><a href="woebin_ply.html">woebin_ply</a></span><span class="op">(</span><span class="va">dt_sel</span>, <span class="va">bins</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] converting into woe values ... </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># glm ------</span></span>
-<span class="r-in"><span class="va">m</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span> <span class="op">~</span> <span class="va">.</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dt_woe</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Select a formula-based model by AIC</span></span>
-<span class="r-in"><span class="va">m_step</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">m</span>, direction<span class="op">=</span><span class="st">"both"</span>, trace<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">m</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="va">m_step</span><span class="op">$</span><span class="va">call</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># scorecard</span></span>
-<span class="r-in"><span class="co"># Example I # creat a scorecard</span></span>
-<span class="r-in"><span class="va">card</span> <span class="op">=</span> <span class="fu"><a href="scorecard.html">scorecard</a></span><span class="op">(</span><span class="va">bins</span>, <span class="va">m</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">xnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'_woe'</span>, <span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">card2</span> <span class="op">=</span> <span class="fu"><a href="scorecard2.html">scorecard2</a></span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">'creditability'</span>, x<span class="op">=</span><span class="va">xnames</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># credit score</span></span>
-<span class="r-in"><span class="co"># Example I # only total score</span></span>
-<span class="r-in"><span class="va">score1</span> <span class="op">=</span> <span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">card</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II # credit score for both total and each variable</span></span>
-<span class="r-in"><span class="va">score2</span> <span class="op">=</span> <span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">card</span>, only_total_score <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># }</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># glm ------</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span> <span class="op">~</span> <span class="va">.</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dt_woe</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Select a formula-based model by AIC</span></span></span>
+<span class="r-in"><span><span class="va">m_step</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">m</span>, direction<span class="op">=</span><span class="st">"both"</span>, trace<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="va">m_step</span><span class="op">$</span><span class="va">call</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># scorecard</span></span></span>
+<span class="r-in"><span><span class="co"># Example I # creat a scorecard</span></span></span>
+<span class="r-in"><span><span class="va">card</span> <span class="op">=</span> <span class="fu"><a href="scorecard.html">scorecard</a></span><span class="op">(</span><span class="va">bins</span>, <span class="va">m</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">xnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'_woe'</span>, <span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">card2</span> <span class="op">=</span> <span class="fu"><a href="scorecard2.html">scorecard2</a></span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">'creditability'</span>, x<span class="op">=</span><span class="va">xnames</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># credit score</span></span></span>
+<span class="r-in"><span><span class="co"># Example I # only total score</span></span></span>
+<span class="r-in"><span><span class="va">score1</span> <span class="op">=</span> <span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">card</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II # credit score for both total and each variable</span></span></span>
+<span class="r-in"><span><span class="va">score2</span> <span class="op">=</span> <span class="fu">scorecard_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">card</span>, only_total_score <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -160,7 +173,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

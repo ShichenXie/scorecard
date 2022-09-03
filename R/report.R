@@ -153,7 +153,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   bin_num = ifelse('bin_num' %in% names(kwargs), kwargs$bin_num, 10)
   bin_type = ifelse('bin_type' %in% names(kwargs), kwargs$bin_type, 'freq')
   gains_tbl = gains_table(score = rbindlist(score_lst), label = rbindlist(label_list), bin_num = bin_num, bin_type=bin_type)
-  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'negative', 'cumulative negative', 'positive', 'cumulative positive', 'count distribution', 'positive probability', 'approval rate', 'cumulative positive probability')
+  gains_table_cols = c('dataset', 'bin', 'count', 'cumulative count', 'negative', 'positive', 'cumulative negative', 'cumulative positive', 'count distribution', 'positive probability', 'cumulative positive probability', 'rejected rate', 'approval rate')
 
 
   wb <- createWorkbook()

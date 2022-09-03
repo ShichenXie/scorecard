@@ -736,35 +736,26 @@ pf_cutoffs = function(dt_ev_lst, pred_desc = FALSE) {
 #'
 #' @examples
 #' \donttest{
-#' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_f = var_filter(germancredit, "creditability")
+#' dtvf = var_filter(germancredit, "creditability")
+#'
 #' # breaking dt into train and test
-#' dt_list = split_df(dt_f, "creditability")
+#' dt_list = split_df(dtvf, "creditability")
 #' label_list = lapply(dt_list, function(x) x$creditability)
 #'
-#' # woe binning ------
+#' # woe binning
 #' bins = woebin(dt_list$train, "creditability")
 #' # converting train and test into woe values
 #' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
 #'
-#' # glm ------
-#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
-#' # vif(m1, merge_coef = TRUE)
-#' # Select a formula-based model by AIC
-#' m_step = step(m1, direction="both", trace=FALSE)
-#' m2 = eval(m_step$call)
-#' # vif(m2, merge_coef = TRUE)
-#'
 #' # predicted proability
-#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
+#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
+#' pred_list = lapply(dt_woe_list, function(x) predict(m1, type = 'response', x))
 #'
-#' # scorecard ------
-#' card = scorecard(bins, m2)
-#'
-#' # credit score, only_total_score = TRUE
+#' # credit score
+#' card = scorecard(bins, m1)
 #' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
 #' # credit score, only_total_score = FALSE
 #' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card,
@@ -787,27 +778,6 @@ pf_cutoffs = function(dt_ev_lst, pred_desc = FALSE) {
 #' ## predicted score
 #' # perf_eva(score_list, label_list)
 #'
-#'
-#' ###### perf_psi examples ######
-#' # Example I # only total psi
-#' psi1 = perf_psi(score = score_list, label = label_list)
-#' psi1$psi  # psi data frame
-#' psi1$pic  # pic of score distribution
-#'
-#' # Example II # both total and variable psi
-#' psi2 = perf_psi(score = score_list2, label = label_list)
-#' # psi2$psi  # psi data frame
-#' # psi2$pic  # pic of score distribution
-#'
-#'
-#' ###### gains_table examples ######
-#' # Example I, input score and label can be a list or a vector
-#' g1 = gains_table(score = score_list$train, label = label_list$train)
-#' g2 = gains_table(score = score_list, label = label_list)
-#'
-#' # Example II, specify the bins number and type
-#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
 #' }
 #'
 #' @import data.table ggplot2 gridExtra
@@ -982,12 +952,15 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
   dt_distr = dt_distr[, .(
     bin,
     count, cum_count = cumsum(count),
-    neg,  cum_neg = cumsum(neg),
-    pos,   cum_pos = cumsum(pos),
-    count_distr = count/sum(count),
-    posprob=pos/count,
-    approval_rate = cumsum(count)/sum(count),
-    cum_posprob = cumsum(pos)/cumsum(count),
+    neg,
+    pos,
+    cum_neg = cumsum(neg),
+    cum_pos = cumsum(pos),
+    count_distr   = round(count/sum(count),4),
+    posprob       = round(pos/count,4),
+    cum_posprob   = round(cumsum(pos)/cumsum(count),4),
+    rejected_rate = round(cumsum(count)/sum(count),4),
+    approval_rate = round(1-cumsum(count)/sum(count),4),
     bin_avg
   ), by = datset]
   if (!ret_bin_avg) dt_distr = dt_distr[, bin_avg := NULL]
@@ -995,7 +968,7 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 }
 #' Gains Table
 #'
-#' \code{gains_table} creates a data frame including distribution of total, negative, positive, positive rate and approval rate by score bins. It provides both equal width and equal frequency intervals on score binning.
+#' \code{gains_table} creates a data frame including distribution of total, negative, positive, positive rate and rejected rate by score bins. The gains table is used in conjunction with financial and operational considerations to make cutoff decisions.
 #'
 #' @param score A list of credit score for actual and expected data samples. For example, score = list(actual = scoreA, expect = scoreE).
 #' @param label A list of label value for actual and expected data samples. For example, label = list(actual = labelA, expect = labelE).
@@ -1011,74 +984,32 @@ gains_table_format = function(dt_distr, ret_bin_avg=FALSE) {
 #'
 #' @examples
 #' \donttest{
-#' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_f = var_filter(germancredit, "creditability")
+#' dtvf = var_filter(germancredit, "creditability")
+#'
 #' # breaking dt into train and test
-#' dt_list = split_df(dt_f, "creditability")
+#' dt_list = split_df(dtvf, "creditability")
 #' label_list = lapply(dt_list, function(x) x$creditability)
 #'
-#' # woe binning ------
+#' # binning
 #' bins = woebin(dt_list$train, "creditability")
-#' # converting train and test into woe values
-#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
+#' # scorecard
+#' card = scorecard2(bins, dt = dt_list$train, y = 'creditability')
 #'
-#' # glm ------
-#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
-#' # vif(m1, merge_coef = TRUE)
-#' # Select a formula-based model by AIC
-#' m_step = step(m1, direction="both", trace=FALSE)
-#' m2 = eval(m_step$call)
-#' # vif(m2, merge_coef = TRUE)
-#'
-#' # predicted proability
-#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
-#'
-#' # scorecard ------
-#' card = scorecard(bins, m2)
-#'
-#' # credit score, only_total_score = TRUE
+#' # credit score
 #' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
-#' # credit score, only_total_score = FALSE
-#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
-#'
-#'
-#' ###### perf_eva examples ######
-#' # Example I, one datset
-#' ## predicted p1
-#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
-#' ## predicted score
-#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
-#'
-#' # Example II, multiple datsets
-#' ## predicted p1
-#' perf_eva(pred = pred_list, label = label_list)
-#' ## predicted score
-#' # perf_eva(score_list, label_list)
-#'
-#'
-#' ###### perf_psi examples ######
-#' # Example I # only total psi
-#' psi1 = perf_psi(score = score_list, label = label_list)
-#' psi1$psi  # psi data frame
-#' psi1$pic  # pic of score distribution
-#'
-#' # Example II # both total and variable psi
-#' psi2 = perf_psi(score = score_list2, label = label_list)
-#' # psi2$psi  # psi data frame
-#' # psi2$pic  # pic of score distribution
 #'
 #'
 #' ###### gains_table examples ######
-#' # Example I, input score and label can be a list or a vector
-#' g1 = gains_table(score = score_list$train, label = label_list$train)
+#' # Example I, input score and label can be a vector or a list
+#' g1 = gains_table(score = unlist(score_list), label = unlist(label_list))
 #' g2 = gains_table(score = score_list, label = label_list)
 #'
 #' # Example II, specify the bins number and type
-#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
+#' g3 = gains_table(score = unlist(score_list), label = unlist(label_list), bin_num = 20)
+#' g4 = gains_table(score = unlist(score_list), label = unlist(label_list), method = 'width')
 #' }
 #'
 #' @export
@@ -1184,8 +1115,8 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
 
   # distribution table
   dt_distr = dt_psi[, .(count=.N, neg = sum(label==0), pos = sum(label==1), bin_avg = mean(score)), keyby = .(datset,bin)
-                  ][order(datset, -bin)]
-  if (!is_score) dt_distr = dt_distr[order(datset, bin)] #is predicted probability
+                  ][order(datset, bin)]
+  if (!is_score) dt_distr = dt_distr[order(datset, -bin)] #is predicted probability
   # gains table
   dt_distr = gains_table_format(dt_distr, ret_bin_avg)
   return(dt_distr)
@@ -1218,52 +1149,25 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
 #'
 #' @examples
 #' \donttest{
-#' # data preparing ------
 #' # load germancredit data
 #' data("germancredit")
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_f = var_filter(germancredit, "creditability")
+#' dtvf = var_filter(germancredit, "creditability")
+#'
 #' # breaking dt into train and test
-#' dt_list = split_df(dt_f, "creditability")
+#' dt_list = split_df(dtvf, "creditability")
 #' label_list = lapply(dt_list, function(x) x$creditability)
 #'
-#' # woe binning ------
+#' # binning
 #' bins = woebin(dt_list$train, "creditability")
-#' # converting train and test into woe values
-#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
+#' # scorecard
+#' card = scorecard2(bins, dt = dt_list$train, y = 'creditability')
 #'
-#' # glm ------
-#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
-#' # vif(m1, merge_coef = TRUE)
-#' # Select a formula-based model by AIC
-#' m_step = step(m1, direction="both", trace=FALSE)
-#' m2 = eval(m_step$call)
-#' # vif(m2, merge_coef = TRUE)
-#'
-#' # predicted proability
-#' pred_list = lapply(dt_woe_list, function(x) predict(m2, type = 'response', x))
-#'
-#' # scorecard ------
-#' card = scorecard(bins, m2)
-#'
-#' # credit score, only_total_score = TRUE
+#' # credit score
 #' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
 #' # credit score, only_total_score = FALSE
-#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card, only_total_score=FALSE))
-#'
-#'
-#' ###### perf_eva examples ######
-#' # Example I, one datset
-#' ## predicted p1
-#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability, title = 'train')
-#' ## predicted score
-#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability, title = 'train')
-#'
-#' # Example II, multiple datsets
-#' ## predicted p1
-#' perf_eva(pred = pred_list, label = label_list)
-#' ## predicted score
-#' # perf_eva(score_list, label_list)
+#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card,
+#'   only_total_score=FALSE))
 #'
 #'
 #' ###### perf_psi examples ######
@@ -1280,15 +1184,6 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
 #' # psi2$psi  # psi data frame
 #' # psi2$pic  # pic of score distribution
 #'
-#'
-#' ###### gains_table examples ######
-#' # Example I, input score and label can be a list or a vector
-#' g1 = gains_table(score = score_list$train, label = label_list$train)
-#' g2 = gains_table(score = score_list, label = label_list)
-#'
-#' # Example II, specify the bins number and type
-#' g3 = gains_table(score = score_list, label = label_list, bin_num = 20)
-#' g4 = gains_table(score = score_list, label = label_list, method = 'width')
 #' }
 #' @import data.table ggplot2 gridExtra
 #' @export

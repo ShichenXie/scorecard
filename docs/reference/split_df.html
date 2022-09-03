@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9.999</span>
       </span>
     </div>
 
@@ -81,53 +81,66 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">split_df</span><span class="op">(</span><span class="va">dt</span>, y <span class="op">=</span> <span class="cn">NULL</span>, ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.3</span><span class="op">)</span>, name_dfs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"train"</span>,
-  <span class="st">"test"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">618</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">split_df</span><span class="op">(</span><span class="va">dt</span>, y <span class="op">=</span> <span class="cn">NULL</span>, ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.3</span><span class="op">)</span>, name_dfs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"train"</span>,</span>
+<span>  <span class="st">"test"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">618</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>A data frame.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.</p></dd>
+
+
 <dt>ratios</dt>
 <dd><p>A numeric vector indicating the ratio of total rows contained in each split, defaults to c(0.7, 0.3).</p></dd>
+
+
 <dt>name_dfs</dt>
 <dd><p>Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.</p></dd>
+
+
 <dt>seed</dt>
 <dd><p>A random seed, Defaults to 618.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of data frames</p>
+    
+
+<p>A list of data frames</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># load German credit data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example I</span></span>
-<span class="r-in"><span class="va">dt_list</span> <span class="op">=</span> <span class="fu">split_df</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># dimensions of each split data sets</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="va">dim</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load German credit data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example I</span></span></span>
+<span class="r-in"><span><span class="va">dt_list</span> <span class="op">=</span> <span class="fu">split_df</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># dimensions of each split data sets</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="va">dim</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $train</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 681  21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $test</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 319  21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II</span></span>
-<span class="r-in"><span class="va">dt_list2</span> <span class="op">=</span> <span class="fu">split_df</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span>
-<span class="r-in">  ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
-<span class="r-in">  name_dfs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'train'</span>, <span class="st">'test'</span>, <span class="st">'valid'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list2</span>, <span class="va">dim</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II</span></span></span>
+<span class="r-in"><span><span class="va">dt_list2</span> <span class="op">=</span> <span class="fu">split_df</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
+<span class="r-in"><span>  ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  name_dfs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'train'</span>, <span class="st">'test'</span>, <span class="st">'valid'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list2</span>, <span class="va">dim</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $train</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 491  21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -137,7 +150,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> $valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 211  21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -152,7 +165,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

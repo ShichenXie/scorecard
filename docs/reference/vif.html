@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9.999</span>
       </span>
     </div>
 
@@ -81,19 +81,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">vif</span><span class="op">(</span><span class="va">model</span>, merge_coef <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vif</span><span class="op">(</span><span class="va">model</span>, merge_coef <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>model</dt>
 <dd><p>A model object.</p></dd>
+
+
 <dt>merge_coef</dt>
 <dd><p>Logical, whether to merge with coefficients of model summary matrix. Defaults to FALSE.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.</p>
+    
+
+<p>A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -102,39 +107,39 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example I</span></span>
-<span class="r-in"><span class="va">fit1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span><span class="op">~</span> <span class="va">age.in.years</span> <span class="op">+</span> <span class="va">credit.amount</span> <span class="op">+</span></span>
-<span class="r-in">  <span class="va">present.residence.since</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">vif</span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example I</span></span></span>
+<span class="r-in"><span><span class="va">fit1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span><span class="op">~</span> <span class="va">age.in.years</span> <span class="op">+</span> <span class="va">credit.amount</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="va">present.residence.since</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">vif</span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   variable     gvif</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:            age.in.years 1.068963</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:           credit.amount 1.006434</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: present.residence.since 1.063583</span>
-<span class="r-in"><span class="fu">vif</span><span class="op">(</span><span class="va">fit1</span>, merge_coef<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">vif</span><span class="op">(</span><span class="va">fit1</span>, merge_coef<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   variable      Estimate Std. Error z value Pr(&gt;|z|)     gvif</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:             (Intercept)  0.6360894980     0.2774  2.2927   0.0219       NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:            age.in.years  0.0215127873     0.0068  3.1789   0.0015 1.068963</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:           credit.amount -0.0001159332     0.0000 -4.8739   0.0000 1.006434</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4: present.residence.since -0.0514901312     0.0658 -0.7831   0.4336 1.063583</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II</span></span>
-<span class="r-in"><span class="va">fit2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span><span class="op">~</span> <span class="va">status.of.existing.checking.account</span> <span class="op">+</span></span>
-<span class="r-in">  <span class="va">credit.history</span> <span class="op">+</span> <span class="va">credit.amount</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">germancredit</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">vif</span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II</span></span></span>
+<span class="r-in"><span><span class="va">fit2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span><span class="op">~</span> <span class="va">status.of.existing.checking.account</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="va">credit.history</span> <span class="op">+</span> <span class="va">credit.amount</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">germancredit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">vif</span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               variable     gvif df gvif^(1/(2*df))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: status.of.existing.checking.account 1.054607  3        1.008901</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:                      credit.history 1.061760  4        1.007519</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:                       credit.amount 1.049244  1        1.024326</span>
-<span class="r-in"><span class="fu">vif</span><span class="op">(</span><span class="va">fit2</span>, merge_coef<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">vif</span><span class="op">(</span><span class="va">fit2</span>, merge_coef<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The summary matrix cant merge with vif.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               variable     gvif df gvif^(1/(2*df))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: status.of.existing.checking.account 1.054607  3        1.008901</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:                      credit.history 1.061760  4        1.007519</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:                       credit.amount 1.049244  1        1.024326</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -149,7 +154,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
