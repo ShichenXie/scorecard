@@ -4,9 +4,9 @@
 \alias{scorecard2}
 \title{Creating a Scorecard}
 \usage{
-scorecard2(bins, dt, y, x = NULL, posprob_pop = NULL, points0 = 600,
-  odds0 = 1/19, pdo = 50, basepoints_eq0 = FALSE, digits = 0,
-  return_prob = FALSE, positive = "bad|1", ...)
+scorecard2(bins, dt, y, x = NULL, points0 = 600, odds0 = 1/19,
+  pdo = 50, basepoints_eq0 = FALSE, digits = 0, return_prob = FALSE,
+  posprob_pop = NULL, posprob_sample = NULL, positive = "bad|1", ...)
 }
 \arguments{
 \item{bins}{Binning information generated from \code{woebin} function.}
@@ -16,8 +16,6 @@ scorecard2(bins, dt, y, x = NULL, posprob_pop = NULL, points0 = 600,
 \item{y}{Name of y variable.}
 
 \item{x}{Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.}
-
-\item{posprob_pop}{Positive probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.}
 
 \item{points0}{Target points, default 600.}
 
@@ -30,6 +28,10 @@ scorecard2(bins, dt, y, x = NULL, posprob_pop = NULL, points0 = 600,
 \item{digits}{The number of digits after the decimal point for points calculation. Default 0.}
 
 \item{return_prob}{Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.}
+
+\item{posprob_pop}{Positive probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.}
+
+\item{posprob_sample}{Positive probability of sample. Accepted range: 0-1,  default to the positive probability of the input dt.}
 
 \item{positive}{Value of positive class, default "bad|1".}
 
@@ -45,34 +47,25 @@ A list of scorecard data frames
 \donttest{
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
+dtvf = var_filter(germancredit, "creditability")
+# split into train and test
+dtlst = split_df(dtvf, y = 'creditability')
+# binning
+bins = woebin(dtlst$train, "creditability")
 
-# woe binning ------
-bins = woebin(dt_sel, "creditability")
-dt_woe = woebin_ply(dt_sel, bins)
+# train only
+## create scorecard
+card1 = scorecard2(bins=bins, dt=dtlst$train, y='creditability')
+## scorecard and predicted probability
+cardprob1 = scorecard2(bins=bins, dt=dtlst$train, y='creditability', return_prob = TRUE)
 
-# glm ------
-m = glm(creditability ~ ., family = binomial(), data = dt_woe)
+# both train and test
+## create scorecard
+card2 = scorecard2(bins=bins, dt=dtlst, y='creditability')
+## scorecard and predicted probability
+cardprob2 = scorecard2(bins=bins, dt=dtlst, y='creditability', return_prob = TRUE)
 
-# Select a formula-based model by AIC
-m_step = step(m, direction="both", trace=FALSE)
-m = eval(m_step$call)
-
-# scorecard
-# Example I # creat a scorecard
-card = scorecard(bins, m)
-
-xnames = sub('_woe', '', names(coef(m))[-1])
-card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
-
-# credit score
-# Example I # only total score
-score1 = scorecard_ply(germancredit, card)
-
-# Example II # credit score for both total and each variable
-score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 }
 }
 \seealso{

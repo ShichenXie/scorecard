@@ -32,34 +32,22 @@ A list of scorecard data frames
 \donttest{
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
+dtvf = var_filter(germancredit, "creditability")
+# split into train and test
+dtlst = split_df(dtvf, y = 'creditability')
+# binning
+bins = woebin(dtlst$train, "creditability")
 
-# woe binning ------
-bins = woebin(dt_sel, "creditability")
-dt_woe = woebin_ply(dt_sel, bins)
-
-# glm ------
-m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-
-# Select a formula-based model by AIC
-m_step = step(m, direction="both", trace=FALSE)
-m = eval(m_step$call)
-
+# to woe
+dtlst_woe = lapply(dtlst, function(d) woebin_ply(d, bins))
+# lr
+m = glm(creditability ~ ., family = binomial(), data = dtlst_woe$train)
 # scorecard
-# Example I # creat a scorecard
 card = scorecard(bins, m)
+prob = predict(m, dtlst_woe$train, type='response')
+# problst = lapply(dtlst_woe, function(x) predict(m, x, type='response'))
 
-xnames = sub('_woe', '', names(coef(m))[-1])
-card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
-
-# credit score
-# Example I # only total score
-score1 = scorecard_ply(germancredit, card)
-
-# Example II # credit score for both total and each variable
-score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 }
 }
 \seealso{

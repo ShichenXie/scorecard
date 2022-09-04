@@ -1,8 +1,9 @@
 # scorecard 0.3.9.999
 
 * remove the |> operator to support R < 4.1. 
-* modified var_filter function.
-
+* modified var_filter and scorecard2 function. 
+* update examples for the scorecard and perf functions.
+ 
 # scorecard 0.3.9
 
 * fixed a bug in woebin function.

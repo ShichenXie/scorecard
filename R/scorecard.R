@@ -54,34 +54,22 @@ p2score = function(p, points0=600, odds0=1/19, pdo=50) {
 #' \donttest{
 #' # load germancredit data
 #' data("germancredit")
-#'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
+#' dtvf = var_filter(germancredit, "creditability")
+#' # split into train and test
+#' dtlst = split_df(dtvf, y = 'creditability')
+#' # binning
+#' bins = woebin(dtlst$train, "creditability")
 #'
-#' # woe binning ------
-#' bins = woebin(dt_sel, "creditability")
-#' dt_woe = woebin_ply(dt_sel, bins)
-#'
-#' # glm ------
-#' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-#'
-#' # Select a formula-based model by AIC
-#' m_step = step(m, direction="both", trace=FALSE)
-#' m = eval(m_step$call)
-#'
+#' # to woe
+#' dtlst_woe = lapply(dtlst, function(d) woebin_ply(d, bins))
+#'# lr
+#' m = glm(creditability ~ ., family = binomial(), data = dtlst_woe$train)
 #' # scorecard
-#' # Example I # creat a scorecard
 #' card = scorecard(bins, m)
+#' prob = predict(m, dtlst_woe$train, type='response')
+#' # problst = lapply(dtlst_woe, function(x) predict(m, x, type='response'))
 #'
-#' xnames = sub('_woe', '', names(coef(m))[-1])
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
-#'
-#' # credit score
-#' # Example I # only total score
-#' score1 = scorecard_ply(germancredit, card)
-#'
-#' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 #' }
 #' @import data.table
 #' @export
@@ -131,13 +119,14 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
 #' @param x Name of x variables. If it is NULL, then all variables in bins are used. Defaults to NULL.
-#' @param posprob_pop Positive probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.
 #' @param points0 Target points, default 600.
 #' @param odds0 Target odds, default 1/19. Odds = p/(1-p).
 #' @param pdo Points to Double the Odds, default 50.
 #' @param basepoints_eq0 Logical, defaults to FALSE. If it is TRUE, the basepoints will equally distribute to each variable.
 #' @param digits The number of digits after the decimal point for points calculation. Default 0.
 #' @param return_prob Logical, defaults to FALSE. If it is TRUE, the predict probability will also return.
+#' @param posprob_pop Positive probability of population. Accepted range: 0-1,  default to NULL. If it is not NULL, the model will adjust for oversampling.
+#' @param posprob_sample Positive probability of sample. Accepted range: 0-1,  default to the positive probability of the input dt.
 #' @param positive Value of positive class, default "bad|1".
 #' @param ... Additional parameters.
 #' @return A list of scorecard data frames
@@ -148,88 +137,91 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
 #' \donttest{
 #' # load germancredit data
 #' data("germancredit")
-#'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
+#' dtvf = var_filter(germancredit, "creditability")
+#' # split into train and test
+#' dtlst = split_df(dtvf, y = 'creditability')
+#' # binning
+#' bins = woebin(dtlst$train, "creditability")
 #'
-#' # woe binning ------
-#' bins = woebin(dt_sel, "creditability")
-#' dt_woe = woebin_ply(dt_sel, bins)
+#' # train only
+#' ## create scorecard
+#' card1 = scorecard2(bins=bins, dt=dtlst$train, y='creditability')
+#' ## scorecard and predicted probability
+#' cardprob1 = scorecard2(bins=bins, dt=dtlst$train, y='creditability', return_prob = TRUE)
 #'
-#' # glm ------
-#' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
+#' # both train and test
+#' ## create scorecard
+#' card2 = scorecard2(bins=bins, dt=dtlst, y='creditability')
+#' ## scorecard and predicted probability
+#' cardprob2 = scorecard2(bins=bins, dt=dtlst, y='creditability', return_prob = TRUE)
 #'
-#' # Select a formula-based model by AIC
-#' m_step = step(m, direction="both", trace=FALSE)
-#' m = eval(m_step$call)
-#'
-#' # scorecard
-#' # Example I # creat a scorecard
-#' card = scorecard(bins, m)
-#'
-#' xnames = sub('_woe', '', names(coef(m))[-1])
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
-#'
-#' # credit score
-#' # Example I # only total score
-#' score1 = scorecard_ply(germancredit, card)
-#'
-#' # Example II # credit score for both total and each variable
-#' score2 = scorecard_ply(germancredit, card, only_total_score = FALSE)
 #' }
 #' @import data.table
 #' @importFrom stats predict
 #' @export
-scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0, return_prob = FALSE, positive='bad|1', ...) {
+scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, basepoints_eq0=FALSE, digits=0, return_prob = FALSE, posprob_pop = NULL, posprob_sample = NULL, positive='bad|1', ...) {
   variable = wgts = NULL
 
-  dt = setDT(copy(dt))
+  # data frame to list
+  if (inherits(dt, 'data.frame')) dt = list(dat=dt)
+  # check y column
+  dt = lapply(dt, function(d) check_y(d, y, positive))
+  dt0 = dt[[1]]
 
+  # param
   kwargs = list(...)
   badprob_pop = kwargs[['kwargs']]
   if (!is.null(badprob_pop)) posprob_pop = badprob_pop
 
-  # bins # if (is.list(bins)) rbindlist(bins)
+  # bind bins
   if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
   bins = setDT(bins)
 
-  # check x and y
-  dt = check_y(dt, y, positive)
-  # x
+  # check xs
   x_bins = bins[, unique(variable)]
   if (is.null(x)) x = x_bins
-  x = x_variable(dt,y,x)
+  x = x_variable(dt0,y,x)
 
-  # dt to woe values
-  dt_woe = do.call(woebin_ply, args = c(list(dt=dt, bins=bins, print_info=FALSE), list(...)))
-
+  # dt to woe
+  dt_woe = lapply(dt, function(d) do.call(woebin_ply, args = c(list(dt=d, bins=bins, print_info=FALSE), list(...))))
+  dt0_woe = dt_woe[[1]]
 
   # model
-  if (!is.null(posprob_pop) && posprob_pop > 0 && posprob_pop < 1) {
-    p1 = posprob_pop # positive probability in population
-    r1 = dt[, table(get(y))/.N][['1']] # positive probability in sample dataset
-    dt_woe = dt_woe[grepl(positive, get(y)), wgts := p1/r1
+  if (is.numeric(posprob_pop) && posprob_pop > 0 && posprob_pop < 1) {
+    # positive probability in population
+    p1 = posprob_pop
+    # positive probability in sample dataset
+    if (is.numeric(posprob_sample) && posprob_sample > 0 && posprob_sample < 1) {
+      r1 = posprob_sample
+    } else {
+      r1 = dt0[, table(get(y))/.N][['1']]
+    }
+
+    dt0_woe = dt0_woe[grepl(positive, get(y)), wgts := p1/r1
                   ][is.na(wgts), wgts := (1-p1)/(1-r1)
                   ][,c(paste0(x,"_woe"), "wgts", y), with=F]
 
     fmla = as.formula(sprintf('%s ~ %s', y, paste(paste0(x,"_woe"), collapse=" + ")))
-    model = glm(fmla, family = 'quasibinomial', weights = wgts, data = dt_woe)
+    model = glm(fmla, family = 'quasibinomial', weights = wgts, data = dt0_woe)
   } else {
 
     model = glm(
       as.formula(paste(y, "~ .")), family = 'binomial',
-      data = dt_woe[,c(paste0(x,"_woe"),y), with=F])
+      data = dt0_woe[,c(paste0(x,"_woe"),y), with=F])
   }
 
   na_coef = coef(model)[is.na(coef(model))]
   if (length(na_coef) > 0) warning(sprintf('The model coefficients for the following %s variables are NA, please remove these variables:\n%s', length(na_coef), paste(sub('_woe', '', names(na_coef)), collapse = ',')))
 
-
+  # scorecard
   card = scorecard(bins = bins, model = model, points0 = points0, odds0 = odds0, pdo = pdo, basepoints_eq0 = basepoints_eq0, digits = digits)
+
+  # returns
   if (return_prob) {
     rt = list(
       card = card,
-      prob = predict(model, dt_woe, type='response')
+      prob = lapply(dt_woe, function(d) predict(model, d, type='response'))
     )
   } else {
     rt = card
@@ -256,27 +248,14 @@ scorecard2 = function(bins, dt, y, x=NULL, posprob_pop = NULL, points0=600, odds
 #' \donttest{
 #' # load germancredit data
 #' data("germancredit")
-#'
 #' # filter variable via missing rate, iv, identical value rate
-#' dt_sel = var_filter(germancredit, "creditability")
-#'
-#' # woe binning ------
-#' bins = woebin(dt_sel, "creditability")
-#' dt_woe = woebin_ply(dt_sel, bins)
-#'
-#' # glm ------
-#' m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-#'
-#' # Select a formula-based model by AIC
-#' m_step = step(m, direction="both", trace=FALSE)
-#' m = eval(m_step$call)
-#'
+#' dtvf = var_filter(germancredit, "creditability")
+#' # split into train and test
+#' dtlst = split_df(dtvf, y = 'creditability')
+#' # binning
+#' bins = woebin(dtlst$train, "creditability")
 #' # scorecard
-#' # Example I # creat a scorecard
-#' card = scorecard(bins, m)
-#'
-#' xnames = sub('_woe', '', names(coef(m))[-1])
-#' card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
+#' card = scorecard2(bins=bins, dt=dtlst$train, y='creditability')
 #'
 #' # credit score
 #' # Example I # only total score

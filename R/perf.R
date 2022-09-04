@@ -747,34 +747,25 @@ pf_cutoffs = function(dt_ev_lst, pred_desc = FALSE) {
 #'
 #' # woe binning
 #' bins = woebin(dt_list$train, "creditability")
-#' # converting train and test into woe values
-#' dt_woe_list = lapply(dt_list, function(x) woebin_ply(x, bins))
-#'
-#' # predicted proability
-#' m1 = glm(creditability ~ ., family = binomial(), data = dt_woe_list$train)
-#' pred_list = lapply(dt_woe_list, function(x) predict(m1, type = 'response', x))
+#' # scorecard, prob
+#' cardprob = scorecard2(bins, dt = dt_list, y = 'creditability', return_prob = TRUE)
 #'
 #' # credit score
-#' card = scorecard(bins, m1)
-#' score_list = lapply(dt_list, function(x) scorecard_ply(x, card))
-#' # credit score, only_total_score = FALSE
-#' score_list2 = lapply(dt_list, function(x) scorecard_ply(x, card,
-#'   only_total_score=FALSE))
-#'
+#' score_list = lapply(dt_list, function(x) scorecard_ply(x, cardprob$card))
 #'
 #' ###### perf_eva examples ######
 #' # Example I, one datset
 #' ## predicted p1
-#' perf_eva(pred = pred_list$train, label=dt_list$train$creditability,
-#'   title = 'train')
+#' perf_eva(pred = cardprob$prob$train, label=label_list$train,
+#'          title = 'train')
 #' ## predicted score
-#' # perf_eva(pred = score_list$train, label=dt_list$train$creditability,
+#' # perf_eva(pred = score_list$train, label=label_list$train,
 #' #   title = 'train')
 #'
 #' # Example II, multiple datsets
 #' ## predicted p1
-#' perf_eva(pred = pred_list, label = label_list,
-#'  show_plot = c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
+#' perf_eva(pred = cardprob$prob, label = label_list,
+#'          show_plot = c('ks', 'lift', 'gain', 'roc', 'lz', 'pr', 'f1', 'density'))
 #' ## predicted score
 #' # perf_eva(score_list, label_list)
 #'

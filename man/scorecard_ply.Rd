@@ -30,27 +30,14 @@ A data frame in score values
 \donttest{
 # load germancredit data
 data("germancredit")
-
 # filter variable via missing rate, iv, identical value rate
-dt_sel = var_filter(germancredit, "creditability")
-
-# woe binning ------
-bins = woebin(dt_sel, "creditability")
-dt_woe = woebin_ply(dt_sel, bins)
-
-# glm ------
-m = glm(creditability ~ ., family = binomial(), data = dt_woe)
-
-# Select a formula-based model by AIC
-m_step = step(m, direction="both", trace=FALSE)
-m = eval(m_step$call)
-
+dtvf = var_filter(germancredit, "creditability")
+# split into train and test
+dtlst = split_df(dtvf, y = 'creditability')
+# binning
+bins = woebin(dtlst$train, "creditability")
 # scorecard
-# Example I # creat a scorecard
-card = scorecard(bins, m)
-
-xnames = sub('_woe', '', names(coef(m))[-1])
-card2 = scorecard2(bins=bins, dt=germancredit, y='creditability', x=xnames)
+card = scorecard2(bins=bins, dt=dtlst$train, y='creditability')
 
 # credit score
 # Example I # only total score
