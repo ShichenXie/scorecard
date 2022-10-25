@@ -4,9 +4,9 @@
 \alias{woebin_adj}
 \title{WOE Binning Adjustment}
 \usage{
-woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
-  method = "tree", save_breaks_list = NULL, count_distr_limit = 0.05,
-  to = "breaks_list", ...)
+woebin_adj(dt, y, bins, breaks_list = NULL, save_breaks_list = NULL,
+  adj_all_var = TRUE, special_values = NULL, method = "tree",
+  count_distr_limit = 0.05, to = "breaks_list", ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -15,13 +15,15 @@ woebin_adj(dt, y, bins, adj_all_var = TRUE, special_values = NULL,
 
 \item{bins}{A list of data frames. Binning information generated from \code{woebin}.}
 
+\item{breaks_list}{List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.}
+
+\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
+
 \item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Defaults to TRUE}
 
 \item{special_values}{The values specified in special_values will in separate bins. Defaults to NULL.}
 
 \item{method}{Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".}
-
-\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
 
 \item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.}
 
@@ -47,11 +49,10 @@ breaks_adj = woebin_adj(dt, y="creditability", bins)
 bins_final = woebin(dt, y="creditability",
                     breaks_list=breaks_adj)
 
-# Example II
-binsII = woebin(germancredit, y="creditability")
-breaks_adjII = woebin_adj(germancredit, "creditability", binsII)
-bins_finalII = woebin(germancredit, y="creditability",
-                    breaks_list=breaks_adjII)
+# Example II adjust two variables' breaks in brklst
+binsII = woebin(germancredit, y="creditability", save_breaks_list = 'brklst')
+brklst = source('brklst.R')$value
+brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2], breaks_list = brklst)
 }
 
 }
