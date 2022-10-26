@@ -300,7 +300,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   for (i in 1:xs_len) {
     x_i = xs[i]
     # print x
-    if (print_step > 0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
+    if (print_step > 0 & i %% print_step == 0) cat_bullet(sprintf('%s/%s %s', i, xs_len, x_i), bullet = "tick", bullet_col = "green")
 
     cardx = card[variable==x_i]
     dtx = dt[, x_i, with=FALSE]

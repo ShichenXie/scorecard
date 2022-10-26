@@ -16,10 +16,15 @@ Authors@R: person("Shichen", "Xie", , "xie@shichen.name", c("aut", "cre"))
 Depends: 
     R (>= 3.5.0)
 Imports: 
-    data.table (>= 1.10.0), 
-    ggplot2, gridExtra,
-    foreach, doParallel, parallel,
-    openxlsx, stringi
+    data.table (>= 1.10.0),
+    ggplot2,
+    gridExtra,
+    foreach,
+    doParallel,
+    parallel,
+    openxlsx,
+    stringi,
+    cli
 Suggests: 
     knitr,
     rmarkdown,

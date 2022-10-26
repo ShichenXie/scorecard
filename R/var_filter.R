@@ -100,7 +100,7 @@ var_filter = function(
   if (is.numeric(kwargs$identical_limit)) lims$identical_rate = kwargs$identical_limit
   # lims
   lims = arglst_update(lims, arglst0 = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95))
-  cat(sprintf('[INFO] filtering variables via %s ... \n', paste(names(lims), collapse = ', ')))
+  cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(names(lims), collapse = ', '))))
 
   # set dt as data.table
   dt = setDT(copy(dt)) # copy(setDT(dt))
@@ -179,7 +179,7 @@ var_filter = function(
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(x_kp)),"\n")
+  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(x_kp)), bullet = "tick", bullet_col = "green")
 
   return(rt)
 }
@@ -233,7 +233,7 @@ var_filter2 = function(
 #' @importFrom stats step
 var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   start_time = proc.time()
-  cat('[INFO] filtering via step ... \n')
+  cli_inform(c(i = 'Filtering variables via step ...'))
 
   dt = setDT(copy(dt))
   if (is.null(x)) x = setdiff(names(dt), y)
@@ -244,10 +244,8 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   m_step = step(m1, direction="both", trace = FALSE)
   m2 = eval(m_step$call)
 
-  if (show_vif) {
-    df_vif = vif(m1, merge_coef = TRUE)
-    print(df_vif)
-  }
+  df_vif = vif(m1, merge_coef = TRUE)
+  if (show_vif) print(df_vif)
 
   xkp_step = names(coef(m2))[-1]
   xrm_step = list(step = data.table(variable = setdiff(x, xkp_step)))
@@ -255,7 +253,7 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp_step)),"\n")
+  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp_step)), bullet = "tick", bullet_col = "green")
 
   return(list(xkp = xkp_step, xrm = xrm_step, df_vif = df_vif))
 }
@@ -265,7 +263,7 @@ var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, vif = 3, p = 0.05
   start_time = proc.time()
   Estimate = variable = gvif = NULL
 
-  cat(sprintf('[INFO] filtering variables via %s ... \n', paste(names(lims), collapse = ', ')))
+  cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(names(lims), collapse = ', '))))
 
   dt = setDT(copy(dt))
   if (is.null(x)) x = setdiff(names(dt), y)
@@ -329,7 +327,7 @@ var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, vif = 3, p = 0.05
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat(sprintf("[INFO] Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp)),"\n")
+  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp)), bullet = "tick", bullet_col = "green")
 
   return(list(xkp = xkp, xrm = xrm, df_vif = df_vif))
 }

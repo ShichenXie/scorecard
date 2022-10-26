@@ -159,7 +159,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   wb <- createWorkbook()
   # dataset information ------
   n = 1
-  cat(sprintf("[INFO] sheet%s-dataset information\n", n))
+  cat_bullet(sprintf("sheet%s - dataset information", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="dataset information")
 
   sample_info <- lapply(dat_lst, function(x) {
@@ -175,7 +175,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # model coefficients ------
   n = n+1
-  cat(sprintf("[INFO] sheet%s-model coefficients\n", n))
+  cat_bullet(sprintf("sheet%s - model coefficients", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="model coefficients")
 
   dt_vif = vif(m, merge_coef = TRUE)[, gvif := round(gvif, 4)]
@@ -194,7 +194,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # model performance ------
   n = n+1
-  cat(sprintf("[INFO] sheet%s-model performance\n", n))
+  cat_bullet(sprintf("sheet%s - model performance", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="model performance")
 
   eva_tbl = rbindlist(m_perf$binomial_metric, idcol = 'dataset')
@@ -212,7 +212,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # variable binning ------
   n = n+1
-  cat(sprintf("[INFO] sheet%s-variable woe binning\n", n))
+  cat_bullet(sprintf("sheet%s - variable woe binning", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="variable woe binning")
 
   names_dat = names(dat_lst)
@@ -247,7 +247,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # scorecard ------
   n = n+1
-  cat(sprintf("[INFO] sheet%s-scorecard\n", n))
+  cat_bullet(sprintf("sheet%s - scorecard", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="scorecard")
 
   odds0 = ifelse('odds0' %in% names(kwargs), kwargs$odds0, 1/19)
@@ -268,7 +268,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   # population stability ------
   if (length(dat_lst) > 1) {
     n = n+1
-    cat(sprintf("[INFO] sheet%s-population stability\n", n))
+    cat_bullet(sprintf("sheet%s - population stability", n), bullet = "tick", bullet_col = "green")
     sheet  <- addWorksheet(wb, sheetName="population stability")
 
     m_psi = perf_psi(score = score_lst, label = label_list, return_distr_dat = TRUE)
@@ -290,7 +290,7 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
 
   # gains table ------
   n = n+1
-  cat(sprintf("[INFO] sheet%s-gains table\n", n))
+  cat_bullet(sprintf("sheet%s - gains table", n), bullet = "tick", bullet_col = "green")
   sheet  <- addWorksheet(wb, sheetName="gains table")
 
   setnames(gains_tbl, gains_table_cols)
@@ -299,5 +299,5 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   # saving workbook ------
   report_name = sprintf('%s_%s.xlsx', save_report, format(Sys.time(),"%Y%m%d_%H%M%S"))
   saveWorkbook(wb, report_name, overwrite=TRUE)
-  cat(sprintf('[INFO] The report is saved as %s\n', report_name))
+  cli_inform(c(i = sprintf('The report is saved as %s', report_name)))
 }

@@ -735,7 +735,7 @@ binbrklst2txt = function(bins_breakslist, header = FALSE, bin_close_right) {
 
   brklst_char = paste0(c("list(", brklst_char, ")"), collapse = "\n ")
 
-  if (isTRUE(header)) brklst_char = sprintf("# %s \noptions(scorecard.bin_close_right = %s) \nbreaks_list=%s", Sys.time(), bin_close_right, brklst_char)
+  if (isTRUE(header)) brklst_char = sprintf("# %s \noptions(scorecard.bin_close_right = %s) \n%s", Sys.time(), bin_close_right, brklst_char)
 
   return(brklst_char)
 }
@@ -746,7 +746,7 @@ brklst_save = function(bins_breakslist, save_name=NULL) {
   save_name = sprintf('%s.R', save_name)
 
   writeLines(bins_breakslist, save_name, useBytes = TRUE)
-  cat(sprintf('[INFO] The breaks_list is saved as %s\n', save_name))
+  cli_inform(c(i = sprintf('The breaks_list is saved as %s\n', save_name)))
 
   return(invisible())
 }
@@ -879,7 +879,7 @@ woebin = function(
   # print_info
   print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
-  if (print_info) cat('[INFO] creating woe binning ... \n')
+  if (print_info) cli_inform(c(i='Creating woe binning ...'))
 
   # method
   method = try(match.arg(method, c("tree", "chimerge", 'freq', 'width')), silent = TRUE)
@@ -903,7 +903,7 @@ woebin = function(
   if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
   # bin_close_right
   bin_close_right = getarg('bin_close_right')
-  if (print_info & !is.null(breaks_list)) cat(sprintf("[INFO] The option bin_close_right was set to %s.\n", bin_close_right))
+  if (print_info & !is.null(breaks_list)) cli_inform(c(i = sprintf("The option bin_close_right was set to %s.", bin_close_right)))
 
   # set dt as data.table
   dt = setDT(copy(dt))  #copy(setDT(dt))
@@ -964,7 +964,7 @@ woebin = function(
       x_i = xs[i]
       dtm = data.table(y=ycol, variable=x_i, value=dt[[x_i]])
       # print xs
-      if (print_step>0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
+      if (print_step>0 & i %% print_step == 0) cat_bullet(sprintf('%s/%s %s', i, xs_len, x_i), bullet = "tick", bullet_col = "green")
 
       # woebining on one variable
       bins[[x_i]] <-
@@ -1036,7 +1036,7 @@ woebin = function(
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10 & print_info) cat(sprintf("[INFO] Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),"\n")
+  if (rs[3] > 10 & print_info) cli_inform(c(i = sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3]))))
 
   # save breaks_list
   if (!is.null(save_breaks_list)) {
@@ -1154,7 +1154,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
   # print info
   print_info = kwargs[['print_info']]
   if (is.null(print_info)) print_info = TRUE
-  if (print_info) cat('[INFO] converting into woe values ... \n')
+  if (print_info) cli_inform(c(i='Converting into woe values ...'))
   # to woe/bin
   if (!is.null(kwargs[['value']])) to = kwargs[['value']]
   if (is.null(to) || !(to %in% c('woe', 'bin'))) to = 'woe'
@@ -1195,7 +1195,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
     for (i in 1:xs_len) {
       x_i = xs[i]
       # print x
-      if (print_step > 0 & i %% print_step == 0) cat(paste0(format(c(i,xs_len)),collapse = "/"), x_i,"\n")
+      if (print_step > 0 & i %% print_step == 0) cat_bullet(sprintf('%s/%s %s', i, xs_len, x_i), bullet = "tick", bullet_col = "green")
 
       binx = bins[variable==x_i]
       dtx = dt[, x_i, with=FALSE]
@@ -1232,7 +1232,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10 & print_info) cat(sprintf("[INFO] Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),"\n")
+  if (rs[3] > 10 & print_info) cli_inform(c(i = sprintf("Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3]))))
 
   return(dat[, (paste0('dat_col_placeholder',n)) := NULL])
 }
@@ -1409,21 +1409,24 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'p
 
 
 # print basic information in woebin_adj
+#' @import cli
 woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist, ...) {
   x_i = xs_adj[i]
   xs_len = length(xs_adj)
   variable = x_breaks = NULL
 
-  cat("--------", paste0(i, "/", xs_len), x_i, "--------\n")
+  cli::cat_rule(sprintf("%s/%s %s (%s)", i, xs_len, x_i, class(dt[[x_i]])), col = 'cyan')
   ## class
-  cat(paste0("> class(",x_i,"): "),"\n",class(dt[[x_i]]),"\n","\n")
+  # cat(paste0("> class(",x_i,"): "),"\n",class(dt[[x_i]]),"\n","\n")
   ## summary
-  cat(paste0("> summary(",x_i,"): "),"\n")
+  cli::cat_line(sprintf("> summary(%s)", x_i))
+  # cat(paste0("> summary(",x_i,"): "),"\n")
   print(summary(dt[[x_i]]))
   cat("\n")
   ## table
   if (length(table(dt[[x_i]])) < 10 || !is.numeric(dt[[x_i]])) {
-    cat(paste0("> table(",x_i,"): "))
+    cli::cat_line(sprintf("> table(%s)", x_i))
+    # cat(paste0("> table(",x_i,"): "))
     print(table(dt[[x_i]]))
     cat("\n")
   } else {
@@ -1435,12 +1438,14 @@ woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist, 
   ## current breaks
   breaks_bin = bins_breakslist[variable == x_i, x_breaks]
 
-  cat("> Current breaks: \n", breaks_bin,"\n \n")
+  # cat("> Current breaks: \n", breaks_bin,"\n \n")
+  cli::cat_line("> Current breaks")
+  cat(breaks_bin,"\n \n")
   ## woebin plotting
   brklst = list()
   brklst[x_i] = list(brk_txt2vector(breaks_bin))
 
-  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE), ...)
+  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE, no_cores = 1), ...)
   print(plist[[1]])
 
 }
@@ -1455,7 +1460,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
   # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
 
   # eval(parse(text = text_woebin))
-  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method, ...)
+  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method, no_cores = 1, ...)
 
 
   ## print adjust breaks
@@ -1465,7 +1470,9 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
   # is.numeric(dt[[x_i]]),
   # paste0(breaks_bin, collapse=", "),
   # paste0(paste0("\"",breaks_bin,"\""), collapse=", "))
-  cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
+  # cat("> Current breaks: ","\n",breaks_bin,"\n","\n")
+  cli::cat_line("> Current breaks")
+  cat(breaks_bin,"\n \n")
 
   # print bin_adj
   print(woebin_plot(bin_adj, ...)[[1]])
@@ -1616,9 +1623,9 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
     }
   }
 
-  cat(sprintf("options(scorecard.bin_close_right = %s) \n", bin_close_right))
+  # cat(sprintf("options(scorecard.bin_close_right = %s) \n", bin_close_right))
   brklst_char = binbrklst2txt(bins_breakslist, bin_close_right = bin_close_right)
-  cat(brklst_char,"\n")
+  # cat(brklst_char,"\n")
 
   if (!is.null(save_breaks_list)) brklst_save(
     binbrklst2txt(bins_breakslist, header = TRUE, bin_close_right = bin_close_right),

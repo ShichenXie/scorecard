@@ -831,7 +831,7 @@ perf_eva = function(pred, label, title=NULL, binomial_metric=c('mse', 'rmse', 'l
     threshold_abs = threshold
     if (pred_is_score) threshold_abs = abs(threshold)
     # confusion matrix
-    cat(sprintf('[INFO] The threshold of confusion matrix is %.4f.\n', threshold_abs))
+    cli_inform(c(i=sprintf('The threshold of confusion matrix is %.4f.', threshold_abs)))
     rt_list[['confusion_matrix']] = lapply(dt_lst, function(x) confusionMatrix(dt=x, threshold=threshold))
   }
   # cat(sprintf('Confusion Matrix with threshold=%s:\n', round(threshold,4)))
