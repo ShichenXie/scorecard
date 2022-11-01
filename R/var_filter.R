@@ -179,7 +179,11 @@ var_filter = function(
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(x_kp)), bullet = "tick", bullet_col = "green")
+  cat_bullet(
+    c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), length(x), sec_to_hms(rs[3])),
+      sprintf("%s variables are removed", length(x)-length(x_kp)) ),
+    bullet = "tick", bullet_col = "green", col = 'grey'
+  )
 
   return(rt)
 }
@@ -253,7 +257,11 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp_step)), bullet = "tick", bullet_col = "green")
+  cat_bullet(
+    c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), length(x), sec_to_hms(rs[3])),
+      sprintf("%s variables are removed", length(x)-length(xkp_step))),
+    bullet = "tick", bullet_col = "green", col = 'grey'
+  )
 
   return(list(xkp = xkp_step, xrm = xrm_step, df_vif = df_vif))
 }
@@ -327,7 +335,11 @@ var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, vif = 3, p = 0.05
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10) cat_bullet(sprintf("Variable filtering on %s rows and %s columns in %s \n%s variables are removed", nrow(dt), length(x), sec_to_hms(rs[3]), length(x)-length(xkp)), bullet = "tick", bullet_col = "green")
+  cat_bullet(
+    c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), length(x), sec_to_hms(rs[3])),
+      sprintf("%s variables are removed", length(x)-length(xkp))),
+    bullet = "tick", bullet_col = "green", col = 'grey'
+  )
 
   return(list(xkp = xkp, xrm = xrm, df_vif = df_vif))
 }

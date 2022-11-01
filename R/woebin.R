@@ -903,9 +903,9 @@ woebin = function(
   if (!is.null(max_num_bin)) bin_num_limit = max_num_bin
   # bin_close_right
   bin_close_right = getarg('bin_close_right')
-  if (print_info & !is.null(breaks_list)) cli_inform(c(i = sprintf("The option bin_close_right was set to %s.", bin_close_right)))
+  if (print_info & !is.null(breaks_list)) cli_inform(c(i = sprintf("The option bin_close_right was set to %s.", bin_close_right)), col = 'grey')
 
-  # set dt as data.table
+  #set dt as data.table
   dt = setDT(copy(dt))  #copy(setDT(dt))
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # check y
@@ -1036,7 +1036,11 @@ woebin = function(
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10 & print_info) cli_inform(c(i = sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3]))))
+  if (print_info) cat_bullet(
+    sprintf("Binning on %s rows and %s columns in %s",nrow(dt),ncol(dt),sec_to_hms(rs[3])),
+    bullet = "tick", bullet_col = "green", col = 'grey'
+  )
+
 
   # save breaks_list
   if (!is.null(save_breaks_list)) {
@@ -1232,7 +1236,10 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
   # running time
   rs = proc.time() - start_time
   # hms
-  if (rs[3] > 10 & print_info) cli_inform(c(i = sprintf("Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3]))))
+  if (print_info) cat_bullet(
+    sprintf("Woe transformating on %s rows and %s columns in %s",nrow(dt),xs_len,sec_to_hms(rs[3])),
+    bullet = "tick", bullet_col = "green", col = 'grey'
+  )
 
   return(dat[, (paste0('dat_col_placeholder',n)) := NULL])
 }
