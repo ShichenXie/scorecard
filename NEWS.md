@@ -1,4 +1,4 @@
-# scorecard 0.3.9.999
+# scorecard 0.4.0
 
 * remove the |> operator to support R < 4.1. 
 * modified var_filter and scorecard2 function. 
