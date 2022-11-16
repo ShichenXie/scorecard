@@ -1,3 +1,7 @@
+# scorecard 0.4.0.999
+
+* added correlation matrix to the report function
+
 # scorecard 0.4.0
 
 * remove the |> operator to support R < 4.1. 
