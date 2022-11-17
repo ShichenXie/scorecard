@@ -209,9 +209,9 @@ report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_rep
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
 
   # correlation
-  corlst = rbindlist(lapply(dat_lst, function(d) {
+  corlst = rbindlist(lapply(dat_lst[1], function(d) {
     numcols = names(which(d[,sapply(.SD, is.numeric)]))
-    setDT(as.data.frame(cor(d[,intersect(x,numcols),with=FALSE])),keep.rownames=TRUE)
+    setDT(as.data.frame(cor(d[,intersect(x,numcols),with=FALSE], use='pairwise.complete.obs')), keep.rownames=TRUE)
   }), idcol = 'dataset')
   setnames(corlst, 'rn', 'x')
 

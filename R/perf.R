@@ -1082,16 +1082,17 @@ gains_table = function(score, label, bin_num=10, method='freq', width_by=NULL, b
                          ][, score[-1]]
 
     } else if (method == 'width') {
+      sminmax = dt_sl_brkp[, quantile(score, c(0.01, 0.99))]
       # in equal width
       if (is.null(width_by) || width_by > max(score)-min(score)) {
         # in equal width
-        minmax = dt_sl_brkp[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
-                       ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
+        # minmax = dt_sl_brkp[, sapply(.SD, function(x) list(min(x), max(x))), by=datset, .SDcols=c('score')
+        #                ][,.(mins = max(V1), maxs = min(V2))] # choose min of max value, and max of min value by dataset
+        # brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
 
-        brkp = seq(minmax$mins, minmax$maxs, length.out = bin_num+1)
+        brkp = dt_sl_brkp[score >= sminmax[1] & score <= sminmax[2]][,pretty(score,bin_num)]
       } else {
-        minmax = dt_sl_brkp[, quantile(score, c(0.02, 0.98))]
-        minmax = round(minmax/width_by) * width_by
+        minmax = round(sminmax/width_by) * width_by
         brkp = seq(minmax[[1]]-width_by, minmax[[2]]+width_by, by = width_by)
       }
 
