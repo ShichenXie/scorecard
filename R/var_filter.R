@@ -193,7 +193,7 @@ var_filter = function(
 # Variable Filter via lr
 var_filter2 = function(
     dt, y, x=NULL,
-    lims = list(coef = 0, vif = 3, p = 0.05),
+    step = TRUE, lims = list(coef = 0, vif = 3, p = 0.05),
     var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ...) {
 
   # lims
@@ -209,9 +209,11 @@ var_filter2 = function(
   x_kp = setdiff(x_kp, c(var_rm, var_kp))
 
   # step
-  dt2 = dt[, c(x_kp, y), with=FALSE ]
-  lrx_filter1 = var_filter_step(dt2, y = y, x = x_kp)
-  x_kp = lrx_filter1$xkp
+  if (step == TRUE) {
+    dt2 = dt[, c(x_kp, y), with=FALSE ]
+    lrx_filter1 = var_filter_step(dt2, y = y, x = x_kp)
+    x_kp = lrx_filter1$xkp
+  }
 
   # vif
   dt2 = dt[, c(x_kp, y), with=FALSE ]
@@ -224,7 +226,9 @@ var_filter2 = function(
 
   # var removed reason
   if (isTRUE(var_rm_reason)) {
-    rtrm = dat_rm_reason(rmlst = c(lrx_filter1$xrm, lrx_filter2$xrm), var_rm = var_rm, var_kp = var_kp, lims = lims)
+    vfxrm = lrx_filter2$xrm
+    if (step == TRUE) vfxrm = c(lrx_filter1$xrm, vfxrm)
+    rtrm = dat_rm_reason(rmlst = vfxrm, var_rm = var_rm, var_kp = var_kp, lims = lims)
     rtrm = rbind(rtrm, lrx_filter2$df_vif[-1], fill=TRUE)
     rt = list(dt = rtdt, rm = rtrm)
   } else {
