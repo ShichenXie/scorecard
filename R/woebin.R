@@ -699,8 +699,7 @@ bins2binbrklst = function(bins, dt, breaks_list=NULL, bin_close_right=FALSE) {
   .= bin= bin2= is_special_values= variable= x_breaks= x_class = NULL
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
 
   # x variables
   xs_all = bins[,unique(variable)]
@@ -1057,13 +1056,12 @@ woebin = function(
 #' @import data.table
 woepoints_ply1 = function(dtx, binx, x_i, woe_points, bin_close_right ) {
   # woe_points: "woe" "points"
-  . = V1 = bin = woe = NULL
+  . = V1 = bin = NULL
 
   # binx
   binx = binx[
     , bin:=as.character(bin)
-  ][,.(unlist(strsplit(bin, "%,%", fixed=TRUE)),
-       eval(parse(text = woe_points)) ), by=bin]
+  ][, .(unlist(strsplit(bin, "%,%", fixed=TRUE))), by=c('bin',woe_points)]
 
   # dtx
   ## cut numeric variable
@@ -1085,10 +1083,10 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points, bin_close_right ) {
   dtx = setDT(dtx)[, rowid := .I]
 
   # rename binx
-  setnames(binx, c("bin", x_i, paste(x_i, woe_points, sep="_")))
+  setnames(binx, c('V1', woe_points), c(x_i, paste(x_i, woe_points, sep="_")))
   # merge
   dtx_suffix = merge(dtx, binx, by=x_i, all.x = TRUE)
-  dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (c("rowid", "bin", x_i)) := NULL]
+  dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (c("rowid", "bin", x_i)) := NULL][]
 
   return(dtx_suffix)
 }
@@ -1173,8 +1171,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
   print_step = check_print_step(print_step)
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
   # bin_close_right
   bin_close_right = check_bcr(bins)
 
@@ -1187,8 +1184,8 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
 
   # initial data set
   n = 0
-  while (paste0('dat_col_placeholder',n) %in% xs) n = n+1
-  dt_init = copy(dt)[, (paste0('dat_col_placeholder',n)) := 1][,(xs) := NULL]
+  while (paste0('col_init',n) %in% xs) n = n+1
+  dt_init = copy(dt)[, (paste0('col_init',n)) := 1][,(xs) := NULL]
   # the databc_colomun_placeholder will be remove in the result, in case dt_init is an empty dataframe
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
@@ -1241,7 +1238,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
     bullet = "tick", bullet_col = "green", col = 'grey'
   )
 
-  return(dat[, (paste0('dat_col_placeholder',n)) := NULL])
+  return(dat[, (paste0('col_init',n)) := NULL])
 }
 
 
@@ -1398,8 +1395,7 @@ woebin_plot = function(bins, x=NULL, title=NULL, show_iv = TRUE, line_value = 'p
   # bar_color = kwargs[['bar_color']]
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
 
   # x variable names
   if (is.null(xs)) xs = bins[,unique(variable)]
@@ -1538,8 +1534,7 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
 
   # x variables
   xs_all = bins[,unique(variable)]

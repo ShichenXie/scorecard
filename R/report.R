@@ -6,6 +6,7 @@
 #' @param y Name of y variable.
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param breaks_list A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.
+#' @param x_name A vector of x variables' name.
 #' @param special_values The values specified in special_values will be in separate bins. Defaults to NULL.
 #' @param seed A random seed to split input data frame. Defaults to 618. If it is NULL, input dt will not split into two datasets.
 #' @param save_report The name of xlsx file where the report is to be saved. Defaults to 'report'.
@@ -91,13 +92,12 @@
 #' @import openxlsx
 #' @importFrom stats as.formula glm predict.glm cor
 #' @export
-report = function(dt, y, x, breaks_list, special_values=NULL, seed=618, save_report='report', positive='bad|1', ...) {
+report = function(dt, y, x, breaks_list, x_name = NULL, special_values=NULL, seed=618, save_report='report', positive='bad|1', ...) {
   # info_value = gvif = . = variable = bin = woe = points = NULL
   . = bin = gvif = info_value = points = variable = woe = points = name = NULL
 
   kwargs = list(...)
   # x name
-  x_name = kwargs[['x_name']]
   if (!is.null(x_name)) {
     if (inherits(x_name, 'character')) {
       x_name = setDT(list(variable=x, name = x_name))

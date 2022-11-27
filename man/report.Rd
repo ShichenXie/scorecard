@@ -4,8 +4,8 @@
 \alias{report}
 \title{Scorecard Modeling Report}
 \usage{
-report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
-  save_report = "report", positive = "bad|1", ...)
+report(dt, y, x, breaks_list, x_name = NULL, special_values = NULL,
+  seed = 618, save_report = "report", positive = "bad|1", ...)
 }
 \arguments{
 \item{dt}{A data frame or a list of data frames that have both x (predictor/feature) and y (response/label) variables. If there are multiple data frames are provided, only the first data frame would be used for training, and the others would be used for testing/validation.}
@@ -15,6 +15,8 @@ report(dt, y, x, breaks_list, special_values = NULL, seed = 618,
 \item{x}{Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.}
 
 \item{breaks_list}{A list of break points. It can be extracted from \code{woebin} and \code{woebin_adj} via the argument save_breaks_list.}
+
+\item{x_name}{A vector of x variables' name.}
 
 \item{special_values}{The values specified in special_values will be in separate bins. Defaults to NULL.}
 

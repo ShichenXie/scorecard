@@ -84,8 +84,7 @@ scorecard = function(bins, model, points0=600, odds0=1/19, pdo=50, basepoints_eq
   # odds = pred/(1-pred); score = a - b*log(odds)
 
   # bins # if (is.list(bins)) rbindlist(bins)
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
 
   # coefficients
   coef_dt = data.table(var_woe = names(coef(model)), Estimate = coef(model))[, variable := sub("_woe$", "", var_woe) ][]
@@ -175,8 +174,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
   if (!is.null(badprob_pop)) posprob_pop = badprob_pop
 
   # bind bins
-  if (inherits(bins, 'list') && all(sapply(bins, is.data.frame))) bins = rbindlist(bins)
-  bins = setDT(bins)
+  bins = check_bincard(bins)
 
   # check xs
   x_bins = bins[, unique(variable)]
@@ -234,7 +232,7 @@ scorecard2 = function(bins, dt, y, x=NULL, points0=600, odds0=1/19, pdo=50, base
 #' \code{scorecard_ply} calculates credit score using the results from \code{scorecard}.
 #'
 #' @param dt A data frame, which is the original dataset for training model.
-#' @param card The scorecard generated from the function \code{scorecard}.
+#' @param card A data frame or a list of data frames. It's the scorecard generated from the function \code{scorecard}.
 #' @param only_total_score  Logical, Defaults to TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.
 #' @param print_step A non-negative integer. Defaults to 1. If print_step>0, print variable names by each print_step-th iteration. If print_step=0, no message is print.
 #' @param replace_blank_na Logical. Replace blank values with NA. Defaults to TRUE. This argument should be the same with \code{woebin}'s.
@@ -284,8 +282,7 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
 
 
   # card # if (is.list(card)) rbindlist(card)
-  if (inherits(card, 'list') && all(sapply(card, is.data.frame))) {card = rbindlist(card, fill = TRUE)}
-  card = setDT(card)
+  card = check_bincard(card)
 
   # x variables
   xs = card[variable != "basepoints", unique(variable)]
@@ -336,3 +333,216 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
 }
 
 
+# https://dmg.org/pmml/v4-1/Scorecard.html
+
+#' Scorecard to PMML
+#'
+#' \code{scorecard_pmml} converts scorecard into PMML format.
+#'
+#' @param card A data frame or a list of data frames. It's a scorecard object generated from the function \code{scorecard}.
+#' @param save_name A string. The file name to save scorecard. Defaults to None.
+#' @param model_name A name to be given to the PMML model.
+#' @param model_version A string specifying the model version.
+#' @param description A descriptive text for the Header element of the PMML.
+#' @param copyright The copyright notice for the model.
+#'
+#' @examples
+#' data("germancredit")
+#' dtvf = var_filter(germancredit, y='creditability')
+#' bins = woebin(dtvf, y='creditability')
+#' card = scorecard2(bins, dtvf, y='creditability')
+#'
+#' # export scorecard into pmml
+#' cardpmml = scorecard_pmml(card)
+#' # save pmml
+#' # cardpmml = scorecard_pmml(card, save_name='scorecard', model_version='1.0')
+#'
+#' @import xml2
+#' @export
+scorecard_pmml = function(
+    card, save_name=NULL,
+    model_name = "scorecard",
+    model_version = NULL,
+    description = "scorecard",
+    copyright = NULL
+) {
+  points = variable = NULL
+
+  # scorecard
+  card = try(check_bincard(card)[,c('variable', 'bin', 'points'),with=FALSE], silent = TRUE)
+  if (inherits(card, 'try-error')) stop("Not a scorecard object")
+
+  # is bin_close_right
+  bcr = get_bcr_bin(card)
+
+  # points
+  ## base points
+  points0 = card[variable == 'basepoints', points]
+  ## x points
+  dfx = pmml_card2field(card)
+
+  # card pmml
+  ## param
+  copyright = ifelse(is.null(copyright), sprintf("Copyright (c) %s %s", year(Sys.time()), Sys.info()["user"]), copyright)
+  model_version = ifelse(is.null(model_version), as.character(Sys.time()), model_version)
+
+  ## init ## https://dmg.org/pmml/v4-4-1/Scorecard.html
+  cardpmml =
+    as_xml_document(list(PMML=structure(list(
+      Header = structure(list(Timestamp=list(Sys.time())), copyright=copyright, description=description, modelVersion=model_version),
+      DataDictionary = list(),
+      Scorecard = structure(list(
+        MiningSchema=list(),
+        Output=list(OutputField=structure(list(), name="Final Score", feature="predictedValue", dataType="double", optype="continuous")),
+        Characteristics=list()
+      ), modelName=model_name, functionName="regression", useReasonCodes="false", initialScore=points0)
+    ), version="4.4", xmlns="https://www.dmg.org/PMML-4_4", 'xmlns:xsi'="http://www.w3.org/2001/XMLSchema-instance")))
+
+  ## DataDictionary
+  xml_DataDictionary = pmml_df2xml(dfx$df, 'DataField', c("name","dataType", "optype"), root = 'DataDictionary')
+  xml_replace(xml_child(cardpmml, "DataDictionary"), xml_DataDictionary)
+
+  ## MiningSchema
+  xml_MiningSchema = pmml_df2xml(dfx$df, 'MiningField', c("name","usageType", "invalidValueTreatment"), root = 'MiningSchema')
+  xml_replace(xml_child(cardpmml, "Scorecard//MiningSchema"), xml_MiningSchema)
+
+  ## Characteristics
+  xml_Characteristics = pmml_xstoxml(dfx$x)
+  xml_replace(xml_child(cardpmml, "Scorecard//Characteristics"), xml_Characteristics)
+
+
+
+  # save pmml file
+  if (!is.null(save_name)) {
+    cp_name = sprintf('%s_%s.pmml', save_name, format(Sys.time(),"%Y%m%d_%H%M%S"))
+    write_xml(cardpmml, cp_name, options = "format")
+    cli_inform(c(i = sprintf('The scorecard is saved as %s', cp_name)))
+  }
+
+  return(cardpmml)
+}
+
+pmml_card2field = function(card) {
+  variable= .= bin= isbin= bcr= V1= rid= name= invalidValueTreatment= points= f= value= operator= field= NULL
+
+  # x points
+  pointsx = copy(card)[
+    variable != 'basepoints'
+  ][, .(unlist(strsplit(bin, "%,%", fixed=TRUE))), by=c('variable', 'bin', 'points')
+  ][, isbin := max(grepl(binpattern('isbin', bcr), bin)), by = 'variable'
+  ][]
+  ## numeric x points
+  pointsx_num = pointsx[isbin == 1][][V1 != 'missing', `:=`(
+    f = sub(binpattern('leftright_brkp', bcr),"\\1",bin),
+    t = sub(binpattern('leftright_brkp', bcr),"\\2",bin)
+  )][, rid := seq(.N), by = variable]
+  ## categorical x points
+  pointsx_cat = pointsx[isbin != 1][, rid := seq(.N), by = variable]
+
+  # DataField MiningField
+  df = rbind(
+    pointsx_num[,.(name = unique(variable), dataType = 'double', optype = 'continuous')],
+    pointsx_cat[,.(name = unique(variable), dataType = 'string', optype = 'categorical')],
+    data.table(name="overallScore", dataType="double", optype="continuous")
+  )[,`:=`(
+    usageType = 'active', invalidValueTreatment='asMissing'
+  )][name == 'overallScore', invalidValueTreatment := NA]
+
+  # Characteristic
+  x = rbind(
+    ## numeric
+    rbind(
+      pointsx_num[V1=='missing',.(field=variable, operator = 'isMissing', partialScore = points, rid)],
+      melt(
+        pointsx_num[V1!='missing',.(field=variable, f, t, partialScore = points, rid)],
+        id.vars = c('field', 'partialScore', 'rid')
+      )[, value := as.numeric(value)
+      ][is.finite(value)
+      ][variable == 'f', operator := ifelse(isFALSE(bcr), 'greaterOrEqual', 'greaterThan')
+      ][variable == 't', operator := ifelse(isFALSE(bcr), 'lessThan', 'lessOrEqual')
+      ][,c('field', 'operator','value','partialScore', 'rid'),with=FALSE][],
+      fill = TRUE
+    )[order(field, rid)
+    ][],
+    ## categorical
+    rbind(
+      pointsx_cat[V1=='missing',.(field=variable, operator = 'isMissing', partialScore = points, rid)],
+      pointsx_cat[V1!='missing',.(field=variable, operator = 'equal', value=V1, partialScore = points, rid)],
+      fill=TRUE
+    )[order(field, rid)
+    ][],
+    fill=TRUE
+  )[, name := paste0(field,'Score')
+  ][,c('name', 'field', 'operator', 'value', 'partialScore', 'rid'),with=FALSE]
+  return(list(df=df, x=x))
+}
+
+pmml_df2xml = function(df, node, attrs, root=NULL, retlst = FALSE) {
+  rid = NULL
+
+  # keep attrs column
+  df = setDT(df)[, attrs, with=FALSE]
+
+
+  arglst3 = sapply(
+    split(df[, rid:=.I], by='rid', keep.by=FALSE),
+    function(df1r) {
+      nacols = names(which(df1r[,sapply(.SD, is.na)]))
+      if (length(nacols) > 0) df1r[, (nacols) := NULL]
+
+
+      arglst = c(list(list()), as.list(setDF(df1r)))
+      arglst2 = list(foo = do.call('structure', arglst))
+      names(arglst2) = node
+      return(arglst2)
+    },
+    USE.NAMES = FALSE
+  )
+  names(arglst3) = rep(node, nrow(df))
+
+  arglst4 = list(foo = arglst3)
+  if (!is.null(root)) names(arglst4) = root
+
+  if (retlst) return(arglst4)
+  as_xml_document(arglst4)
+}
+
+pmml_x1toxml = function(x1, retlst = FALSE) {
+  partialScore = name = NULL
+
+  xmlst_x1 = sapply(
+    split(x1, by = 'rid'),
+    function(x1b) {
+      xmlst_x1b = pmml_df2xml(x1b, 'SimplePredicate', c('field', 'operator', 'value'), retlst = TRUE)[[1]]
+      if (nrow(x1b) > 1) {
+        xmlst_x1b = list(CompoundPredicate=structure(list(xmlst_x1b), booleanOperator="and"))
+      }
+
+      xmlst_x1 = list(Attribute=structure(list(
+        xmlst_x1b
+      ), partialScore=x1b[,unique(partialScore)]))
+      return(xmlst_x1)
+    }
+  )
+  names(xmlst_x1) = rep('Attribute', length(xmlst_x1))
+
+  if (retlst) return(xmlst_x1)
+  as_xml_document(list(Characteristic = xmlst_x1))
+}
+
+pmml_xstoxml = function(xs, retlst = FALSE) {
+  name = NULL
+
+  xmlst_xs = sapply(
+    split(xs, by = 'name'),
+    function(x1) {
+      xmlst_x1 = pmml_x1toxml(x1, retlst = TRUE)
+      list(Characteristic=structure(list(xmlst_x1), name = x1[,unique(name)]))
+    },
+    USE.NAMES = FALSE
+  )
+  names(xmlst_xs) = rep('Characteristic', length(xmlst_xs))
+
+  if (retlst) return(xmlst_xs)
+  as_xml_document(list(Characteristics = xmlst_xs))
+}

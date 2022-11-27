@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.999</span>
       </span>
     </div>
 
@@ -81,8 +81,8 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">report</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">x</span>, <span class="va">breaks_list</span>, special_values <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="fl">618</span>,</span>
-<span>  save_report <span class="op">=</span> <span class="st">"report"</span>, positive <span class="op">=</span> <span class="st">"bad|1"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">report</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">x</span>, <span class="va">breaks_list</span>, x_name <span class="op">=</span> <span class="cn">NULL</span>, special_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">618</span>, save_report <span class="op">=</span> <span class="st">"report"</span>, positive <span class="op">=</span> <span class="st">"bad|1"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -101,6 +101,10 @@
 
 <dt>breaks_list</dt>
 <dd><p>A list of break points. It can be extracted from <code>woebin</code> and <code>woebin_adj</code> via the argument save_breaks_list.</p></dd>
+
+
+<dt>x_name</dt>
+<dd><p>A vector of x variables' name.</p></dd>
 
 
 <dt>special_values</dt>

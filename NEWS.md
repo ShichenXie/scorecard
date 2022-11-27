@@ -1,6 +1,7 @@
 # scorecard 0.4.0.999
 
-* added correlation matrix to the report function
+* added correlation matrix to the report function.
+* added a new function scorecard_pmml.
 
 # scorecard 0.4.0
 

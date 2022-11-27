@@ -10,7 +10,7 @@ scorecard_ply(dt, card, only_total_score = TRUE, print_step = 0L,
 \arguments{
 \item{dt}{A data frame, which is the original dataset for training model.}
 
-\item{card}{The scorecard generated from the function \code{scorecard}.}
+\item{card}{A data frame or a list of data frames. It's the scorecard generated from the function \code{scorecard}.}
 
 \item{only_total_score}{Logical, Defaults to TRUE. If it is TRUE, then the output includes only total credit score; Otherwise, if it is FALSE, the output includes both total and each variable's credit score.}
 

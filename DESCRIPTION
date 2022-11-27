@@ -24,7 +24,9 @@ Imports:
     parallel,
     openxlsx,
     stringi,
-    cli
+    cli,
+    xml2,
+    xefun (>= 0.1.2)
 Suggests: 
     knitr,
     rmarkdown,

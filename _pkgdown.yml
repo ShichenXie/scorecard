@@ -57,6 +57,7 @@ reference:
       - scorecard
       - scorecard2
       - scorecard_ply
+      - scorecard_pmml
   - title: "scorecard report"
     contents:
       - gains_table

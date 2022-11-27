@@ -44,7 +44,7 @@ one_hot = function(dt, var_skip = NULL, var_encode = NULL, nacol_rm = FALSE, ...
 
   # columns encoding
   if ( is.null(var_encode)) {
-    var_encode = names(which(sapply(dt, function(x) !is.numeric(x) & !isdatetime(x) )))
+    var_encode = names(which(sapply(dt, function(x) !is.numeric(x) & !xefun:::is.datetime(x) )))
   } else {
     var_encode = x_variable(dt, y=var_skip, x=var_encode)
   }
