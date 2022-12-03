@@ -4,7 +4,7 @@ dat_rm_reason = function(rmlst, var_rm = NULL, var_kp = NULL, lims = NULL) {
   # lims = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95, coef = 0, vif = 3, p = 0.05)
   dtlims = suppressWarnings(melt(setDT(lims), variable.name = 'rm_reason'))[
     , value := as.character(value)
-  ][rm_reason %in% c('missing_rate', 'identical_rate', 'vif', 'p'), value := paste0('>', value)
+  ][rm_reason %in% c('missing_rate', 'identical_rate', 'vif', 'p', 'cor'), value := paste0('>', value)
   ][rm_reason == 'coef', value := paste('<=', value)
   ][rm_reason == 'info_value', value := paste0('<', value)
   ][rm_reason == 'step', value := NA]
@@ -193,11 +193,11 @@ var_filter = function(
 # Variable Filter via lr
 var_filter2 = function(
     dt, y, x=NULL,
-    step = TRUE, lims = list(coef = 0, vif = 3, p = 0.05),
+    step = TRUE, lims = list(coef = 0, cor=0.6, vif = 3, p = 0.05), var_rm_byiv = TRUE,
     var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ...) {
 
   # lims
-  lims = arglst_update(lims, arglst0 = list(coef = 0, vif = 3, p = 0.05))
+  lims = arglst_update(lims, arglst0 = list(coef = 0, cor=0.6, vif = 3, p = 0.05))
 
   # dt
   dt = setDT(copy(dt))
@@ -217,7 +217,7 @@ var_filter2 = function(
 
   # vif
   dt2 = dt[, c(x_kp, y), with=FALSE ]
-  lrx_filter2 =  var_filter_vif(dt2, y = y, x = x_kp, lims = lims)
+  lrx_filter2 =  var_filter_vif(dt2, y = y, x = x_kp, lims = lims, var_rm_byiv=var_rm_byiv, ...)
   x_kp = lrx_filter2$xkp
 
   # dat returned
@@ -248,6 +248,11 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
   dtxy = dt[, c(x, y), with = FALSE]
 
   m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
+  while (any(is.na(coef(m1)))) {
+    dtxy = dtxy[, (names(which(is.na(coef(m1))))) := NULL]
+    m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
+  }
+
 
   m_step = step(m1, direction="both", trace = FALSE)
   m2 = eval(m_step$call)
@@ -271,68 +276,143 @@ var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
 }
 
 
-var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, vif = 3, p = 0.05), show_vif=FALSE) {
+var_filter_vif = function(dt, y, x=NULL, lims = list(coef = 0, cor=0.6, vif = 3, p = 0.05), var_rm_byiv=TRUE, show_vif=FALSE, ...) {
   start_time = proc.time()
-  Estimate = variable = gvif = NULL
+  Estimate = variable = gvif = info_value = `Pr(>|z|)` = value = x2 = NULL
 
   cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(names(lims), collapse = ', '))))
+
 
   dt = setDT(copy(dt))
   if (is.null(x)) x = setdiff(names(dt), y)
   dtxy = dt[, c(x, y), with = FALSE]
 
+  # info value
+  xiv = iv(dtxy, y, x)
+  var_filter_iv = function(x, xiv) {
+    xiv[variable %in% x][order(info_value)][1,variable]
+  }
+
+  # lr
   m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
   df_vif = vif(m1, merge_coef = TRUE)
 
-  # coefficients
+  # x keep
   x_kp = x
+  # coefficients ------
+  x_kp_last = x
   xrm_coef = NULL
   if ('coef' %in% names(lims)) {
-    while (df_vif[-1][Estimate <= lims$coef, .N>0]) {
-      x_kp = setdiff(x_kp, df_vif[-1][Estimate <= lims$coef,][order(-gvif)][1,variable])
+    while (df_vif[variable != '(Intercept)'][Estimate <= lims$coef, .N>0]) {
+      dt_xrm = df_vif[variable != '(Intercept)'][Estimate <= lims$coef,]
+      if (var_rm_byiv) {
+        x_rm = var_filter_iv(dt_xrm$variable, xiv)
+      } else {
+        x_rm = dt_xrm[order(-gvif)][1,variable]
+      }
+
+      x_kp = setdiff(x_kp, x_rm)
       dtxy = dt[, c(x_kp, y), with = FALSE]
 
       m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
       df_vif = vif(m1, merge_coef = TRUE)
     }
-    xrm_coef = setdiff(x, names(coef(m1))[-1])
+
+    xrm_coef = setdiff(x_kp_last, x_kp)
   }
 
-  # vif
-  x_kp = x
+  if (length(xrm_coef)>0) {
+    cat_bullet(
+      c(sprintf("%s variables are removed via coef", length(xrm_coef))),
+      bullet = "tick", bullet_col = "green", col = 'grey'
+    )
+  }
+
+  # correlation ------
+  x_kp_last = x_kp
+  xrm_cor = NULL
+  if ('cor' %in% names(lims)) {
+    x_kp_num = cols_type(dtxy[, x_kp_last, with=FALSE], 'numeric')
+    x_kp_cat = setdiff(x_kp_last, x_kp_num)
+
+    dtcor = cor2(dt, x_kp_num, uptri = TRUE)[]
+    while (dtcor[!is.na(value)][abs(value) > lims$cor, .N>0]) {
+      x_rm = var_filter_iv(dtcor[order(-abs(value))][1, c(x,x2)], xiv)
+
+      x_kp_num = setdiff(x_kp_num, x_rm)
+      dtcor = cor2(dt, x_kp_num, uptri = TRUE)[]
+    }
+
+    x_kp = c(x_kp_num, x_kp_cat)
+    xrm_cor = setdiff(x_kp_last, x_kp)
+    }
+
+  if (length(xrm_cor)>0) {
+    cat_bullet(
+      c(sprintf("%s variables are removed via cor", length(xrm_cor))),
+      bullet = "tick", bullet_col = "green", col = 'grey'
+    )
+  }
+
+  # vif ------
+  x_kp_last = x_kp
   xrm_vif = NULL
   if ('vif' %in% names(lims)) {
-    while (df_vif[gvif > lims$vif, .N>0]) {
-      x_kp = setdiff(x_kp, df_vif[-1][gvif == max(gvif), variable])
+    while (df_vif[variable != '(Intercept)'][gvif > lims$vif, .N>0]) {
+      dt_xrm = df_vif[variable != '(Intercept)'][gvif > lims$vif,]
+      if (var_rm_byiv) {
+        x_rm = var_filter_iv(dt_xrm$variable, xiv)
+      } else {
+        x_rm = dt_xrm[order(-gvif)][1,variable]
+      }
+
+      x_kp = setdiff(x_kp, x_rm)
       dtxy = dt[, c(x_kp, y), with = FALSE]
 
       m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
       df_vif = vif(m1, merge_coef = TRUE)
     }
-    xrm_vif = setdiff(x, names(coef(m1))[-1])
+
+    xrm_vif = setdiff(x_kp_last, x_kp)
   }
 
+  if (length(xrm_vif)>0) {
+    cat_bullet(
+      c(sprintf("%s variables are removed via vif", length(xrm_vif))),
+      bullet = "tick", bullet_col = "green", col = 'grey'
+    )
+  }
 
-  # p
-  x_kp = x
+  # p ------
+  x_kp_last = x_kp
   xrm_p = NULL
   if ('p' %in% names(lims)) {
-    while (df_vif[get("Pr(>|z|)") > lims$p, .N>0]) {
-      x_kp = setdiff(x_kp, df_vif[-1][ get("Pr(>|z|)") == max(df_vif[-1][["Pr(>|z|)"]]), variable])
+    while (df_vif[variable != '(Intercept)'][`Pr(>|z|)` > lims$p, .N>0]) {
+      dt_xrm = df_vif[variable != '(Intercept)'][`Pr(>|z|)` > lims$p,]
+      x_rm = dt_xrm[order(-`Pr(>|z|)`)][1,variable]
+
+      x_kp = setdiff(x_kp, x_rm)
       dtxy = dt[, c(x_kp, y), with = FALSE]
 
       m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
       df_vif = vif(m1, merge_coef = TRUE)
     }
-    xrm_p = setdiff(x, names(coef(m1))[-1])
+    xrm_p = setdiff(x_kp_last, x_kp)
+  }
+
+  if (length(xrm_p)>0) {
+    cat_bullet(
+      c(sprintf("%s variables are removed via p", length(xrm_p))),
+      bullet = "tick", bullet_col = "green", col = 'grey'
+    )
   }
 
   # xkp
-  xkp = setdiff(x, unique(c(xrm_coef, xrm_vif, xrm_p)))
-
+  xkp = x_kp # setdiff(x, unique(c(xrm_coef, xrm_vif, xrm_p)))
   # xrm
   if (show_vif) print(df_vif)
   xrm = list(coef = data.table(variable = xrm_coef),
+             cor  = data.table(variable = xrm_cor),
              vif  = data.table(variable = xrm_vif),
              p    = data.table(variable = xrm_p))
 

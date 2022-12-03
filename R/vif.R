@@ -74,3 +74,24 @@ vif = function(model, merge_coef = FALSE) {
 }
 
 # modified from car::vif
+
+
+cor2 = function(dt, x, uptri = FALSE) {
+  . = cid = rid = rcid = NULL
+
+  numcols = names(which(dt[,sapply(.SD, is.numeric)]))
+
+  dtcor = setDT(as.data.frame(cor(dt[,intersect(x,numcols),with=FALSE], use='pairwise.complete.obs')), keep.rownames=TRUE)
+  setnames(dtcor, 'rn', 'x')
+
+  if (uptri) {
+    dtcor = melt(dtcor, id.vars = 'x', variable.name = 'x2')[
+      dtcor[,.(x)][,rid:=.I][], on = 'x'
+    ][dtcor[,.(x2=x)][,cid:=.I][], on = 'x2'
+    ][, rcid := sprintf('%s_%s',rid,cid)
+    ][cid > rid
+    ]
+  }
+
+  return(dtcor)
+}
