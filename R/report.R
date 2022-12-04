@@ -209,14 +209,12 @@ report = function(dt, y, x, breaks_list, x_name = NULL, special_values=NULL, see
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
 
   # correlation
-  corlst = rbindlist(lapply(dat_lst[1], function(d) {
-    numcols = names(which(d[,sapply(.SD, is.numeric)]))
-    setDT(as.data.frame(cor(d[,intersect(x,numcols),with=FALSE], use='pairwise.complete.obs')), keep.rownames=TRUE)
-  }), idcol = 'dataset')
-  setnames(corlst, 'rn', 'x')
+  dtcor = rbindlist(lapply(dat_lst[1], function(d) cor2(d,x, uptri = TRUE, diag = TRUE)))
+  setnames(dtcor, 'x1', 'variable')
+  if (!is.null(x_name)) dtcor = merge(x_name, dtcor, by = 'variable', sort = FALSE, all = TRUE)[c(.N, seq_len(.N-1)),]
 
   writeData(wb,sheet, 'Correlation of numeric variables', startRow=5+nrow(sum_tbl), startCol=1, colNames=F)
-  writeData(wb,sheet, corlst, startRow=6+nrow(sum_tbl), startCol=1, colNames=T)
+  writeData(wb,sheet, dtcor, startRow=6+nrow(sum_tbl), startCol=1, colNames=T)
 
 
   # variable binning ------

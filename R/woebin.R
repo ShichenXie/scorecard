@@ -1530,7 +1530,7 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
 #' @export
 woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_all_var=TRUE, special_values=NULL, method="tree", count_distr_limit=0.05, to='breaks_list', ...) {
   # global variables or functions
-  . = V1 = posprob = posprob2 = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
+  . = V1 = posprob = posprob_chg = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
@@ -1539,11 +1539,15 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
   # x variables
   xs_all = bins[,unique(variable)]
   if (adj_all_var == FALSE) {
-    xs_adj = bins[
-      !(bin == "missing" & count_distr >= count_distr_limit)
-    ][, posprob2 := posprob >= shift(posprob, type = "lag"), by=variable
-    ][!is.na(posprob2), length(unique(posprob2)), by=variable
-    ][V1 > 1, variable]
+    xs_adj = unique(c(
+        bins[count_distr < count_distr_limit, unique(variable)],
+        bins[
+          bin != "missing"
+        ][, posprob_chg := posprob >= shift(posprob, type = "lag"), by=variable
+        ][!is.na(posprob_chg), length(unique(posprob_chg)), by=variable
+        ][V1 > 1, variable]
+      ))
+
   } else {
     xs_adj = xs_all
   }
