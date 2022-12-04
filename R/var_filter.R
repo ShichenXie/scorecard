@@ -244,7 +244,7 @@ var_filter2 = function(
   rs = proc.time() - start_time
   # hms
   cat_bullet(
-    c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), ncol(dt), sec_to_hms(rs[3])),
+    c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), ncol(dt)-1, sec_to_hms(rs[3])),
       sprintf("%s variables are removed in total", ncol(dt)-1-length(x_kp) )),
     bullet = "tick", bullet_col = "green", col = 'grey'
   )
