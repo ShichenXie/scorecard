@@ -27,8 +27,14 @@ dat_rm_reason = function(rmlst, var_rm = NULL, var_kp = NULL, lims = NULL) {
 
 arglst_update = function(arglst, arglst0) {
   for ( n in intersect(names(arglst), names(arglst0)) ) {
+    if (isFALSE(arglst[[n]]) || is.null(arglst[[n]])) {
+      arglst0[[n]] = NULL
+      next
+    }
+
     arglst0[[n]] = arglst[[n]]
   }
+
   arglst = arglst0
   return(arglst)
 }
@@ -42,9 +48,9 @@ arglst_update = function(arglst, arglst0) {
 #' @param x Name of x variables. Defaults to NULL. If x is NULL, then all columns except y are counted as x variables.
 #' @param lims A list of variable filters' thresholds.
 #' \itemize{
-#'   \item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
 #'   \item \code{missing_rate} The missing rate of kept variables should <= 0.95 by defaults.
 #'   \item \code{identical_rate} The identical value rate (excluding NAs) of kept variables should <= 0.95 by defaults.
+#'   \item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
 #' }
 #' @param var_rm Name of force removed variables, Defaults to NULL.
 #' @param var_kp Name of force kept variables, Defaults to NULL.
@@ -81,15 +87,13 @@ arglst_update = function(arglst, arglst0) {
 #'
 var_filter = function(
   dt, y, x = NULL,
-  lims = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95),
+  lims = list(missing_rate = 0.95, identical_rate = 0.95, info_value = 0.02),
   var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ... ) {
+
   # start time
   start_time = proc.time()
 
-
-  # no visible binding for global variable
-  . = info_value = variable = rm_reason = NULL
-
+  rm_reason = NULL
   kwargs = list(...)
   # return_rm_reason param
   return_rm_reason = kwargs$return_rm_reason
@@ -99,7 +103,7 @@ var_filter = function(
   if (is.numeric(kwargs$missing_limit)) lims$missing_rate = kwargs$missing_limit
   if (is.numeric(kwargs$identical_limit)) lims$identical_rate = kwargs$identical_limit
   # lims
-  lims = arglst_update(lims, arglst0 = list(info_value = 0.02, missing_rate = 0.95, identical_rate = 0.95))
+  lims = arglst_update(lims, arglst0 = list(missing_rate = 0.95, identical_rate = 0.95, info_value = 0.02))
   cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(names(lims), collapse = ', '))))
 
   # set dt as data.table
@@ -107,70 +111,47 @@ var_filter = function(
   if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
   # check y
   dt = check_y(dt, y, positive)
-  # # remove date/time col
-  # dt = rmcol_datetime_unique1(dt)
-  # # replace "" by NA
-  # dt = rep_blank_na(dt)
   # x variable names
   x = x_variable(dt,y,x)
-  x_kp = x
+  # variable keep
+  if (length(setdiff(var_kp, x)) > 0) {
+    warning("Incorrect inputs; there are ", length(setdiff(var_kp, x)), " var_kp variables are not exist in input data, which are removed from var_kp. \n", setdiff(var_kp, x))
+  }
+  x2 = setdiff(x, c(var_rm, var_kp))
 
-  # force removed variables
-  if (!is.null(var_rm))  x_kp = setdiff(x_kp, var_rm)
-  # check force kept variables
-  if (!is.null(var_kp)) {
-    var_kp2 = intersect(var_kp, x_kp)
-    len_diff = length(var_kp) - length(var_kp2)
-    if (len_diff > 0) {
-      warning("Incorrect inputs; there are ", len_diff, " var_kp variables are not exist in input data, which are removed from var_kp. \n", setdiff(var_kp, var_kp2))
+  # variable filter via lims
+  x_kp = NULL
+  x_rm = NULL
+  x_filter = NULL
+  for (lim in names(lims)) {
+    x_rmkp = do.call(paste0('var_filter_', lim), args = list(dt=dt, y=y, x=x2, lim = lims[[lim]]))
+
+    x_kp[[lim]] = x_rmkp$xkp
+    x_rm[[lim]] = data.table(variable = x_rmkp$xrm)
+    x_filter[[lim]] = x_rmkp$filter
+
+    if (length(x_rmkp$xrm)>0) {
+      cat_bullet(
+        c(sprintf("%s variables are removed via %s", length(x_rmkp$xrm), lim)),
+        bullet = "tick", bullet_col = "green", col = 'grey'
+      )
     }
-    var_kp = var_kp2
   }
 
-  # -iv
-  iv_list = iv(dt, y, x_kp)
-  # -na percentage
-  missing_rate = dt[, sapply(.SD, function(a) mean(is.na(a))), .SDcols = x_kp] # sum(is.na(a))/length(a)
-  # -element percentage
-  identical_rate = dt[, sapply(.SD, function(a) {
-    pt = prop.table(table(a))
-    max_rate = ifelse(length(pt) == 0, Inf, max(pt, na.rm = TRUE))
-    return(max_rate)
-  } ), .SDcols = x_kp]
+  # return dt
+  x_kp2 = unique(c(Reduce(intersect, x_kp), var_kp))
+  rtdt = dt[, c(x_kp2, y), with=FALSE ]
 
-  # datatable  iv na ele
-  dt_var_selector =
-    iv_list[data.table(variable = names(missing_rate), missing_rate = missing_rate), on="variable"
-    ][data.table(variable = names(identical_rate), identical_rate = identical_rate), on="variable"]
-
-  # remove missing_rate>95 | identical_rate>0.95 | iv<0.02
-  # variable datatable selected
-  dt_var_sel = dt_var_selector
-  if ('info_value'     %in% names(lims)) dt_var_sel = dt_var_sel[info_value >= lims$info_value]
-  if ('missing_rate'   %in% names(lims)) dt_var_sel = dt_var_sel[missing_rate <= lims$missing_rate]
-  if ('identical_rate' %in% names(lims)) dt_var_sel = dt_var_sel[identical_rate <= lims$identical_rate]
-  x_kp = dt_var_sel[, as.character(variable)]
-
-  # add kept variable
-  if (!is.null(var_kp))  x_kp = unique(c(x_kp, var_kp))
-  rtdt = dt[, c(x_kp, y), with=FALSE ]
-
-  # variable removed reason
-  if (var_rm_reason) {
-    rmlst = list(
-      info_value = dt_var_selector[info_value < lims$info_value, .(variable)],
-      missing_rate = dt_var_selector[missing_rate > lims$missing_rate, .(variable)],
-      identical_rate = dt_var_selector[identical_rate > lims$identical_rate, .(variable)]
-    )
-    dtrm = dat_rm_reason(rmlst = rmlst, var_rm = var_rm, var_kp = var_kp, lims = lims)
+  # x remove reason
+  if (isTRUE(var_rm_reason)) {
+    x_filter$rm_reason = dat_rm_reason(rmlst = x_rm, var_rm = var_rm, var_kp = var_kp, lims = lims)
 
     fcols = c('info_value', 'missing_rate', 'identical_rate')
-    rtrm = merge(
-      dtrm, dt_var_selector, all.y = TRUE
+    rtrm = Reduce(
+      function(x,y) merge(x,y, by='variable', all=TRUE), x_filter
     )[order(rm_reason)
     ][, (fcols) := lapply(.SD, function(x) round(x, 4)), .SDcols = fcols][]
 
-    # return
     rt = list(dt = rtdt, rm = rtrm)
   } else {
     rt = rtdt
@@ -181,11 +162,60 @@ var_filter = function(
   # hms
   cat_bullet(
     c(sprintf("Variable filtering on %s rows and %s columns in %s", nrow(dt), length(x), sec_to_hms(rs[3])),
-      sprintf("%s variables are removed", length(x)-length(x_kp)) ),
+      sprintf("%s variables are removed in total", length(x)-length(x_kp2)) ),
     bullet = "tick", bullet_col = "green", col = 'grey'
   )
 
   return(rt)
+}
+
+var_filter_missing_rate = function(dt, y, x, lim=0.95) {
+  variable = missing_rate = NULL
+
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
+  x_missing_rate = data.table(
+    variable = x,
+    missing_rate = dtxy[, sapply(.SD, function(a) mean(is.na(a))), .SDcols = x]
+  )
+
+  x_kp = x_missing_rate[missing_rate <= lim, variable]
+
+  return(
+    list(xkp = x_kp, xrm = setdiff(x, x_kp), filter=x_missing_rate)
+  )
+}
+
+var_filter_identical_rate = function(dt, y, x, lim=0.95) {
+  variable = identical_rate = NULL
+
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
+  x_identical_rate = data.table(
+    variable = x,
+    identical_rate = dtxy[, sapply(.SD, function(a) {
+      pt = prop.table(table(a))
+      max_rate = ifelse(length(pt) == 0, Inf, max(pt, na.rm = TRUE))
+      return(max_rate)
+    } ), .SDcols = x]
+  )
+
+  x_kp = x_identical_rate[identical_rate <= lim, variable]
+
+  return(
+    list(xkp = x_kp, xrm = setdiff(x, x_kp), filter=x_identical_rate)
+  )
+}
+
+var_filter_info_value = function(dt, y, x, lim=0.02) {
+  variable = info_value = NULL
+
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
+  x_info_value = iv(dtxy, y, x)
+
+  x_kp = x_info_value[info_value >= lim, variable]
+
+  return(
+    list(xkp = x_kp, xrm = setdiff(x, x_kp), filter = x_info_value)
+  )
 }
 
 
@@ -193,48 +223,52 @@ var_filter = function(
 # Variable Filter via lr
 var_filter2 = function(
     dt, y, x=NULL,
-    step = TRUE, lims = list(coef = 'positive', vif = 3, p = 0.05, cor=0.6), var_rm_miniv = TRUE,
+    lims = list(coef = 'positive', step=TRUE, vif = 3, cor = 0.8), var_rm_miniv = TRUE,
     var_rm = NULL, var_kp = NULL, var_rm_reason = FALSE, positive = "bad|1", ...) {
+
   # running time start
   start_time = proc.time()
 
+  variable = NULL
+  show_vif = list(...)['show_vif']
   # lims
-  xf_lims = names(lims)
-  if (step) xf_lims = c('step', xf_lims)
-  cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(xf_lims, collapse = ', '))))
-  lims = arglst_update(lims, arglst0 = list(coef = 'positive', vif = 3, p = 0.05, cor=0.6))
+  lims = arglst_update(lims, arglst0 = list(coef = 'positive', step=TRUE, vif = 3, cor = 0.8))
+  cli_inform(c(i = sprintf('Filtering variables via %s ...', paste(names(lims), collapse = ', '))))
 
   # dt
-  dt = setDT(copy(dt))
-  if (!is.null(x)) dt = dt[, c(y,x), with=FALSE]
-  # check y
-  dt = check_y(dt, y, positive)
+  dt = check_y(setDT(copy(dt)), y, positive)
+  x = x_variable(dt,y,x)
 
-  x_kp = x_variable(dt,y,x)
-  x_kp = setdiff(x_kp, c(var_rm, var_kp))
+  # variable filter via lims
+  x_kp = setdiff(x, c(var_rm, var_kp))
+  x_rm = NULL
+  for (lim in names(lims)) {
+    x_rmkp = do.call(paste0('var_filter_', lim), args = list(dt=dt, y=y, x=x_kp, lim = lims[[lim]], var_rm_miniv = var_rm_miniv))
 
-  # step
-  if (step == TRUE) {
-    dt2 = dt[, c(x_kp, y), with=FALSE ]
-    lrx_filter1 = var_filter_step(dt2, y = y, x = x_kp)
-    x_kp = lrx_filter1$xkp
+    x_rm[[lim]] = data.table(variable = x_rmkp$xrm)
+    x_kp = x_rmkp$xkp
+
+    if (length(x_rmkp$xrm)>0) {
+      cat_bullet(
+        c(sprintf("%s variables are removed via %s", length(x_rmkp$xrm), lim)),
+        bullet = "tick", bullet_col = "green", col = 'grey'
+      )
+    }
   }
 
-  # lims
-  dt2 = dt[, c(x_kp, y), with=FALSE ]
-  lrx_filter2 =  var_filter_lims(dt2, y = y, x = x_kp, lims = lims, var_rm_miniv=var_rm_miniv, ...)
-  x_kp = lrx_filter2$xkp
+  # df_vif
+  df_vif=m1_vif(dt[,c(x_kp,y),with=FALSE], y)
+  if (isTRUE(show_vif)) print(df_vif)
 
   # dat returned
-  if (!is.null(var_kp))  x_kp = unique(c(x_kp, var_kp))
+  x_kp = unique(c(x_kp, var_kp))
   rtdt = dt[, c(x_kp, y), with=FALSE ]
 
   # var removed reason
   if (isTRUE(var_rm_reason)) {
-    vfxrm = lrx_filter2$xrm
-    if (step == TRUE) vfxrm = c(lrx_filter1$xrm, vfxrm)
-    rtrm = dat_rm_reason(rmlst = vfxrm, var_rm = var_rm, var_kp = var_kp, lims = lims)
-    rtrm = rbind(rtrm, lrx_filter2$df_vif[-1], fill=TRUE)
+    rtrm = dat_rm_reason(rmlst = x_rm, var_rm = var_rm, var_kp = var_kp, lims = lims)
+    rtrm = rbind(rtrm, df_vif[variable != '(Intercept)'], fill=TRUE)
+
     rt = list(dt = rtdt, rm = rtrm)
   } else {
     rt = rtdt
@@ -253,184 +287,165 @@ var_filter2 = function(
 }
 
 #' @importFrom stats step
-var_filter_step = function(dt, y, x=NULL, show_vif=FALSE) {
-  dt = setDT(copy(dt))
+var_filter_step = function(dt, y, x=NULL, ...) {
+
   if (is.null(x)) x = setdiff(names(dt), y)
-  dtxy = dt[, c(x, y), with = FALSE]
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
 
-  m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
-  while (any(is.na(coef(m1)))) {
-    dtxy = dtxy[, (names(which(is.na(coef(m1))))) := NULL]
-    m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dtxy)
-  }
-
-
+  m1 = m1_vif(dtxy, y, mobj=TRUE)
   m_step = step(m1, direction="both", trace = FALSE)
   m2 = eval(m_step$call)
 
-  df_vif = vif(m2, merge_coef = TRUE)
-  if (show_vif) print(df_vif)
 
-  xkp_step = names(coef(m2))[-1]
-  xrm_step = list(step = data.table(variable = setdiff(x, xkp_step)))
-
-  # hms
-  cat_bullet(
-    c(sprintf("%s variables are removed via step", length(x)-length(xkp_step))),
-    bullet = "tick", bullet_col = "green", col = 'grey'
-  )
-
-  return(list(xkp = xkp_step, xrm = xrm_step, df_vif = df_vif))
+  xkp_step = setdiff(names(coef(m2)), "(Intercept)")
+  return(list(xkp = xkp_step, xrm = setdiff(x, xkp_step)))
 }
 
 
-var_filter_lims = function(dt, y, x=NULL, lims = list(coef = 'positive', vif = 3, p = 0.05, cor=0.6), var_rm_miniv=TRUE, show_vif=FALSE, ...) {
-  start_time = proc.time()
-
-  if (is.null(x)) x = setdiff(names(dt), y)
-  dtxy = setDT(copy(dt))[, c(x, y), with = FALSE]
-
-  # variable filter via lims
-  x_kp = x
-  x_rm = NULL
-  for (lim in names(lims)) {
-    x_rmkp = do.call(paste0('var_filter_', lim), args = list(dt=dtxy, y=y, x=x_kp, lim = lims[[lim]], var_rm_miniv = var_rm_miniv))
-
-    x_rm[[lim]] = data.table(variable = x_rmkp$xrm)
-    x_kp = x_rmkp$xkp
-
-    if (length(x_rmkp$xrm)>0) {
-      cat_bullet(
-        c(sprintf("%s variables are removed via %s", length(x_rmkp$xrm), lim)),
-        bullet = "tick", bullet_col = "green", col = 'grey'
-      )
-    }
-  }
-
-  # df_vif
-  df_vif=vif2(dtxy[,c(x_kp,y),with=FALSE],y)
-  if (show_vif) print(df_vif)
-
-  return(list(xkp = x_kp, xrm = x_rm, df_vif = df_vif))
-}
-
-var_filter_coef = function(dt, y, x, lim='positive', var_rm_miniv=TRUE) {
+var_filter_coef = function(dt, y, x=NULL, lim='positive', var_rm_miniv=TRUE, ...) {
   variable = Estimate = NULL
 
+  if (is.null(x)) x = setdiff(names(dt), y)
   dtxy = setDT(dt)[, c(x,y), with=FALSE]
-  xiv = iv(dtxy, y, x)
+  if (var_rm_miniv) xiv = iv(dtxy, y, x)
 
   lim = match.arg(lim, c('positive', 'negative'))
 
-  df_vif=vif2(dtxy,y)
-  x_kp = x
+  df_vif=m1_vif(dtxy,y)
+  x_kp = df_vif[variable != '(Intercept)', variable]
   if (lim == 'positive') {
     while (df_vif[variable != '(Intercept)'][Estimate <= 0, .N>0]) {
-      dt_xrm = df_vif[variable != '(Intercept)'][Estimate <= 0,]
+      dt_xrm = df_vif[variable != '(Intercept)'][order(Estimate)]
       if (var_rm_miniv) {
-        x_rm = xrm_miniv(dt_xrm$variable, xiv)
+        x_rm = xrm_miniv(dt_xrm[Estimate <= 0,variable], xiv)
       } else {
-        x_rm = dt_xrm[order(Estimate)][1,variable]
+        x_rm = dt_xrm[1,variable]
       }
 
       x_kp = setdiff(x_kp, x_rm)
-      dtxy = dt[, c(x_kp, y), with = FALSE]
+      dtxy = dtxy[, c(x_kp, y), with = FALSE]
 
-      df_vif=vif2(dtxy,y)
+      df_vif=m1_vif(dtxy,y)
     }
   } else if (lim == 'negative'){
     while (df_vif[variable != '(Intercept)'][Estimate >= 0, .N>0]) {
-      dt_xrm = df_vif[variable != '(Intercept)'][Estimate >= 0,]
+      dt_xrm = df_vif[variable != '(Intercept)'][order(-Estimate)]
       if (var_rm_miniv) {
-        x_rm = xrm_miniv(dt_xrm$variable, xiv)
+        x_rm = xrm_miniv(dt_xrm[Estimate >= 0,variable], xiv)
       } else {
-        x_rm = dt_xrm[order(-Estimate)][1,variable]
+        x_rm = dt_xrm[1,variable]
       }
 
       x_kp = setdiff(x_kp, x_rm)
       dtxy = dt[, c(x_kp, y), with = FALSE]
 
-      df_vif=vif2(dtxy,y)
+      df_vif=m1_vif(dtxy,y)
     }
   }
 
   return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
 }
 
-var_filter_cor = function(dt, y, x, lim=0.6, ...) {
-  value = x1 = x2 = NULL
+var_filter_p = function(dt, y, x=NULL, lim=0.05, var_rm_miniv=FALSE) {
+  variable = `Pr(>|z|)` = NULL
 
+  if (is.null(x)) x = setdiff(names(dt), y)
   dtxy = setDT(dt)[, c(x,y), with=FALSE]
-  xiv = iv(dtxy, y, x)
+  if (var_rm_miniv) xiv = iv(dtxy, y, x)
+
+  df_vif=m1_vif(dtxy,y)
+  x_kp = x
+  while (df_vif[variable != '(Intercept)'][`Pr(>|z|)` > lim, .N>0]) {
+    dt_xrm = df_vif[variable != '(Intercept)'][order(-`Pr(>|z|)`)]
+    if (var_rm_miniv) {
+      x_rm = xrm_miniv(dt_xrm[`Pr(>|z|)` > lim, variable], xiv)
+    } else {
+      x_rm = dt_xrm[1, variable]
+    }
+
+    x_kp = setdiff(x_kp, x_rm)
+    dtxy = dtxy[, c(x_kp, y), with = FALSE]
+
+    df_vif=m1_vif(dtxy,y)
+  }
+
+  return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
+}
+
+
+var_filter_vif = function(dt, y, x=NULL, lim=3, var_rm_miniv=TRUE) {
+  variable = gvif = NULL
+
+  if (is.null(x)) x = setdiff(names(dt), y)
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
+  if (var_rm_miniv) xiv = iv(dtxy, y, x)
+
+  df_vif=m1_vif(dtxy,y)
+  x_kp = x
+  while (df_vif[variable != '(Intercept)'][gvif > lim, .N>0]) {
+    dt_xrm = df_vif[variable != '(Intercept)'][order(-gvif)]
+    if (var_rm_miniv) {
+      x_rm = xrm_miniv(dt_xrm[gvif > lim,variable], xiv)
+    } else {
+      x_rm = dt_xrm[1,variable]
+    }
+
+    x_kp = setdiff(x_kp, x_rm)
+    dtxy = dtxy[, c(x_kp, y), with = FALSE]
+
+    df_vif=m1_vif(dtxy,y)
+  }
+
+  return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
+}
+
+var_filter_cor = function(dt, y, x=NULL, lim=0.6, var_rm_miniv=TRUE) {
+  value = x1 = x2 = . = V1 = cid = rid = NULL
+
+  if (is.null(x)) x = setdiff(names(dt), y)
+  dtxy = setDT(dt)[, c(x,y), with=FALSE]
+  if (var_rm_miniv) xiv = iv(dtxy, y, x)
 
   x_kp_num = cols_type(dtxy[, x, with=FALSE], 'numeric')
   x_kp_cat = setdiff(x, x_kp_num)
 
-  dtcor = cor2(dtxy, x_kp_num, uptri = TRUE, melt = TRUE)[]
-  while (dtcor[!is.na(value)][abs(value) > lim, .N>0]) {
-    x_rm = xrm_miniv(dtcor[order(-abs(value))][1, c(x1,x2)], xiv)
+  dtcor = cor2(dtxy, x_kp_num, uptri = TRUE, long = TRUE)[!is.na(value) & rid != cid][order(-abs(value))][]
+  while (dtcor[abs(value) > lim, .N>0]) {
+    if (var_rm_miniv) {
+      x_rm = xrm_miniv(dtcor[1, c(x1,x2)], xiv)
+    } else {
+      x_rm = rbind(
+        dtcor[x1 == dtcor[1,x1], mean(abs(value)), by = .(x=x1)],
+        dtcor[x2 == dtcor[1,x2], mean(abs(value)), by = .(x=x2)]
+      )[order(-V1)][1,x]
+    }
+
 
     x_kp_num = setdiff(x_kp_num, x_rm)
-    dtcor = cor2(dt, x_kp_num, uptri = TRUE, melt = TRUE)[]
+    dtcor = dtcor[!(x1 == x_rm | x2 == x_rm)]
   }
 
   x_kp = c(x_kp_num, x_kp_cat)
-  return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
-}
-
-var_filter_vif = function(dt, y, x, lim=3, var_rm_miniv=TRUE) {
-  variable = gvif = NULL
-
-  dtxy = setDT(dt)[, c(x,y), with=FALSE]
-  xiv = iv(dtxy, y, x)
-
-  df_vif=vif2(dtxy,y)
-  x_kp = x
-  while (df_vif[variable != '(Intercept)'][gvif > lim, .N>0]) {
-    dt_xrm = df_vif[variable != '(Intercept)'][gvif > lim,]
-    if (var_rm_miniv) {
-      x_rm = xrm_miniv(dt_xrm$variable, xiv)
-    } else {
-      x_rm = df_vif[order(-gvif)][1,variable]
-    }
-
-    x_kp = setdiff(x_kp, x_rm)
-    dtxy = dt[, c(x_kp, y), with = FALSE]
-
-    df_vif=vif2(dtxy,y)
-  }
-
-  return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
-}
-
-var_filter_p = function(dt, y, x, lim=0.05, var_rm_miniv=TRUE) {
-  variable = `Pr(>|z|)` = NULL
-
-  dtxy = setDT(dt)[, c(x,y), with=FALSE]
-  xiv = iv(dtxy, y, x)
-
-  df_vif=vif2(dtxy,y)
-  x_kp = x
-  while (df_vif[variable != '(Intercept)'][`Pr(>|z|)` > lim, .N>0]) {
-    dt_xrm = df_vif[variable != '(Intercept)'][`Pr(>|z|)` > lim,]
-    if (var_rm_miniv) {
-      x_rm = xrm_miniv(dt_xrm$variable, xiv)
-    } else {
-      x_rm = dt_xrm[order(-`Pr(>|z|)`)][1,variable]
-    }
-
-    x_kp = setdiff(x_kp, x_rm)
-    dtxy = dt[, c(x_kp, y), with = FALSE]
-
-    df_vif=vif2(dtxy,y)
-  }
-
-  return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
+  return(
+    list(xkp = x_kp, xrm = setdiff(x, x_kp))
+  )
 }
 
 
-vif2 = function(dt,y) {
+
+
+m1_vif = function(dt, y, mobj=FALSE) {
   m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dt)
+
+  xrm = names(which(is.na(coef(m1))))
+  while (length(xrm) > 0) {
+    # print(xrm)
+    dt = dt[, (xrm) := NULL]
+    m1 = glm(as.formula(sprintf('%s ~ .', y)), family = "binomial", data = dt)
+    xrm = names(which(is.na(coef(m1))))
+  }
+
+  if (isTRUE(mobj)) return(m1)
   df_vif = vif(m1, merge_coef = TRUE)
   return(df_vif)
 }
@@ -438,9 +453,10 @@ vif2 = function(dt,y) {
 # uptri: upper triangular
 # lotri: lower triangular
 # diag: diagonal
-cor2 = function(dt, x=NULL, uptri = FALSE, lotri = FALSE, diag = FALSE, melt=FALSE) {
+cor2 = function(dt, x=NULL, uptri = FALSE, lotri = FALSE, diag = FALSE, long=FALSE) {
   . = x1 = cid = rid = rcid = NULL
 
+  dt = setDT(dt)
   if (is.null(x)) x = names(dt)
   numcols = names(which(dt[,sapply(.SD, is.numeric)]))
 
@@ -454,7 +470,7 @@ cor2 = function(dt, x=NULL, uptri = FALSE, lotri = FALSE, diag = FALSE, melt=FAL
   cor_dt = setDT(as.data.frame(cor_mt), keep.rownames=TRUE)
   setnames(cor_dt, 'rn', 'x1')
 
-  if (melt) {
+  if (long) {
     cor_dt = melt(cor_dt, id.vars = 'x1', variable.name = 'x2')[
       cor_dt[,.(x1)][,rid:=.I][], on = 'x1'
     ][cor_dt[,.(x2=x1)][,cid:=.I][], on = 'x2'

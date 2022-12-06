@@ -94,7 +94,7 @@
 #' @export
 report = function(dt, y, x, breaks_list, x_name = NULL, special_values=NULL, seed=618, save_report='report', positive='bad|1', ...) {
   # info_value = gvif = . = variable = bin = woe = points = NULL
-  . = bin = gvif = info_value = points = variable = woe = points = name = NULL
+  . = bin = gvif = info_value = points = variable = woe = points = name = x1 = NULL
 
   kwargs = list(...)
   # x name
@@ -209,12 +209,19 @@ report = function(dt, y, x, breaks_list, x_name = NULL, special_values=NULL, see
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
 
   # correlation
-  dtcor = rbindlist(lapply(dat_lst[1], function(d) cor2(d,x, uptri = TRUE, diag = TRUE)))
-  setnames(dtcor, 'x1', 'variable')
-  if (!is.null(x_name)) dtcor = merge(x_name, dtcor, by = 'variable', sort = FALSE, all = TRUE)[c(.N, seq_len(.N-1)),]
+  dtcor1 = rbindlist(lapply(dat_woe_lst[1], function(d) cor2(d,paste0(x,'_woe'), uptri = TRUE, diag = TRUE)))[, x1 := sub('_woe$', '', x1)]
+  setnames(dtcor1, 'x1', 'variable')
+  if (!is.null(x_name)) dtcor1 = merge(x_name, dtcor1, by = 'variable', sort = FALSE, all = TRUE)[]
 
-  writeData(wb,sheet, 'Correlation of numeric variables', startRow=5+nrow(sum_tbl), startCol=1, colNames=F)
-  writeData(wb,sheet, dtcor, startRow=6+nrow(sum_tbl), startCol=1, colNames=T)
+  writeData(wb,sheet, 'Correlation of variables in woe values', startRow=5+nrow(sum_tbl), startCol=1, colNames=F)
+  writeData(wb,sheet, dtcor1, startRow=6+nrow(sum_tbl), startCol=1, colNames=T)
+
+
+  # dtcor2 = rbindlist(lapply(dat_lst[1], function(d) cor2(d,x, uptri = TRUE, diag = TRUE)))
+  # setnames(dtcor2, 'x1', 'variable')
+  # if (!is.null(x_name)) dtcor2 = merge(x_name, dtcor2, by = 'variable', sort = FALSE, all = TRUE)[]
+  # writeData(wb,sheet, 'Correlation of numeric variables', startRow=9+nrow(sum_tbl)+nrow(dtcor1), startCol=1, colNames=F)
+  # writeData(wb,sheet, dtcor2, startRow=10+nrow(sum_tbl)+nrow(dtcor1), startCol=1, colNames=T)
 
 
   # variable binning ------

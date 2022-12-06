@@ -15,7 +15,7 @@ vif(model, merge_coef = FALSE)
 A data frame with columns for variable and gvif, or additional columns for df and gvif^(1/(2*df)) if provided model uses factor variable.
 }
 \description{
-\code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.
+\code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear to identify collinearity among explanatory variables.
 }
 \examples{
 data(germancredit)

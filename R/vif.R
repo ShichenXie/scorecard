@@ -1,6 +1,6 @@
 #' Variance Inflation Factors
 #'
-#' \code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear.
+#' \code{vif} calculates variance-inflation and generalized variance-inflation factors for linear, generalized linear to identify collinearity among explanatory variables.
 #'
 #' @param model A model object.
 #' @param merge_coef Logical, whether to merge with coefficients of model summary matrix. Defaults to FALSE.

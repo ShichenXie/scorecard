@@ -4,8 +4,8 @@
 \alias{var_filter}
 \title{Variable Filter}
 \usage{
-var_filter(dt, y, x = NULL, lims = list(info_value = 0.02, missing_rate =
-  0.95, identical_rate = 0.95), var_rm = NULL, var_kp = NULL,
+var_filter(dt, y, x = NULL, lims = list(missing_rate = 0.95, identical_rate
+  = 0.95, info_value = 0.02), var_rm = NULL, var_kp = NULL,
   var_rm_reason = FALSE, positive = "bad|1", ...)
 }
 \arguments{
@@ -17,9 +17,9 @@ var_filter(dt, y, x = NULL, lims = list(info_value = 0.02, missing_rate =
 
 \item{lims}{A list of variable filters' thresholds.
 \itemize{
-\item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
 \item \code{missing_rate} The missing rate of kept variables should <= 0.95 by defaults.
 \item \code{identical_rate} The identical value rate (excluding NAs) of kept variables should <= 0.95 by defaults.
+\item \code{info_value} The information value (iv) of kept variables should >= 0.02 by defaults.
 }}
 
 \item{var_rm}{Name of force removed variables, Defaults to NULL.}
