@@ -36,7 +36,7 @@ var_filter(dt, y, x = NULL, lims = list(missing_rate = 0.95, identical_rate
 A data frame with columns for y and selected x variables, and a data frame with columns for remove reason if var_rm_reason is TRUE.
 }
 \description{
-This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.
+This function filter variables base on specified conditions, such as missing rate, identical value rate, information value.
 }
 \examples{
 # Load German credit data

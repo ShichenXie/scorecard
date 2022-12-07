@@ -41,7 +41,7 @@ arglst_update = function(arglst, arglst0) {
 
 #' Variable Filter
 #'
-#' This function filter variables base on specified conditions, such as information value, missing rate, identical value rate.
+#' This function filter variables base on specified conditions, such as missing rate, identical value rate, information value.
 #'
 #' @param dt A data frame with both x (predictor/feature) and y (response/label) variables.
 #' @param y Name of y variable.
