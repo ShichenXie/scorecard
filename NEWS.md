@@ -1,3 +1,7 @@
+# scorecard 0.4.1.999
+
+* added a new param in the woebin function to specify the bin position of missing values
+
 # scorecard 0.4.1
 
 * added correlation matrix to the report function.

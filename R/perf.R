@@ -1381,3 +1381,8 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
 
   return(perf_metric)
 }
+
+
+score_eva = function(score) {
+
+}

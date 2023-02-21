@@ -385,7 +385,7 @@ woebin2_tree = function(
     bin_num_limit     = 8,
     breaks            = NULL,
     spl_val           = NULL,
-    bin_close_right
+    bin_close_right, missing_join
 ) {
   # global variables or functions
   brkp = bstbrkp = total_iv = count = neg = pos =  NULL
@@ -426,7 +426,11 @@ woebin2_tree = function(
 
   if (is.null(binning_tree)) binning_tree = initial_binning
 
-  return(list(binning_sv=binning_sv, binning=binning_tree[, count := neg + pos]))
+  bin_list = list(binning_sv=binning_sv, binning=binning_tree[, count := neg + pos])
+  # missing merge
+  bin_list = binlst_missing_merge(bin_list=bin_list, dtm=dtm, missing_join=missing_join, count_distr_limit=count_distr_limit)
+
+  return(bin_list)
   # return(binning_tree)
 }
 # examples
@@ -447,7 +451,7 @@ woebin2_chimerge = function(
     bin_num_limit     = 8,
     breaks            = NULL,
     spl_val           = NULL,
-    bin_close_right
+    bin_close_right, missing_join
 ) {
   .= a= a_colsum= a_lag= a_lag_rowsum= a_rowsum= a_sum= pos= bin= brkp= brkp2= chisq= count= count_distr= e= e_lag= chisq_lead= neg= negpos= merge_tolead =value= variable= NULL
 
@@ -547,13 +551,18 @@ woebin2_chimerge = function(
     binning_chisq = binning_chisq[grepl("%,%",bin), bin := sub(binpattern('multibin', bin_close_right), "\\1\\2", bin)]
   }
 
-  return(list(binning_sv=binning_sv, binning=binning_chisq[, count := neg + pos]))
+  bin_list = list(binning_sv=binning_sv, binning=binning_chisq[, count := neg + pos])
+  # missing merge
+  bin_list = binlst_missing_merge(bin_list=bin_list, dtm=dtm, missing_join=missing_join, count_distr_limit=count_distr_limit)
+
+  return(bin_list)
   # return(binning_chisq)
 }
 
 
 # required in woebin2 # return equal binning, supports numerical variables only
-woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL, method='freq', bin_close_right ) {
+woebin2_equal = function(
+    dtm, init_count_distr=0.02, count_distr_limit=0.05, stop_limit=0.1, bin_num_limit=8, breaks=NULL, spl_val=NULL, method='freq', bin_close_right, missing_join ) {
   count = value = group = . = minv = maxv = bin = y = variable = pos = neg = posprob = NULL
 
   # dtm $ binning_sv
@@ -601,7 +610,11 @@ woebin2_equal = function(dtm, init_count_distr=0.02, count_distr_limit=0.05, sto
   binning_equal = check_zero_negpos(dtm, binning_equal, bin_close_right=bin_close_right)
   binning_equal = check_count_distri(dtm, binning_equal, count_distr_limit, bin_close_right=bin_close_right)
 
-  return(list(binning_sv=binning_sv, binning=binning_equal))
+  bin_list = list(binning_sv=binning_sv, binning=binning_equal)
+  # missing merge
+  bin_list = binlst_missing_merge(bin_list=bin_list, dtm=dtm, missing_join=missing_join, count_distr_limit=count_distr_limit)
+
+  return(bin_list)
 }
 
 # required in woebin2 # # format binning output
@@ -628,22 +641,56 @@ binning_format = function(binning, bin_close_right ) {
   return(binning[])
 }
 
+binlst_missing_merge = function(bin_list, dtm, missing_join, count_distr_limit) {
+  . = bin = count = neg = pos = value = variable = N = nr = NULL
+
+  if (dtm[,!any(is.na(value))]) return(bin_list)
+
+  missingrate = dtm[, .N, by = 'value'][, nr := N/sum(N)][is.na(value), nr][]
+  # missing merge
+  if (missingrate < count_distr_limit) {
+    if (missing_join == 'left') {
+      bin_list$binning = rbindlist(
+        list(
+          bin_list$binning[, rowid := .I],
+          bin_list$binning_sv[bin == 'missing'][, rowid := 1]
+        ), fill = TRUE
+      )[, .(bin=paste0(bin,collapse="%,%"), count = sum(count), neg=sum(neg), pos=sum(pos), variable=unique(variable)), keyby=rowid
+      ][]
+
+      bin_list$binning_sv = bin_list$binning_sv[bin != 'missing'][]
+    } else if (missing_join == 'right') {
+      bin_list$binning = rbindlist(
+        list(
+          bin_list$binning[, rowid := .I],
+          bin_list$binning_sv[bin == 'missing'][, rowid := nrow(bin_list$binning)]
+        ), fill = TRUE
+      )[, .(bin=paste0(bin,collapse="%,%"), count = sum(count), neg=sum(neg), pos=sum(pos), variable=unique(variable)), keyby=rowid
+      ][]
+
+      bin_list$binning_sv = bin_list$binning_sv[bin != 'missing'][]
+    }
+  }
+
+  return(bin_list)
+}
+
 # woebin2
 # This function provides woe binning for only two columns (one x and one y) data frame.
 woebin2 = function(
     dtm,
     breaks            = NULL,
     spl_val           = NULL,
+    missing_join     = FALSE,
     init_count_distr  = 0.02,
     count_distr_limit = 0.05,
     stop_limit        = 0.1,
     bin_num_limit     = 8,
     bin_close_right   = FALSE,
-    method            = "tree"
+    method            = "tree", ...
 ) {
   # global variables or functions
-  . = pos = posprob = bin = bin_iv = neg = total_iv = variable = woe = is_sv = NULL
-
+  . = pos = posprob = bin = bin_iv = neg = total_iv = variable = woe = is_sv = count = value = NULL
 
   # binning
   if (!anyNA(breaks) & !is.null(breaks)) {
@@ -658,15 +705,16 @@ woebin2 = function(
     } else {
       if (method == "tree") {
         # 2.tree-like optimal binning
-        bin_list = woebin2_tree(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, bin_close_right=bin_close_right)
+        bin_list = woebin2_tree(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, bin_close_right=bin_close_right, missing_join=missing_join)
 
       } else if (method == "chimerge") {
         # 2.chimerge optimal binning
-        bin_list = woebin2_chimerge(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, bin_close_right=bin_close_right)
+        bin_list = woebin2_chimerge(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, bin_close_right=bin_close_right, missing_join=missing_join)
       } else if (method %in% c('freq','width')) {
         # 3. in equal freq or width
-        bin_list = woebin2_equal(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, method = method, bin_close_right=bin_close_right)
+        bin_list = woebin2_equal(dtm, init_count_distr, count_distr_limit, stop_limit, bin_num_limit, breaks=breaks, spl_val=spl_val, method = method, bin_close_right=bin_close_right, missing_join=missing_join)
       }
+
     }
   }
 
@@ -763,6 +811,7 @@ brklst_save = function(bins_breakslist, save_name=NULL) {
 #' @param var_skip Name of variables that will skip for binning. Defaults to NULL.
 #' @param breaks_list List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Defaults to NULL.
+#' @param missing_join missing values join with the left non-missing bin if its share is lower than threshold. Accepted values including left and right. Defaults to left.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.
 # 'qchisq(1-stoplimit, 1)'
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.
@@ -864,7 +913,7 @@ brklst_save = function(bins_breakslist, save_name=NULL) {
 #' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
 woebin = function(
-    dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL,
+    dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, missing_join='left',
     stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8,
     positive="bad|1", no_cores=2, print_step=0L, method="tree", save_breaks_list=NULL,
     ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_inf=TRUE, ...) {
@@ -958,6 +1007,14 @@ woebin = function(
     ycol = dt[[y]]
   } else ycol = NA
 
+  args1list = list(
+    missing_join      = missing_join,
+    init_count_distr  = init_count_distr,
+    count_distr_limit = count_distr_limit,
+    bin_num_limit     = bin_num_limit,
+    bin_close_right   = bin_close_right,
+    method            = method
+  )
   if (no_cores == 1) {
     for (i in 1:xs_len) {
       x_i = xs[i]
@@ -967,16 +1024,13 @@ woebin = function(
 
       # woebining on one variable
       bins[[x_i]] <-
-        try(do.call('woebin2', args = list(
-          dtm              = dtm,
-          breaks           = breaks_list[[x_i]],
-          spl_val          = special_values[[x_i]],
-          init_count_distr = init_count_distr,
-          count_distr_limit= count_distr_limit,
-          stop_limit       = stop_limit[[x_i]],
-          bin_num_limit    = bin_num_limit,
-          bin_close_right  = bin_close_right,
-          method           = method
+        try(do.call('woebin2', args = c(
+          list(
+            dtm              = dtm,
+            breaks           = breaks_list[[x_i]],
+            spl_val          = special_values[[x_i]],
+            stop_limit       = stop_limit[[x_i]]
+          ), args1list
         )), silent = TRUE)
     }
 
@@ -1005,16 +1059,13 @@ woebin = function(
         x_i = xs[i]
         dtm = data.table(y=ycol, variable=x_i, value=dt[[x_i]])
         # woebining on one variable
-        try(do.call('woebin2', args = list(
-          dtm              = dtm,
-          breaks           = breaks_list[[x_i]],
-          spl_val          = special_values[[x_i]],
-          init_count_distr = init_count_distr,
-          count_distr_limit= count_distr_limit,
-          stop_limit       = stop_limit[[x_i]],
-          bin_num_limit    = bin_num_limit,
-          bin_close_right  = bin_close_right,
-          method           = method
+        try(do.call('woebin2', args = c(
+          list(
+            dtm              = dtm,
+            breaks           = breaks_list[[x_i]],
+            spl_val          = special_values[[x_i]],
+            stop_limit       = stop_limit[[x_i]]
+          ), args1list
         )), silent = TRUE)
       }
     # finish
@@ -1519,9 +1570,11 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
 #'                     breaks_list=breaks_adj)
 #'
 #' # Example II adjust two variables' breaks in brklst
-#' binsII = woebin(germancredit, y="creditability", save_breaks_list = 'brklst')
-#' brklst = source('brklst.R')$value
-#' brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2], breaks_list = brklst)
+#' binsII = woebin(germancredit, y="creditability", save_breaks_list = 'breaks')
+#' brklst = source('breaks.R')$value
+#' # update break list file
+#' brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2],
+#'                         breaks_list = brklst, save_breaks_list = 'breaks')
 #' }
 #'
 #' @import data.table

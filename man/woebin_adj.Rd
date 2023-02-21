@@ -50,9 +50,11 @@ bins_final = woebin(dt, y="creditability",
                     breaks_list=breaks_adj)
 
 # Example II adjust two variables' breaks in brklst
-binsII = woebin(germancredit, y="creditability", save_breaks_list = 'brklst')
-brklst = source('brklst.R')$value
-brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2], breaks_list = brklst)
+binsII = woebin(germancredit, y="creditability", save_breaks_list = 'breaks')
+brklst = source('breaks.R')$value
+# update break list file
+brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2],
+                        breaks_list = brklst, save_breaks_list = 'breaks')
 }
 
 }

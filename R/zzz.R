@@ -1,5 +1,6 @@
 scorecard_default_options <- list(
   scorecard.bin_close_right = FALSE,
+  scorecard.missing_merge_right = FALSE,
   scorecard.ignore_const_cols = TRUE,
   scorecard.ignore_datetime_cols = TRUE,
   scorecard.check_cate_num = TRUE,
