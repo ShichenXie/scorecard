@@ -937,6 +937,8 @@ woebin = function(
   }
   if (is.null(y) & !(method %in% c('freq', 'width'))) method = 'freq'
 
+  missing_join = match.arg(missing_join, c("left", "right"))
+
   # init_count_distr
   min_perc_fine_bin = kwargs[['min_perc_fine_bin']]
   init_count_distr = kwargs[['init_count_distr']]

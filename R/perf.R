@@ -1383,6 +1383,18 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
 }
 
 
-score_eva = function(score) {
+score_eva = function(dt, score = 'score', y = NULL) {
 
+  score_summary =
+    data.table(
+      unique_count = uniqueN(dt[[score]], na.rm = TRUE),
+      identical_rate = fun_identical_rate(dt[[score]])
+    )
+
+  if (!is.null(y)) {
+    setnames(dt, y, 'y', skip_absent=TRUE)
+    score_summary$p80bad_rejectrate = dt[order(score)][, cumy := cumsum(y)/sum(y) <= 0.8 ][, sum(cumy)/.N]
+  }
+
+  return(score_summary)
 }
