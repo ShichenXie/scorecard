@@ -1384,6 +1384,7 @@ perf_cv = function(dt, y, x=NULL, no_folds = 5, seeds = NULL, binomial_metric = 
 
 
 score_eva = function(dt, score = 'score', y = NULL) {
+  cumy = NULL
 
   score_summary =
     data.table(

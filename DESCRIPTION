@@ -1,5 +1,5 @@
 Package: scorecard
-Version: 0.4.1.999
+Version: 0.4.2
 Title: Credit Risk Scorecard
 Description: 
   The `scorecard` package makes the development of credit risk scorecard 
@@ -26,7 +26,7 @@ Imports:
     stringi,
     cli,
     xml2,
-    xefun (>= 0.1.2)
+    xefun (>= 0.1.3)
 Suggests: 
     knitr,
     rmarkdown,

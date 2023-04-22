@@ -274,15 +274,14 @@ scorecard_ply = function(dt, card, only_total_score=TRUE, print_step=0L, replace
   # # remove date/time col
   # dt = rmcol_datetime_unique1(dt)
   # replace blank values by NA
-  if (replace_blank_na) dt = rep_blank_na(dt)
+  if (isTRUE(replace_blank_na)) dt = rep_blank_na(dt)
   # print_step
   print_step = check_print_step(print_step)
-  # bin_close_right
-  bin_close_right = check_bcr(card)
-
 
   # card # if (is.list(card)) rbindlist(card)
   card = check_bincard(card)
+  # bin_close_right
+  bin_close_right = check_bcr(card)
 
   # x variables
   xs = card[variable != "basepoints", unique(variable)]
