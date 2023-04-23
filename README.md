@@ -1,6 +1,5 @@
 # scorecard
 
-[![Travis build status](https://travis-ci.org/ShichenXie/scorecard.svg?branch=master)](https://travis-ci.org/ShichenXie/scorecard)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/scorecard)](https://cran.r-project.org/package=scorecard)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/scorecard)](https://cran.r-project.org/package=scorecard)
 [![](http://cranlogs.r-pkg.org/badges/scorecard)](https://cran.r-project.org/package=scorecard)
