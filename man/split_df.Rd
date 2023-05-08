@@ -5,7 +5,8 @@
 \title{Split a Data Frame}
 \usage{
 split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
-  "test"), seed = 618, ...)
+  "test"), oot = list(order = NULL, start = NULL, ratio = NULL),
+  seed = 618, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -15,6 +16,8 @@ split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
 \item{ratios}{A numeric vector indicating the ratio of total rows contained in each split, defaults to c(0.7, 0.3).}
 
 \item{name_dfs}{Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.}
+
+\item{oot}{out-of-time validation data set parameters.}
 
 \item{seed}{A random seed, Defaults to 618.}
 

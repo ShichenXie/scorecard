@@ -2,6 +2,7 @@
 
 S3method(replace_na,data.frame)
 S3method(replace_na,default)
+S3method(split_df,data.frame)
 S3method(var_scale,data.frame)
 S3method(var_scale,default)
 export(describe)
