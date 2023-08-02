@@ -261,7 +261,7 @@ check_stop_limit = function(stop_limit, xs) {
     xs2 = setdiff(xs, names(stop_limit))
 
     sl = c(stop_limit,
-           as.list(rep(0.1), length(xs2)) )
+           as.list(rep(0.1, length(xs2))) )
     sl = setNames(sl, c(names(stop_limit), xs2))
   }
 

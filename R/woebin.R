@@ -1112,9 +1112,10 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points, bin_close_right ) {
   . = V1 = bin = NULL
 
   # binx
+  bycols = unique(c('bin',woe_points))
   binx = binx[
     , bin:=as.character(bin)
-  ][, .(unlist(strsplit(bin, "%,%", fixed=TRUE))), by=c('bin',woe_points)]
+  ][, .(unlist(strsplit(bin, "%,%", fixed=TRUE))), by=bycols]
 
   # dtx
   ## cut numeric variable

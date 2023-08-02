@@ -35,6 +35,13 @@ p2score = function(p, points0=600, odds0=1/19, pdo=50) {
   return(s)
 }
 
+score2p = function(score, points0=600, odds0=1/19, pdo=50) {
+  aabb = ab(points0, odds0, pdo)
+
+  p = 1/(1+1/exp((aabb$a - score)/aabb$b) )
+  return(p)
+}
+
 #' Creating a Scorecard
 #'
 #' \code{scorecard} creates a scorecard based on the results from \code{woebin} and \code{glm}.

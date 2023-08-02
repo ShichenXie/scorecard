@@ -1,3 +1,7 @@
+# scorecard 0.4.2.999
+
+* fixed multiple bugs 
+
 # scorecard 0.4.2
 
 * added a new param in the woebin function to specify the bin position of missing values
