@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scorecard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -150,22 +150,28 @@
 <span class="r-in"><span><span class="co"># binning</span></span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">$</span><span class="va">train</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 681 rows and 14 columns in 00:00:00</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
 <span class="r-in"><span><span class="co"># scorecard</span></span></span>
 <span class="r-in"><span><span class="va">card</span> <span class="op">=</span> <span class="fu"><a href="scorecard2.html">scorecard2</a></span><span class="op">(</span><span class="va">bins</span>, dt <span class="op">=</span> <span class="va">dt_list</span><span class="op">$</span><span class="va">train</span>, y <span class="op">=</span> <span class="st">'creditability'</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># credit score</span></span></span>
 <span class="r-in"><span><span class="va">score_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="scorecard_ply.html">scorecard_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">card</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FUN(X[[i]], ...):</span> object 'card' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">###### gains_table examples ######</span></span></span>
 <span class="r-in"><span><span class="co"># Example I, input score and label can be a vector or a list</span></span></span>
 <span class="r-in"><span><span class="va">g1</span> <span class="op">=</span> <span class="fu">gains_table</span><span class="op">(</span>score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">score_list</span><span class="op">)</span>, label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">label_list</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list' not found</span>
 <span class="r-in"><span><span class="va">g2</span> <span class="op">=</span> <span class="fu">gains_table</span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example II, specify the bins number and type</span></span></span>
 <span class="r-in"><span><span class="va">g3</span> <span class="op">=</span> <span class="fu">gains_table</span><span class="op">(</span>score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">score_list</span><span class="op">)</span>, label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">label_list</span><span class="op">)</span>, bin_num <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list' not found</span>
 <span class="r-in"><span><span class="va">g4</span> <span class="op">=</span> <span class="fu">gains_table</span><span class="op">(</span>score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">score_list</span><span class="op">)</span>, label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">label_list</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">'width'</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list' not found</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -182,7 +188,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
