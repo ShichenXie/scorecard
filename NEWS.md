@@ -1,3 +1,7 @@
+# scorecard 0.4.3.999
+
+* the parameter missing_join supports to NULL in woebin function
+
 # scorecard 0.4.3
 
 * fixed multiple bugs 
