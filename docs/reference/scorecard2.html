@@ -172,23 +172,19 @@
 <span class="r-in"><span><span class="co"># binning</span></span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dtlst</span><span class="op">$</span><span class="va">train</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 681 rows and 14 columns in 00:00:00</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># train only</span></span></span>
 <span class="r-in"><span><span class="co">## create scorecard</span></span></span>
 <span class="r-in"><span><span class="va">card1</span> <span class="op">=</span> <span class="fu">scorecard2</span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">dtlst</span><span class="op">$</span><span class="va">train</span>, y<span class="op">=</span><span class="st">'creditability'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span><span class="co">## scorecard and predicted probability</span></span></span>
 <span class="r-in"><span><span class="va">cardprob1</span> <span class="op">=</span> <span class="fu">scorecard2</span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">dtlst</span><span class="op">$</span><span class="va">train</span>, y<span class="op">=</span><span class="st">'creditability'</span>, return_prob <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># both train and test</span></span></span>
 <span class="r-in"><span><span class="co">## create scorecard</span></span></span>
 <span class="r-in"><span><span class="va">card2</span> <span class="op">=</span> <span class="fu">scorecard2</span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">dtlst</span>, y<span class="op">=</span><span class="st">'creditability'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span><span class="co">## scorecard and predicted probability</span></span></span>
 <span class="r-in"><span><span class="va">cardprob2</span> <span class="op">=</span> <span class="fu">scorecard2</span><span class="op">(</span>bins<span class="op">=</span><span class="va">bins</span>, dt<span class="op">=</span><span class="va">dtlst</span>, y<span class="op">=</span><span class="st">'creditability'</span>, return_prob <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>

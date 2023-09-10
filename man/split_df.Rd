@@ -5,7 +5,7 @@
 \title{Split a Data Frame}
 \usage{
 split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
-  "test"), oot = list(order = NULL, start = NULL, ratio = NULL),
+  "test"), oot = list(time_col = NULL, time_start = NULL, ratio = NULL),
   seed = 618, ...)
 }
 \arguments{
@@ -17,7 +17,7 @@ split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
 
 \item{name_dfs}{Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.}
 
-\item{oot}{out-of-time validation data set parameters.}
+\item{oot}{The out-of-time validation dataset parameters. The parameters of time_cols and either time_start or ratio need to be supplied.}
 
 \item{seed}{A random seed, Defaults to 618.}
 
@@ -27,7 +27,7 @@ split_df(dt, y = NULL, ratios = c(0.7, 0.3), name_dfs = c("train",
 A list of data frames
 }
 \description{
-Split a data frame into multiple data sets according to the specified ratios.
+Split a data frame into multiple datasets according to the specified ratios.
 }
 \examples{
 # load German credit data

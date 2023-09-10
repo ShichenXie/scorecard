@@ -137,41 +137,48 @@
 <span class="r-in"><span><span class="co"># binning for dt</span></span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt</span>, y <span class="op">=</span> <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 1000 rows and 3 columns in 00:00:00</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># converting to woe</span></span></span>
 <span class="r-in"><span><span class="va">dt_woe</span> <span class="op">=</span> <span class="fu">woebin_ply</span><span class="op">(</span><span class="va">dt</span>, bins<span class="op">=</span><span class="va">bins</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 1000 rows and 2 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dt_woe</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'dt_woe' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ credit.amount_woe: num  0.0337 0.3905 -0.2583 0.3905 0.3905 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ purpose_woe      : num  -0.41 -0.41 0.28 0.28 0.28 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># converting to bin</span></span></span>
 <span class="r-in"><span><span class="va">dt_bin</span> <span class="op">=</span> <span class="fu">woebin_ply</span><span class="op">(</span><span class="va">dt</span>, bins<span class="op">=</span><span class="va">bins</span>, to <span class="op">=</span> <span class="st">'bin'</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 1000 rows and 2 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dt_bin</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'dt_bin' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Classes ‘data.table’ and 'data.frame':	1000 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ creditability    : Factor w/ 2 levels "bad","good": 2 1 2 2 1 2 2 2 2 1 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ credit.amount_bin: chr  "[-Inf,1400)" "[4000,9200)" "[1800,4000)" "[4000,9200)" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ purpose_bin      : chr  "radio/television" "radio/television" "furniture/equipment%,%domestic appliances%,%business%,%repairs%,%car (new)%,%others%,%education" "furniture/equipment%,%domestic appliances%,%business%,%repairs%,%car (new)%,%others%,%education" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Example II</span></span></span>
 <span class="r-in"><span><span class="co"># binning for germancredit dataset</span></span></span>
 <span class="r-in"><span><span class="va">bins_germancredit</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 1000 rows and 21 columns in 00:00:01</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># converting the values in germancredit to woe</span></span></span>
 <span class="r-in"><span><span class="co"># bins is a list which generated from woebin()</span></span></span>
 <span class="r-in"><span><span class="va">germancredit_woe</span> <span class="op">=</span> <span class="fu">woebin_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">bins_germancredit</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins_germancredit' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 1000 rows and 20 columns in 00:00:00</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># bins is a data frame</span></span></span>
 <span class="r-in"><span><span class="va">bins_df</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">bins_germancredit</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins_germancredit' not found</span>
 <span class="r-in"><span><span class="va">germancredit_woe</span> <span class="op">=</span> <span class="fu">woebin_ply</span><span class="op">(</span><span class="va">germancredit</span>, <span class="va">bins_df</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins_df' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 1000 rows and 20 columns in 00:00:00</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

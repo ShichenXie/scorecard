@@ -123,13 +123,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">7 variables are removed in total</span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dtvf</span>, y<span class="op">=</span><span class="st">'creditability'</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 1000 rows and 14 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="va">card</span> <span class="op">=</span> <span class="fu"><a href="scorecard2.html">scorecard2</a></span><span class="op">(</span><span class="va">bins</span>, <span class="va">dtvf</span>, y<span class="op">=</span><span class="st">'creditability'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># export scorecard into pmml</span></span></span>
 <span class="r-in"><span><span class="va">cardpmml</span> <span class="op">=</span> <span class="fu">scorecard_pmml</span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scorecard_pmml(card):</span> Not a scorecard object</span>
 <span class="r-in"><span><span class="co"># save pmml</span></span></span>
 <span class="r-in"><span><span class="co"># cardpmml = scorecard_pmml(card, save_name='scorecard', model_version='1.0')</span></span></span>
 <span class="r-in"><span></span></span>

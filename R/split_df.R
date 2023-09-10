@@ -1,12 +1,12 @@
 #' Split a Data Frame
 #'
-#' Split a data frame into multiple data sets according to the specified ratios.
+#' Split a data frame into multiple datasets according to the specified ratios.
 #'
 #' @param dt A data frame.
 #' @param y Name of y variable, Defaults to NULL. The input data will split based on the predictor y, if it is provide.
 #' @param ratios A numeric vector indicating the ratio of total rows contained in each split, defaults to c(0.7, 0.3).
 #' @param name_dfs Name of returned data frames. Its length should equals to the ratios'. Defaults to train and test.
-#' @param oot out-of-time validation data set parameters.
+#' @param oot The out-of-time validation dataset parameters. The parameters of time_cols and either time_start or ratio need to be supplied.
 #' @param seed A random seed, Defaults to 618.
 #' @param ... Additional parameters.
 #'
@@ -31,12 +31,12 @@
 #'
 #' @import data.table
 #' @export
-split_df = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(order=NULL, start=NULL, ratio=NULL), seed=618, ...) {
+split_df = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(time_col=NULL, time_start=NULL, ratio=NULL),  seed=618, ...) {
   UseMethod('split_df')
 }
 
 #' @export
-split_df.data.frame = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(order=NULL, start=NULL, ratio=NULL), seed=618, ...) {
+split_df.data.frame = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(time_col=NULL, time_start=NULL, ratio=NULL), seed=618, ...) {
   ind = NULL
 
   # set dt as data.table
@@ -64,12 +64,15 @@ split_df.data.frame = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train
 
   # oot, out of time
   dt_oot = NULL
-  if (!is.null(oot$order) & (is.null(oot$start) + is.null(oot$ratio) == 1)) {
-    setorderv(dt, oot$order)
+  if ('order' %in% names(oot)) oot$time_col = oot$order
+  if ('start' %in% names(oot)) oot$time_start = oot$start
 
-    if (!is.null(oot$start)) {
-      dt_oot = dt[get(oot$order) >= oot$start]
-      dt = dt[get(oot$order) < oot$start]
+  if (!is.null(oot$time_col) & (is.null(oot$time_start) + is.null(oot$ratio) == 1)) {
+    setorderv(dt, oot$time_col)
+
+    if (!is.null(oot$time_start)) {
+      dt_oot = dt[get(oot$time_col) >= oot$time_start]
+      dt = dt[get(oot$time_col) < oot$time_start]
     } else if (!is.null(oot$ratio)) {
       n_oot = dt[,floor(.N*oot$ratio)]
 
@@ -108,6 +111,6 @@ split_df.data.frame = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train
 }
 
 
-df_split = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(order=NULL, start=NULL, ratio=NULL), seed=618, ...) {
+df_split = function(dt, y=NULL, ratios=c(0.7, 0.3), name_dfs=c('train', 'test'), oot=list(time_col=NULL, time_start=NULL, ratio=NULL), seed=618, ...) {
   UseMethod('split_df')
 }

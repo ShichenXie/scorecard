@@ -194,9 +194,32 @@
 <span class="r-in"><span><span class="va">bins2_tree</span> <span class="op">=</span> <span class="fu">woebin</span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>,</span></span>
 <span class="r-in"><span>   x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"credit.amount"</span>,<span class="st">"housing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"tree"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 1000 rows and 3 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="va">bins2_tree</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins2_tree' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $credit.amount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         variable         bin count count_distr neg pos   posprob         woe</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: credit.amount [-Inf,1400)   267       0.267 185  82 0.3071161  0.03366128</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: credit.amount [1400,1800)   105       0.105  87  18 0.1714286 -0.72823850</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: credit.amount [1800,4000)   382       0.382 287  95 0.2486911 -0.25830746</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: credit.amount [4000,9200)   196       0.196 120  76 0.3877551  0.39053946</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: credit.amount [9200, Inf)    50       0.050  21  29 0.5800000  1.17007125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          bin_iv  total_iv breaks is_special_values</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.0003045545 0.1812204   1400             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 0.0468153322 0.1812204   1800             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.0241086966 0.1812204   4000             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 0.0319870413 0.1812204   9200             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 0.0780047502 0.1812204    Inf             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $housing</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    variable      bin count count_distr neg pos   posprob        woe     bin_iv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  housing     rent   179       0.179 109  70 0.3910615  0.4044452 0.03139265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  housing      own   713       0.713 527 186 0.2608696 -0.1941560 0.02579501</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  housing for free   108       0.108  64  44 0.4074074  0.4726044 0.02610577</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      total_iv   breaks is_special_values</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.08329343     rent             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 0.08329343      own             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.08329343 for free             FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># using chimerge method</span></span></span>

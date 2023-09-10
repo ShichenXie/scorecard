@@ -155,35 +155,33 @@
 <span class="r-in"><span><span class="co"># binning</span></span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">$</span><span class="va">train</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 681 rows and 14 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="co"># scorecard</span></span></span>
 <span class="r-in"><span><span class="va">card</span> <span class="op">=</span> <span class="fu"><a href="scorecard2.html">scorecard2</a></span><span class="op">(</span><span class="va">bins</span>, dt <span class="op">=</span> <span class="va">dt_list</span><span class="op">$</span><span class="va">train</span>, y <span class="op">=</span> <span class="st">'creditability'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># credit score</span></span></span>
 <span class="r-in"><span><span class="va">score_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="scorecard_ply.html">scorecard_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">card</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FUN(X[[i]], ...):</span> object 'card' not found</span>
 <span class="r-in"><span><span class="co"># credit score, only_total_score = FALSE</span></span></span>
 <span class="r-in"><span><span class="va">score_list2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dt_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="scorecard_ply.html">scorecard_ply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">card</span>,</span></span>
 <span class="r-in"><span>  only_total_score<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FUN(X[[i]], ...):</span> object 'card' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">###### perf_psi examples ######</span></span></span>
 <span class="r-in"><span><span class="co"># Example I # only total psi</span></span></span>
 <span class="r-in"><span><span class="va">psi1</span> <span class="op">=</span> <span class="fu">perf_psi</span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list' not found</span>
 <span class="r-in"><span><span class="va">psi1</span><span class="op">$</span><span class="va">psi</span>  <span class="co"># psi data frame</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'psi1' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    variable    dataset        psi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    score train_test 0.03837177</span>
 <span class="r-in"><span><span class="va">psi1</span><span class="op">$</span><span class="va">pic</span>  <span class="co"># pic of score distribution</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'psi1' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $score</span>
+<span class="r-plt img"><img src="perf_psi-1.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># modify colors</span></span></span>
 <span class="r-in"><span><span class="co"># perf_psi(score = score_list, label = label_list,</span></span></span>
 <span class="r-in"><span><span class="co">#          line_color='#FC8D59', bar_color=c('#FFFFBF', '#99D594'))</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example II # both total and variable psi</span></span></span>
 <span class="r-in"><span><span class="va">psi2</span> <span class="op">=</span> <span class="fu">perf_psi</span><span class="op">(</span>score <span class="op">=</span> <span class="va">score_list2</span>, label <span class="op">=</span> <span class="va">label_list</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'score_list2' not found</span>
 <span class="r-in"><span><span class="co"># psi2$psi  # psi data frame</span></span></span>
 <span class="r-in"><span><span class="co"># psi2$pic  # pic of score distribution</span></span></span>
 <span class="r-in"><span></span></span>

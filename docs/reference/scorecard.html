@@ -143,20 +143,19 @@
 <span class="r-in"><span><span class="co"># binning</span></span></span>
 <span class="r-in"><span><span class="va">bins</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">dtlst</span><span class="op">$</span><span class="va">train</span>, <span class="st">"creditability"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating woe binning ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deparse(...):</span> unused argument (by = "variable")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Binning on 681 rows and 14 columns in 00:00:00</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># to woe</span></span></span>
 <span class="r-in"><span><span class="va">dtlst_woe</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dtlst</span>, <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu"><a href="woebin_ply.html">woebin_ply</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">bins</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FUN(X[[i]], ...):</span> object 'bins' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 681 rows and 13 columns in 00:00:00</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Converting into woe values ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #B2B2B2;">Woe transformating on 319 rows and 13 columns in 00:00:00</span></span>
 <span class="r-in"><span><span class="co"># lr</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">creditability</span> <span class="op">~</span> <span class="va">.</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dtlst_woe</span><span class="op">$</span><span class="va">train</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(mf, parent.frame()):</span> object 'dtlst_woe' not found</span>
 <span class="r-in"><span><span class="co"># scorecard</span></span></span>
 <span class="r-in"><span><span class="va">card</span> <span class="op">=</span> <span class="fu">scorecard</span><span class="op">(</span><span class="va">bins</span>, <span class="va">m</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bins' not found</span>
 <span class="r-in"><span><span class="va">prob</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">dtlst_woe</span><span class="op">$</span><span class="va">train</span>, type<span class="op">=</span><span class="st">'response'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'm' not found</span>
 <span class="r-in"><span><span class="co"># problst = lapply(dtlst_woe, function(x) predict(m, x, type='response'))</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
