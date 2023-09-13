@@ -5,8 +5,7 @@
 \title{WOE Binning Adjustment}
 \usage{
 woebin_adj(dt, y, bins, breaks_list = NULL, save_breaks_list = NULL,
-  adj_all_var = TRUE, special_values = NULL, method = "tree",
-  count_distr_limit = 0.05, to = "breaks_list", ...)
+  adj_all_var = TRUE, to = "breaks_list", ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -20,12 +19,6 @@ woebin_adj(dt, y, bins, breaks_list = NULL, save_breaks_list = NULL,
 \item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
 
 \item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Defaults to TRUE}
-
-\item{special_values}{The values specified in special_values will in separate bins. Defaults to NULL.}
-
-\item{method}{Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".}
-
-\item{count_distr_limit}{The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.}
 
 \item{to}{Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.}
 

@@ -5,7 +5,7 @@
 \title{WOE Binning}
 \usage{
 woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
-  special_values = NULL, missing_join = NULL, stop_limit = 0.1,
+  special_values = NULL, missing_join = "left", stop_limit = 0.1,
   count_distr_limit = 0.05, bin_num_limit = 8, positive = "bad|1",
   no_cores = 2, print_step = 0L, method = "tree",
   save_breaks_list = NULL, ignore_const_cols = TRUE,
@@ -25,7 +25,7 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{special_values}{the values specified in special_values will be in separate bins. Defaults to NULL.}
 
-\item{missing_join}{missing values join with the left non-missing bin if its share is lower than threshold. Accepted values including left and right. Defaults to NULL.}
+\item{missing_join}{missing values join with the left non-missing bin if its share is lower than the threshold. Accepted values include 'left' and 'right'. If it sets to NULL, the missing values will be placed in a separate bin.}
 
 \item{stop_limit}{Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.}
 

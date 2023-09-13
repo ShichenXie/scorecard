@@ -82,7 +82,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, x <span class="op">=</span> <span class="cn">NULL</span>, var_skip <span class="op">=</span> <span class="cn">NULL</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  special_values <span class="op">=</span> <span class="cn">NULL</span>, missing_join <span class="op">=</span> <span class="cn">NULL</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  special_values <span class="op">=</span> <span class="cn">NULL</span>, missing_join <span class="op">=</span> <span class="st">"left"</span>, stop_limit <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>, bin_num_limit <span class="op">=</span> <span class="fl">8</span>, positive <span class="op">=</span> <span class="st">"bad|1"</span>,</span>
 <span>  no_cores <span class="op">=</span> <span class="fl">2</span>, print_step <span class="op">=</span> <span class="fl">0L</span>, method <span class="op">=</span> <span class="st">"tree"</span>,</span>
 <span>  save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>, ignore_const_cols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -117,7 +117,7 @@
 
 
 <dt>missing_join</dt>
-<dd><p>missing values join with the left non-missing bin if its share is lower than threshold. Accepted values including left and right. Defaults to NULL.</p></dd>
+<dd><p>missing values join with the left non-missing bin if its share is lower than the threshold. Accepted values include 'left' and 'right'. If it sets to NULL, the missing values will be placed in a separate bin.</p></dd>
 
 
 <dt>stop_limit</dt>

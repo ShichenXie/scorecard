@@ -82,8 +82,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">bins</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>, special_values <span class="op">=</span> <span class="cn">NULL</span>, method <span class="op">=</span> <span class="st">"tree"</span>,</span>
-<span>  count_distr_limit <span class="op">=</span> <span class="fl">0.05</span>, to <span class="op">=</span> <span class="st">"breaks_list"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span>  adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>, to <span class="op">=</span> <span class="st">"breaks_list"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -110,18 +109,6 @@
 
 <dt>adj_all_var</dt>
 <dd><p>Logical, whether to show variables have monotonic woe trends. Defaults to TRUE</p></dd>
-
-
-<dt>special_values</dt>
-<dd><p>The values specified in special_values will in separate bins. Defaults to NULL.</p></dd>
-
-
-<dt>method</dt>
-<dd><p>Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".</p></dd>
-
-
-<dt>count_distr_limit</dt>
-<dd><p>The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.</p></dd>
 
 
 <dt>to</dt>

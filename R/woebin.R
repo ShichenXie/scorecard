@@ -780,13 +780,21 @@ binbrklst2txt = function(bins_breakslist, header = FALSE, bin_close_right) {
   return(brklst_char)
 }
 # saving breaks list
-brklst_save = function(bins_breakslist, save_name=NULL) {
+brklst_save = function(bins_breakslist, save_name=NULL, ...) {
+  brklst_backup = list(...)$brklst_backup
+  if (is.null(brklst_backup)) brklst_backup = TRUE
+
   if (is.null(save_name)) save_name = sprintf('brklst_%s', format(Sys.time(),'%Y%m%d_%H%M%S'))
 
   save_name = sprintf('%s.R', save_name)
+  if (file.exists(save_name) & isTRUE(brklst_backup)) {
+    new_name = sub('\\.R$', sprintf('_bck@%s.R', format(Sys.time(),'%Y%m%d_%H%M%S')), save_name)
+    file.rename(save_name, new_name)
+    cli_inform(c(i = sprintf("The existed breaks_list file '%s' is renamed as '%s'\n", save_name, new_name)))
+  }
 
   writeLines(bins_breakslist, save_name, useBytes = TRUE)
-  cli_inform(c(i = sprintf('The breaks_list is saved as %s\n', save_name)))
+  cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_name)))
 
   return(invisible())
 }
@@ -804,7 +812,7 @@ brklst_save = function(bins_breakslist, save_name=NULL) {
 #' @param var_skip Name of variables that will skip for binning. Defaults to NULL.
 #' @param breaks_list List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param special_values the values specified in special_values will be in separate bins. Defaults to NULL.
-#' @param missing_join missing values join with the left non-missing bin if its share is lower than threshold. Accepted values including left and right. Defaults to NULL.
+#' @param missing_join missing values join with the left non-missing bin if its share is lower than the threshold. Accepted values include 'left' and 'right'. If it sets to NULL, the missing values will be placed in a separate bin.
 #' @param stop_limit Stop binning segmentation when information value gain ratio less than the 'stop_limit' if using tree method; or stop binning merge when the chi-square of each neighbor bins are larger than the threshold under significance level of 'stop_limit' and freedom degree of 1 if using chimerge method. Accepted range: 0-0.5; Defaults to 0.1. If it is 'N', each x value is a bin.
 # 'qchisq(1-stoplimit, 1)'
 #' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05.
@@ -906,7 +914,7 @@ brklst_save = function(bins_breakslist, save_name=NULL) {
 #' @importFrom parallel detectCores makeCluster stopCluster
 #' @export
 woebin = function(
-    dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, missing_join=NULL,
+    dt, y, x=NULL, var_skip=NULL, breaks_list=NULL, special_values=NULL, missing_join='left',
     stop_limit=0.1, count_distr_limit=0.05, bin_num_limit=8,
     positive="bad|1", no_cores=2, print_step=0L, method="tree", save_breaks_list=NULL,
     ignore_const_cols=TRUE, ignore_datetime_cols=TRUE, check_cate_num=TRUE, replace_blank_inf=TRUE, ...) {
@@ -932,13 +940,6 @@ woebin = function(
 
   if (!is.null(missing_join)) {
     missing_join = match.arg(missing_join, c("left", "right"))
-    # if (missing_join == 'left') {
-    #   missing_join = 0
-    # } else if (missing_join == 'right') {
-    #   missing_join = 1
-    # } else {
-    #   missing_join = NULL
-    # }
   }
 
   # init_count_distr
@@ -1100,7 +1101,10 @@ woebin = function(
   # save breaks_list
   if (!is.null(save_breaks_list)) {
     bins_breakslist = bins2binbrklst(bins, dt, bin_close_right=bin_close_right)
-    brklst_save(binbrklst2txt(bins_breakslist, header=TRUE, bin_close_right = bin_close_right), save_name=save_breaks_list)
+    brklst_save(
+      binbrklst2txt(bins_breakslist, header=TRUE, bin_close_right = bin_close_right),
+      save_name=save_breaks_list, ...
+    )
   }
 
   return(bins)
@@ -1505,22 +1509,22 @@ woebin_adj_print_basic_info = function(dt, y, xs_adj, i, bins, bins_breakslist, 
   brklst = list()
   brklst[x_i] = list(brk_txt2vector(breaks_bin))
 
-  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE, no_cores = 1), ...)
+  plist = woebin_plot(woebin(dt, y = y, x=x_i, breaks_list = brklst, print_info = FALSE, no_cores = 1, ...), ...)
   print(plist[[1]])
 
 }
 # plot adjusted binning in woebin_adj
-woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, bin_close_right, ...) {
+woebin_adj_break_plot = function(dt, y, x_i, breaks, bin_close_right, ...) {
+  # stop_limit, svlst, method,
   bin_adj = brk_lst = spc_val = NULL
 
   brk_lst[x_i] = list(brk_txt2vector(breaks))
-  spc_val[x_i] = list(sv_i)
   # if (stop_limit != 'N') stop_limit = 0.1
 
   # text_woebin = paste0("bin_adj=woebin(dt[,c(\"",x_i,"\",\"",y,"\"),with=F], \"",y,"\", breaks_list=list(",x_i,"=c(",breaks,")), special_values =list(",x_i,"=c(", sv_i, ")), ", ifelse(stop_limit=="N","stop_limit = \"N\", ",NULL), "print_step=0L, print_info=FALSE, method=\"",method,"\")")
 
   # eval(parse(text = text_woebin))
-  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, special_values = spc_val, stop_limit = stop_limit, print_step = 0L, print_info=FALSE, method = method, no_cores = 1, ...)
+  bin_adj = woebin(dt = dt, y = y, x = x_i, breaks_list = brk_lst, print_step = 0L, print_info=FALSE, no_cores = 1, ...)
 
 
   ## print adjust breaks
@@ -1553,9 +1557,6 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
 #' @param breaks_list List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.
 #' @param save_breaks_list A string. The file name to save breaks_list. Defaults to None.
 #' @param adj_all_var Logical, whether to show variables have monotonic woe trends. Defaults to TRUE
-#' @param special_values The values specified in special_values will in separate bins. Defaults to NULL.
-#' @param method Optimal binning method, it should be "tree" or "chimerge". Defaults to "tree".
-#' @param count_distr_limit The minimum count distribution percentage. Accepted range: 0.01-0.2; Defaults to 0.05. This argument should be the same with woebin's.
 #' @param to Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.
 #' @param ... Additional parameters.
 #'
@@ -1587,13 +1588,20 @@ woebin_adj_break_plot = function(dt, y, x_i, breaks, stop_limit, sv_i, method, b
 #' @importFrom utils menu
 #' @importFrom graphics hist plot
 #' @export
-woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_all_var=TRUE, special_values=NULL, method="tree", count_distr_limit=0.05, to='breaks_list', ...) {
+woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_all_var=TRUE, to='breaks_list', ...) {
+
   # global variables or functions
   . = V1 = posprob = posprob_chg = bin2 = bin = bin_adj = count_distr = variable = x_breaks = x_class = NULL
 
   dt = setDT(copy(dt))
   # bins # if (is.list(bins)) rbindlist(bins)
   bins = check_bincard(bins)
+  # args
+  kwargs = list(...)
+  # count_distr_limit
+  count_distr_limit = kwargs$count_distr_limit
+  if (is.null(count_distr_limit)) count_distr_limit = 0.05
+
 
   # x variables
   xs_all = bins[,unique(variable)]
@@ -1612,18 +1620,11 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
   }
   # length of adjusting variables
   xs_len = length(xs_adj)
-  # special_values
-  special_values = check_special_values(special_values, xs_adj)
-  # stop_limit
-  kwargs = list(...)
-  stop_limit = 0.1
-  if ('stop_limit' %in% names(kwargs)) stop_limit = kwargs[['stop_limit']]
-  # print(stop_limit)
-  stop_limit = check_stop_limit(stop_limit, xs_adj)
   # to
   to = match.arg(to, c('breaks_list', 'bins_list'))
   # bin_close_right
   bin_close_right = check_bcr(bins)
+  # bin_close_right = getarg('bin_close_right')
 
   # breakslist of bins
   bins_breakslist = bins2binbrklst(bins, dt, breaks_list = breaks_list, bin_close_right=bin_close_right)
@@ -1643,7 +1644,6 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
     # x variable
     breaks = NULL
     x_i = xs_adj[i]
-    sv_i = special_values[[x_i]]
 
     # basic information of x_i variable ------
     woebin_adj_print_basic_info(dt, y, xs_adj, i, bins, bins_breakslist, ...)
@@ -1653,23 +1653,23 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
 
     while (adj_brk == 2 || adj_brk == 'save') {
       if (adj_brk == 2) {
-        stp_lmt = stop_limit[[x_i]]
         # modify breaks adj_brk == 2
         breaks = readline("> Enter modified breaks: ")
         breaks = gsub("^[,\\.]+|[,\\.]+$", "", breaks)
-        if (breaks == "N") {
-          stp_lmt = "N"
-          breaks = NULL
-        }
+        # if (breaks == "N") {
+        #   stp_lmt = "N"
+        #   breaks = NULL
+        # }
 
-        breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, stp_lmt, sv_i, method=method, bin_close_right = bin_close_right, ...), silent = TRUE)
+        breaks <- try(woebin_adj_break_plot(dt, y, x_i, breaks, bin_close_right = bin_close_right, ...), silent = TRUE)
       } else { # adj_brk == 'save'
         # go next adj_brk == 1
         if (!(is.null(breaks) || breaks == "")) bins_breakslist = bins_breakslist[variable == x_i, x_breaks := breaks]
 
         brklst_save(
           binbrklst2txt(bins_breakslist, header = TRUE, bin_close_right = bin_close_right),
-          save_name = save_breaks_list)
+          save_name = save_breaks_list, ...
+        )
       }
 
       adj_brk = menu2(c("next", "yes", "back"), title=paste0("> Adjust breaks for (", i, "/", xs_len, ") ", x_i, "?"))
@@ -1694,13 +1694,14 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, save_breaks_list=NULL, adj_
 
   if (!is.null(save_breaks_list)) brklst_save(
     binbrklst2txt(bins_breakslist, header = TRUE, bin_close_right = bin_close_right),
-    save_name = save_breaks_list)
+    save_name = save_breaks_list, ...
+  )
 
   if (to == 'breaks_list') {
     return(brklst_char)
 
   } else if (to == 'bins_list') {
-    bins = woebin(dt, y, x = xs_all, breaks_list = brklst_char, special_values = special_values, method = method, count_distr_limit = count_distr_limit, ...)
+    bins = woebin(dt, y, x = xs_all, breaks_list = brklst_char, ...)
 
     return(bins)
 
