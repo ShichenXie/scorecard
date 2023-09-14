@@ -8,9 +8,8 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
   special_values = NULL, missing_join = "left", stop_limit = 0.1,
   count_distr_limit = 0.05, bin_num_limit = 8, positive = "bad|1",
   no_cores = 2, print_step = 0L, method = "tree",
-  save_breaks_list = NULL, ignore_const_cols = TRUE,
-  ignore_datetime_cols = TRUE, check_cate_num = TRUE,
-  replace_blank_inf = TRUE, ...)
+  ignore_const_cols = TRUE, ignore_datetime_cols = TRUE,
+  check_cate_num = TRUE, replace_blank_inf = TRUE, save_as = NULL, ...)
 }
 \arguments{
 \item{dt}{A data frame with both x (predictor/feature) and y (response/label) variables.}
@@ -41,8 +40,6 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 
 \item{method}{Four methods are provided, "tree" and "chimerge" for optimal binning that support both numerical and categorical variables, and 'width' and 'freq' for equal binning that support numerical variables only. Defaults to "tree".}
 
-\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
-
 \item{ignore_const_cols}{Logical. Ignore constant columns. Defaults to TRUE.}
 
 \item{ignore_datetime_cols}{Logical. Ignore datetime columns. Defaults to TRUE.}
@@ -50,6 +47,8 @@ woebin(dt, y, x = NULL, var_skip = NULL, breaks_list = NULL,
 \item{check_cate_num}{Logical. Check whether the number of unique values in categorical columns larger than 50. It might make the binning process slow if there are too many unique categories. Defaults to TRUE.}
 
 \item{replace_blank_inf}{Logical. Replace blank values with NA and infinite with -1. Defaults to TRUE.}
+
+\item{save_as}{A string. The file name to save breaks_list. Defaults to None.}
 
 \item{...}{Additional parameters.}
 }
@@ -124,7 +123,7 @@ bins_cus_brk = woebin(dat, y="creditability",
 # Example V
 # save breaks_list as a R file
 bins2 = woebin(germancredit, y="creditability",
-   x=c("credit.amount","housing"), save_breaks_list='breaks_list')
+   x=c("credit.amount","housing"), save_as='breaks_list')
 
 # Example VI
 # setting bin closed on the right

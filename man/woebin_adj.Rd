@@ -4,8 +4,8 @@
 \alias{woebin_adj}
 \title{WOE Binning Adjustment}
 \usage{
-woebin_adj(dt, y, bins, breaks_list = NULL, save_breaks_list = NULL,
-  adj_all_var = TRUE, to = "breaks_list", ...)
+woebin_adj(dt, y, bins, breaks_list = NULL, adj_all_var = TRUE,
+  to = "breaks_list", save_as = NULL, ...)
 }
 \arguments{
 \item{dt}{A data frame.}
@@ -16,11 +16,11 @@ woebin_adj(dt, y, bins, breaks_list = NULL, save_breaks_list = NULL,
 
 \item{breaks_list}{List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.}
 
-\item{save_breaks_list}{A string. The file name to save breaks_list. Defaults to None.}
-
 \item{adj_all_var}{Logical, whether to show variables have monotonic woe trends. Defaults to TRUE}
 
 \item{to}{Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.}
+
+\item{save_as}{A string. The file name to save breaks_list. Defaults to None.}
 
 \item{...}{Additional parameters.}
 }
@@ -43,11 +43,11 @@ bins_final = woebin(dt, y="creditability",
                     breaks_list=breaks_adj)
 
 # Example II adjust two variables' breaks in brklst
-binsII = woebin(germancredit, y="creditability", save_breaks_list = 'breaks')
+binsII = woebin(germancredit, y="creditability", save_as = 'breaks')
 brklst = source('breaks.R')$value
 # update break list file
 brklst_adj = woebin_adj(germancredit, "creditability", binsII[1:2],
-                        breaks_list = brklst, save_breaks_list = 'breaks')
+                        breaks_list = brklst, save_as = 'breaks')
 }
 
 }

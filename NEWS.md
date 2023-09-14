@@ -3,6 +3,7 @@
 * the parameter missing_join supports to NULL in woebin function
 * modified the oot param names in split_df function
 * the woebin_adj function supports more params for binning
+# rename the param save_breaks_list to save_as in woebin and woebin_adj function
 
 # scorecard 0.4.3
 
