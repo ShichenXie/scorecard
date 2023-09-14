@@ -780,21 +780,21 @@ binbrklst2txt = function(bins_breakslist, header = FALSE, bin_close_right) {
   return(brklst_char)
 }
 # saving breaks list
-brklst_save = function(bins_breakslist, save_name=NULL, ...) {
-  brklst_backup = list(...)$brklst_backup
-  if (is.null(brklst_backup)) brklst_backup = TRUE
+brklst_save = function(bins_breakslist, save_as=NULL, ...) {
+  backup = list(...)$backup
+  if (is.null(backup)) backup = TRUE
 
-  if (is.null(save_name)) save_name = sprintf('brklst_%s', format(Sys.time(),'%Y%m%d_%H%M%S'))
+  if (is.null(save_as)) save_as = sprintf('brklst_%s', format(Sys.time(),'%Y%m%d_%H%M%S'))
+  save_as = sprintf('%s.R', save_as)
 
-  save_name = sprintf('%s.R', save_name)
-  if (file.exists(save_name) & isTRUE(brklst_backup)) {
-    new_name = sub('\\.R$', sprintf('_bck@%s.R', format(Sys.time(),'%Y%m%d_%H%M%S')), save_name)
-    file.rename(save_name, new_name)
-    cli_inform(c(i = sprintf("The existed breaks_list file '%s' is renamed as '%s'\n", save_name, new_name)))
+  if (file.exists(save_as) & isTRUE(backup)) {
+    new_name = sub('\\.R$', sprintf('_bck@%s.R', format(Sys.time(),'%Y%m%d_%H%M%S')), save_as)
+    file.rename(save_as, new_name)
+    cli_inform(c(i = sprintf("The existed breaks_list file '%s' is renamed as '%s'\n", save_as, new_name)))
   }
 
-  writeLines(bins_breakslist, save_name, useBytes = TRUE)
-  cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_name)))
+  writeLines(bins_breakslist, save_as, useBytes = TRUE)
+  cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_as)))
 
   return(invisible())
 }
@@ -1108,7 +1108,7 @@ woebin = function(
     bins_breakslist = bins2binbrklst(bins, dt, bin_close_right=bin_close_right)
     brklst_save(
       binbrklst2txt(bins_breakslist, header=TRUE, bin_close_right = bin_close_right),
-      save_name=save_as, ...
+      save_as=save_as, ...
     )
   }
 
@@ -1675,7 +1675,7 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, adj_all_var=TRUE, to='break
 
         brklst_save(
           binbrklst2txt(bins_breakslist, header = TRUE, bin_close_right = bin_close_right),
-          save_name = save_as, ...
+          save_as = save_as, ...
         )
       }
 
@@ -1701,7 +1701,7 @@ woebin_adj = function(dt, y, bins, breaks_list=NULL, adj_all_var=TRUE, to='break
 
   if (!is.null(save_as)) brklst_save(
     binbrklst2txt(bins_breakslist, header = TRUE, bin_close_right = bin_close_right),
-    save_name = save_as, ...
+    save_as = save_as, ...
   )
 
   if (to == 'breaks_list') {
