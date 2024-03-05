@@ -771,7 +771,10 @@ bins2binbrklst = function(bins, dt, breaks_list=NULL, bin_close_right=FALSE) {
 binbrklst2txt = function(bins_breakslist, header = FALSE, bin_close_right) {
   variable = x_breaks = NULL
 
-  brklst_char = paste0(bins_breakslist[, paste0(variable, "=c(", x_breaks, ")")], collapse = ", \n ")
+  brklst_char = paste0(bins_breakslist[
+    , sprintf("`%s`=c(%s)", variable, x_breaks)
+    # paste0(variable, "=c(", x_breaks, ")")
+  ], collapse = ", \n ")
 
   brklst_char = paste0(c("list(", brklst_char, ")"), collapse = "\n ")
 

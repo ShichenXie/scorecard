@@ -81,8 +81,8 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">bins</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>, save_breaks_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>, to <span class="op">=</span> <span class="st">"breaks_list"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">woebin_adj</span><span class="op">(</span><span class="va">dt</span>, <span class="va">y</span>, <span class="va">bins</span>, breaks_list <span class="op">=</span> <span class="cn">NULL</span>, adj_all_var <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  to <span class="op">=</span> <span class="st">"breaks_list"</span>, save_as <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -103,16 +103,16 @@
 <dd><p>List of break points, Defaults to NULL. If it is not NULL, variable binning will based on the provided breaks.</p></dd>
 
 
-<dt>save_breaks_list</dt>
-<dd><p>A string. The file name to save breaks_list. Defaults to None.</p></dd>
-
-
 <dt>adj_all_var</dt>
 <dd><p>Logical, whether to show variables have monotonic woe trends. Defaults to TRUE</p></dd>
 
 
 <dt>to</dt>
 <dd><p>Adjusting bins into breaks_list or bins_list. Defaults to breaks_list.</p></dd>
+
+
+<dt>save_as</dt>
+<dd><p>A string. The file name to save breaks_list. Defaults to None.</p></dd>
 
 
 <dt>...</dt>
@@ -144,11 +144,11 @@
 <span class="r-in"><span>                    breaks_list<span class="op">=</span><span class="va">breaks_adj</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example II adjust two variables' breaks in brklst</span></span></span>
-<span class="r-in"><span><span class="va">binsII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, save_breaks_list <span class="op">=</span> <span class="st">'breaks'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">binsII</span> <span class="op">=</span> <span class="fu"><a href="woebin.html">woebin</a></span><span class="op">(</span><span class="va">germancredit</span>, y<span class="op">=</span><span class="st">"creditability"</span>, save_as <span class="op">=</span> <span class="st">'breaks'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">brklst</span> <span class="op">=</span> <span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'breaks.R'</span><span class="op">)</span><span class="op">$</span><span class="va">value</span></span></span>
 <span class="r-in"><span><span class="co"># update break list file</span></span></span>
 <span class="r-in"><span><span class="va">brklst_adj</span> <span class="op">=</span> <span class="fu">woebin_adj</span><span class="op">(</span><span class="va">germancredit</span>, <span class="st">"creditability"</span>, <span class="va">binsII</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>                        breaks_list <span class="op">=</span> <span class="va">brklst</span>, save_breaks_list <span class="op">=</span> <span class="st">'breaks'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                        breaks_list <span class="op">=</span> <span class="va">brklst</span>, save_as <span class="op">=</span> <span class="st">'breaks'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
