@@ -250,6 +250,9 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val, bin_close_ri
       brk = setdiff(unique(xvalue_rm_outlier), c(NA, Inf, -Inf))
     } else {
       brk = suppressWarnings(pretty(xvalue_rm_outlier, n))
+
+      ndigits = data.table(n=nchar(sub('.*\\.', '', as.character(brk))))[, .N, by=n][, max(n)+1]
+      brk = unique(round(brk, digits=ndigits))
     }
     brk = brk_numx_init(brk, xvalue, bin_close_right)
     if (anyNA(xvalue)) brk = c(brk, NA)
@@ -1155,7 +1158,7 @@ woepoints_ply1 = function(dtx, binx, x_i, woe_points, bin_close_right ) {
   setnames(binx, c('V1', woe_points), c(x_i, paste(x_i, woe_points, sep="_")))
   # merge
   dtx_suffix = merge(dtx, binx, by=x_i, all.x = TRUE)
-  dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (c("rowid", "bin", x_i)) := NULL][]
+  dtx_suffix = setDT(dtx_suffix)[order(rowid)][, (intersect(names(dtx_suffix), c("rowid", "bin", x_i))) := NULL][]
 
   return(dtx_suffix)
 }
@@ -1258,7 +1261,7 @@ woebin_ply = function(dt, bins, to='woe', no_cores=2, print_step=0L, replace_bla
   # the databc_colomun_placeholder will be remove in the result, in case dt_init is an empty dataframe
 
   # loop on xs # https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
-  no_cores = check_no_cores(no_cores)
+  no_cores = check_no_cores(no_cores, xs_len = xs_len)
 
   if (no_cores == 1) {
     dat = dt_init

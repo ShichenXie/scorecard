@@ -209,7 +209,7 @@ report = function(dt, y, x, breaks_list, x_name = NULL, special_values=NULL, see
   writeData(wb,sheet, sum_tbl, startRow=2, startCol=1, colNames=T)
 
   # correlation
-  dtcor1 = rbindlist(lapply(dat_woe_lst[1], function(d) cor2(d,paste0(x,'_woe'), uptri = TRUE, diag = TRUE)))[, x1 := sub('_woe$', '', x1)]
+  dtcor1 = rbindlist(lapply(dat_woe_lst[1], function(d) cor2(d,paste0(x,'_woe'), uptri = FALSE)))[, x1 := sub('_woe$', '', x1)]
   setnames(dtcor1, 'x1', 'variable')
   if (!is.null(x_name)) dtcor1 = merge(x_name, dtcor1, by = 'variable', sort = FALSE, all = TRUE)[]
 

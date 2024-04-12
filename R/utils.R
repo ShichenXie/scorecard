@@ -289,6 +289,8 @@ check_no_cores = function(no_cores, xs_len=10) {
     no_cores = all_cores
   }
 
+  if (no_cores > xs_len) no_cores = xs_len
+
   return(no_cores)
 }
 

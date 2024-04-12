@@ -4,6 +4,7 @@
 * modified the oot param names in split_df function
 * the woebin_adj function supports more params for binning
 * rename the param save_breaks_list to save_as in woebin and woebin_adj function
+* fixed a bug due to the pretty function returns numbers with inconsistency digits
 
 # scorecard 0.4.3
 
