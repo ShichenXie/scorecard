@@ -1,4 +1,4 @@
-# scorecard 0.4.3.999
+# scorecard 0.4.4
 
 * the parameter missing_join supports to NULL in woebin function
 * modified the oot param names in split_df function

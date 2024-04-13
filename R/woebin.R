@@ -793,14 +793,24 @@ brklst_save = function(bins_breakslist, save_as=NULL, ...) {
   if (is.null(save_as)) save_as = sprintf('brklst_%s', format(Sys.time(),'%Y%m%d_%H%M%S'))
   save_as = sprintf('%s.R', save_as)
 
-  if (file.exists(save_as) & isTRUE(backup)) {
-    new_name = sub('\\.R$', sprintf('_bck@%s.R', format(Sys.time(),'%Y%m%d_%H%M%S')), save_as)
-    file.rename(save_as, new_name)
-    cli_inform(c(i = sprintf("The existed breaks_list file '%s' is renamed as '%s'\n", save_as, new_name)))
-  }
+  if (isTRUE(backup)) {
+    if (file.exists(save_as)) {
+      brklst_ori = readLines(save_as)[-1]
+      brklst_new = unlist(strsplit(bins_breakslist, '\n'))[-1]
 
-  writeLines(bins_breakslist, save_as, useBytes = TRUE)
-  cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_as)))
+      if (!identical(brklst_ori, brklst_new)) {
+        new_name = sub('\\.R$', sprintf('_bck@%s.R', format(Sys.time(),'%Y%m%d_%H%M%S')), save_as)
+        file.rename(save_as, new_name)
+        cli_inform(c(i = sprintf("The existed breaks_list file '%s' is renamed as '%s'\n", save_as, new_name)))
+
+        writeLines(bins_breakslist, save_as, useBytes = TRUE)
+        cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_as)))
+      }
+    } else {
+      writeLines(bins_breakslist, save_as, useBytes = TRUE)
+      cli_inform(c(i = sprintf("The breaks_list is saved as '%s'", save_as)))
+    }
+  }
 
   return(invisible())
 }
