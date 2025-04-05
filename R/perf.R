@@ -378,7 +378,7 @@ plot_roc = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
           legend.background=element_blank(),
           legend.key=element_blank(),
           legend.key.size = unit(1.5, 'lines')) +
-    guides(color=guide_legend(title=NULL), fill=FALSE)
+    guides(color=guide_legend(title=NULL), fill='none')
 
   # axis, labs, theme
   proc = proc + ggtitle(paste0(title, 'ROC')) +

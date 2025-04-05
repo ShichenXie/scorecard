@@ -1,3 +1,7 @@
+# scorecard 0.4.5
+
+* fixed a bug caused by deprecated feature in ggplot2
+
 # scorecard 0.4.4
 
 * the parameter missing_join supports to NULL in woebin function

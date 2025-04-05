@@ -251,7 +251,7 @@ woebin2_init_bin = function(dtm, init_count_distr, breaks, spl_val, bin_close_ri
     } else {
       brk = suppressWarnings(pretty(xvalue_rm_outlier, n))
 
-      ndigits = data.table(n=nchar(sub('.*\\.', '', as.character(brk))))[, .N, by=n][, max(n)+1]
+      ndigits = data.table(n=nchar(sub('.*\\.', '', as.character(brk))))[, max(n)+1]
       brk = unique(round(brk, digits=ndigits))
     }
     brk = brk_numx_init(brk, xvalue, bin_close_right)

@@ -399,12 +399,18 @@ var_filter_vif = function(dt, y, x=NULL, lim=3, var_rm_miniv=TRUE) {
   return(list(xkp = x_kp, xrm = setdiff(x, x_kp)))
 }
 
-var_filter_cor = function(dt, y, x=NULL, lim=0.6, var_rm_miniv=TRUE) {
+var_filter_cor = function(dt, y, x=NULL, lim=0.6, var_rm_miniv=TRUE, importance = NULL) {
   value = x1 = x2 = . = V1 = cid = rid = NULL
 
   if (is.null(x)) x = setdiff(names(dt), y)
   dtxy = setDT(dt)[, c(x,y), with=FALSE]
-  if (var_rm_miniv) xiv = iv(dtxy, y, x)
+  if (var_rm_miniv) {
+    if (is.null(importance)) {
+      xiv = iv(dtxy, y, x)
+    } else {
+      xiv = setnames(importance[,1:2], c('variable', 'info_value'))
+    }
+  }
 
   x_kp_num = cols_type(dtxy[, x, with=FALSE], 'numeric')
   x_kp_cat = setdiff(x, x_kp_num)
