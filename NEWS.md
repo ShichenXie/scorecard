@@ -1,3 +1,7 @@
+# scorecard 0.4.6
+
+* fixed a bug to fit R 4.6.0
+
 # scorecard 0.4.5
 
 * fixed a bug caused by deprecated feature in ggplot2

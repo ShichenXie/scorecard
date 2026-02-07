@@ -23,40 +23,36 @@
 #' @export
 #'
 describe = function(dt) {
-  `NA's` = cv = NULL
+  # `NA's` = cv = NULL
   dt = setDT(copy(dt))
 
-  sum_dt =
-    data.table(
-      variable = names(dt),
-      class = dt[, sapply(.SD, class)],
-      count = dt[, .N],
-      missing_rate = dt[, sapply(.SD, function(x) mean(is.na(x)) )],
-      unique_count = dt[, sapply(.SD, function(x) uniqueN(x, na.rm = TRUE) )],
-      identical_rate = dt[, sapply(.SD, function(a) fun_identical_rate(a) )]
-    )
-
-
-  xnum = names(which(dt[, sapply(.SD, is.numeric)]))
-  dtnum = dt[, xnum, with = FALSE]
-  sum_dtnum = as.data.table(do.call(rbind, lapply(dtnum, summary)))[, `:=`(
-    variable = xnum,
-    sd = dtnum[,sapply(.SD, function(x) sd(x, na.rm = TRUE))]
+  # summary numeric columns
+  colnum = xefun::cols_type(dt, 'num')
+  dtnum = dt[, colnum, with = FALSE]
+  dtsum_a = as.data.table(do.call(rbind, lapply(dtnum, summary)))[, `:=`(
+    variable = colnum
   )]
-  if (anyNA(dtnum)) sum_dtnum = sum_dtnum[, `NA's` := NULL]
-  setnames(sum_dtnum, c('min', 'p25', 'p50', 'mean', 'p75', 'max', 'variable', 'sd'))
-  sum_dtnum = sum_dtnum[,c('variable', 'min', 'p25', 'p50', 'p75', 'max', 'mean', 'sd'), with = FALSE][, cv := sd/mean]
+
+  # desc idx
+  dtsum_b = merge2(list(
+    data.table(class = dt[, sapply(.SD, class)], keep.rownames = 'variable'),
+    data.table(count = dt[, sapply(.SD, length)], keep.rownames = 'variable'),
+    data.table(missing_rate = dt[, sapply(.SD, function(x) mean(is.na(x)) )], keep.rownames = 'variable'),
+    data.table(unique_count = dt[, sapply(.SD, function(x) uniqueN(x, na.rm = TRUE) )], keep.rownames = 'variable'),
+    data.table(identical_rate = dt[, sapply(.SD, function(a) fun_identical_rate(a) )], keep.rownames = 'variable'),
+    data.table(sd = dt[,sapply(.SD, function(x) sd(x, na.rm = TRUE)), .SDcols = colnum], keep.rownames = 'variable')
+  ), by = 'variable', all = T)
 
 
-  xround = c('identical_rate', 'missing_rate', 'mean', 'sd', 'cv')
-  vardesc = merge(
-    sum_dt, sum_dtnum,
+  dtdesc = merge(
+    dtsum_b, dtsum_a,
     by = 'variable', all = TRUE, sort = FALSE
-  )[,(xround) := lapply(.SD, function(x) round(x,4)),
-    .SDcols = xround
-  ][]
+  )
 
-  return(vardesc)
+  colround = setdiff(xefun::cols_type(dtdesc, 'num'), xefun::cols_type(dtdesc, 'int'))
+  dtdesc = dtdesc[,(colround) := lapply(.SD, function(x) round(x,4)), .SDcols = colround][]
+
+  return(dtdesc)
 }
 
 
