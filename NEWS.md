@@ -1,6 +1,6 @@
 # scorecard 0.4.6
 
-* fixed a bug to fit R 4.6.0
+* fixed a few bugs
 
 # scorecard 0.4.5
 

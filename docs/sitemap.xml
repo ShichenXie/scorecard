@@ -1,96 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/articles/demo.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/describe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gains_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/germancredit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/iv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/one_hot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/perf_cv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/perf_eva.html</loc>
-  </url>
-  <url>
-    <loc>/reference/perf_psi.html</loc>
-  </url>
-  <url>
-    <loc>/reference/replace_na.html</loc>
-  </url>
-  <url>
-    <loc>/reference/report.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scorecard.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scorecard2.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scorecard_ply.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scorecard_pmml.html</loc>
-  </url>
-  <url>
-    <loc>/reference/split_df.html</loc>
-  </url>
-  <url>
-    <loc>/reference/var_filter.html</loc>
-  </url>
-  <url>
-    <loc>/reference/var_scale.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vif.html</loc>
-  </url>
-  <url>
-    <loc>/reference/woebin.html</loc>
-  </url>
-  <url>
-    <loc>/reference/woebin_adj.html</loc>
-  </url>
-  <url>
-    <loc>/reference/woebin_plot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/woebin_ply.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/demo.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/describe.html</loc></url>
+<url><loc>/reference/gains_table.html</loc></url>
+<url><loc>/reference/germancredit.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/iv.html</loc></url>
+<url><loc>/reference/one_hot.html</loc></url>
+<url><loc>/reference/perf_cv.html</loc></url>
+<url><loc>/reference/perf_eva.html</loc></url>
+<url><loc>/reference/perf_psi.html</loc></url>
+<url><loc>/reference/replace_na.html</loc></url>
+<url><loc>/reference/report.html</loc></url>
+<url><loc>/reference/scorecard.html</loc></url>
+<url><loc>/reference/scorecard2.html</loc></url>
+<url><loc>/reference/scorecard_ply.html</loc></url>
+<url><loc>/reference/scorecard_pmml.html</loc></url>
+<url><loc>/reference/split_df.html</loc></url>
+<url><loc>/reference/var_filter.html</loc></url>
+<url><loc>/reference/var_scale.html</loc></url>
+<url><loc>/reference/vif.html</loc></url>
+<url><loc>/reference/woebin.html</loc></url>
+<url><loc>/reference/woebin_adj.html</loc></url>
+<url><loc>/reference/woebin_plot.html</loc></url>
+<url><loc>/reference/woebin_ply.html</loc></url>
 </urlset>
+
