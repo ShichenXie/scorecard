@@ -446,7 +446,7 @@ plot_lz = function(dat_eva_lst, pm=NULL, co=NULL, title=NULL, ...) {
           legend.background=element_blank(),
           legend.key=element_blank(),
           legend.key.size = unit(1.5, 'lines')) +
-    guides(color=guide_legend(title=NULL), fill=FALSE)
+    guides(color=guide_legend(title=NULL), fill='none')
 
   # axis, labs, theme
   plz = plz + ggtitle(paste0(title, 'Lorenz')) +
@@ -479,18 +479,23 @@ plot_f1 = function(dat_eva_lst, pm=NULL, co=NULL, beta=1, title=NULL, ...) {
   # max_fb = ceiling2(max(dt_f[[paste0('f',beta)]],na.rm = TRUE))
 
   # plot
-  pf = ggplot(data = dt_f, aes(x=cumpop)) +
-    geom_line(aes_string(y=paste0('f',beta), color='datset'), na.rm = TRUE) +
-    geom_point(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta)), color='red') +
-    # geom_text(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta), label='oc', color='datset'), vjust=0) +
-    geom_segment(data = dt_cut, aes_string(x = 'cumpop', y = 0, xend = 'cumpop', yend = paste0('f',beta), color='datset'), linetype = "dashed") +
+  pf =
+    # ggplot(data = dt_f, aes(x=cumpop)) +
+    # geom_line(aes_string(y=paste0('f',beta), color='datset'), na.rm = TRUE) +
+    # geom_point(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta)), color='red') +
+    # # geom_text(data = dt_cut, aes_string(x='cumpop', y=paste0('f',beta), label='oc', color='datset'), vjust=0) +
+    # geom_segment(data = dt_cut, aes_string(x = 'cumpop', y = 0, xend = 'cumpop', yend = paste0('f',beta), color='datset'), linetype = "dashed") +
+    ggplot() +
+    geom_line(data = dt_f, aes(x = .data[['cumpop']], y = .data[[paste0('f', beta)]], color = .data[['datset']]), na.rm = TRUE) +
+    geom_point(data = dt_cut, aes(x = .data[['cumpop']], y = .data[[paste0('f', beta)]]), color='red') +
+    geom_segment(data = dt_cut, aes(x = .data[['cumpop']], y = 0, xend = .data[['cumpop']], yend = .data[[paste0('f', beta)]], color = .data[['datset']]), linetype = "dashed") +
     theme_bw() +
     theme(legend.position=c(1,0),
           legend.justification=c(1,0),
           legend.background=element_blank(),
           legend.key=element_blank(),
           legend.key.size = unit(1.5, 'lines')) +
-    guides(color=guide_legend(title=NULL), fill=FALSE)
+    guides(color=guide_legend(title=NULL), fill='none')
 
   # axis, labs, theme
   pf = pf + ggtitle(paste0(title, paste0("F",beta))) +
@@ -870,8 +875,8 @@ psicsi_metric = function(dt_sn, names_datset, is_totalscore=TRUE) {
 
   # data frame of bin, actual, expected
   dt_bae = dcast(
-    dt_sn[, .N, keyby = c('datset', 'bin')],
-    bin ~ datset, value.var="N", fill = 0.99
+    dt_sn[, as.numeric(.N), keyby = c('datset', 'bin')][],
+    "bin ~ datset", value.var="V1", fill = 0.99
   )
 
 
